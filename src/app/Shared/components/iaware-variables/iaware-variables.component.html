@@ -1,0 +1,20 @@
+<div *ngIf="iawareVariables">
+  <div class="variables-container">
+    <!-- Header Section -->
+    <div class="variables-header">
+      <h4>iAware Variables</h4>
+    </div>
+    <app-iAware-info severity="info" description="Some text to describe the iAware Variables"></app-iAware-info>
+    <div class="variable-grid">
+      <div *ngFor="let variable of iawareVariables" class="variable-item" (click)="copyVariable(variable.value)">
+        <div class="variable-name">
+          <span>{{ variable.name }}</span>
+          <i class="fa fa-copy copy-icon" title="Copy variable"></i>
+        </div>
+        <div class="variable-description">
+          {{ variable.description }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

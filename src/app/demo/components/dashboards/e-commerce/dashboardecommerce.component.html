@@ -1,0 +1,297 @@
+<div class="grid">
+    <div class="col-12 md:col-6 lg:col-3">
+        <div class="p-3 text-white h-6rem border-round m-0 bg-center bg-cover bg-no-repeat bg-cyan-400"
+            style="background-image: url('assets/layout/images/dashboard/effect-1.svg')">
+            <div class="font-bold w-full mb-3">
+                <span>Sales</span>
+            </div>
+            <div class="text-white text-2xl font-bold w-full flex align-items-center py-1">150 <i
+                    class="pi pi-arrow-up ml-2 font-bold"></i></div>
+        </div>
+    </div>
+    <div class="col-12 md:col-6 lg:col-3">
+        <div class="p-3 text-white h-6rem border-round m-0 bg-center bg-cover bg-no-repeat bg-orange-400"
+            style="background-image: url('assets/layout/images/dashboard/effect-2.svg')">
+            <div class="font-bold w-full mb-3">
+                <span>Revenue</span>
+            </div>
+            <div class="text-white text-2xl font-bold w-full flex align-items-center py-1">532 <i
+                    class="pi pi-arrow-up ml-2 font-bold"></i></div>
+        </div>
+    </div>
+    <div class="col-12 md:col-6 lg:col-3">
+        <div class="p-3 text-white h-6rem border-round m-0 bg-center bg-cover bg-no-repeat bg-purple-400"
+            style="background-image: url('assets/layout/images/dashboard/effect-3.svg')">
+            <div class="font-bold w-full mb-3">
+                <span>New Customers</span>
+            </div>
+            <div class="text-white text-2xl font-bold w-full flex align-items-center py-1">450 <i
+                    class="pi pi-arrow-down ml-2 font-bold"></i></div>
+        </div>
+    </div>
+    <div class="col-12 md:col-6 lg:col-3">
+        <div class="p-3 text-white h-6rem border-round m-0 bg-center bg-cover bg-no-repeat bg-bluegray-200"
+            style="background-image: url('assets/layout/images/dashboard/effect-4.svg')">
+            <div class="font-bold w-full mb-3">
+                <span>Stock</span>
+            </div>
+            <div class="text-white text-2xl font-bold w-full flex align-items-center py-1">143 <i
+                    class="pi pi-arrow-down ml-2 font-bold"></i></div>
+        </div>
+    </div>
+
+    <div class="col-12 lg:col-6">
+        <div class="card h-full">
+            <h5>Weekly Overview</h5>
+            <p-chart type="line" [data]="chartData" [options]="chartOptions" id="nasdaq-chart"
+                [responsive]="true"></p-chart>
+        </div>
+    </div>
+
+    <div class="col-12 lg:col-6">
+        <div class="card">
+            <div class="flex align-items-center justify-content-between mb-4">
+                <h5>Quarter Goals</h5>
+                <div class="ml-auto">
+                    <button pButton pRipple icon="pi pi-ellipsis-v"
+                        class="p-button-text p-button-plain p-button-rounded" (click)="menu.toggle($event)"></button>
+                    <p-menu #menu [popup]="true" [model]="items"></p-menu>
+                </div>
+            </div>
+            <div class="border-1 surface-border p-3 mb-4">
+                <span class="font-medium text-3xl text-color">85% <span
+                        class="text-color-secondary">(2125/2500)</span></span>
+                <ul class="m-0 p-0 list-none mt-3 flex">
+                    <li class="bg-cyan-500 h-1rem flex-1 border-round-left"></li>
+                    <li class="bg-orange-500 h-1rem flex-1"></li>
+                    <li class="bg-pink-500 h-1rem flex-1"></li>
+                    <li class="bg-purple-500 h-1rem flex-1"></li>
+                    <li class="bg-blue-500 h-1rem flex-1"></li>
+                    <li class="bg-gray-500 h-1rem flex-1 border-round-right"></li>
+                </ul>
+            </div>
+
+            <ul class="mt-4 p-0 mx-0">
+                <li class="flex align-items-center py-3">
+                    <span class="border-round bg-cyan-500 mr-3 w-1rem h-1rem"></span>
+                    <span class="text-xl font-medium text-color">T-Shirt</span>
+                    <span class="text-xl font-medium text-color-secondary ml-auto">89</span>
+                </li>
+                <li class="flex align-items-center py-3">
+                    <span class="border-round-md bg-orange-500 mr-3 w-1rem h-1rem"></span>
+                    <span class="text-xl font-medium text-color">Controller</span>
+                    <span class="text-xl font-medium text-color-secondary ml-auto">23</span>
+                </li>
+                <li class="flex align-items-center py-3">
+                    <span class="border-round-md bg-pink-500 mr-3 w-1rem h-1rem"></span>
+                    <span class="text-xl font-medium text-color">Phone Case</span>
+                    <span class="text-xl font-medium text-color-secondary ml-auto">134</span>
+                </li>
+                <li class="flex align-items-center py-3">
+                    <span class="border-round-md bg-purple-500 mr-3 w-1rem h-1rem"></span>
+                    <span class="text-xl font-medium text-color">Purple Band</span>
+                    <span class="text-xl font-medium text-color-secondary ml-auto">42</span>
+                </li>
+                <li class="flex align-items-center py-3">
+                    <span class="border-round-md bg-blue-500 mr-3 w-1rem h-1rem"></span>
+                    <span class="text-xl font-medium text-color">Blue Band</span>
+                    <span class="text-xl font-medium text-color-secondary ml-auto">63</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-12 lg:col-4 p-3">
+        <div class="card">
+            <div class="flex align-items-center justify-content-between">
+                <div>
+                    <span class="font-bold text-3xl text-color">450</span>
+                    <p class="mt-2 mb-0 text-2xl text-color-secondary">Reviews Received</p>
+                </div>
+                <div>
+                    <img src="assets/layout/images/dashboard/stats-illustration-1.svg" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 lg:col-4 p-3">
+        <div class="card">
+            <div class="flex align-items-center justify-content-between">
+                <div>
+                    <span class="font-bold text-3xl text-color">71K</span>
+                    <p class="mt-2 mb-0 text-2xl text-color-secondary">Unique Visitors</p>
+                </div>
+                <div>
+                    <img src="assets/layout/images/dashboard/stats-illustration-2.svg" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 lg:col-4 p-3">
+        <div class="card">
+            <div class="flex align-items-center justify-content-between">
+                <div>
+                    <span class="font-bold text-3xl text-color">757</span>
+                    <p class="mt-2 mb-0 text-2xl text-color-secondary">Payments Processed</p>
+                </div>
+                <div>
+                    <img src="assets/layout/images/dashboard/stats-illustration-3.svg" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 xl:col-6">
+        <div class="card p-4">
+            <div class="flex align-items-center justify-content-between mb-4">
+                <h5>Product Sales</h5>
+                <button pButton pRipple icon="pi pi-refresh" class="p-button-rounded p-button-outlined"></button>
+            </div>
+
+            <div class="grid mr-0">
+                <div class="col-6 md:col-4 lg:col-3 p-3">
+                    <div class="text-center">
+                        <div class="flex align-items-center justify-content-center mb-3 mx-auto surface-section border-1 surface-border border-round"
+                            style="width:90px; height:90px">
+                            <img src="assets/layout/images/dashboard/headphone.png" style="width: 48px;height: 48px" />
+                        </div>
+                        <span class="font-medium text-color">Headphone</span>
+                        <div class="text-sm text-color-secondary mt-2">220 Sales</div>
+                    </div>
+                </div>
+                <div class="col-6 md:col-4 lg:col-3 p-3">
+                    <div class="text-center">
+                        <div class="flex align-items-center justify-content-center mb-3 mx-auto surface-section border-1 surface-border border-round"
+                            style="width:90px; height:90px">
+                            <img src="assets/layout/images/dashboard/laptop.png" style="width: 48px;height: 48px" />
+                        </div>
+                        <span class="font-medium text-color">Laptop</span>
+                        <div class="text-sm text-color-secondary mt-2">110 Sales</div>
+                    </div>
+                </div>
+                <div class="col-6 md:col-4 lg:col-3 p-3">
+                    <div class="text-center">
+                        <div class="flex align-items-center justify-content-center mb-3 mx-auto surface-section border-1 surface-border border-round"
+                            style="width:90px; height:90px">
+                            <img src="assets/layout/images/dashboard/phone.png" style="width: 48px;height: 48px" />
+                        </div>
+                        <span class="font-medium text-color">Phone</span>
+                        <div class="text-sm text-color-secondary mt-2">90 Sales</div>
+                    </div>
+                </div>
+                <div class="col-6 md:col-4 lg:col-3 p-3">
+                    <div class="text-center">
+                        <div class="flex align-items-center justify-content-center mb-3 mx-auto surface-section border-1 surface-border border-round"
+                            style="width:90px; height:90px">
+                            <img src="assets/layout/images/dashboard/shoes.png" style="width: 48px;height: 48px" />
+                        </div>
+                        <span class="font-medium text-color">Shoes</span>
+                        <div class="text-sm text-color-secondary mt-2">77 Sales</div>
+                    </div>
+                </div>
+                <div class="col-6 md:col-4 lg:col-3 p-3">
+                    <div class="text-center">
+                        <div class="flex align-items-center justify-content-center mb-3 mx-auto surface-section border-1 surface-border border-round"
+                            style="width:90px; height:90px">
+                            <img src="assets/layout/images/dashboard/tshirt.png" style="width: 48px;height: 48px" />
+                        </div>
+                        <span class="font-medium text-color">Tshirt</span>
+                        <div class="text-sm text-color-secondary mt-2">454 Sales</div>
+                    </div>
+                </div>
+                <div class="col-6 md:col-4 lg:col-3 p-3">
+                    <div class="text-center">
+                        <div class="flex align-items-center justify-content-center mb-3 mx-auto surface-section border-1 surface-border border-round"
+                            style="width:90px; height:90px">
+                            <img src="assets/layout/images/dashboard/vacuum.png" style="width: 48px;height: 48px" />
+                        </div>
+                        <span class="font-medium text-color">Vacuum</span>
+                        <div class="text-sm text-color-secondary mt-2">330 Sales</div>
+                    </div>
+                </div>
+                <div class="col-6 md:col-4 lg:col-3 p-3">
+                    <div class="text-center">
+                        <div class="flex align-items-center justify-content-center mb-3 mx-auto surface-section border-1 surface-border border-round"
+                            style="width:90px; height:90px">
+                            <img src="assets/layout/images/dashboard/wallet.png" style="width: 48px;height: 48px" />
+                        </div>
+                        <span class="font-medium text-color">Wallet</span>
+                        <div class="text-sm text-color-secondary mt-2">42 Sales</div>
+                    </div>
+                </div>
+                <div class="col-6 md:col-4 lg:col-3 p-3">
+                    <div class="text-center">
+                        <div class="flex align-items-center justify-content-center mb-3 mx-auto surface-section border-1 surface-border border-round"
+                            style="width:90px; height:90px">
+                            <img src="assets/layout/images/dashboard/watch.png" style="width: 48px;height: 48px" />
+                        </div>
+                        <span class="font-medium text-color">Watch</span>
+                        <div class="text-sm text-color-secondary mt-2">112 Sales</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 xl:col-6">
+        <div class="card">
+            <div class="flex flex-column md:flex-row md:align-items-start md:justify-content-between mb-3">
+                <div class="text-900 text-xl font-semibold mb-3 md:mb-0">Recent Sales</div>
+                <div class="inline-flex align-items-center">
+                    <span class="p-input-icon-left flex-auto">
+                        <i class="pi pi-search"></i>
+                        <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search"
+                            class="w-full" style="border-radius: 2rem" />
+                    </span>
+                    <button pButton pRipple icon="pi pi-upload" class="p-button-rounded mx-3"
+                        (click)="dt.exportCSV()"></button>
+                </div>
+            </div>
+            <p-table #dt [value]="products" [columns]="cols" [paginator]="true" [rows]="4" responsiveLayout="scroll"
+                [globalFilterFields]="['name','category','inventoryStatus']">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th pSortableColumn="name" style="min-width:12rem" class="white-space-nowrap">Name
+                            <p-sortIcon field="name"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="category" style="min-width:10rem" class="white-space-nowrap">Category
+                            <p-sortIcon field="category"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="price" style="min-width:10rem" class="white-space-nowrap">Price
+                            <p-sortIcon field="price"></p-sortIcon>
+                        </th>
+                        <th pSortableColumn="inventoryStatus" style="min-width:10rem" class="white-space-nowrap">
+                            Status
+                            <p-sortIcon field="inventoryStatus"></p-sortIcon>
+                        </th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-product>
+                    <tr>
+                        <td>{{product.name}}</td>
+                        <td>
+                            <span class="p-column-title">Category</span>
+                            {{product.category}}
+                        </td>
+                        <td>
+                            <span class="p-column-title">Price</span>
+                            {{product.price | currency:'USD'}}
+                        </td>
+                        <td>
+                            <span class="p-column-title">Status</span>
+                            <span
+                                [class]="'product-badge status-' + product.inventoryStatus.toLowerCase()">{{product.inventoryStatus}}</span>
+                        </td>
+                        <td style="text-align: center">
+                            <button pButton type="button" icon="pi pi-search"
+                                class="p-button-outlined p-button-rounded"></button>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+</div>

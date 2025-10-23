@@ -1,0 +1,12 @@
+.centered-text {
+  text-align: center; /* Horizontally center the text */
+  margin-bottom: 20px; /* Optional: Add space below the text */
+}
+
+.centered-footer {
+  display: flex;
+  justify-content: center; /* Horizontally center the button */
+  align-items: center; /* Vertically center the button (optional) */
+  width: 100%; /* Ensure the footer spans the full width */
+  padding: 10px 0; /* Optional: Add padding for spacing */
+}

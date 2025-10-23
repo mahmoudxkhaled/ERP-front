@@ -1,0 +1,86 @@
+<p-dialog [header]="dialogHeader" [style]="{ width: '90%', height: '83%' }" (onHide)="handleHideAndClearSelections()"
+    [(visible)]="displayDialog" [modal]="true" [closable]="true">
+    <ng-template pTemplate="content">
+        <div class="grid">
+            <!-- Action Buttons -->
+            <div class="col-12 flex justify-content-end">
+                <div class="mx-3">
+                    <p-button [label]="'shared.actions.csv' | translate" icon="pi pi-file-excel"
+                        [disabled]="campaignForSelectedUser.length == 0" (onClick)="downloadCSV()"></p-button>
+                </div>
+                <div>
+                    <p-button [label]="'shared.actions.pdf' | translate" icon="pi pi-file-pdf"
+                        [disabled]="campaignForSelectedUser.length == 0" (onClick)="downloadPDF()"></p-button>
+                </div>
+            </div>
+
+            <div class="col-12 overflow-auto">
+                <div class="grid">
+
+                    <!-- User List -->
+                    <div class="col-12 md:col-3 p-2 user-list">
+
+                        <button pButton pRipple label="Download All Users as PDF" icon="pi pi-file-pdf"
+                            (click)="downloadAllPDF()" class="mb-1 w-full md:w-50 p-button-outlined"></button>
+
+                        <button pButton pRipple label="Download All Users as CSV" icon="pi pi-file-excel"
+                            (click)="downloadAllCSV()" class="mb-5 w-full md:w-50 p-button-outlined"></button>
+                        <div class="overflow-auto">
+                            <p-scrollPanel [style]="{ height: '40vh' }">
+                                <ul class="flex flex-row md:flex-column gap-1 md:gap-2 list-none m-0 p-0 overflow-auto">
+                                    <li *ngFor="let user of filteredCampaignUsers; let i = index"
+                                        class="cursor-pointer select-none p-3 transition-duration-150 border-round flex align-items-center justify-content-center md:justify-content-start md:flex-1 flex-auto"
+                                        (click)="selectUser(user)"
+                                        [ngClass]="{'bg-primary': selectedUser === user, 'hover:surface-hover': selectedUser !== user}">
+                                        <img [alt]="user.userName"
+                                            [src]="user?.userImageUrl ?? '../../../../../assets/media/avatar.png'"
+                                            class="user-avatar md:mr-3 text-600 transition-duration-150 text-lg" />
+                                        <span class="text-900 font-medium hidden md:inline"
+                                            [ngClass]="{'text-primary-50': selectedUser === user}">
+                                            {{ user.userName }}
+                                            <br>
+                                            <span class="text-sm px-2hidden md:inline">
+                                                {{ user.userEmail }}
+                                            </span>
+                                        </span>
+                                        <hr>
+                                    </li>
+                                </ul>
+                            </p-scrollPanel>
+                        </div>
+                    </div>
+                    <!-- Table Section -->
+                    <div class="col-12 md:col-9 p-2">
+                        <p-scrollPanel [style]="{ height: '50vh' }">
+                            <div class="iAware-loading-table-container" style="position: relative">
+                                <app-table-loading-spinner *ngIf="tableLoadingSpinner"></app-table-loading-spinner>
+                                <p-table #dt dataKey="userId" dataKey="userName" [value]="campaignForSelectedUser"
+                                [tableStyle]="{ 'min-width': '60rem' }" [paginator]="true" [rows]="10"
+                                [showCurrentPageReport]="true" responsiveLayout="scroll"
+                                [rowsPerPageOptions]="[10, 50, 100, 150]">
+                                    <ng-template pTemplate="header">
+                                        <tr>
+                                            <th>{{ 'trainingCampaignsDashboard.campaign' | translate }}</th>
+                                            <th>{{ 'trainingCampaignsDashboard.lesson' | translate }}</th>
+                                            <th>{{ 'trainingCampaignsDashboard.score' | translate }}</th>
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="body" let-user>
+                                        <tr>
+                                            <td>{{ user.name }}</td>
+                                            <td>{{ user.lessonName }}</td>
+                                            <td style="color: var(--primary-color); font-size: larger; font-weight: 800">
+                                                {{ user.score ?? 0 }}%
+                                            </td>
+                                        </tr>
+                                    </ng-template>
+                                </p-table>
+                            </div>
+                        </p-scrollPanel>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </ng-template>
+</p-dialog>

@@ -1,0 +1,123 @@
+.body {
+    height: 100vh;
+    font-family: 'Arial', sans-serif;
+    overflow: hidden;
+    background: radial-gradient(circle, #69189b, #9c25b1, #522cac);
+    background-size: 400% 400%;
+    animation: gradientShift 20s ease infinite;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.gradient-bg {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    border-radius: 15px;
+    width: 30%;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    color: white;
+}
+
+.gradient-bg h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
+}
+
+.card-container {
+    max-width: 400px;
+}
+
+.custom-card {
+    background: #9d4edd;
+    border-radius: 12px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.title {
+    color: #fff;
+    font-size: 24px;
+}
+
+.subtitle {
+    color: #d1c4e9;
+    font-size: 14px;
+    padding: 10px;
+}
+
+.custom-input {
+    width: 50px;
+    height: 50px;
+    border: 2px solid #6b21a8;
+    border-radius: 8px;
+    background: #f3e8ff;
+    color: #6a0dad;
+    font-size: 20px;
+    text-align: center;
+    margin: 3px;
+}
+
+.custom-button {
+    background: #6b21a8;
+    color: #fff;
+    font-weight: bold;
+    border-radius: 8px;
+    font-size: 18px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Button */
+.verify-btn {
+    width: 100%;
+    margin-top: 20px;
+    padding: 12px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #8e24aa, #6a1b9a);
+    color: white;
+    font-weight: bold;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+}
+
+.verify-btn:hover {
+    background: linear-gradient(135deg, #6a1b9a, #512da8);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+}
+
+.backend-error-message {
+    color: red;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 5px;
+    font-weight: bold;
+    font-size: medium;
+}
+
+.verify-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6; /* Optional: Make the button look more disabled */
+}

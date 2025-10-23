@@ -1,0 +1,177 @@
+.th-table {
+    text-align: left;
+    padding: 1rem 1rem;
+    border: 1px solid #dee2e6;
+    border-width: 1px 0 2px 0;
+    font-weight: 600;
+    color: #212529;
+    background: #ffffff;
+    transition: box-shadow 0.15s;
+}
+
+.ranking-container {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+.ranking-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    padding: 15px 0;
+    border-bottom: 2px solid #ddd;
+    font-size: 18px;
+    color: #333;
+}
+
+.ranking-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ranking-row-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 15px 10px;
+    font-size: 16px;
+    font-weight: bolder;
+}
+
+// .ranking-row {
+//     display: flex;
+//     justify-content: space-between;
+//     align-items: center;
+//     text-align: center;  
+//     padding: 15px 10px;
+//     border-bottom: 1px solid #eee;
+//     transition: background-color 0.3s ease, transform 0.2s ease;
+//     font-size: 16px;
+// }
+
+.ranking-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-size: 16px;
+}
+
+
+.user-info {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    /* Adds spacing between avatar & name */
+    flex: 1;
+}
+
+.user-text {
+    display: flex;
+    flex-direction: column;
+    font-size: 10px;
+}
+
+.user-name {
+    font-weight: bold;
+    color: #333;
+}
+
+.ranking-row:hover {
+    background-color: #f5f5f5;
+    transform: translateY(-2px);
+}
+
+.unique-row {
+    background-color: #f0f8ff;
+    font-weight: bold;
+    border-left: 5px solid #FF8C00;
+    position: relative;
+}
+
+.unique-row .you-badge,
+.unique-row .your-group-badge {
+    color: orange;
+    font-weight: bold;
+    margin-left: 5px;
+    display: inline-block;
+}
+
+.unique-row .you-badge::after {
+    content: '⭐ you';
+}
+
+.unique-row .your-group-badge::after {
+    content: '⭐ your group';
+}
+
+.unique-row .you-badge,
+.unique-row .your-group-badge {
+    background-color: #ff9800;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    margin-left: 15px;
+    position: relative;
+}
+
+.unique-row .you-badge::before,
+.unique-row .your-group-badge::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -9px;
+    transform: translateY(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent #ff9800 transparent transparent;
+}
+
+.ranking-no {
+    flex: 0 0 8%;
+    text-align: left;
+    font-weight: bold;
+    color: #333;
+}
+
+.user-name,
+.group-name {
+    flex: 1;
+    text-align: center;
+    padding-left: 10px;
+    font-size: 16px;
+    color: #555;
+}
+
+.user-points {
+    flex: 0 0 15%;
+    text-align: center;
+    font-weight: bold;
+    font-size: 14px;
+    color: #333;
+}  
+
+.group-percentage {
+    flex: 0 0 20%;
+    text-align: right;
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+::ng-deep .trainingCampaignLeaderboard .p-card-body {
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+}
+
+::ng-deep .trendAnalysis .p-card-body {
+    padding-top: 0px !important;
+}

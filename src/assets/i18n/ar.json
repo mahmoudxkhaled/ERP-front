@@ -1,0 +1,2661 @@
+{
+    "validation": {
+        "requiredMessage": "هذا الحقل مطلوب",
+        "emailMessage": "يرجى إدخال بريد إلكتروني صالح",
+        "minLengthMessage": "الحد الأدنى للطول هو {{min}}"
+    },
+    "menu": {
+        "adminAccount": "المسؤول - الحساب",
+        "dashboard": "لوحة التحكم",
+        "users": "المستخدمون",
+        "roles": "الأدوار",
+        "companyGroups": "مجموعات الشركة",
+        "awarenessCampaign": "إدارة الحملات",
+        "phishingEmailDomains": "نطاقات بريد التصيد",
+        "systemEmailDomains": "رسائل النظام",
+        "systemEmailActivity": "نشاط رسائل النظام",
+        "phishingCategory": "فئات التصيد",
+        "phishingTemplates": "قوالب التصيد",
+        "notifications": "الإشعارات",
+        "libraryBackground": "خلفية المكتبة",
+        "libraryLanguageCharacter": "شخصيات اللغة في المكتبة",
+        "libraryLanguageQuote": "اقتباسات اللغة في المكتبة",
+        "libraryWallpaper": "خلفيات المكتبة",
+        "libraryWallpaperWizard": "معالج خلفيات المكتبة",
+        "LibraryWallpaperIngredients": "مكتبة الخلفيات",
+        "userAccount": "المستخدم - الحساب",
+        "awarenessCampaigns": "الحملات التدريبية",
+        "phishingAwarenessCampaigns": "حملات التصيد",
+        "iAwareTeam": "فريق iAware",
+        "pages": "الصفحات",
+        "languages": "اللغات",
+        "badges": "إدارة الشارات",
+        "trainingCategory": "فئات التدريب",
+        "training": "دروس التدريب",
+        "subscription": "الاشتراكات",
+        "paymentReminder": "تذكير بالدفع",
+        "support": "الدعم",
+        "supportCategory": "الفئات",
+        "supportSubjects": "المواضيع",
+        "supportStatus": "الحالة",
+        "tenantUnit": "أقسام الشركة (OUs)",
+        "leaderboard": "الترتيب",
+        "invoice": "الفواتير",
+        "industry": "الصناعات",
+        "pointingSystem": "نظام النقاط",
+        "trainingLibrary": "مكتبة التدريب",
+        "gamification": "قائمة الالعاب",
+        "tages": "العلامات",
+        "marketing": "ماركيتنج"
+    },
+    "layout": {
+        "ticket-chat-box": {
+            "details": "التفاصيل:",
+            "closedMessage": "تم إغلاق هذه التذكرة",
+            "myTicketClosedMessage": "تم إغلاق هذه التذكرة، إذا لم يتم حل مشكلتك بعد، يرجى",
+            "forwardMessage": "إعادة توجيه هذه التذكرة إلى فئة أخرى",
+            "downloadMessage": "تحميل مرفقات التذكرة",
+            "downloadMessageFile": "تحميل ملف الرسالة",
+            "messagePlaceHolder": "اكتب رسالة",
+            "reopenTicket": "إعادة فتح التذكرة"
+        },
+        "app-breadcrumb": {
+            "iAwareDashboard": "لوحة تحكم iAware",
+            "uikit": "UI Kit",
+            "utilities": "الأدوات",
+            "pages": "إدارة الصفحات",
+            "profile": "إدارة المستخدم",
+            "users": "إدارة المستخدمين",
+            "roles": "إدارة الأدوار",
+            "pages-management": "إدارة الصفحات",
+            "account-setting": "إدارة الحسابات",
+            "tenant-group": "إدارة مجموعات المستأجر",
+            "language": "إدارة اللغة",
+            "badge": "إدارة الشارات",
+            "documentation": "التوثيق",
+            "blocks": "الوحدات الأساسية",
+            "ecommerce": "التجارة الإلكترونية",
+            "apps": "التطبيقات",
+            "subscription": "الاشتراكات",
+            "security-training": "التدريب الأمني",
+            "campaign-management": "إدارة حملات التوعية",
+            "campaign": "الحملة التدريبية",
+            "phishing-campaigns": "حملات التصيد",
+            "phishing-email-domains": "نطاقات بريد التصيد",
+            "system-email-domains": "رسائل النظام",
+            "system-email-activity": "نشاط رسائل النظام",
+            "phishing-category": "فئات التصيد",
+            "phishing-templates": "قالب بريد التصيد",
+            "notifications": "الإشعارات",
+            "wallpaper-libraries": "مكتبة الخلفيات",
+            "wallpaper-wizard": "معالج الخلفيات",
+            "support": "الدعم",
+            "auth": "المصادقة",
+            "simulation-phishing": "محاكاة التصيد",
+            "details": "التفاصيل",
+            "pointing-system": "نظام النقاط",
+            "multimedia": "الوسائط المتعددة",
+            "tenantUnit": "الوحدات المستأجرة",
+            "statistics": "الإحصائيات",
+            "leaderboard": "الترتيب",
+            "industry": "الصناعات",
+            "gamification": "التلعيب",
+            "tages": "العلامات"
+        },
+        "app-layout": {
+            "actions": {
+                "hide": "إخفاء؟"
+            }
+        },
+        "app-menuProfile": {
+            "profile": "الملف الشخصي",
+            "logout": "تسجيل الخروج",
+            "settings": "الإعدادات"
+        },
+        "config": {
+            "layoutThemeScale": "مقياس التخطيط/الثيم",
+            "scenes": "المشاهد",
+            "colorScheme": "نظام الألوان",
+            "light": "فاتح",
+            "dark": "داكن",
+            "menuMode": "وضع القائمة",
+            "static": "ثابت",
+            "overlay": "تراكب",
+            "slim": "رفيع",
+            "slimPlus": "رفيع +",
+            "reveal": "كشف",
+            "drawer": "درج",
+            "horizontal": "أفقي",
+            "menuProfilePosition": "موضع ملف تعريف القائمة",
+            "start": "البداية",
+            "end": "النهاية",
+            "inputStyle": "نمط الإدخال",
+            "outlined": "محدد",
+            "filled": "ممتلئ",
+            "rippleEffect": "تأثير التموج",
+            "menuThemes": "ثيمات القائمة",
+            "menu_theme_selector": "ثيمات القائمة متاحة فقط في الوضع الفاتح بسبب كثافة الإضاءة في الوضع الداكن.",
+            "topbarThemes": "ثيمات الشريط العلوي",
+            "componentThemes": "ثيمات المكونات"
+        },
+        "support-tabmenu": {
+            "taps": {
+                "addTicket": "+إضافة تذكرة",
+                "allTicket": "كل التذاكر",
+                "myTicket": "تذاكري"
+            },
+            "fields": {
+                "supportCategory": "فئة الدعم:",
+                "subject": "الموضوع:",
+                "customSubject": "موضوع مخصص:",
+                "requestDetails": "تفاصيل الطلب:",
+                "file": "الملف:",
+                "upload": "رفع"
+            },
+            "placeHolders": {
+                "subject": "اختر موضوعًا",
+                "category": "اختر فئة",
+                "openthisticket": "انقر مرتين لفتح هذه التذكرة",
+                "search": "بحث"
+            },
+            "emptyMessage": {
+                "title": "لا توجد تذاكر متاحة",
+                "details": "إذا واجهت أي مشاكل، يرجى رفع تذكرة بالنقر على زر 'إضافة تذكرة'. سيساعدك فريق الدعم لدينا فورًا."
+            }
+        },
+        "top-bar": {
+            "markAllAsRead": "تحديد الكل كمقروء"
+        }
+    },
+    "account": {
+        "account-integration-settings": {
+            "title": "إعدادات تكامل الحساب",
+            "samlNotificationRecipients": "مستلمو إشعارات SAML",
+            "idPSSOTargetURL": "رابط IDP SSO الهدف",
+            "currentAuthnRequestCertificate": "شهادة طلب التوثيق الحالية",
+            "entityId": "معرّف الكيان",
+            "ssoSignInURL": "رابط تسجيل الدخول SSO",
+            "ssoSignOutURL": "رابط تسجيل الخروج SSO",
+            "ssoCallbackURL": "رابط استدعاء SSO",
+            "smalId": "معرّف SAML",
+            "metadataURL": "رابط بيانات التعريف",
+            "bypassSSOLoginURL": "تجاوز تسجيل الدخول SSO",
+            "currentAuthnRequestCertificateValidFrom": "صلاحية شهادة طلب التوثيق الحالية من",
+            "currentAuthnRequestCertificateValidTo": "صلاحية شهادة طلب التوثيق الحالية إلى",
+            "enableSAMLSSO": "تمكين تسجيل الدخول الموحد SAML",
+            "disableNonSMALLoginsForAllUsers": "تعطيل تسجيل الدخول غير SAML لجميع المستخدمين",
+            "allowAdminswMFAToByPassSMALLogin": "السماح للمسؤولين ذوي MFA بتجاوز تسجيل الدخول SAML",
+            "allowAccountCreationFromSAMLLogin": "السماح بإنشاء الحساب من خلال تسجيل الدخول SAML",
+            "sha_1": "SHA-1",
+            "sha_256": "SHA-256",
+            "signUpAuthnRequest": "تسجيل طلب التوثيق",
+            "enableSPAuthnRequesExpirationNotifications": "تمكين إشعارات انتهاء طلب توثيق SP"
+        },
+        "ad-settings": {
+            "title": "إعدادات Active Directory",
+            "adISyncToken": "رمز مزامنة ADI",
+            "ipAddress": "عنوان IP لخادم AD",
+            "adDomainName": "اسم مجال AD",
+            "adDomainNameExtention": "امتداد مجال AD",
+            "adUserName": "اسم مستخدم مسؤول AD",
+            "adPassword": "كلمة مرور مسؤول AD",
+            "showGroupAdmin": "عرض مسؤول المجموعة"
+        },
+        "branding": {
+            "title": "تفاصيل العلامة التجارية",
+            "companyLogoURL": "رابط شعار الشركة",
+            "brandCertificate": "شهادة العلامة التجارية",
+            "companyLogo": "شعار الشركة",
+            "brandColor": "لون العلامة التجارية",
+            "upload": "تحميل الشعار"
+        },
+        "learner-experience": {
+            "title": "تجربة المتعلم",
+            "leaderboardType": "نوع لوحة المتصدرين",
+            "defaultTrainingLanguage": "اللغة الافتراضية للتدريب",
+            "leaderboardTimePeriod": "الفترة الزمنية للوحة المتصدرين",
+            "groupsToIncludeInLeaderboard": "المجموعات التي سيتم تضمينها في لوحة المتصدرين",
+            "enableOptionalTrainingCampaigns": "تمكين الحملات التدريبية الاختيارية",
+            "enableAIDARecomendedOptionalLearning": "تمكين التعلم الاختياري الموصى به بواسطة AIDA",
+            "excludeTrainingCampaignsWithNoDueDate": "استبعاد الحملات التدريبية التي ليس لها تاريخ استحقاق",
+            "enableBadges": "تمكين الشارات",
+            "selectBadge": "اختر الشارة"
+        },
+        "organization-information": {
+            "title": "تفاصيل المنظمة",
+            "organizationName": "اسم المنظمة",
+            "streetAddress1": "عنوان الشارع 1",
+            "streetAddress2": "عنوان الشارع 2",
+            "suiteNumber": "رقم الجناح",
+            "city": "المدينة",
+            "state": "الولاية",
+            "zipCode": "الرمز البريدي",
+            "dateTimeFormat": "تنسيق التاريخ والوقت",
+            "extension": "الامتداد",
+            "defaultAdminConsoleLanguage": "اللغة الافتراضية لوحدة تحكم المسؤول",
+            "businessHours": "ساعات العمل:",
+            "from": "من",
+            "to": "إلى",
+            "businessDays": "أيام العمل"
+        },
+        "phishing-settings": {
+            "title": "إعدادات التصيد الاحتيالي",
+            "defaultPhishingLanguage": "اللغة الافتراضية للتصيد الاحتيالي"
+        },
+        "profile-details": {
+            "title": "تفاصيل الملف الشخصي",
+            "firstName": "الاسم الأول",
+            "lastName": "الاسم الأخير",
+            "companyName": "اسم الشركة",
+            "phone": "رقم الاتصال",
+            "country": "الدولة",
+            "language": "اللغة",
+            "timeZone": "المنطقة الزمنية",
+            "currency": "العملة",
+            "companyNameValidation": "اسم الشركة مطلوب",
+            "minLengthValidation": "اسم الشركة يجب أن يكون على الأقل 2 حرفاً.",
+            "maxLengthValidation": "اسم الشركة لا يمكن أن يتجاوز 50 حرفاً.",
+            "onlyLettersValidation": "يسمح فقط بالحروف والمساواة. لا يسمح بأي حروف خاصة أو أرقام."
+        },
+        "training-settings": {
+            "title": "إعدادات التدريب",
+            "enableContentSurveysForAllNewTrainingCampaigns": "تمكين استطلاعات المحتوى لجميع الحملات التدريبية الجديدة",
+            "enableDirectLinksInTrainingNotifications": "تمكين الروابط المباشرة في إشعارات التدريب"
+        },
+        "user-provisioning": {
+            "title": "تفاصيل إعداد المستخدمين",
+            "enableUserProvisioning": "تمكين إعداد المستخدمين",
+            "testMode": "وضع الاختبار"
+        },
+        "user-provisioning-notifications": {
+            "title": "إشعارات إعداد المستخدمين",
+            "enableUserProvisioningNotifications": "تمكين إشعارات إعداد المستخدمين",
+            "timeFrame": "الإطار الزمني",
+            "notificationsRecipients": "مستلمو الإشعارات"
+        },
+        "user-settings": {
+            "title": "إعدادات المستخدمين",
+            "adminSessionTimeout": "مهلة جلسة المسؤول",
+            "userSessionTimeout": "مهلة جلسة المستخدم",
+            "minimumPasswordLength": "الحد الأدنى لطول كلمة المرور",
+            "rememberDeviceFor": "تذكر الجهاز لمدة",
+            "requireMFA": "يتطلب المصادقة متعددة العوامل (MFA)",
+            "rememberTrustedDevice": "تذكر الجهاز الموثوق به"
+        },
+        "message": "سيتم تطبيق جميع التغييرات التي تم إجراؤها على مستوى الشركة بأكملها. يرجى مراجعة التحديثات بعناية قبل المتابعة."
+    },
+    "auth": {
+        "login": {
+            "title": "تسجيل الدخول إلى iAware",
+            "fields": {
+                "username": "اسم المستخدم",
+                "password": "كلمة المرور"
+            },
+            "forgotPasswordLink": "هل نسيت كلمة المرور؟",
+            "rememberMe": "تذكرني",
+            "pleaseWait": "يرجى الانتظار...",
+            "submit": "تسجيل الدخول",
+            "notMemeberYet": "لست عضواً بعد؟",
+            "signUp": "سجل الآن",
+            "invalidCredentials": "بيانات تسجيل الدخول غير صحيحة"
+        },
+        "register": {
+            "title": "التسجيل في iAware",
+            "fields": {
+                "firstName": "الاسم الأول",
+                "lastName": "الاسم الأخير",
+                "companyname": "اسم الشركة",
+                "email": "البريد الإلكتروني",
+                "phone": "رقم الهاتف",
+                "currency": "العملة",
+                "country": "الدولة",
+                "NoOfUsers": "حد المستخدمين",
+                "language": "اللغة",
+                "timezone": "المنطقة الزمنية",
+                "password": "كلمة المرور",
+                "cpassword": "تأكيد كلمة المرور"
+            },
+            "termsAndConditions": "أوافق على الشروط والأحكام",
+            "submit": "تسجيل",
+            "pleaseWait": "يرجى الانتظار...",
+            "placeholders": {
+                "language": "اختر اللغة",
+                "currency": "اختر العملة",
+                "country": "اختر الدولة",
+                "timezone": "اختر المنطقة الزمنية"
+            },
+            "validations": {
+                "firstName": "الاسم الأول مطلوب",
+                "firstNameMinLength": "يجب أن يتكون الاسم الأول من 3 أحرف على الأقل",
+                "firstNameMaxLength": "يجب أن يتكون الاسم الأول من 100 حرف كحد أقصى",
+                "lastName": "الاسم الأخير مطلوب",
+                "lastNameMinLength": "يجب أن يتكون الاسم الأخير من 3 أحرف على الأقل",
+                "lastNameMaxLength": "يجب أن يتكون الاسم الأخير من 100 حرف كحد أقصى",
+                "companyname": "اسم الشركة مطلوب",
+                "companynameMinLength": "يجب أن يتكون اسم الشركة من 3 أحرف على الأقل",
+                "companynameMaxLength": "يجب أن يتكون اسم الشركة من 100 حرف كحد أقصى",
+                "email": "البريد الإلكتروني مطلوب",
+                "emailTaken": "البريد الإلكتروني مطلوب وصحيح",
+                "companyEmail": "البريد الإلكتروني للشركة مطلوب (لا يتم قبول Gmail أو Outlook وما إلى ذلك)",
+                "language": "اللغة مطلوبة",
+                "timezone": "المنطقة الزمنية مطلوبة",
+                "phone": "رقم الهاتف مطلوب",
+                "currency": "العملة مطلوبة",
+                "country": "الدولة مطلوبة",
+                "password": "كلمة المرور مطلوبة",
+                "passwordMinLength": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
+                "passwordMaxLength": "يجب أن تتكون كلمة المرور من 100 حرف كحد أقصى",
+                "passwordMismatch": "كلمتا المرور غير متطابقتين",
+                "cpassword": "تأكيد كلمة المرور مطلوب"
+            }
+        },
+        "reset-password": {
+            "title": "إعادة تعيين كلمة المرور",
+            "messages": {
+                "messageI": "لضمان أمان حسابك، يرجى اختيار كلمة مرور جديدة تكون",
+                "messageII": "بطول 8 أحرف على الأقل وتتضمن مجموعة من الحروف والأرقام"
+            },
+            "fields": {
+                "newPass": "كلمة المرور الجديدة",
+                "cpassword": "تأكيد كلمة المرور الجديدة",
+                "confirmPassword": "تأكيد كلمة المرور"
+            },
+            "actions": {
+                "submit": "إعادة تعيين الآن!"
+            },
+            "validations": {
+                "password": "كلمة المرور مطلوبة.",
+                "cpassword": "تأكيد كلمة المرور مطلوب.",
+                "passwordsMismatch": "كلمات المرور غير متطابقة.",
+                "passMaxLength": "يجب ألا تزيد كلمة المرور عن 100 حرف.",
+                "missingNumber": "يجب أن تحتوي كلمة المرور على رقم واحد على الأقل.",
+                "passMinLength": "يجب أن تكون كلمة المرور مكونة من 12 أحرف على الأقل.",
+                "missingUppercase": "يجب أن تحتوي كلمة المرور على حرف كبير واحد على الأقل.",
+                "missingLowercase": "يجب أن تحتوي كلمة المرور على حرف صغير واحد على الأقل.",
+                "missingSpecialChar": "يجب أن تحتوي كلمة المرور على حرف خاص واحد على الأقل."
+            }
+        },
+        "email-verified": {
+            "welcome": "مرحبًا!",
+            "message": "أنت على بعد خطوة واحدة من تأكيد بريدك الإلكتروني. يرجى عدم إغلاق الصفحة أو تحديثها.",
+            "waitMessage": "نحن نقوم بتأكيد بريدك الإلكتروني. يرجى الانتظار قليلاً..."
+        },
+        "verification-email": {
+            "title": "مرحبًا بك في خدمتنا",
+            "message": "تم تسجيل بريدك الإلكتروني بنجاح في خدمتنا.",
+            "messageI": "لإكمال عملية التسجيل والتحقق من بريدك الإلكتروني،",
+            "messageII": "يرجى التحقق من صندوق الوارد الخاص بك"
+        }
+    },
+    "badge": {
+        "badge-listing": {
+            "fields": {
+                "name": "اسم الشارة",
+                "image": "صورة الشارة",
+                "status": "الحالة"
+            },
+            "actions": {
+                "add": "إضافة شارة جديدة"
+            },
+            "dialogs": {
+                "addDialog": {
+                    "header": "إضافة شارة جديدة",
+                    "fields": {
+                        "name": "اسم الشارة",
+                        "description": "وصف الشارة",
+                        "image": "صورة الشارة"
+                    }
+                },
+                "editDialog": {
+                    "header": "تعديل الشارة",
+                    "fields": {
+                        "name": "اسم الشارة",
+                        "description": "وصف الشارة",
+                        "image": "صورة الشارة"
+                    }
+                }
+            }
+        }
+    },
+    "campaign": {
+        "taps": {
+            "current": "الحملات الحالية",
+            "history": "تاريخ الحملات"
+        },
+        "currentCampaign": {
+            "taps": {
+                "training": "التدريب",
+                "phishing": "التصيد الاحتيالي"
+            },
+            "training": {
+                "fields": {
+                    "name": "الاسم",
+                    "type": "النوع",
+                    "lessonName": "اسم الدرس",
+                    "book": "الكتاب",
+                    "video": "الفيديو",
+                    "language": "اللغة",
+                    "lessonsCount": "عدد دروس التدريب",
+                    "startDate": "تاريخ البدء",
+                    "endDate": "تاريخ الانتهاء",
+                    "description": "الوصف"
+                }
+            },
+            "phishing": {
+                "fields": {
+                    "name": "الاسم",
+                    "template": "القوالب",
+                    "startDate": "تاريخ البدء",
+                    "endDate": "تاريخ الانتهاء"
+                }
+            },
+            "dialogs": {
+                "templateDialog": {
+                    "header": "جدول قوالب الحملة",
+                    "fields": {
+                        "name": "اسم القالب",
+                        "startDate": "وقت بدء التصيد الاحتيالي",
+                        "endDate": "وقت انتهاء التصيد الاحتيالي",
+                        "users": "المستخدمون",
+                        "success": "المستخدمون الناجحون",
+                        "faild": "المستخدمون الفاشلون"
+                    }
+                },
+                "templateUserDialog": {
+                    "header": "مستخدمي جدول قوالب الحملة",
+                    "fields": {
+                        "name": "اسم المستخدم",
+                        "results": "النتائج",
+                        "activities": "الأنشطة"
+                    }
+                }
+            }
+        },
+        "campaignHistory": {
+            "fields": {
+                "name": "الاسم",
+                "type": "النوع",
+                "startDate": "تاريخ البدء",
+                "endDate": "تاريخ الانتهاء",
+                "description": "الوصف"
+            }
+        },
+        "campaignDetails": {
+            "steps": {
+                "book": "الكتاب",
+                "video": "الفيديو",
+                "quiz": "الاختبار",
+                "results": "النتائج",
+                "bookTitle": "أنت حالياً تقرأ الكتاب. إذا كنت تفضل مشاهدة الفيديو، <a class='dynamic-link' style='cursor: pointer; font-size: medium; font-weight: 500' data-path='/training-campaign/[scedualUserId]/[campaignId]/video'>اضغط هنا</a> لمشاهدة الفيديو.",
+                "videoTitle": "يمكنك مشاهدة الفيديو في هذه الخطوة، أو إذا كنت تفضل القراءة، <a style='cursor: pointer; font-size: medium; font-weight: 500' class='dynamic-link' data-path='/training-campaign/[scedualUserId]/[campaignId]/book'>اضغط هنا</a> لقراءة الكتاب."
+            },
+            "titles": {
+                "book": "الكتاب",
+                "video": "الفيديو",
+                "result": "نتيجة الاختبار"
+            },
+            "messages": {
+                "congrat": "تهانينا!",
+                "faild": "فشل",
+                "faildMessage": "للأسف، لم تجتز الاختبار.",
+                "congratMessage": "لقد اجتزت الاختبار.",
+                "score": "درجتك:",
+                "answars": "إجابات الاختبار"
+            },
+            "actions": {
+                "next": "التالي",
+                "back": "السابق",
+                "submit": "إرسال",
+                "previous": "السابق",
+                "finish": "إنهاء"
+            }
+        },
+        "messages": {
+            "emptyMessage": "لا توجد دروس لهذه الحملة حتى الآن."
+        }
+    },
+    "campaign-management": {
+        "campaign-create": {
+            "campaign-type": {
+                "title": "إعداد الحملة:",
+                "message": "قم بتكوين تفاصيل حملتك. راجع جميع المدخلات بعناية قبل المتابعة.",
+                "fields": {
+                    "name": "الاسم:",
+                    "type": "النوع:",
+                    "startDate": "تاريخ البدء:",
+                    "endDate": "تاريخ الانتهاء:",
+                    "users": "المستخدمون:",
+                    "campaignUsers": "مرشح مستخدمي الحملة:",
+                    "campaignEmails": "رسائل البريد الإلكتروني للحملة",
+                    "groups": "المجموعات:",
+                    "emailSubject": "موضوع البريد الإلكتروني لحملة التوعية",
+                    "emailContent": "محتوى البريد الإلكتروني لحملة التوعية (HTML)",
+                    "sourceHeader": "المصدر",
+                    "targetHeader": "الهدف",
+                    "allUser": "جميع المستخدمين",
+                    "departments": "الأقسام",
+                    "groupss": "المجموعات",
+                    "campaigntype": "اختر نوع الحملة"
+                },
+                "validations": {
+                    "startDate": "لا يمكن أن يكون تاريخ البدء في الماضي. يرجى اختيار تاريخ صحيح.",
+                    "endDate": "يجب أن يكون تاريخ الانتهاء المختار أكبر من تاريخ البدء لهذه الحملة."
+                },
+                "placeholders": {
+                    "users": "اختر المستخدمين",
+                    "type": "اختر النوع",
+                    "groups": "اختر المجموعة",
+                    "name": "أدخل اسم الحملة"
+                },
+                "actions": {
+                    "next": "التالي"
+                }
+            },
+            "lessons": {
+                "message": "يمكنك اختيار عدة دروس تدريبية حسب الفئات التدريبية لإضافتها إلى الحملة.",
+                "actions": {
+                    "next": "التالي",
+                    "back": "السابق"
+                }
+            },
+            "phishing-email-templates": {
+                "title": "قائمة قوالب التصيد:",
+                "defaultTemplateHeader": "قوالب التصيد الافتراضية",
+                "tenantTemplatesHeader": "قوالب التصيد الخاصة بالشركة",
+                "message": "اختر قوالب التصيد لتضمينها في حملتك.",
+                "upgradeYourPlan": "قم بترقية خطتك",
+                "upgradeMessage": "قم بفتح هذا القالب للتصيد والمزيد عن طريق ترقية خطتك.",
+                "upgradeBtn": "قم بالترقية الآن",
+                "noTemplates": "لا يوجد قوالب تصيد متاحة",
+                "actions": {
+                    "next": "التالي",
+                    "back": "السابق"
+                }
+            },
+            "scedual": {
+                "title": "جدول الحملة:",
+                "training": {
+                    "aiRecomindationMessage": "<div class='ml-1'>تم إنشاء هذا الجدول باستخدام <strong style='font-size: larger; font-weight: 700;'>الذكاء الاصطناعي</strong> لمساعدتك في التخطيط. لا تتردد في تعديله حسب الحاجة، ولكن يرجى التأكد من الاحتفاظ بالتواريخ البداية والنهاية التي حددتها.</div>",
+                    "defaultEmailInstructions": "<div><strong>مهم:</strong> يرجى التأكد من استبدال العناصر النائبة التالية في جميع الإصدارات اللغوية من هذا البريد الإلكتروني:<ul><li><strong>[Information Security]</strong> - استبدل هذا باسم قسمك أو عنوان بريدك الإلكتروني (مثال: security@company.com).</li><li><strong>[support contact info]</strong> - استبدل هذا بمعلومات الاتصال بالدعم الخاص بك (مثال: support@company.com).</li></ul>إذا لم يتم استبدال هذه العناصر النائبة، فسيتم إرسال البريد الإلكتروني مع هذه العناصر كما هي في جميع الإصدارات اللغوية للبريد الإلكتروني.</div>",
+                    "fields": {
+                        "trainingLessonName": "اسم الدرس",
+                        "scedualedTime": "الوقت المجدول",
+                        "lessonAwaernesEmail": "البريد الإلكتروني للتوعية بالدرس",
+                        "awarenessCampaignScedual": "جدول حملة التوعية",
+                        "awarenessCampaignEmail": "البريد الإلكتروني لحملة التوعية"
+                    },
+                    "validations": {
+                        "startDate": "لا يمكن أن يكون تاريخ البدء في الماضي. يرجى اختيار تاريخ صحيح.",
+                        "endDate": "يجب أن يكون تاريخ الانتهاء المختار أكبر من تاريخ البدء لهذه الحملة."
+                    },
+                    "dialogs": {
+                        "editEmailTrainingLanguageDialog": {
+                            "emailSubject": "موضوع البريد الإلكتروني",
+                            "emailContent": "محتوى البريد الإلكتروني (HTML)",
+                            "header": "البريد الإلكتروني للتوعية"
+                        }
+                    }
+                },
+                "phishing": {
+                    "message": "قم بإعداد جدول حملة التصيد الاحتيالي والتفاصيل.",
+                    "fields": {
+                        "template": "قوالب التصيد",
+                        "phishingDomainEmailId":"البريد الإلكتروني لنطاق التصيد",
+                        "users": "المستخدمون",
+                        "isFrequently": "مجدولة",
+                        "isImmediately": "فورًا",
+                        "startTime": "وقت بدء التصيد",
+                        "endTime": "وقت انتهاء التصيد",
+                        "frequencyDays": "التكرار (بالأيام)",
+                        "numberOfOccurrences": "عدد التكرارات",
+                        "awarenessCampaignPhishingSchedule": "جدول حملة التوعية للتصيد الاحتيالي",
+                        "awarenessCampaignPhishingScedualResult": "نتيجة جدول حملة التوعية للتصيد الاحتيالي"
+                    },
+                    "columns": {
+                        "template": "قالب التصيد",
+                        "startTime": "وقت بدء التصيد",
+                        "endTime": "وقت انتهاء التصيد",
+                        "frequencyDays": "أيام التكرار",
+                        "usersCount": "عدد المستخدمين"
+                    },
+                    "placeholders": {
+                        "template": "اختر القالب",
+                        "users": "اختر المستخدمين",
+                        "phishingDomainEmailId":"اختر البريد الإلكتروني لنطاق التصيد"
+                    },
+                    "actions": {
+                        "add": "إضافة"
+                    },
+                    "validations": {
+                        "validationPhishingEndTimeMessage": "وقت انتهاء التصيد المحدد ليس ضمن تاريخ بدء وانتهاء الحملة.",
+                        "validationPhishingStartTimeMessage": "وقت بدء التصيد المحدد ليس ضمن تاريخ بدء وانتهاء الحملة."
+                    }
+                }
+            },
+            "steps": {
+                "settings": "إعداد الحملة",
+                "build": "بناء الحملة",
+                "schedual": "جدول الحملة"
+            }
+        },
+        "campaign-listing": {
+            "fields": {
+                "name": "الاسم",
+                "type": "النوع",
+                "startDate": "تاريخ البدء",
+                "endDate": "تاريخ الانتهاء",
+                "status": "الحالة",
+                "usersCount": "عدد المستخدمين"
+            },
+            "actions": {
+                "add": "إضافة حملة جديدة"
+            },
+            "dialogs": {
+                "editDialog": {
+                    "header": "تعديل الحملة",
+                    "fields": {
+                        "name": "الاسم",
+                        "type": "النوع",
+                        "startDate": "تاريخ البدء",
+                        "endDate": "تاريخ الانتهاء",
+                        "users": "المستخدمون",
+                        "groups": "المجموعات",
+                        "campaignUsers": "مستخدمي الحملة",
+                        "sourceHeader": "المصدر",
+                        "targetHeader": "الهدف"
+                    },
+                    "validations": {
+                        "endDate": "يجب أن يكون التاريخ المختار أكبر من أو يساوي تاريخ الانتهاء الحالي لهذه الحملة."
+                    },
+                    "placeholders": {
+                        "users": "اختر المستخدم",
+                        "type": "اختر النوع",
+                        "groups": "اختر المجموعة"
+                    }
+                }
+            }
+        }
+    },
+    "dashboards": {
+        "organization": {
+            "header": "درجة المخاطر المجموعية",
+            "pointsTitle": "ملخص الأداء",
+            "positivePoints": "النقاط الموجبة",
+            "negativePoints": "النقاط السلبية",
+            "totalPoints": "إجمالي النقاط",
+            "riskHistory": "تاريخ المخاطر",
+            "riskScore": "درجة المخاطر"
+        },
+        "training": {
+            "header": "التدريب",
+            "securityAwarenessChartTitle": "رسم بياني لحملات التوعية الأمنية (الأخرى",
+            "months": "أشهر)",
+            "seeAllCampaignsButton": "عرض جميع الحملات",
+            "newCampaignButton": "حملة جديدة",
+            "recentCampaignsTitle": "الحملات الحالية الأخرى",
+            "noRecentCampaignsTitle": "لا توجد حملات حالية",
+            "completedPercentage": "% مكتمل",
+            "completedUsersDialogHeader": "المستخدمين المكتملين",
+            "notStartedUsersDialogHeader": "المستخدمين الغير مبدئين",
+            "failedUsersDialogHeader": "المستخدمين الفاشلين",
+            "userNameColumn": "اسم المستخدم",
+            "campaignNameColumn": "اسم الحملة",
+            "lessonNameColumn": "اسم الدرس",
+            "scoreColumn": "الدرجة",
+            "downloadCsvButton": "تحميل CSV",
+            "downloadPdfButton": "تحميل PDF"
+        },
+        "phishing": {
+            "header": "التصيد الاحتيالي",
+            "phishingSecurity": "الأمن التصيد الاحتيالي (الأخرى",
+            "months": "أشهر)",
+            "yourPhishingVulnerability": "الضعف التصيد الاحتيالي الخاص بك %",
+            "industryPhishingVulnerability": "ضعف التصيد الاحتيالي الصناعي %",
+            "industryPlaceholder": "اختر الصناعة",
+            "industryBenchmark": "المعيار الصناعي",
+            "showIndustry": "عرض بيانات المعيار الصناعي",
+            "hideIndustry": "إخفاء بيانات المعيار الصناعي"
+        },
+        "alertButton": {},
+        "user-dashboard": {
+            "buttons": {
+                "myDashboard": "لوحة التحكم الخاصة بي",
+                "teamDashboard": "لوحة التحكم المجموعة",
+                "goToTraining": "الذهاب إلى التدريب",
+                "learnHowToEarnBadges": "تعلم كيفية تحقيق المكاسب؟",
+                "viewLeaderboard": "عرض الرتبة",
+                "viewTeam": "عرض"
+            },
+            "trainingProgress": {
+                "header": "عرض معلومات التدريب",
+                "description": "تتبع تقدمك في التدريب وتعزيز مهاراتك.",
+                "completed": "مكتمل",
+                "percentage": "{assignmentsPercentage}%",
+                "assignmentsMessage": "لقد قمت بالفعل بـ {completedAssignments} من {totalAssignments} مهمة"
+            },
+            "phishingResults": {
+                "header": "عرض معلومات التصيد الاحتيالي",
+                "description": "تتبع مهاراتك في التصيد الاحتيالي وحماية المخاطر الأمنية.",
+                "emailsflaggedasphishingthreats": "الرسائل المحملة بالتصيد الاحتيالي",
+                "emailsReportedPercentage": "{emailsReportedPercentage}% نجاح",
+                "reportedEmails": "الرسائل المحملة بالتصيد الاحتيالي",
+                "failures": "التصيد الاحتيالي الفاشل",
+                "emailsnotrecognizedasphishingattempts": "الرسائل غير معروفة بالتصيد الاحتيالي",
+                "emailsReported": "{emailsReported} / {emailsDelivered}",
+                "noData": "لا توجد بيانات تصيد احتيالي متاحة بعد.",
+                "emailsFailures": "{emailsFailures} / {emailsDelivered}",
+                "emailsFailuresPercentage": "{emailsFailuresPercentage}% الفشل"
+            },
+            "riskScore": {
+                "header": "درجة المخاطر الشخصية",
+                "description": "تقييم معرفتك الأمنية بدرجة المخاطر الشخصية.",
+                "title": "درجة المخاطر"
+            },
+            "badges": {
+                "header": "الإنجازات والتقدم",
+                "message": "تتبع إنجازاتك ومراقبة مسارك نحو النجاح.",
+                "learn": "تعلم كيفية تحقيق المكاسب؟",
+                "badgesEarned": "الشارات المحققة",
+                "youhaveearned": "لقد قمت بالفعل بـ <strong class=\"ranked-no\">{number} شارة</strong> خلال تدريبك. استمر في العمل المثير!"
+            },
+            "groupRanking": {
+                "header": "الترتيب المجموعي",
+                "message": "ترتيب المجموعة الحالي هو <strong class=\"ranked-no\">#{number}</strong>. استمر في العمل المثير!"
+            },
+            "teamSelection": {
+                "header": "اختر الفريق",
+                "description": "اختر فريق لعرض معلومات عن تقدمه في التدريب ونتائج التصيد الاحتيالي ودرجة المخاطر المجموعية.",
+                "dropdownPlaceholder": "اختر الفريق"
+            },
+            "teamTrainingProgress": {
+                "header": "تقدم التدريب",
+                "description": "النسبة المئوية للمهام المكتملة من قبل أعضاء الفريق طوال الوقت",
+                "completedAssignments": "{completedAssignments}/{totalAssignments}"
+            },
+            "teamPhishingResults": {
+                "header": "نتائج التصيد الاحتيالي",
+                "reportedEmails": "الرسائل المحملة بالتصيد الاحتيالي",
+                "failures": "التصيد الاحتيالي الفاشل",
+                "reportedPercentage": "{emailsReported}/{emailsDelivered}",
+                "noData": "لا يوجد أعضاء فريقك حصلوا على اختبار الأمن التصيد الاحتيالي."
+            },
+            "teamRiskScore": {
+                "header": "درجة المخاطر المجموعية",
+                "title": "درجة المخاطر"
+            },
+            "teamDetails": {
+                "header": "تفاصيل الفريق"
+            }
+        },
+        "iAwareAdminDashboard": {
+            "header": "لوحة إدارة العملاء",
+            "totalClients": "إجمالي العملاء",
+            "activeClients": "العملاء النشطون",
+            "expiringSubscriptions": "الاشتراكات التي على وشك الانتهاء",
+            "industry": "الصناعة:",
+            "industryy": "الصناعة",
+            "status": "الحالة:",
+            "Statuss": "الحالة",
+            "subscriptionPlan": "خطة الاشتراك:",
+            "subscriptionPlann": "خطة الاشتراك",
+            "search": "بحث:",
+            "searchh": "بحث",
+            "searchclients": "ابحث عن العملاء...",
+            "clientName": "اسم العميل",
+            "contact": "التواصل",
+            "plan": "الخطة",
+            "licenses": "التراخيص",
+            "lastActivity": "آخر نشاط",
+            "expiryDate": "تاريخ الانتهاء",
+            "manager": "المدير",
+            "selectStatus": "اختر الحالة",
+            "selectPlan": "اختر الخطة"
+        }
+    },
+    "email-domains": {
+        "email-domains-details": {
+            "addHeader": "إضافة بريد إلكتروني",
+            "editHeader": "تعديل البريد الإلكتروني",
+            "senderUserName": "اسم المستخدم",
+            "senderDisplayName": "اسم العرض",
+            "senderEmail": "البريد الإلكتروني",
+            "senderEmailPassword": "كلمة المرور",
+            "outgoingServer": "خادم الصادر",
+            "outgoingServerPort": "منفذ خادم الصادر",
+            "enableSSL": "تفعيل SSL",
+            "noEmails": "لم يتم العثور على بريد إلكتروني",
+            "phishingDomainName": "اسم نطاق التصيد الاحتيالي"
+        },
+        "email-domains-listing": {
+            "domainName": "اسم النطاق",
+            "addHeader": "إضافة نطاق",
+            "editHeader": "تعديل النطاق",
+            "phishingDomainEmailsCount": "عدد الرسائل",
+            "status": "حالة النطاق"
+        }
+    },
+    "system-email-activity": {
+        "addHeader": "إضافة نشاط البريد الإلكتروني للنظام",
+        "editHeader": "تعديل نشاط البريد الإلكتروني للنظام",
+        "noRecords": "لم يتم العثور على أنشطة بريد إلكتروني للنظام",
+        "emailSubject": "موضوع البريد الإلكتروني",
+        "emailBody": "محتوى البريد الإلكتروني",
+        "actions": "الإجراءات",
+        "systemEmailId": "بريد النظام",
+        "systemActivity": "نشاط النظام",
+        "systemActivityName": "اسم نشاط النظام",
+        "sendToCustomEmails": "إرسال إلى بريد إلكتروني مخصص",
+        "isActive": "نشط",
+        "sendToUser": "إرسال إلى المستخدم",
+        "sendToAdministrators": "إرسال إلى المسؤولين",
+        "sendToPhishingAdministrators": "إرسال إلى مسؤولي التصيد",
+        "sendToCampaignAdministrators": "إرسال إلى مسؤولي الحملات",
+        "sendToTenantAdministrators": "إرسال إلى مسؤولي المستأجر",
+        "sendToTenantPhishingAdministrators": "إرسال إلى مسؤولي التصيد في المستأجر",
+        "sendToTenantCampaignAdministrators": "إرسال إلى مسؤولي الحملات في المستأجر",
+        "loadError": "فشل في تحميل أنشطة البريد الإلكتروني للنظام",
+        "addSuccess": "تمت إضافة نشاط البريد الإلكتروني للنظام بنجاح",
+        "addError": "فشل في إضافة نشاط البريد الإلكتروني للنظام",
+        "editSuccess": "تم تحديث نشاط البريد الإلكتروني للنظام بنجاح",
+        "editError": "فشل في تحديث نشاط البريد الإلكتروني للنظام",
+        "deleteSuccess": "تم حذف نشاط البريد الإلكتروني للنظام بنجاح",
+        "deleteError": "فشل في حذف نشاط البريد الإلكتروني للنظام",
+        "invalidForm": "يرجى ملء جميع الحقول المطلوبة",
+        "emailSubjectRequired": "موضوع البريد الإلكتروني مطلوب",
+        "emailBodyRequired": "محتوى البريد الإلكتروني مطلوب",
+        "systemActivityRequired": "نشاط النظام مطلوب",
+        "systemEmailIdRequired": "بريد النظام مطلوب",
+        "languageSpecificContent": "المحتوى حسب اللغة"
+    },
+    "gamification": {
+        "game_edit": {
+            "addNewGameLanguage": "إضافة لغة لعبة جديدة",
+            "general": "عام",
+            "id": "المعرف",
+            "questionCount": "عدد الأسئلة",
+            "autoNextAllowed": "التنقل التلقائي مسموح",
+            "previousAllowed": "السابق مسموح",
+            "gameImage": "صورة اللعبة",
+            "upload": "رفع",
+            "update": "تحديث",
+            "name": "الاسم",
+            "layoutUrl": "رابط التخطيط",
+            "instruction": "التعليمات",
+            "description": "الوصف",
+            "delete": "حذف",
+            "actions": "الإجراءات",
+            "search": "بحث...",
+            "noGameData": "لا توجد بيانات لعبة متاحة لهذه اللغة.",
+            "gameManagement": "إدارة اللعبة",
+            "status": "الحالة",
+            "answer1": "الإجابة",
+            "answer2": "الإجابة",
+            "answer3": "الإجابة",
+            "answer4": "الإجابة",
+            "correctAnswer": "الإجابة الصحيحة",
+            "incorrectAnswer": "الإجابة الخاطئة",
+            "addNewQuestionDialog": {
+                "header": "إضافة سؤال جديد",
+                "question": "السؤال",
+                "writeQuestionPlaceholder": "اكتب السؤال",
+                "answer": "الإجابة",
+                "answerPlaceholder": "الإجابة ",
+                "save": "حفظ",
+                "cancel": "إلغاء"
+            },
+            "addNewGameLanguageDialog": {
+                "header": "إضافة لغة لعبة جديدة",
+                "language": "اللغة",
+                "chooseLanguage": "اختر اللغة",
+                "name": "الاسم",
+                "description": "الوصف",
+                "instruction": "التعليمات",
+                "layoutUrl": "رابط التخطيط",
+                "save": "حفظ",
+                "cancel": "إلغاء"
+            },
+            "deleteGameLanguageDialog": {
+                "header": "حذف لغة اللعبة",
+                "confirmationMessage": "هل أنت متأكد أنك تريد حذف لغة اللعبة؟",
+                "gameLanguage": "لغة اللعبة",
+                "no": "لا",
+                "yes": "نعم"
+            },
+            "editGameLanguageQuestionDialog": {
+                "header": "تعديل السؤال",
+                "question": "السؤال",
+                "answerSpace": "الإجابة ",
+                "answer": "الإجابة"
+            }
+        },
+        "game_list": {
+            "add_game_button": "إضافة لعبة",
+            "play_now_button": "العب الآن",
+            "edit_button": "تعديل",
+            "choose_language": "اختر اللغة",
+            "dialog": {
+                "add_game_header": "إضافة لغة لعبة جديدة",
+                "language_label": "اللغة",
+                "id_label": "المعرف",
+                "name_label": "الاسم",
+                "description_label": "الوصف",
+                "layout_url_label": "رابط التخطيط",
+                "question_count_label": "عدد الأسئلة",
+                "auto_next_allowed_label": "التنقل التلقائي مسموح",
+                "previous_allowed_label": "السابق مسموح",
+                "game_image_label": "صورة اللعبة"
+            }
+        }
+    },
+    "industry": {
+        "add": "إضافة صناعة جديدة",
+        "name": "الاسم",
+        "nameValidation": "الاسم مطلوب",
+        "value": "القيمة",
+        "valueValidation": "القيمة مطلوبة",
+        "addHeader": "إضافة صناعة",
+        "editHeader": "تعديل الصناعة"
+    },
+    "invoice": {
+        "inProgressInvoices": "الفواتير قيد المعالجة",
+        "completedInvoices": "الفواتير المكتملة",
+        "management": "إدارة الفواتير",
+        "expandAll": "توسيع الكل",
+        "collapseAll": "طي الكل",
+        "company": "الشركة",
+        "subscriptionPlan": "خطة الاشتراك",
+        "invoiceType": "نوع الفاتورة",
+        "total": "الإجمالي",
+        "amountDue": "المبلغ المستحق",
+        "issueDate": "تاريخ الإصدار",
+        "paymentRequest": "طلب الدفع",
+        "payButton": "ادفع",
+        "paidLabel": "مدفوع",
+        "requestTime": "وقت الطلب",
+        "requestAmount": "المبلغ المطلوب",
+        "referenceKey": "مفتاح المرجع",
+        "referenceImage": "صورة المرجع",
+        "paymentNote": "ملاحظة الدفع",
+        "confirmed": "تم التأكيد",
+        "confirmationUserId": "معرف المستخدم المؤكد",
+        "confirmationTime": "وقت التأكيد",
+        "confirmButton": "تأكيد",
+        "confirmedLabel": "مؤكد",
+        "pendingLabel": "قيد الانتظار",
+        "doneLabel": "تم",
+        "paidAmount": "المبلغ المدفوع",
+        "paymentTime": "وقت الدفع",
+        "paymentReferenceKey": "مفتاح مرجع الدفع",
+        "paymentType": "نوع الدفع",
+        "noPaymentRequestsMessage": "لا توجد طلبات دفع لهذه الفاتورة.",
+        "dialogs": {
+            "editHeader": "تعديل الفاتورة",
+            "editLanguageLabel": "اللغة",
+            "editTextLabel": "النص",
+            "editCancel": "إلغاء",
+            "editSave": "حفظ",
+            "addHeader": "إضافة فاتورة جديدة",
+            "addLanguageLabel": "اللغة",
+            "addTextLabel": "نص الاقتباس",
+            "paymentRequestHeader": "طلب دفع الفاتورة",
+            "paymentRequestRefKeyLabel": "مفتاح مرجع الطلب",
+            "paymentRequestAmountLabel": "المبلغ المطلوب",
+            "paymentRequestNoteLabel": "ملاحظة طلب الدفع",
+            "paymentRequestImageLabel": "صورة طلب الدفع",
+            "paymentConfirmHeader": "تأكيد طلب دفع الفاتورة",
+            "confirmClientLabel": "العميل",
+            "confirmAccountantLabel": "المحاسب",
+            "confirmPaidAmountLabel": "المبلغ المدفوع",
+            "confirmPaymentRefKeyLabel": "مفتاح مرجع الدفع",
+            "invoicePaymentRefKeyLabel": "مفتاح مرجع الفاتورة",
+            "confirmPaymentTypeLabel": "نوع الدفع",
+            "confirmCheckboxLabel": "تم التأكيد"
+        }
+    },
+    "leaderboard": {
+        "usersLeaderboard": "لوحة المتصدرين للمستخدمين",
+        "unitLeaderboard": "لوحة المتصدرين للوحدات",
+        "ranking": "التصنيف",
+        "name": "الاسم",
+        "points": "النقاط",
+        "pointsPercentage": "نسبة الإنجاز",
+        "congrats": "تهانينا!",
+        "yourGroupIs2d": "مجموعتك في المركز الثاني",
+        "yourGroupIs3d": "مجموعتك في المركز الثالث",
+        "yourGroupIs1d": "مجموعتك في المركز الأول",
+        "first": "الأول",
+        "second": "الثاني",
+        "third": "الثالث",
+        "star1": "النجم 1",
+        "star2": "النجم 2",
+        "star3": "النجم 3",
+        "userPoints": "{{ userPoints }} نقطة",
+        "uniqueBadge": "أنت",
+        "tenantUnitPercentage": "{{ tenantUnitPercentage }}%",
+        "tenantUnitName": "{{ tenantUnitName }}"
+    },
+    "multimedia-library": {
+        "readNow": "اقرأ الآن",
+        "watchNow": "شاهد الآن",
+        "watchVideo": "شاهد الفيديو",
+        "readBook": "اقرأ الكتاب",
+        "downloadScreensavers": "تحميل حافظات الشاشة",
+        "selectScreensavers": "اختيار حافظات الشاشة",
+        "noScreensaversAvailable": "لا توجد حافظات شاشة متاحة.",
+        "addToDownload": "تحميل",
+        "platform": "المنصة",
+        "downloadAll": "تحميل المختار",
+        "showLessons": "عرض الدروس",
+        "lessons": "الدروس",
+        "upgradeYourPlan": "قم بترقية خطتك",
+        "upgradeMessage": "افتح هذه الدرس والعديد من الدروس الأخرى من خلال ترقية خطتك.",
+        "upgradeBtn": "قم بالترقية الآن"
+    },
+    "phishing-campaigns": {
+        "phishing-campaign-statistics": {
+            "overview": "نظرة عامة",
+            "templates": "القوالب",
+            "top100Clickers": "أعلى (100) نقرات",
+            "userName": "اسم المستخدم",
+            "userEmail": "البريد الإلكتروني للمستخدم",
+            "clicksCount": "عدد النقرات",
+            "status": "الحالة:",
+            "name": "الاسم:",
+            "startDate": "تاريخ البدء:",
+            "endDate": "تاريخ الانتهاء:",
+            "templatesII": "القوالب:",
+            "users": "المستخدمون:",
+            "campaignLeaderboard": "لوحة الصدارة للحملة",
+            "campaignLeaderboardMessage": "مرحبًا بك في لوحة الصدارة لحملات التصيد! هنا، يمكنك رؤية المستخدمين الذين تعرضوا للتصيد وتتبع النقاط السلبية الخاصة بهم. شجع على تحسين السلوك لتقليل حوادث التصيد بمرور الوقت!",
+            "ranking": "التصنيف",
+            "points": "النقاط",
+            "noDataMessage": "لا توجد بيانات حتى الآن. بمجرد تصيد المستخدمين، سيتم تحديث لوحة الصدارة بنقاطهم السلبية.",
+            "templateName": "اسم القالب",
+            "startedOn": "بدأ في",
+            "endedOn": "انتهى في",
+            "noOfUsers": "عدد المستخدمين",
+            "percentage": "نسبة الضعف",
+            "campaignSummary": "ملخص الحملة",
+            "vulnerability": "نسبة الضعف",
+            "vulnerabilityPercentage": "نسبة الضعف: %[tooltipItem]",
+            "vulnerabilityPercentagee": "نسبة الضعف"
+        },
+        "phishing-campaign-template-statistics": {
+            "overview": "نظرة عامة",
+            "users": "المستخدمون",
+            "failures": "الإخفاقات حسب اليوم",
+            "status": "الحالة:",
+            "name": "الاسم:",
+            "startDate": "تاريخ البدء:",
+            "endDate": "تاريخ الانتهاء:",
+            "percentage": "نسبة الضعف",
+            "recipients": "المستلمون:",
+            "recipient": "المستلمون:",
+            "delivered": "تم التسليم",
+            "opened": "تم الفتح",
+            "qrCode": "تم مسح رمز الاستجابة السريعة",
+            "dataEntered": "تم إدخال البيانات",
+            "reported": "تم الإبلاغ",
+            "clicked": "تم النقر",
+            "nameAndEmail": "الاسم والبريد الإلكتروني",
+            "scheduled": "مجدول",
+            "thisPhishingTemplateSummary": "ملخص نموذج التصيد الاحتيالي هذا",
+            "failuress": "الإخفاقات",
+            "failuresWithValue": "الإخفاقات: [value]",
+            "refresh": "تحديث"
+        },
+        "phishingcampaign": {
+            "dashboard": "لوحة إدارة حملات التصيد",
+            "RunningCampaigns": "حملات التصيد الجارية",
+            "completedCampaigns": "حملات التصيد المكتملة",
+            "campaignName": "اسم الحملة",
+            "templateName": "اسم القالب",
+            "phishingStartDate": "تاريخ بدء التصيد",
+            "phishingEndDate": "تاريخ انتهاء التصيد",
+            "status": "الحالة",
+            "toatalTemplates": "إجمالي القوالب: {calculateCurrentTotalNumberOfTemplates}",
+            "clicktoviewcampaigndetails": "اضغط لعرض تفاصيل الحملة"
+        }
+    },
+    "language": {
+        "language-listing": {
+            "fields": {
+                "languageName": "اسم اللغة",
+                "languageCode": "كود اللغة",
+                "status": "الحالة",
+                "isDefault": "هل هي اللغة الافتراضية",
+                "actions": "الإجراءات"
+            },
+            "actions": {
+                "add": "إضافة لغة جديدة"
+            },
+            "dialogs": {
+                "editDialog": {
+                    "header": "تعديل اللغة",
+                    "fields": {
+                        "languageName": "اسم اللغة",
+                        "languageCode": "كود اللغة",
+                        "isDefaultLanguage": "هل هي اللغة الافتراضية",
+                        "isActive": "هل هي نشطة"
+                    }
+                },
+                "addDialog": {
+                    "header": "إضافة لغة جديدة",
+                    "fields": {
+                        "languageName": "اسم اللغة",
+                        "languageCode": "كود اللغة",
+                        "isDefaultLanguage": "هل هي اللغة الافتراضية",
+                        "isActive": "هل هي نشطة"
+                    }
+                }
+            },
+            "notifications": {
+                "createSuccess": "تم إنشاء اللغة بنجاح",
+                "updateSuccess": "تم تحديث اللغة بنجاح",
+                "deleteSuccess": "تم حذف اللغة بنجاح"
+            }
+        }
+    },
+    "notification-settings": {
+        "notification-type-language": {
+            "title": "إدارة لغات أنواع الإشعارات",
+            "language": "اللغة",
+            "languagePlaceholder": "اختر اللغة",
+            "status": "الحالة",
+            "name": "الاسم",
+            "nameValidation": "الاسم مطلوب",
+            "notificationValidation": "رسالة الإشعار مطلوبة",
+            "notificationMessage": "رسالة الإشعار",
+            "editHeader": "لغة نوع الإشعار"
+        },
+        "notification-type-list": {
+            "title": "نوع الإشعار",
+            "id": "المعرف",
+            "name": "الاسم",
+            "language": "اللغة",
+            "languagePlaceholder": "اختر اللغة",
+            "notificationLogo": "شعار الإشعار",
+            "notificationMessage": "رسالة الإشعار",
+            "notificationIcon": "أيقونة الإشعار",
+            "notificationIconPlaceholder": "اختر أيقونة الإشعار",
+            "redirectPageUrl": "عنوان إعادة التوجيه",
+            "notificationParameterKey1": "المفتاح الأول لمعلمات الإشعار",
+            "notificationParameterKey2": "المفتاح الثاني لمعلمات الإشعار",
+            "status": "الحالة",
+            "addHeader": "إضافة نوع إشعار جديد",
+            "editHeader": "تعديل لغة فئة التصيد الإنجليزية",
+            "validations": {
+                "id": "المعرف مطلوب.",
+                "name": "الاسم مطلوب.",
+                "redirectPageUrl": "عنوان إعادة التوجيه مطلوب.",
+                "notificationParameterKey1": "المفتاح الأول لمعلمات الإشعار مطلوب.",
+                "notificationParameterKey2": "المفتاح الثاني لمعلمات الإشعار مطلوب.",
+                "notificationMessage": "رسالة الإشعار مطلوبة."
+            }
+        }
+    },
+    "page-management": {
+        "page-details": {},
+        "page-listing": {
+            "fields": {
+                "page-EN": "اسم الصفحة بالإنجليزية",
+                "page-AR": "اسم الصفحة بالعربية",
+                "status": "الحالة"
+            },
+            "actions": {
+                "add": "إضافة صفحة"
+            },
+            "dialogs": {
+                "addDialog": {
+                    "header": "إضافة صفحة جديدة",
+                    "fields": {
+                        "page-EN": "اسم الصفحة بالإنجليزية",
+                        "page-AR": "اسم الصفحة بالعربية",
+                        "appUrl": "عنوان التطبيق",
+                        "pageUrl": "عنوان الصفحة",
+                        "dispalyInMenu": "عرض في القائمة",
+                        "orderNo": "رقم الترتيب",
+                        "helpText-AR": "نص المساعدة بالعربية",
+                        "helpText-EN": "نص المساعدة بالإنجليزية",
+                        "fontIconCode": "كود أيقونة الخط",
+                        "isHeading": "تحديد كعنوان رئيسي"
+                    },
+                    "validations": {
+                        "page-EN": "اسم الصفحة بالإنجليزية مطلوب.",
+                        "page-AR": "اسم الصفحة بالعربية مطلوب.",
+                        "appUrl": "عنوان التطبيق مطلوب.",
+                        "pageUrl": "عنوان الصفحة مطلوب.",
+                        "dispalyInMenu": "عرض في القائمة مطلوب."
+                    }
+                },
+                "editDialog": {
+                    "header": "تعديل الصفحة",
+                    "fields": {
+                        "page-EN": "اسم الصفحة بالإنجليزية",
+                        "page-AR": "اسم الصفحة بالعربية",
+                        "appUrl": "عنوان التطبيق",
+                        "pageUrl": "عنوان الصفحة",
+                        "dispalyInMenu": "عرض في القائمة",
+                        "orderNo": "رقم الترتيب",
+                        "helpText-AR": "نص المساعدة بالعربية",
+                        "helpText-EN": "نص المساعدة بالإنجليزية",
+                        "fontIconCode": "كود أيقونة الخط",
+                        "isHeading": "تحديد كعنوان رئيسي"
+                    }
+                }
+            },
+            "notifications": {
+                "saveSuccess": "تم حفظ الصفحة بنجاح",
+                "deleteSuccess": "تم حذف الصفحة بنجاح"
+            }
+        }
+    },
+    "phishing-category": {
+        "phishing-category-language-list": {
+            "title": "إدارة لغات فئات التصيد",
+            "add": "إضافة لغة فئة تصيد",
+            "imageField": "رفع صورة الفئة",
+            "nameField": "أدخل اسم الفئة",
+            "descriptionField": "أدخل وصف الفئة",
+            "bannerField": "رفع لافتة الفئة",
+            "categoryPageContentHtmlPlaceholder": "اكتب محتوى البريد الإلكتروني",
+            "language": "اللغة",
+            "languagePlaceholder": "اختر اللغة",
+            "category": "الفئة",
+            "name": "اسم الفئة",
+            "banner": "لافتة الفئة",
+            "description": "وصف الفئة",
+            "pageContnt": "محتوى الصفحة بتنسيق HTML",
+            "status": "الحالة",
+            "editHeader": "لغة فئة التصيد",
+            "phishingTemplateName": "اسم قالب التصيد",
+            "therearenotemplatesforthistraininglanguageyet": "لا توجد قوالب لهذه اللغة التدريبية حتى الآن.",
+            "validations": {
+                "name": "الاسم مطلوب.",
+                "description": "وصف الفئة مطلوب.",
+                "banner": "اللافتة مطلوبة.",
+                "pageContent": "محتوى الصفحة مطلوب.",
+                "category": "الفئة مطلوبة."
+            }
+        },
+        "phishing-category-list": {
+            "title": "قائمة فئات التصيد",
+            "add": "إضافة فئة تصيد",
+            "image": "صورة الفئة",
+            "name": "الاسم",
+            "status": "الحالة",
+            "language": "اللغة",
+            "banner": "لافتة الفئة",
+            "description": "وصف الفئة",
+            "pageContent": "محتوى الصفحة بتنسيق HTML",
+            "imageField": "رفع صورة الفئة",
+            "nameField": "أدخل اسم الفئة",
+            "descriptionField": "أدخل وصف الفئة",
+            "bannerField": "رفع لافتة الفئة",
+            "categoryPageContentHtmlPlaceholder": "اكتب محتوى البريد الإلكتروني",
+            "category": "الفئة",
+            "languagePlaceholder": "اختر اللغة",
+            "addHeader": "إضافة لغة فئة تصيد جديدة",
+            "editHeader": "تعديل لغة فئة التصيد",
+            "defaultPhishingCategories": "فئات التصيد الافتراضية",
+            "companyPhishingCategories": "فئات التصيد الخاصة بالشركة",
+            "validations": {
+                "name": "الاسم مطلوب.",
+                "description": "وصف الفئة مطلوب.",
+                "banner": "اللافتة مطلوبة.",
+                "pageContent": "محتوى الصفحة مطلوب.",
+                "category": "الفئة مطلوبة."
+            }
+        }
+    },
+    "phishing-email-template": {
+        "taps": {
+            "info": "المعلومات",
+            "emailDeatails": "تفاصيل البريد الإلكتروني",
+            "landingPage": "صفحة الهبوط",
+            "feedbackPage": "صفحة الملاحظات"
+        },
+        "add": "إضافة قالب تصيد",
+        "addLanguage": "إضافة لغة لقالب التصيد",
+        "name": "اسم قالب التصيد",
+        "nameField": "أدخل اسمًا وصفيًا لقالب التصيد.",
+        "nameValidation": "اسم قالب التصيد مطلوب.",
+        "language": "اللغة",
+        "languagePlaceholder": "اختر اللغة",
+        "languageValidation": "اللغة مطلوبة.",
+        "status": "الحالة",
+        "phishingCategory": "فئة التصيد",
+        "phishingCategoryPlaceholder": "اختر الفئة",
+        "phishingCategoryValidation": "فئة قالب التصيد مطلوبة.",
+        "phishingDomain": "مجالات التصيد",
+        "phishingDomainPlaceholder": "اختر المجال المرتبط.",
+        "phishingDomainValidation": "مجال قالب التصيد مطلوب.",
+        "IsQrCodeChecked": "إضافة رمز QR",
+        "description": "وصف قالب التصيد",
+        "descriptionField": "أدخل وصف قالب التصيد",
+        "descriptionValidation": "وصف قالب التصيد مطلوب.",
+        "emailInstruction": "تعليمات البريد الإلكتروني لقالب التصيد",
+        "emailInstructionField": "اكتب تعليمات واضحة وموجزة لقالب التصيد.",
+        "phishingTemplateImage": "صورة قالب التصيد",
+        "emailImage": "رفع صورة قالب التصيد.",
+        "phishingEmailSubject": "موضوع البريد الإلكتروني لقالب التصيد",
+        "phishingEmailSubjectField": "أدخل موضوع البريد الإلكتروني لقالب التصيد",
+        "phishingEmailContent": "محتوى البريد الإلكتروني لقالب التصيد",
+        "phishingEmailContentField": "أدخل محتوى البريد الإلكتروني بتنسيق HTML",
+        "landingPageTitle": "عنوان صفحة الهبوط لقالب التصيد",
+        "landingPageTitleField": "أدخل عنوان صفحة الهبوط لقالب التصيد",
+        "landingPageDescription": "وصف صفحة الهبوط لقالب التصيد",
+        "landingPageDescriptionField": "أدخل وصف صفحة الهبوط لقالب التصيد",
+        "landingPageContentHtml": "محتوى صفحة الهبوط بتنسيق HTML",
+        "phishingEmailSuccessMessageTitle": "عنوان رسالة النجاح",
+        "phishingEmailSuccessMessageTitleField": "أدخل عنوان رسالة النجاح",
+        "phishingEmailSuccessMessagePageHtml": "محتوى رسالة النجاح",
+        "phishingEmailSuccessMessagePageHtmlField": "أدخل محتوى رسالة النجاح بتنسيق HTML",
+        "inputChecklistDialogHeader": "اختر المدخلات للتتبع",
+        "cloneDialogHeader": "استنساخ قالب التصيد باستخدام الرابط",
+        "pageUrl": "عنوان الصفحة",
+        "listTitle": "قائمة قوالب التصيد",
+        "languages": "اللغات",
+        "editHeader": "تعديل قالب التصيد",
+        "editEmailHeader": "تعديل لغة قالب التصيد",
+        "addEmailHeader": "لغة قالب تصيد جديدة",
+        "clone": "استنساخ القالب الآن",
+        "upgradeYourPlan": "قم بترقية خطتك",
+        "upgradeMessage": "قم بفتح هذا القالب للتصيد والمزيد عن طريق ترقية خطتك.",
+        "upgradeBtn": "قم بالترقية الآن",
+        "defaultPhishingTemplates": "قوالب التصيد الافتراضية",
+        "companyPhishingTemplates": "قوالب التصيد الخاصة بالشركة",
+        "cloningDescription": "قم بتكرار العمليات بسهولة باستخدام ميزة الاستنساخ لدينا. ما عليك سوى نسخ الرابط، لصقه في حقل الاستنساخ، ودع النظام يتولى الباقي. إنها طريقة سريعة وموثوقة وتضمن نتائج متسقة في كل مرة."
+    },
+    "pointing-system": {
+        "id": "المعرف",
+        "title": "عنوان النقاط",
+        "value": "قيمة النقاط",
+        "editHeader": "تعديل القيمة"
+    },
+    "tenantUnit": {
+        "syncADOU": "مزامنة الوحدات التنظيمية للدليل النشط",
+        "add": "إضافة قسم جديد",
+        "name": "اسم القسم",
+        "nameField": "أدخل اسم القسم",
+        "status": "الحالة",
+        "editDialogHeader": "تعديل القسم",
+        "addDialogHeader": "إضافة قسم جديد",
+        "showInLeaderboard": "عرض في التصنيفات",
+        "showCompleteADDataDialog": "استكمال بيانات الدليل النشط",
+        "showCompleteADDataDialogMessage": "<i class=\"pi pi-megaphone\"></i> نوصي باستكمال بيانات الدليل النشط أولاً. {link} للقيام بذلك."
+    },
+    "role": {
+        "role-create": {},
+        "role-listing": {
+            "fields": {
+                "name": "اسم الدور",
+                "users": "المستخدمون",
+                "permissions": "الصلاحيات",
+                "status": "الحالة",
+                "search": "بحث شامل"
+            },
+            "actions": {
+                "add": "إضافة دور جديد"
+            },
+            "dialog": {
+                "addDialog": {
+                    "header": "إضافة دور جديد",
+                    "fields": {
+                        "name": "اسم الدور",
+                        "description": "الوصف",
+                        "permissions": "الصلاحيات",
+                        "isTenantRole": "هل هو دور مستأجر",
+                        "isTenantAdministratorRole": "هل هو دور مدير المستأجر"
+                    },
+                    "validations": {
+                        "name": "اسم الدور مطلوب"
+                    }
+                },
+                "editDialog": {
+                    "header": "تعديل الدور",
+                    "fields": {
+                        "name": "اسم الدور",
+                        "description": "الوصف",
+                        "isTenantRole": "هل هو دور مستأجر",
+                        "isTenantAdministratorRole": "هل هو دور مدير المستأجر"
+                    },
+                    "validations": {
+                        "name": "اسم الدور مطلوب"
+                    }
+                },
+                "usersWithinRoleDialog": {
+                    "header": "",
+                    "firstName": "الاسم الأول",
+                    "lastName": "اسم العائلة",
+                    "email": "البريد الإلكتروني",
+                    "search": "بحث شامل"
+                }
+            }
+        }
+    },
+    "security-training": {
+        "pdf-viewer-dialog": {
+            "header": "عارض PDF",
+            "close": "إغلاق"
+        },
+        "security-training-create": {
+            "title": "إنشاء درس تدريبي باللغة الإنجليزية",
+            "fields": {
+                "name": "اسم الدرس",
+                "description": "وصف الدرس",
+                "category": "فئة الدرس",
+                "language": "لغة الدرس",
+                "pdf": "ملف الكتاب",
+                "video": "ملف الفيديو",
+                "email": "رسالة توعية البريد الإلكتروني",
+                "emailSubject": "موضوع البريد الإلكتروني",
+                "emailContent": "محتوى البريد الإلكتروني",
+                "screenSavers": "شاشات التوقف",
+                "wallpaper": "الخلفيات",
+                "quizzes": "الاختبارات",
+                "quotes": "الاقتباسات"
+            },
+            "placeholders": {
+                "category": "اختر الفئة",
+                "namePlaceholder": "أدخل اسم الدرس",
+                "descriptionPlaceholder": "أدخل وصف الدرس",
+                "emailSubjectPlaceholder": "أدخل موضوع البريد الإلكتروني",
+                "emailContentPlaceholder": "أنشئ محتوى البريد الإلكتروني",
+                "language": "اختر اللغة",
+                "title": "عنوان شاشة التوقف",
+                "platform": "منصة شاشة التوقف",
+                "writeQuestion": "أدخل السؤال",
+                "question": "السؤال",
+                "writeQuote": "أدخل الاقتباس",
+                "answer": "أدخل الإجابة {index}"
+            },
+            "validations": {
+                "name": "الاسم مطلوب",
+                "description": "الوصف مطلوب",
+                "category": "الفئة مطلوبة",
+                "language": "اللغة مطلوبة",
+                "pdf": "ملف الكتاب مطلوب",
+                "video": "ملف الفيديو مطلوب",
+                "emailSubject": "موضوع رسالة التوعية مطلوب",
+                "emailContent": "محتوى رسالة التوعية مطلوب",
+                "quizText": "يتطلب إدخال إجابتين على الأقل.",
+                "quizTextTrue": "يتطلب إجابة واحدة صحيحة."
+            },
+            "messages": {
+                "pdf": "رفع ملف PDF",
+                "video": "رفع الفيديو",
+                "uploaded": "تم الرفع",
+                "numberOfChosenWallpapers": "عدد الخلفيات المختارة",
+                "question": "السؤال"
+            },
+            "actions": {
+                "submit": "إرسال"
+            },
+            "dialogs": {
+                "libraryWallpaperDialog": {
+                    "header": "مكتبة الخلفيات",
+                    "actions": {
+                        "back": "العودة لاختيار الخلفيات"
+                    }
+                },
+                "chooseWllpapersDialog": {
+                    "header": "اختيار خلفية",
+                    "fields": {
+                        "wallpaper": "اختر الخلفيات"
+                    },
+                    "actions": {
+                        "continue": "متابعة",
+                        "add": "إضافة خلفية جديدة"
+                    }
+                }
+            }
+        },
+        "security-training-details": {},
+        "training-lesson-category-list": {},
+        "security-training-list": {},
+        "training-lesson-language-create": {},
+        "video-viewer-dialog": {}
+    },
+    "simulation-phishing": {
+        "dynamic-landing-content": {},
+        "phishing-schedule-user-list": {}
+    },
+    "subscription": {
+        "payment-reminder-list": {
+            "title": "إدارة تذكيرات الدفع",
+            "fields": {
+                "daysBeforePayment": "الأيام قبل الدفع",
+                "status": "الحالة",
+                "title": "العنوان",
+                "message": "الرسالة",
+                "subject": "الموضوع"
+            },
+            "message": {
+                "deleteAll": "هل أنت متأكد أنك تريد حذف التذكيرات المحددة؟"
+            },
+            "actions": {
+                "add": "إضافة",
+                "deleteAll": "حذف الكل"
+            },
+            "dialogs": {
+                "reminderDialog": {
+                    "header": "تفاصيل تذكير الدفع",
+                    "fields": {
+                        "title": "العنوان",
+                        "subject": "الموضوع",
+                        "message": "الرسالة",
+                        "daysBeforePayment": "الأيام قبل الدفع"
+                    },
+                    "validations": {
+                        "title": "العنوان مطلوب",
+                        "subject": "الموضوع مطلوب",
+                        "message": "الرسالة مطلوبة",
+                        "daysBeforePayment": "الأيام قبل الدفع مطلوبة"
+                    }
+                }
+            }
+        },
+        "subscription-list": {
+            "title": "إدارة الاشتراكات",
+            "actions": {
+                "add": "إضافة اشتراك جديد"
+            },
+            "fields": {
+                "name": "اسم الاشتراك",
+                "userPrice": "السعر لكل مستخدم",
+                "duration": "المدة",
+                "features": "المزايا",
+                "freePlane": "الخطة المجانية",
+                "status": "الحالة"
+            },
+            "dialogs": {
+                "subscriptionDialog": {
+                    "header": "تفاصيل الاشتراك",
+                    "fields": {
+                        "title": "العنوان",
+                        "description": "الوصف",
+                        "roles": "الأدوار",
+                        "rolesPlaceholder": "اختر الأدوار",
+                        "durationNumber": "عدد الأيام",
+                        "durationType": "نوع المدة",
+                        "trainingLessons": "دروس التدريب",
+                        "defaultRole": "الدور الافتراضي",
+                        "defaultRolePlaceholder": "اختر الدور الافتراضي",
+                        "userPrice": "سعر المستخدم",
+                        "reminders": "تذكيرات الدفع",
+                        "remindersPlaceholder": "اختر التذكيرات",
+                        "phishingTemplates": "نماذج التصيد الاحتيالي",
+                        "unlimitedPhishingSimulation": "محاكاة تصيد غير محدودة",
+                        "awarenessVideos": "فيديوهات توعية",
+                        "comicBooks": "كتب هزلية",
+                        "knowledgeQuiz": "اختبار المعرفة",
+                        "securityQuotesAndTips": "اقتباسات ونصائح أمنية",
+                        "advancedReporting": "تقارير متقدمة",
+                        "awarenessEmails": "رسائل التوعية",
+                        "wallpapers": "خلفيات",
+                        "screenSavers": "شاشات توقف",
+                        "games": "ألعاب",
+                        "customizedPhishingExperience": "تجربة تصيد مخصصة",
+                        "vrGamesAndTraining": "ألعاب وتدريب واقع افتراضي",
+                        "localization": "التوطين",
+                        "onSiteDeployment": "التنفيذ في الموقع",
+                        "iawareMobileApp": "تطبيق iAware للجوال",
+                        "automatedTrainingCampaigns": "حملات تدريبية مؤتمتة",
+                        "brandableContent": "محتوى قابل للتخصيص",
+                        "phishAlertButton": "زر تنبيه التصيد",
+                        "userProvisioningViaActiveDirectory": "تزويد المستخدمين عبر Active Directory",
+                        "technicalSupport": "الدعم الفني",
+                        "smartGroups": "مجموعات ذكية"
+                    },
+                    "validation": {
+                        "title": "العنوان مطلوب.",
+                        "defaultRole": "الدور الافتراضي مطلوب.",
+                        "roles": "الأدوار مطلوبة."
+                    }
+                },
+                "featuresDetailsDialog": {
+                    "header": "تفاصيل المزايا",
+                    "fields": {
+                        "unlimitedPhishingSimulation": "محاكاة تصيد غير محدودة",
+                        "awarenessVideos": "فيديوهات توعية",
+                        "comicBooks": "كتب هزلية",
+                        "knowledgeQuiz": "اختبار المعرفة",
+                        "securityQuotesAndTips": "اقتباسات ونصائح أمنية",
+                        "advancedReporting": "تقارير متقدمة",
+                        "awarenessEmails": "رسائل التوعية",
+                        "wallpapers": "خلفيات",
+                        "screenSavers": "شاشات توقف",
+                        "games": "ألعاب",
+                        "customizedPhishingExperience": "تجربة تصيد مخصصة",
+                        "vrGamesAndTraining": "ألعاب وتدريب واقع افتراضي",
+                        "localization": "التوطين",
+                        "onSiteDeployment": "التنفيذ في الموقع",
+                        "iawareMobileApp": "تطبيق iAware للجوال",
+                        "automatedTrainingCampaigns": "حملات تدريبية مؤتمتة",
+                        "brandableContent": "محتوى قابل للتخصيص",
+                        "phishAlertButton": "زر تنبيه التصيد",
+                        "userProvisioningViaActiveDirectory": "تزويد المستخدمين عبر Active Directory",
+                        "technicalSupport": "الدعم الفني",
+                        "smartGroups": "مجموعات ذكية"
+                    }
+                },
+                "freeSubscriptionDialog": {
+                    "header": "حالة الاشتراك المجاني",
+                    "freeMessageI": "هل أنت متأكد أنك تريد جعل ",
+                    "freeMessageII": "مجاني؟",
+                    "notFreeMessageI": "غير مجاني؟"
+                }
+            }
+        }
+    },
+    "support": {
+        "category": {
+            "fields": {
+                "members": "الأعضاء",
+                "description": "الوصف",
+                "title": "العنوان",
+                "status": "الحالة"
+            },
+            "actions": {
+                "add": "إضافة فئة جديدة"
+            },
+            "dialogs": {
+                "editDialog": {
+                    "header": "تعديل الفئة",
+                    "fields": {
+                        "members": "الأعضاء",
+                        "description": "الوصف",
+                        "title": "العنوان"
+                    },
+                    "placeholders": {
+                        "members": "اختر الأعضاء"
+                    }
+                },
+                "addDialog": {
+                    "header": "إضافة فئة جديدة",
+                    "fields": {
+                        "members": "الأعضاء",
+                        "description": "الوصف",
+                        "title": "العنوان"
+                    },
+                    "placeholders": {
+                        "members": "اختر الأعضاء"
+                    }
+                },
+                "usersWithinDeptDialog": {
+                    "header": "أعضاء الفئة",
+                    "fields": {
+                        "firstName": "الاسم الأول",
+                        "lastName": "اسم العائلة",
+                        "email": "البريد الإلكتروني"
+                    }
+                }
+            }
+        },
+        "status": {
+            "fields": {
+                "title": "العنوان",
+                "category": "الفئة",
+                "colorCode": "رمز اللون",
+                "isClosedCase": "هل هي حالة مغلقة",
+                "status": "الحالة"
+            },
+            "actions": {
+                "add": "إضافة حالة جديدة"
+            },
+            "dialogs": {
+                "editDialog": {
+                    "header": "تعديل الحالة",
+                    "fields": {
+                        "title": "العنوان",
+                        "categories": "الفئات",
+                        "colorCode": "رمز اللون",
+                        "isClosedCase": "هل هي حالة مغلقة",
+                        "orderNo": "رقم الترتيب"
+                    },
+                    "placeholders": {
+                        "categories": "اختر الفئة"
+                    }
+                },
+                "addDialog": {
+                    "header": "إضافة حالة جديدة",
+                    "fields": {
+                        "title": "العنوان",
+                        "categories": "الفئات",
+                        "colorCode": "رمز اللون",
+                        "isClosedCase": "هل هي حالة مغلقة",
+                        "orderNo": "رقم الترتيب"
+                    },
+                    "placeholders": {
+                        "categories": "اختر الفئة"
+                    }
+                }
+            }
+        },
+        "subject": {
+            "fields": {
+                "category": "الفئة",
+                "title": "العنوان",
+                "isCustomSubject": "هل هو موضوع مخصص",
+                "status": "الحالة"
+            },
+            "actions": {
+                "add": "إضافة موضوع جديد"
+            },
+            "dialogs": {
+                "editDialog": {
+                    "header": "تعديل الموضوع",
+                    "fields": {
+                        "categories": "الفئات",
+                        "title": "العنوان",
+                        "isCustomSubject": "هل هو موضوع مخصص"
+                    },
+                    "placeholders": {
+                        "category": "اختر الفئة"
+                    }
+                },
+                "addDialog": {
+                    "header": "إضافة موضوع جديد",
+                    "fields": {
+                        "categories": "الفئات",
+                        "title": "العنوان",
+                        "isCustomSubject": "هل هو موضوع مخصص"
+                    },
+                    "placeholders": {
+                        "category": "اختر الفئة"
+                    }
+                }
+            }
+        }
+    },
+    "tenantgroup": {
+        "tenantgroup-listing": {
+            "fields": {
+                "groupName": "اسم المجموعة",
+                "status": "الحالة"
+            },
+            "actions": {
+                "add": "إضافة مجموعة جديدة",
+                "syncAD": "مزامنة مجموعات AD (الوحدات التنظيمية)"
+            },
+            "dialogs": {
+                "editDialog": {
+                    "header": "تعديل المجموعة",
+                    "fields": {
+                        "groupName": "اسم المجموعة",
+                        "groupMembers": "أعضاء المجموعة",
+                        "selectMemebers": "اختر الأعضاء"
+                    }
+                },
+                "addDialog": {
+                    "header": "إضافة مجموعة جديدة",
+                    "fields": {
+                        "groupName": "اسم المجموعة",
+                        "groupMembers": "أعضاء المجموعة",
+                        "selectMemebers": "اختر الأعضاء"
+                    }
+                }
+            }
+        }
+    },
+    "user": {
+        "user-create": {
+            "table": {
+                "title": "قائمة المستخدمين",
+                "columns": {
+                    "username": "اسم المستخدم",
+                    "email": "البريد الإلكتروني",
+                    "role": "الدور",
+                    "status": "الحالة",
+                    "actions": "الإجراءات"
+                }
+            },
+            "validation": {},
+            "dialogs": {
+                "editTitle": "تعديل المستخدم",
+                "deleteConfirmation": "هل أنت متأكد أنك تريد حذف {{username}}؟",
+                "statusConfirmation": "هل أنت متأكد أنك تريد {{action}} {{username}}؟"
+            },
+            "notifications": {
+                "saveSuccess": "تم حفظ المستخدم بنجاح",
+                "deleteSuccess": "تم حذف المستخدم بنجاح",
+                "statusUpdateSuccess": "تم {{action}} المستخدم بنجاح"
+            }
+        },
+        "subscription-details": {},
+        "user-details": {
+            "userInfoSection": {
+                "header": "معلومات المستخدم",
+                "firstName": "الاسم الأول",
+                "lastName": "اسم العائلة",
+                "email": "البريد الإلكتروني",
+                "emailVerified": "تم التحقق من البريد الإلكتروني",
+                "phoneNumber": "رقم الهاتف",
+                "language": "اللغة",
+                "createdAt": "تاريخ الإنشاء",
+                "accountStatus": "حالة الحساب",
+                "notEntered": "لم يتم إدخاله",
+                "active": "نشط",
+                "inactive": "غير نشط",
+                "emailConfirmedYes": "نعم",
+                "emailConfirmedNo": "لا",
+                "points": "النقاط",
+                "badges": "الأوسمة",
+                "ranking": "الترتيب",
+                "positivePoints": "النقاط الإيجابية",
+                "negativePoints": "النقاط السلبية",
+                "totalPoints": "إجمالي النقاط",
+                "noBadgesMessage": "لم يتم الحصول على أي أوسمة بعد.",
+                "userRanking": "ترتيب المستخدم",
+                "encouragementHighRank": "المستخدم يقدم أداءً جيدًا، شجعه على الاستمرار!",
+                "encouragementLowRank": "ترتيب المستخدم يحتاج إلى تحسين. شجعه على التفاعل أكثر.",
+                "noRankingAvailable": "لا توجد تصنيفات متاحة بعد.",
+                "noRankingMessage": "ستكون التصنيفات متاحة بمجرد أن يبدأ المستخدمون في كسب النقاط."
+            },
+            "organizationRiskScoreSection": {
+                "header": "معدل المخاطر للمنظمة",
+                "riskHistory": "تاريخ المخاطر",
+                "riskScore": "معدل المخاطر"
+            },
+            "trainingSection": {
+                "header": "التدريب",
+                "statusOfAllCampaigns": "حالة جميع الحملات",
+                "totalCompletedAssignments": "إجمالي المهام المكتملة",
+                "completed": "مكتمل:",
+                "inProgress": "قيد التنفيذ:",
+                "notStarted": "لم يبدأ:",
+                "trainingLessonsDetails": "تفاصيل دروس التدريب",
+                "campaignName": "اسم الحملة",
+                "campaignProgress": "تقدم الحملة",
+                "campaignStartDate": "تاريخ بدء الحملة",
+                "campaignEndDate": "تاريخ انتهاء الحملة",
+                "noLessonsAvailable": "لا توجد دروس متاحة لهذه الحملة.",
+                "trainingSection": "اختر حملة",
+                "completedd": "مكتمل",
+                "inProgresss": "قيد التنفيذ",
+                "notStartedd": "لم يبدأ",
+                "lessonName": "اسم الدرس",
+                "lessonJoiningDate": "تاريخ الانضمام إلى الدرس",
+                "contentStatus": "حالة المحتوى",
+                "status": "الحالة",
+                "score": "النقاط",
+                "totalLessons": "إجمالي الدروس: {number}",
+                "lessonScore": "{number} %",
+                "compelationPercentage": "{number} % مكتمل",
+                "statusofRunningCampaigns": "حالة الحملات الجارية"
+            },
+            "phishingSection": {
+                "header": "التصيد الاحتيالي",
+                "riskHistory": "تاريخ المخاطر",
+                "riskScore": "درجة المخاطر",
+                "vulnerabilityRate": "معدل التعرض للتصيد الاحتيالي",
+                "emailsDelivered": "البريد الإلكتروني المُسَلّم:",
+                "emailsFailures": "البريد الإلكتروني الذي فشل:",
+                "emailsReported": "البريد الإلكتروني المُبلّغ عنه:",
+                "emailsNoActions": "البريد الإلكتروني بدون إجراءات:",
+                "personalThreatPercentage": "النسبة المئوية للتهديد الشخصي للتصيد الاحتيالي:",
+                "basedonemailsDelivered": " (استنادًا إلى { emailsDelivered } بريدًا إلكترونيًا تم تسليمه)",
+                "campaignDetails": "تفاصيل حملة التصيد الاحتيالي",
+                "showCampaignDetails": "عرض تفاصيل حملة التصيد الاحتيالي",
+                "selectCampaign": "اختر الحملة",
+                "clicked": "النقرات:",
+                "dataEntered": "البيانات المدخلة:",
+                "emailsDeliveredd": "البريد الإلكتروني المُسَلّم",
+                "emailsFailuress": "البريد الإلكتروني الذي فشل",
+                "emailsReportedd": "البريد الإلكتروني المُبلّغ عنه",
+                "emailsNoActionss": "البريد الإلكتروني بدون إجراءات",
+                "clickedd": "النقرات",
+                "dataEnteredd": "البيانات المدخلة",
+                "campaignName": "اسم الحملة",
+                "campaignDates": "تواريخ الحملة",
+                "templateName": "اسم القالب",
+                "delivered": "تم التسليم",
+                "Opened": "تم الفتح",
+                "Clicked": "تم النقر",
+                "qRCodeScanned": "تم مسح رمز الاستجابة السريعة",
+                "reported": "تم الإبلاغ",
+                "totalTemplates": "إجمالي القوالب: {number}"
+            },
+            "charts": {
+                "totalAssignments": "إجمالي التعيينات",
+                "totalAssignmentsinCampaign": "إجمالي التعيينات في الحملة",
+                "lessons": "الدروس: [value]",
+                "lessonDetails": "تفاصيل الدروس",
+                "completed": "مكتمل",
+                "inProgress": "قيد التقدم",
+                "notStarted": "لم يبدأ",
+                "failed": "فشل",
+                "reported": "تم الإبلاغ",
+                "noActions": "بدون إجراءات",
+                "clicked": "تم النقر",
+                "dataEntered": "تم إدخال البيانات"
+            }
+        },
+        "user-listing": {
+            "usersTable": {
+                "fields": {
+                    "firstName": "الاسم الأول",
+                    "lastName": "اسم العائلة",
+                    "roles": "الأدوار",
+                    "groups": "المجموعات",
+                    "email": "البريد الإلكتروني",
+                    "emailConfirmed": "تأكيد البريد الإلكتروني",
+                    "status": "حالة المستخدم",
+                    "unit": "القسم"
+                }
+            },
+            "actions": {
+                "save": "حفظ التغييرات",
+                "cancel": "إلغاء",
+                "exportExcelSample": "تصدير نموذج Excel",
+                "exportUsers": "تصدير المستخدمين النشطين",
+                "addUser": "إضافة مستخدم جديد",
+                "delete": "حذف المستخدم",
+                "globalSearch": "بحث شامل",
+                "editUser": "تعديل المستخدم",
+                "importUsers": "استيراد المستخدمين",
+                "syncADUsers": "مزامنة مستخدمي Active Directory",
+                "refresh": "تحديث",
+                "exportDeletedUsers": "تصدير المستخدمين المحذوفين",
+                "activeUsers": "المستخدمون النشطون",
+                "deletedUsers": "المستخدمون المحذوفون",
+                "noActiveUsersavailable": "لا توجد مستخدمون نشطون",
+                "noDeletedUsersavailable": "لا توجد مستخدمون محذوفين"
+            },
+            "notifications": {
+                "updateSuccess": "تم تحديث الملف الشخصي بنجاح"
+            },
+            "validations": {},
+            "dialogs": {
+                "editeUserDialog": {
+                    "header": "تعديل المستخدم",
+                    "fields": {
+                        "firstName": "الاسم الأول",
+                        "lastName": "اسم العائلة",
+                        "language": "اللغة",
+                        "roles": "الأدوار",
+                        "group": "المجموعة"
+                    },
+                    "validations": {
+                        "firstName": "الاسم الأول مطلوب.",
+                        "lastName": "اسم العائلة مطلوب.",
+                        "language": "البريد الإلكتروني مطلوب.",
+                        "roles": "الأدوار مطلوبة."
+                    },
+                    "placeHolders": {
+                        "firstName": "الاسم الأول",
+                        "lastName": "اسم العائلة",
+                        "language": "اختر اللغة",
+                        "roles": "اختر الأدوار",
+                        "group": "اختر المجموعة"
+                    }
+                },
+                "addUserDialog": {
+                    "header": "إضافة مستخدمين جدد",
+                    "taps": {
+                        "adUser": "إضافة يدويًا",
+                        "excelUsers": "استيراد من Excel",
+                        "adSync": "مزامنة من Active Directory"
+                    },
+                    "messages": {
+                        "adUser": "إضافة المستخدمين يدويًا عن طريق إدخال بياناتهم، مثل الاسم الأول، اسم العائلة، البريد الإلكتروني، المجموعات، وتفضيلات اللغة. يسمح هذا الخيار بتسجيل المستخدم مباشرة وإدارة الحالة النشطة.",
+                        "excelUsers": "إضافة المستخدمين دفعة واحدة عن طريق استيراد ملف Excel. يسهل هذا الخيار عملية إضافة مستخدمين متعددين في وقت واحد. تأكد من أن الملف يحتوي على البيانات الضرورية قبل الرفع.",
+                        "excelUsersMessage": "يرجى التأكد من أن الوحدات التنظيمية (OUs) في ملف Excel موجودة بالفعل في النظام لتجنب عدم تطابق البيانات. إذا لم تكن الوحدات موجودة،",
+                        "adSync": "مزامنة المستخدمين تلقائيًا من Active Directory الخاص بك. يضمن هذا الخيار تحديث المعلومات باستمرار بين النظام والدليل النشط."
+                    },
+                    "fields": {
+                        "firstName": "الاسم الأول",
+                        "lastName": "اسم العائلة",
+                        "userName": "اسم المستخدم",
+                        "language": "اللغة",
+                        "email": "البريد الإلكتروني",
+                        "dept": "القسم",
+                        "roles": "الأدوار",
+                        "isActive": "نشط",
+                        "group": "المجموعة"
+                    },
+                    "validations": {
+                        "firstName": "الاسم الأول مطلوب.",
+                        "lastName": "اسم العائلة مطلوب.",
+                        "userNameRequired": "اسم المستخدم مطلوب.",
+                        "userNamePattern": "يجب أن يحتوي اسم المستخدم على أحرف وأرقام ونقاط وشرطات فقط.",
+                        "userNameConsecutivePeriods": "لا يمكن أن يحتوي اسم المستخدم على نقاط متتالية.",
+                        "language": "اللغة مطلوبة.",
+                        "roles": "يجب اختيار دور واحد على الأقل.",
+                        "email": "البريد الإلكتروني مطلوب.",
+                        "emailAddress": "عنوان البريد الإلكتروني غير صحيح."
+                    },
+                    "placeHolders": {
+                        "firstName": "الاسم الأول",
+                        "userName": "اسم المستخدم",
+                        "dept": "اختر القسم",
+                        "lastName": "اسم العائلة",
+                        "language": "اختر اللغة",
+                        "roles": "اختر الأدوار",
+                        "email": "البريد الإلكتروني"
+                    }
+                },
+                "adUsersDialog": {
+                    "usersTable": {
+                        "fields": {
+                            "firstName": "الاسم الأول",
+                            "lastName": "اسم العائلة",
+                            "email": "البريد الإلكتروني"
+                        }
+                    }
+                },
+                "excelUsersDialog": {
+                    "usersTable": {
+                        "fields": {
+                            "firstName": "الاسم الأول",
+                            "lastName": "اسم العائلة",
+                            "email": "البريد الإلكتروني",
+                            "search": "بحث المستخدمين",
+                            "groups": "المجموعات"
+                        }
+                    }
+                },
+                "importUsersToaster": {
+                    "fileName": "اسم الملف",
+                    "fileSize": "حجم الملف",
+                    "confirm": "تأكيد؟",
+                    "cancel": "إلغاء",
+                    "totalRecords": "إجمالي السجلات",
+                    "duplicatedRecords": "السجلات المكررة",
+                    "uniqueRecords": "السجلات الفريدة",
+                    "numOfUsers": "عدد المستخدمين",
+                    "groups": "المجموعات",
+                    "ous": "الوحدات التنظيمية",
+                    "excelDataOverview": "نظرة عامة على بيانات Excel",
+                    "invalidRecords": "سجلات غير صالحة"
+                }
+            }
+        },
+        "user-tenant-profile": {
+            "userProfile": "الملف الشخصي للمستخدم",
+            "tenantProfile": "الملف الشخصي للشركة",
+            "AdminProfile": "الملف الشخصي للمدير",
+            "subscription": "الاشتراك",
+            "activeDirectorySettings": "إعدادات Active Directory",
+            "administrators": "المديرين",
+            "badges": "البادجات",
+            "positivePoints": "النقاط الإيجابية",
+            "negativePoints": "النقاط السلبية",
+            "totalPoints": "إجمالي النقاط",
+            "firstName": "الاسم الأول",
+            "firstNameValidation": "الاسم الأول مطلوب.",
+            "lastName": "اسم العائلة",
+            "lastNameValidation": "اسم العائلة مطلوب.",
+            "timeZone": "المنطقة الزمنية",
+            "timeZoneValidation": "المنطقة الزمنية مطلوبة",
+            "phone": "الهاتف",
+            "phoneValidation": "رقم الهاتف مطلوب",
+            "email": "البريد الإلكتروني",
+            "emailValidation": "البريد الإلكتروني مطلوب",
+            "revokeAdmin": "إلغاء صلاحية المدير",
+            "renewSubscription": "تجديد الاشتراك",
+            "remainingDays": "الأيام المتبقية: ",
+            "renew": "تجديد",
+            "updgradeSubscription": "ترقية الاشتراك",
+            "currentPlan": "الخطة الحالية:",
+            "purchaseUsers": "شراء المستخدمين",
+            "currentUsersNumber": "عدد المستخدمين الحالي:",
+            "refundRequest": "طلب استرداد",
+            "request": "طلب",
+            "yourSubscriptionDetails": "تفاصيل اشتراكك",
+            "company": "الشركة:",
+            "subscriptionPlan": "خطة الاشتراك:",
+            "startDate": "تاريخ البداية:",
+            "endDate": "تاريخ الانتهاء:",
+            "invoice": "الفاتورة",
+            "subscriptionPlann": "خطة الاشتراك",
+            "startDatee": "تاريخ البداية",
+            "endDatee": "تاريخ الانتهاء",
+            "userCount": "عدد المستخدمين",
+            "priceUser": "السعر/المستخدم",
+            "total": "الإجمالي",
+            "paymentMethods": "طرق الدفع",
+            "paymentMethodsMessage": "اختر طريقة الدفع المفضلة لديك من الخيارات أدناه. يمكنك اختيار بطاقة ائتمان، باي بال، تحويل بنكي، أو بيتكوين. سيحدد اختيارك كيفية إتمام الدفع.",
+            "creditCard": "بطاقة ائتمان",
+            "creditCardMessage": "ادفع بأمان باستخدام بطاقة الائتمان الخاصة بك. استمتع بالراحة والأمان مع قبول جميع بطاقات الائتمان الرئيسية.",
+            "payPal": "باي بال",
+            "payPalMessage": "استخدم باي بال للدفع بسرعة وأمان. قم بتسجيل الدخول إلى حساب باي بال الخاص بك لإتمام المعاملة بسهولة.",
+            "wireTransfer": "تحويل بنكي",
+            "wireTransferMessage": "اختر التحويل البنكي لإجراء تحويل مصرفي مباشر. اتبع التعليمات المقدمة لإتمام الدفع بأمان.",
+            "bitCoin": "بيتكوين",
+            "bitCoinMessage": "ادفع باستخدام بيتكوين للحصول على تجربة دفع حديثة ومبتكرة. تأكد من إعداد محفظة بيتكوين لهذا الأسلوب.",
+            "invoiceKey": "رمز الفاتورة {{key}}",
+            "amount": "المبلغ",
+            "requestReferenceKey": "رمز مرجع الطلب",
+            "requestPaymentNote": "ملاحظة طلب الدفع",
+            "paymentReuqestImage": "صورة طلب الدفع",
+            "pricingPlans": "خطط التسعير",
+            "pricingPlansMessage": "اختر الخطة المثالية لمؤسستك وابدأ في تعزيز الوعي الأمني لديك. سواء كنت فريقًا صغيرًا أو مؤسسة كبيرة، لدينا حل يناسب احتياجاتك.",
+            "peruser": "لكل مستخدم",
+            "activeLanguages": "اللغات النشطة",
+            "features": "الميزات",
+            "unlimitedPhishingSimulations": "محاكاة تصيد غير محدودة",
+            "awarenessVideos": "فيديوهات التوعية",
+            "comicBooks": "الكتب المصورة",
+            "knowledgeQuiz": "اختبار المعرفة",
+            "securityQuotes& Tips": "اقتباسات ونصائح أمنية",
+            "awarenessEmails": "رسائل توعية",
+            "wallpapers": "خلفيات",
+            "screenSavers": "شاشات التوقف",
+            "games": "الألعاب",
+            "vRGames&Training": "ألعاب وتدريبات الواقع الافتراضي",
+            "localization": "التوطين",
+            "onSiteDeployment": "النشر في الموقع",
+            "iAwareMobileApp": "تطبيق iAware للهواتف",
+            "automatedTrainingCampaigns": "حملات تدريب مؤتمتة",
+            "brandableContent": "محتوى قابل للتخصيص",
+            "phishAlertButton": "زر التنبيه من التصيد",
+            "userProvisioningviaActiveDirectory": "إعداد المستخدمين عبر Active Directory",
+            "advancedReporting": "تقارير متقدمة",
+            "technicalSupport": "الدعم الفني",
+            "smartGroups": "مجموعات ذكية",
+            "customizedPhishingExperience": "تجربة تصيد مخصصة",
+            "requestAQuote": "طلب عرض سعر",
+            "yourRequestCompletedSuccessfully": "تم إكمال طلبك بنجاح",
+            "yourRequestCompletedSuccessfullyMessage": "ستتلقى بريدًا إلكترونيًا في غضون 48 ساعة بمجرد أن يكمل قسم المحاسبة لدينا عملية التحقق. يرجى التحقق من بريدك الوارد للحصول على المزيد من التحديثات.",
+            "checkInvoice": "التحقق من الفاتورة",
+            "userCountRequest": "طلب عدد المستخدمين",
+            "userCountRequestValidation": "يرجى إدخال عدد مستخدمين صحيح أكبر من 0.",
+            "calculateTotalPrice": "حساب السعر الإجمالي",
+            "nobadgesearned": "لم يتم الحصول على أي شارات حتى الآن.",
+            "earnedTimes": "تم الحصول عليها: {times} مرة/مرات",
+            "onlyLettersValidation": "يُسمح فقط بإدخال الحروف والمسافات، ولا يُسمح بالأرقام أو الرموز الخاصة.",
+            "minLengthValidation": "يجب أن يتكون الاسم من حرفين على الأقل.",
+            "maxLengthValidation": "لا يمكن أن يتجاوز الاسم 50 حرفًا.",
+            "actions": {
+                "save": "حفظ التغييرات",
+                "cancel": "إلغاء",
+                "addNewAdministrator": "إضافة مدير جديد",
+                "returnAdmin": "إرجاع المدير إلى دور المستخدم",
+                "update": "تحديث",
+                "close": "إغلاق"
+            },
+            "dialogs": {
+                "returnAdminDialog": {
+                    "header": "إرجاع المدير إلى دور المستخدم",
+                    "message": "أنت على وشك إلغاء صلاحيات المدير لهذا المستخدم. ستؤثر هذه الخطوة على وصوله إلى النظام بأكمله. يرجى التأكد من أن هذا القرار يتماشى مع سياسات ومتطلبات مؤسستك قبل المتابعة."
+                },
+                "addNewAdministratorDialog": {
+                    "header": "إضافة مدير جديد",
+                    "message": "أنت على وشك إضافة مدير جديد للنظام.",
+                    "user": "المستخدم",
+                    "userValidation": "المستخدم مطلوب",
+                    "userPlaceholder": "اختر المستخدم",
+                    "roles": "الأدوار",
+                    "rolesValidation": "مطلوب دور واحد على الأقل",
+                    "rolesPlaceholder": "اختر الأدوار"
+                }
+            },
+            "profileImagevalidation": {
+                "allowedTypes": "يُسمح فقط بتحميل ملفات الصور (JPEG، PNG، WEBP).",
+                "allowedSize": "يجب أن يكون حجم الملف أقل من 5 ميجابايت."
+            }
+        }
+    },
+    "wallpaper-libraries": {
+        "library-background": {},
+        "library-language-character": {},
+        "library-language-quote": {},
+        "library-wallpaper": {},
+        "library-wallpaper-ingredients": {},
+        "library-wallpaper-language": {}
+    },
+    "wallpaper-wizard": {
+        "wall-lang-list-wiz": {
+            "background-lang-wiz": {
+                "actions": {
+                    "add": "إضافة خلفية جديدة"
+                },
+                "addDialog": {
+                    "header": "إضافة خلفية جديدة",
+                    "title": "صورة الخلفية"
+                },
+                "editDialog": {
+                    "header": "تعديل الخلفية",
+                    "title": "صورة الخلفية"
+                }
+            },
+            "character-lang-wiz": {
+                "actions": {
+                    "add": "إضافة شخصية جديدة"
+                },
+                "addDialog": {
+                    "header": "إضافة شخصية جديدة",
+                    "language": "اللغة",
+                    "languagePlaceholder": "اختر اللغة",
+                    "name": "الاسم",
+                    "nameValidation": "الاسم مطلوب",
+                    "image": "صورة الشخصية",
+                    "imageThumbnail": "صورة مصغرة للشخصية"
+                },
+                "editDialog": {
+                    "header": "تعديل الشخصية",
+                    "language": "اللغة",
+                    "languagePlaceholder": "اختر اللغة",
+                    "name": "الاسم",
+                    "nameValidation": "الاسم مطلوب",
+                    "image": "صورة الشخصية",
+                    "imageThumbnail": "صورة مصغرة للشخصية"
+                }
+            },
+            "quote-lang-wiz": {
+                "actions": {
+                    "add": "إضافة اقتباس جديد"
+                },
+                "fields": {
+                    "quote": "نص الاقتباس",
+                    "language": "اللغة"
+                },
+                "addDialog": {
+                    "header": "إضافة اقتباس جديد",
+                    "language": "اللغة",
+                    "languagePlaceholder": "اختر اللغة",
+                    "quoteText": "نص الاقتباس",
+                    "quotePlaceholder": "اكتب هنا...",
+                    "quoteValidation": "نص الاقتباس مطلوب."
+                },
+                "editDialog": {
+                    "header": "تعديل الاقتباس",
+                    "language": "اللغة",
+                    "languagePlaceholder": "اختر اللغة",
+                    "quoteText": "نص الاقتباس",
+                    "quotePlaceholder": "اكتب هنا...",
+                    "quoteValidation": "نص الاقتباس مطلوب."
+                }
+            },
+            "wall-create-lang-wiz": {
+                "background": "الخلفيات",
+                "character": "الشخصيات",
+                "quote": "الاقتباسات",
+                "schedule": "المعاينة"
+            },
+            "wall-lang-preview": {
+                "wallpaper": "اسم الخلفية",
+                "wallpaperValidation": "اسم الخلفية مطلوب.",
+                "language": "اللغة",
+                "languagePlaceholder": "اختر اللغة",
+                "languageValidation": "اللغة مطلوبة.",
+                "selectedCharacter": "الشخصية المختارة",
+                "selectedBackground": "الخلفية المختارة",
+                "selectedQuote": "الاقتباس المختار",
+                "createWallpaper": "إنشاء خلفية"
+            },
+            "title": "اللغات",
+            "addDialog": {
+                "header": "إضافة خلفية جديدة",
+                "fields": {
+                    "title": "عنوان الخلفية",
+                    "titleValidations": "العنوان مطلوب",
+                    "language": "اللغة",
+                    "languagePlaceholder": "اختر اللغة",
+                    "languageValidation": "اللغة مطلوبة.",
+                    "searchPlaceholder": "بحث..."
+                }
+            },
+            "editDialog": {
+                "header": "تعديل الخلفية",
+                "fields": {
+                    "title": "عنوان الخلفية",
+                    "titleValidations": "العنوان مطلوب",
+                    "language": "اللغة",
+                    "languagePlaceholder": "اختر اللغة"
+                }
+            },
+            "actions": {
+                "add1": "إضافة لغة خلفية مخصصة",
+                "add2": "رفع لغة خلفية افتراضية"
+            }
+        },
+        "wallpaper-list-wizard": {
+            "library-background-wizard": {
+                "title": "مكتبة الخلفيات",
+                "actions": {
+                    "add": "إضافة خلفية جديدة"
+                },
+                "addDialog": {
+                    "header": "إضافة خلفية جديدة",
+                    "title": "صورة الخلفية",
+                    "titleThumbnail": "صورة مصغرة للخلفية"
+                },
+                "editDialog": {
+                    "header": "تعديل الخلفية",
+                    "title": "صورة الخلفية",
+                    "titleThumbnail": "صورة مصغرة للخلفية"
+                }
+            },
+            "library-character-wizard": {
+                "title": "مكتبة الشخصيات",
+                "actions": {
+                    "add": "إضافة شخصية جديدة"
+                },
+                "addDialog": {
+                    "header": "إضافة شخصية جديدة",
+                    "language": "اللغة",
+                    "languagePlaceholder": "اختر اللغة",
+                    "name": "الاسم",
+                    "nameValidation": "الاسم مطلوب",
+                    "image": "صورة الشخصية",
+                    "imageThumbnail": "صورة مصغرة للشخصية"
+                },
+                "editDialog": {
+                    "header": "تعديل الشخصية",
+                    "language": "اللغة",
+                    "languagePlaceholder": "اختر اللغة",
+                    "name": "الاسم",
+                    "nameValidation": "الاسم مطلوب",
+                    "image": "صورة الشخصية",
+                    "imageThumbnail": "صورة مصغرة للشخصية"
+                }
+            },
+            "library-quote-wizard": {
+                "title": "مكتبة الاقتباسات",
+                "actions": {
+                    "add": "إضافة اقتباس جديد"
+                },
+                "fields": {
+                    "quote": "نص الاقتباس",
+                    "language": "اللغة",
+                    "status": "الحالة",
+                    "quoteText": "نص الاقتباس"
+                },
+                "addDialog": {
+                    "header": "إضافة اقتباس جديد",
+                    "language": "اللغة",
+                    "languagePlaceholder": "اختر اللغة",
+                    "quoteText": "نص الاقتباس",
+                    "quotePlaceholder": "اكتب هنا...",
+                    "quoteValidation": "نص الاقتباس مطلوب."
+                },
+                "editDialog": {
+                    "header": "تعديل الاقتباس",
+                    "language": "اللغة",
+                    "languagePlaceholder": "اختر اللغة",
+                    "quoteText": "نص الاقتباس",
+                    "quotePlaceholder": "اكتب هنا...",
+                    "quoteValidation": "نص الاقتباس مطلوب."
+                }
+            },
+            "wall-preview": {
+                "wallpaper": "اسم الخلفية",
+                "wallpaperValidation": "اسم الخلفية مطلوب.",
+                "selectedCharacter": "الشخصية المختارة",
+                "selectedBackground": "الخلفية المختارة",
+                "selectedQuote": "الاقتباس المختار",
+                "createWallpaper": "إنشاء خلفية"
+            },
+            "wallpaper-create-wizard": {
+                "background": "الخلفيات",
+                "character": "الشخصيات",
+                "quote": "الاقتباسات",
+                "schedule": "المعاينة"
+            },
+            "title": "معرض الخلفيات",
+            "addDialog": {
+                "header": "إضافة خلفية",
+                "fields": {
+                    "title": "عنوان الخلفية",
+                    "titleValidations": "العنوان مطلوب",
+                    "language": "اللغة",
+                    "languagePlaceholder": "اختر اللغة",
+                    "tag": "العلامات",
+                    "tagsPlaceholder": "اختر العلامات"
+                }
+            },
+            "actions": {
+                "add1": "إضافة خلفية مخصصة",
+                "add2": "رفع خلفية افتراضية",
+                "title": "العنوان",
+                "titleisrequired": "العنوان مطلوب.",
+                "wallpaperImage": "صورة الخلفية",
+                "wallpaperImageValidation": "صورة الخلفية مطلوبة.",
+                "wallpaperThumbnailImage": "صورة مصغرة للخلفية"
+            }
+        }
+    },
+    "training-campaigns": {
+        "campaign-details": {
+            "readingMessage": "<i class=\"pi pi-sun\" style=\"color: rgb(255, 196, 0);font-size: 1.5rem\"></i> أنت تقرأ الكتاب حاليًا. إذا كنت تفضل مشاهدة الفيديو، <a style=\"cursor: pointer; font-size: medium; font-weight: 500;\" (click)=\"navigateToVideo()\">اضغط هنا</a> لمشاهدة الفيديو.",
+            "question": "السؤال ( {currentQuestionIndex}/{quizzes} )",
+            "correctAnswers": "حصلت على <strong>{ correctanswers }</strong> إجابات صحيحة",
+            "earnedPoints": "حصلت على <strong>{ points }</strong> نقاط من الإجابات الصحيحة",
+            "videoPoints": "حصلت على <strong>5 نقاط</strong> لمشاهدة الفيديو",
+            "bookPoints": "حصلت على <strong>5 نقاط</strong> لقراءة الكتاب",
+            "watchOrRead": "يمكنك مشاهدة الفيديو في هذه الخطوة، أو إذا كنت تفضل القراءة، <a style='cursor: pointer; font-size: medium; font-weight: 500;' (click)='navigateToBook()'>اضغط هنا</a> لقراءة الكتاب",
+            "congratulations": "🎉 مبروك! 🎉"
+        },
+        "current-campaign": {
+            "dashboard": "لوحة التحكم للحملات التدريبية",
+            "currentCampaigns": "الحملات الجارية",
+            "currentMessage": "مرحبًا بك في الحملات الجارية! هنا يمكنك متابعة أحدث الدروس، بما في ذلك الفيديوهات والكتب والاختبارات المصممة لتحسين معرفتك. ركز وأكمل الأنشطة لتتبع تقدمك!",
+            "completedCampaigns": "الحملات المكتملة",
+            "completedCampaignsMessage": "استعرض سجل الحملات الخاص بك! قم بمراجعة الدروس المكتملة—الفيديوهات، الكتب، والاختبارات—لتحصل على المزيد من النقاط. استمر في التعلم لتحسين نتائجك!",
+            "name": "اسم الحملة",
+            "progress": "تقدم الحملة",
+            "lessonName": "اسم الدرس",
+            "lessonJoiningDate": "تاريخ الانضمام إلى الدرس",
+            "contentStatus": "حالة المحتوى",
+            "status": "الحالة",
+            "score": "النقاط",
+            "totalLessons": "إجمالي الدروس: {number}",
+            "lessonScore": "{number} %",
+            "compelationPercentage": "{number} % مكتمل",
+            "viewCertificate": "عرض الشهادة",
+            "clickviewdetails": "اضغط لعرض تفاصيل الحملة",
+            "noCampaignsAvailable": "لا توجد حملات متاحة",
+            "clicktocontinue": "انقر للمتابعة",
+            "clicktostart": "انقر للبدء"
+        },
+        "training-campaign-statistics": {
+            "campaignContent": "محتوى الحملة",
+            "viewUsersProgress": "عرض تقدم المستخدمين",
+            "compelationPercentage": "{number} % مكتمل",
+            "userCompletionActivity": "نشاط إكمال المستخدم",
+            "campaignSummary": "ملخص الحملة",
+            "status": "الحالة:",
+            "name": "الاسم:",
+            "startDate": "تاريخ البدء:",
+            "endDate": "تاريخ الانتهاء:",
+            "duration": "المدة:",
+            "durationValue": "{valueString}",
+            "users": "المستخدمون:",
+            "CampaignLeaderboardHeader": "قائمة المتصدرين للحملة",
+            "CampaignLeaderboardMessage": "مرحبًا بك في قائمة المتصدرين للحملات! هنا يمكنك عرض ترتيب المستخدمين عبر جميع الحملات أو التركيز على حملة معينة. تابع من يتصدر القائمة وشجع الآخرين على إنهاء التدريب في الوقت المناسب!",
+            "ranking": "الترتيب",
+            "nameII": "الاسم",
+            "points": "النقاط",
+            "noData": "لم يبدأ أي مستخدم حتى الآن. سيتم منح النقاط بمجرد بدء المشاركة. ستحدث القائمة بمجرد بدء المشاركة.",
+            "usersProgressDilogHeader": "تقدم المستخدمين",
+            "userName": "اسم المستخدم",
+            "userEmail": "البريد الإلكتروني للمستخدم",
+            "percentage": "نسبة التقدم",
+            "numberofUserswhohavenotcompletedtheirassignments": "عدد المستخدمين الذين لم يكملوا مهامهم",
+            "remaining": "المتبقي",
+            "completed": "مكتمل",
+            "completedUsers": "المستخدمون المكتملون",
+            "remainingUsers": "المستخدمون المتبقون"
+        }
+    },
+    "phishingCampaignsDashboard": {
+        "currentCampaigns": "الحملات الحالية",
+        "completedCampaigns": "الحملات المكتملة",
+        "selectACampaign": "اختر حملة",
+        "reportedd": "المبلَّغ عنها:",
+        "noActionn": "بدون إجراء:",
+        "failedd": "فشل:",
+        "trendAnalysis": "تحليل الاتجاهات",
+        "trendAnalysisMessage": "مرحبًا بك في تحليل اتجاهات حملات التصيد! يتتبع هذا المخطط المستخدمين المتوقع أن يبلغوا عن محاولات التصيد مقارنة بأولئك الذين لم يبلغوا بعد. تابع التقدم لتعزيز الوعي الأمني وضمان الاستجابات في الوقت المناسب عبر جميع الحملات.",
+        "selectAMonth": "اختر شهرًا",
+        "campaignLeaderboard": "لوحة الصدارة للحملات",
+        "campaignLeaderboardMessage": "مرحبًا بك في لوحة صدارة حملات التصيد! هنا، يمكنك رؤية المستخدمين الذين تم خداعهم وتتبع نقاطهم السلبية. شجّع على التحسن لتقليل حوادث التصيد بمرور الوقت!",
+        "campaignLeaderboardNoDataMessage": "لا توجد بيانات متاحة حتى الآن. بمجرد خداع المستخدمين، سيتم تحديث لوحة الصدارة بنقاطهم السلبية.",
+        "ranking": "التصنيف",
+        "name": "الاسم",
+        "points": "النقاط",
+        "userName": "اسم المستخدم",
+        "campaign": "الحملة",
+        "template": "القالب",
+        "delivered": "تم التسليم",
+        "opened": "تم الفتح",
+        "qrCode": "تم مسح رمز QR",
+        "clicked": "تم النقر",
+        "dataEntered": "تم إدخال البيانات",
+        "reported": "تم التبليغ",
+        "noAction": "بدون إجراء",
+        "failed": "فشل",
+        "reportedUsers": "المستخدمون المبلَّغون",
+        "noActionUsers": "المستخدمون بدون إجراء",
+        "failedUsers": "المستخدمون الذين فشلوا"
+    },
+    "trainingCampaignsDashboard": {
+        "currentCampaigns": "الحملات الحالية",
+        "completedCampaigns": "الحملات المكتملة",
+        "selectACampaign": "اختر حملة",
+        "trendAnalysis": "تحليل الاتجاهات",
+        "trendAnalysisMessage": "مرحبًا بك في تحليل اتجاهات حملات التدريب! هنا يمكنك تتبع التقدم مقابل الأهداف الشهرية. يعرض المخطط عدد المستخدمين المتوقع أن يكملوا حملاتهم هذا الشهر مقابل أولئك الذين أكملوا بالفعل. تابع أهدافك لضمان أن ينهي جميع المستخدمين تدريباتهم في الوقت المناسب!",
+        "selectAMonth": "اختر شهرًا",
+        "campaignLeaderboard": "لوحة الصدارة للحملات",
+        "campaignLeaderboardMessage": "مرحبًا بك في لوحة صدارة الحملات! هنا يمكنك عرض تصنيفات المستخدمين عبر جميع الحملات أو التركيز على حملة محددة. تتبع من يتصدر وشاهد أول المستخدمين الذين أكملوا دروسهم في كل حملة. تنافس لتكون في القمة وحفّز الآخرين على إكمال تدريباتهم في الوقت المحدد!",
+        "campaignLeaderboardNoDataMessage": "لم يبدأ أي مستخدم بعد. سيتم منح النقاط بمجرد بدء المشاركة. سيتم تحديث لوحة الصدارة فور بدء المستخدمين في المشاركة.",
+        "ranking": "التصنيف",
+        "name": "الاسم",
+        "points": "النقاط",
+        "userName": "اسم المستخدم",
+        "campaign": "الحملة",
+        "completed": "مكتمل",
+        "completedd": "مكتمل:",
+        "completedUsers": "المستخدمون المكتملون",
+        "notStarted": "لم يبدأ",
+        "notStartedd": "لم يبدأ:",
+        "notStartedUsers": "المستخدمون الذين لم يبدأوا",
+        "inProgress": "قيد التقدم",
+        "inProgresss": "قيد التقدم:",
+        "inProgressUsers": "المستخدمون قيد التقدم",
+        "failed": "فشل",
+        "failedd": "فشل:",
+        "failedUsers": "المستخدمون الذين فشلوا",
+        "lesson": "الدرس",
+        "score": "درجة الاختبار",
+        "excepted": "المتوقع",
+        "actual": "الفعلي"
+    },
+    "tag": {
+        "tagName": "اسم العلامة",
+        "priorityNumber": "رقم الأولوية",
+        "tagNameValidation": "اسم العلامة مطلوب.",
+        "priorityNumberValidation": "رقم الأولوية مطلوب.",
+        "add": "إضافة علامة جديدة",
+        "blogAllowed": "مسموح بالمدونة",
+        "gameAllowed": "مسموح بالألعاب",
+        "newsAllowed": "مسموح بالأخبار",
+        "phishingAllowed": "مسموح بالتصيد",
+        "trainingAllowed": "مسموح بالتدريب",
+        "wallpaperAllowed": "مسموح بخلفيات الشاشة",
+        "languages": "النسخ اللغوية",
+        "addLanguage": "إضافة لغة",
+        "permissions": "الأذونات",
+        "duplicateLanguages": "لا يُسمح باللغات المكررة"
+    },
+    "shared": {
+        "actions": {
+            "save": "حفظ",
+            "submit": "تقديم",
+            "search": "بحث عالمي",
+            "searchWithParameter": "بحث {term}",
+            "cancel": "إلغاء",
+            "close": "إغلاق",
+            "edit": "تعديل",
+            "delete": "حذف",
+            "view": "عرض",
+            "upload": "رفع",
+            "download": "تنزيل",
+            "export": "تصدير",
+            "action": "الإجراءات",
+            "confirm": "تأكيد",
+            "saveChanges": "حفظ التغييرات",
+            "new": "جديد",
+            "back": "رجوع",
+            "next": "التالي",
+            "add": "إضافة",
+            "defaultInSystem": "افتراضي في النظام",
+            "type": "اكتب هنا...",
+            "clone": "نسخ",
+            "preview": "معاينة",
+            "hide": "إخفاء",
+            "csv": "تحميل CSV",
+            "pdf": "تحميل PDF",
+            "update": "تحديث",
+            "showMore": "عرض المزيد",
+            "showLess": "عرض أقل",
+            "upgrade": "ترقية",
+            "ok": "موافق"
+        },
+        "loading": "جاري التحميل، يرجى الانتظار...",
+        "search": {
+            "activeUser": "بحث عن المستخدمين النشطين",
+            "deletedUser": "بحث عن المستخدمين المحذوفين",
+            "role": "بحث عن الأدوار",
+            "page": "بحث عن الصفحات",
+            "group": "بحث عن المجموعات",
+            "tenantUnit": "بحث عن الأقسام",
+            "subscription": "بحث عن الاشتراكات",
+            "domain": "بحث عن النطاقات",
+            "phishingCategory": "بحث عن فئات التصيد"
+        },
+        "headers": {
+            "delete": "تأكيد الحذف",
+            "active": "تأكيد التفعيل",
+            "defaultWallpapers": "خلفيات افتراضية",
+            "companyWallpapers": "خلفيات الشركة",
+            "defaultBackgrounds": "خلفيات افتراضية",
+            "companyBackgrounds": "خلفيات الشركة",
+            "sessionExpired": "انتهت الجلسة",
+            "sessionExpiredMessage": "تم طردك. يرجى تسجيل الدخول مرة أخرى.",
+            "logoutaccount": "هل أنت متأكد أنك تريد تسجيل الخروج من حسابك؟",
+            "confirmLogout": "تأكيد تسجيل الخروج"
+        },
+        "pagination": {
+            "showing": "عرض {first} إلى {last} من {totalRecords} إدخال"
+        },
+        "labels": {
+            "*": "* "
+        },
+        "messages": {
+            "delete": "هل أنت متأكد أنك تريد الحذف",
+            "active": "هل أنت متأكد أنك تريد التفعيل",
+            "deactive": "هل أنت متأكد أنك تريد إلغاء التفعيل",
+            "success": "نجاح",
+            "required": "هذا الحقل مطلوب.",
+            "noDataAvailable": "لا يوجد بيانات لعرضها",
+            "recommendedDimensions": "الأبعاد الموصى بها: ",
+            "1920x1080": "1920x1080",
+            "300x300": "300x300",
+            "1200x300 ": "1200x300",
+            "800x449 ": "800x449",
+            "600x600": "600x600",
+            "314x91": "314x91",
+            "pixels": "بكسل.",
+            "editCampaignMessage": "لقد اخترت خيار 'جميع المستخدمين' لهذه الحملة، مما يؤدي إلى تعبئة قائمة المستخدمين تلقائيًا بكل المستخدمين في النظام. نظرًا لأن هذا الخيار يشمل جميع المستخدمين، لا يمكنك تعديلهم بشكل فردي في هذه الحملة. إذا كنت ترغب في تخصيص اختيار المستخدمين، يمكنك اختيار مصدر آخر مثل الأقسام أو المجموعات المحددة.",
+            "filterMessages": "Filtering data according to tags for the {componentName} page."
+        }
+    },
+    "system-emails": {
+        "system-emails-listing": {
+            "addHeader": "إضافة بريد إلكتروني للنظام",
+            "editHeader": "تعديل بريد إلكتروني للنظام",
+            "senderName": "اسم المرسل",
+            "senderDisplayName": "اسم العرض",
+            "senderEmail": "البريد الإلكتروني",
+            "senderEmailPassword": "كلمة المرور",
+            "outgoingServer": "خادم الصادر",
+            "outgoingServerPort": "منفذ خادم الصادر",
+            "enableSSL": "تفعيل SSL",
+            "noEmails": "لم يتم العثور على بريد إلكتروني للنظام"
+        }
+    }
+}

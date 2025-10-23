@@ -1,0 +1,15 @@
+<div class="layout-breadcrumb-container">
+    <nav class="layout-breadcrumb">
+        <ol>
+            <li><a routerLink="/"><i class="pi pi-home"></i></a> </li>
+            <ng-template ngFor let-item let-last="last" [ngForOf]="breadcrumbs$ | async">
+                <li><i class="pi pi-angle-right"></i></li>
+                <li><a [routerLink]="item.url">{{getTranslationItem(item.label) | translate}}</a></li>
+            </ng-template>
+        </ol>
+    </nav>
+    <!-- <div class="layout-breadcrumb-buttons">
+        <button pButton pRipple type="button" icon="pi pi-cloud-upload" class="p-button-rounded p-button-text p-button-plain"></button>
+        <button pButton pRipple type="button" icon="pi pi-bookmark" class="p-button-rounded p-button-text p-button-plain"></button>
+    </div> -->
+</div>

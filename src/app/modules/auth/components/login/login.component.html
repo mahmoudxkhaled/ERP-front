@@ -1,0 +1,85 @@
+<div class="body">
+    <div class="wave"></div>
+    <div class="wave"></div>
+    <div class="wave"></div>
+    <div class="login-container">
+        <div class="brand-logo">
+            <div class="i-background">
+                <img src="../../../../../favicon.ico" alt="logo" />
+            </div>
+        </div>
+        <h2>Welcome to iAware</h2>
+        <div *ngIf="hasError" class="backend-error-message">
+            <i class="pi pi-exclamation-circle" style="margin-right: 10px;"></i>
+            <span>
+                {{ 'auth.login.invalidCredentials' | translate }}
+            </span>
+        </div>
+        <div class="message">1 # Revolutionizing Ideas</div>
+        <form [formGroup]="loginCreditials" (ngSubmit)="submit()">
+            <div class="form-group">
+                <input type="email" id="username" name="username" placeholder=" " formControlName="email" required
+                    [ngClass]="{ 'is-invalid': email?.touched && email?.invalid }" />
+                <label for="username">Username</label>
+                <div *ngIf="email?.touched && email?.errors" class="error">
+                    <small *ngIf="email?.errors?.['required']">Email is required</small>
+                    <small *ngIf="email?.errors?.['email']">Invalid email address</small>
+                </div>
+            </div>
+            <div class="form-group password-group">
+                <input  [type]="showPassword ? 'text' : 'password'" id="password" name="password" placeholder=" " formControlName="password" required
+                    [ngClass]="{ 'is-invalid': password?.touched && password?.invalid }" />
+                <label for="password">Password</label>
+                <!-- Eye Icon to Toggle Password -->
+                    <i class="pi" 
+                    [ngClass]="showPassword ? 'pi-eye-slash' : 'pi-eye'"
+                    (click)="togglePasswordVisibility()">
+                </i>
+                <div *ngIf="password?.touched && password?.errors" class="error">
+                    <small *ngIf="password?.errors?.['required']">Password is required</small>
+                </div>
+            </div>
+            <div class="flex align-items-center justify-content-center mt-4 gap-3">
+                <button class="login-btn" type="submit" [disabled]="loginCreditials.invalid">
+                    <ng-container *ngIf="isLoading$ | async">
+                        <span class="indicator-progress" [style.display]="'block'">
+                            {{ 'auth.login.pleaseWait' | translate }}
+                            <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
+                        </span>
+                    </ng-container>
+                    <ng-container *ngIf="(isLoading$ | async) === false">
+                        <span>{{ 'auth.login.submit' | translate }}</span>
+                    </ng-container>
+                </button>
+            </div>
+        </form>
+        <div class="links">
+            <a routerLink="/auth/forget-password">Forgot Password?</a>
+        </div>
+        <div class="footer">
+            © 2025 iAware. All rights reserved.
+        </div>
+    </div>
+</div>
+
+<p-dialog [(visible)]="showDialog" [modal]="true" [closable]="false" [style]="{
+        background: 'linear-gradient(90deg, #800080, #4b0082)',
+        borderRadius: '15px',
+        width: '40vw',
+        padding: '10px',
+        textAlign: 'center',
+        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.5)',
+        color: 'white'
+     }" (onHide)="onDialogClose()" [showHeader]="false">
+    <div class="kikoff-container text-center">
+        <h2>Active Session Detected</h2>
+        <p>We noticed that your account is currently active in another session. Would you like to log out from the
+            previous session and continue here?</p>
+        <div style="display: flex; justify-content: center; gap: 10px;">
+            <button pButton type="button" label="No" (click)="onNoClick()"
+                class="p-button-secondary w-12rem p-2"></button>
+            <button pButton type="button" label="Yes" (click)="onYesClick()"
+                class="p-button-ripple w-12rem p-2"></button>
+        </div>
+    </div>
+</p-dialog>

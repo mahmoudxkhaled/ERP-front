@@ -1,0 +1,15 @@
+export const environment = {
+    production: true,
+    appVersion: 'v8.2.4',
+    USERDATA_KEY: 'authf649fc9a5f55',
+    isMockEnabled: true,
+    defaultTenantId: 'iex',
+    apiUrl: 'https://demoapi.iaware.co/api',
+    apiUrlWithoutAPI: 'https://demoapi.iaware.co',
+    gamificationEnvironment : 'demo',
+    assetsPath: '../assets',
+    CloudFlareAccountId: '54420c1ab525f6db898a46cca426931c',
+    CloudFlareAPIKey: '84310999836a310fa258fc2299f22ff84a994',
+    CloudFlareAuthorization: 'Bearer izX_bJ2ngAeIdZlVZaTbYc05LITFPgpQRco22j6O',
+    CloudFlareEmail: 'operations@iexperts.co',
+};

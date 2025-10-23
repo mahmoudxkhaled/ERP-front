@@ -1,0 +1,255 @@
+<p-toast></p-toast>
+
+<div class="grid h-full">
+    <div class="col-12 md:col-4 pt-0 h-full">
+        <div class="col-12 pt-0 animation-duration-1000 animation-ease-in-out" pAnimateOnScroll enterClass="fadein"
+            leaveClass="fadeoutleft">
+            <p-card styleClass="trainingCampaignLeaderboard">
+                <ng-template pTemplate="header">
+                    <div class="flex align-items-center p-4 pb-0">
+                        <span class="p-card-title">{{ 'trainingCampaignsDashboard.campaignLeaderboard' | translate
+                            }}</span>
+                        <app-iAware-info
+                            description="{{'trainingCampaignsDashboard.campaignLeaderboardMessage' | translate}}"
+                            icon="fa fa-solid fa-circle-info text-3xl" severity="info"
+                            [isDashboard]="true"></app-iAware-info>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="body">
+                    <div class="col-12 pt-0" *ngIf="leaderboardDataForUsers.rankedUsers.length > 0">
+                        <div class="col-12 pl-0 pr-0 ranking-container">
+                            <ul class="flex p-0" style="list-style-type: none">
+                                <li class="ranking-row-header col-5">{{'trainingCampaignsDashboard.ranking' |
+                                    translate}}
+                                </li>
+                                <li class="ranking-row-header col-3">{{'trainingCampaignsDashboard.name' | translate }}
+                                </li>
+                                <li class="ranking-row-header col-4"><span>{{'trainingCampaignsDashboard.points' |
+                                        translate }}</span></li>
+                            </ul>
+                            <p-scrollPanel [style]="{ height: '100vh' }">
+                                <ul class="ranking-list" style="list-style-type: none">
+                                    <li *ngFor="let user of leaderboardDataForUsers.rankedUsers"
+                                        [ngClass]="{ 'unique-row': user.isUnique }" class="ranking-row mb-1">
+                                        <span class="ranking-no">{{ user.rankingNo }}</span>
+                                        <div class="user-info">
+                                            <p-avatar
+                                                [image]="user.userImageUrl ? user.userImageUrl : '../../assets/media/avatar.png'"
+                                                shape="circle" size="large">
+                                            </p-avatar>
+
+                                            <div class="user-text">
+                                                <span class="user-name">{{ user.userName }}</span>
+                                                <span class="you-badge" *ngIf="user.isUnique"></span>
+                                            </div>
+                                        </div>
+                                        <span class="user-points justify-content-center">{{ user.userPoints | number :
+                                            '1.0-0' }}</span>
+                                    </li>
+                                </ul>
+                            </p-scrollPanel>
+                        </div>
+                    </div>
+                    <div class="col-12 pb-0" *ngIf="leaderboardDataForUsers.rankedUsers.length == 0">
+                        <app-iAware-info
+                            description="{{'trainingCampaignsDashboard.campaignLeaderboardNoDataMessage' | translate}}"
+                            icon="fa fa-solid fa-circle-info text-3xl" severity="info"></app-iAware-info>
+                    </div>
+                </ng-template>
+            </p-card>
+        </div>
+    </div>
+    <div class="col-12 md:col-8 pt-0 h-full">
+        <div class="grid">
+            <div class="col-12 md:col-6 animation-duration-1000 animation-ease-in-out" pAnimateOnScroll
+                enterClass="fadein" leaveClass="fadeoutleft">
+                <p-card header="{{'trainingCampaignsDashboard.currentCampaigns' | translate}}">
+                    <div class="grid">
+                        <div class="col-12">
+                            <p-dropdown [options]="trainingAwarenessCampaignsForDashboardDropDown"
+                                optionLabel="campaignName" optionValue="campaignId" [style]="{width:'100%'}"
+                                (onChange)="onCurrentCampaignsDashboardDropdownChanged($event)"
+                                placeholder="{{'trainingCampaignsDashboard.selectACampaign' | translate}}" />
+                        </div>
+                        <div class="p-fluid col-6 flex flex-column justify-content-between">
+                            <div class="col-12 flex flex-column justify-content-center">
+                                <div class="flex gap-1 mb-3">
+                                    <span class="label">{{'trainingCampaignsDashboard.completedd' | translate}}</span>
+                                    <span class="value">{{ currentCampaignsDashboard.completed }}</span>
+                                </div>
+                                <div class="flex gap-1 mb-3">
+                                    <span class="label">{{'trainingCampaignsDashboard.notStartedd' | translate}}</span>
+                                    <span class="value">{{ currentCampaignsDashboard.notStarted }}</span>
+                                </div>
+                                <div class="flex gap-1 mb-3">
+                                    <span class="label">{{'trainingCampaignsDashboard.inProgresss' | translate}}</span>
+                                    <span class="value">{{ currentCampaignsDashboard.inProgress }}</span>
+                                </div>
+                                <div class="flex gap-1 mb-3">
+                                    <span class="label">{{'trainingCampaignsDashboard.failedd' | translate}}</span>
+                                    <span class="value">{{ currentCampaignsDashboard.failed }}</span>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <p-button label="{{'shared.actions.csv' | translate}}" icon="pi pi-file-excel"
+                                        (onClick)="downloadAllCurrentCampaignUsersReportAsCSV()"></p-button>
+                                </div>
+                                <div class="">
+                                    <p-button label="{{'shared.actions.pdf' | translate}}" icon="pi pi-file-pdf"
+                                        (onClick)="downloadAllCurrentCampaignUsersReportAsPDF()"></p-button>
+                                </div>
+                            </div>
+                            <!-- <div class="col-12 col-12 flex justify-content-start">
+                                <div class="current-campaign-download">
+                                    <p-button label="{{'shared.actions.csv' | translate}}" icon="pi pi-file-excel"
+                                        (onClick)="downloadAllCurrentCampaignUsersReportAsCSV()"></p-button>
+                                </div>
+                                <div>
+                                    <p-button label="{{'shared.actions.pdf' | translate}}" icon="pi pi-file-pdf"
+                                        (onClick)="downloadAllCurrentCampaignUsersReportAsPDF()"></p-button>
+                                </div>
+                            </div> -->
+                        </div>
+                        <div class="col-6 ltr">
+                            <p-chart type="pie" width="300" height="300" [data]="currentCampaignsDashboardPiehartData"
+                                [options]="currentCampaignsDashboardPieChartOptions"></p-chart>
+                        </div>
+                    </div>
+                </p-card>
+            </div>
+            <div class="col-12 md:col-6 animation-duration-1000 animation-ease-in-out" pAnimateOnScroll
+                enterClass="fadein" leaveClass="fadeoutleft">
+                <p-card header="{{'trainingCampaignsDashboard.completedCampaigns' | translate}}">
+                    <div class="grid">
+                        <div class="col-12">
+                            <p-dropdown [options]="historyCampaignsDataForDashboardDropDown" optionLabel="campaignName"
+                                optionValue="campaignId" [style]="{width:'100%'}"
+                                (onChange)="onCompletedCampaignsDashboardDropdownChanged($event)"
+                                placeholder="{{'trainingCampaignsDashboard.selectACampaign' | translate}}" />
+                        </div>
+                        <div class="p-fluid col-6 flex flex-column justify-content-between">
+                            <div class="col-12 flex flex-column justify-content-center">
+                                <div class="flex gap-1 mb-3">
+                                    <span class="label">{{'trainingCampaignsDashboard.completedd' | translate}}</span>
+                                    <span class="value">{{ completedCampaignsDashboard.completed }}</span>
+                                </div>
+                                <div class="flex gap-1 mb-3">
+                                    <span class="label">{{'trainingCampaignsDashboard.failedd' | translate}}</span>
+                                    <span class="value">{{ completedCampaignsDashboard.failed }}</span>
+                                </div>
+                                <br>
+                                <br>
+                                <div class="flex gap-1 mb-3">
+
+                                </div>
+                                <div class="flex gap- mb-3">
+
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="mb-1">
+                                    <p-button label="{{'shared.actions.csv' | translate}}" icon="pi pi-file-excel"
+                                        (onClick)="downloadAllCompletedCampaignUsersReportAsCSV()"></p-button>
+                                </div>
+                                <div class="">
+                                    <p-button label="{{'shared.actions.pdf' | translate}}" icon="pi pi-file-pdf"
+                                        (onClick)="downloadAllCompletedCampaignUsersReportAsPDF()"></p-button>
+                                </div>
+                            </div>
+
+                            <!-- <div class="col-12 col-12 flex justify-content-start">
+                                <div class="current-campaign-download">
+                                    <p-button label="{{'shared.actions.csv' | translate}}" icon="pi pi-file-excel"
+                                        (onClick)="downloadAllCompletedCampaignUsersReportAsCSV()"></p-button>
+                                </div>
+                                <div>
+                                    <p-button label="{{'shared.actions.pdf' | translate}}" icon="pi pi-file-pdf"
+                                        (onClick)="downloadAllCompletedCampaignUsersReportAsPDF()"></p-button>
+                                </div>
+                            </div> -->
+                        </div>
+                        <div class="col-6 ltr">
+                            <p-chart type="pie" width="300" height="300" [data]="completedCampaignsDashboardPiehartData"
+                                [options]="completedCampaignsDashboardPieChartOptions"></p-chart>
+                        </div>
+                    </div>
+                </p-card>
+            </div>
+            <div class="col-12 pt-0 animation-duration-1000 animation-ease-in-out" pAnimateOnScroll enterClass="fadein"
+                leaveClass="fadeoutleft">
+                <p-card styleClass="trendAnalysis">
+                    <ng-template pTemplate="header">
+                        <div class="flex align-items-center p-4 pb-0">
+                            <span class="p-card-title">{{ 'trainingCampaignsDashboard.trendAnalysis' | translate
+                                }}</span>
+                            <app-iAware-info
+                                description="{{ 'trainingCampaignsDashboard.trendAnalysisMessage' | translate }}"
+                                icon="fa fa-solid fa-circle-info text-3xl" severity="info"
+                                [isDashboard]="true"></app-iAware-info>
+                        </div>
+                    </ng-template>
+                    <ng-template pTemplate="body">
+                        <div class="grid">
+                            <div class="col-12 flex justify-content-end pb-0">
+                                <div class="p-fluid col-12">
+                                    <p-dropdown [options]="months" [style]="{width:'100%'}"
+                                        placeholder="{{'trainingCampaignsDashboard.selectAMonth' | translate}}"
+                                        optionLabel="name" optionValue="id" [ngModel]="selectedMonth"
+                                        (onChange)="onCompletedTrendAnalysisDashboardDropdownChanged($event)" />
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <p-chart type="line" width="100%" height="300"
+                                    [data]="campaignsDashboardTrendAnalysisChartData"
+                                    [options]="campaignsDashboardTrendAnalysisChartOptions" />
+                            </div>
+                        </div>
+                    </ng-template>
+                </p-card>
+            </div>
+        </div>
+    </div>
+</div>
+
+<app-user-training-list-dialog [dialogHeader]="'trainingCampaignsDashboard.completedUsers' | translate"
+    [displayDialog]="displayCurrentCampaignCompletedDialog" [userStatus]="'Completed'" [campaignType]="'current'"
+    [campaignUsers]="campaignUsers" [filteredCampaignUsers]="getTrainingCampaignUsers()"
+    [currentCampaignNameForReport]="currentCampaignNameForReport"
+    (onHide)="displayCurrentCampaignCompletedDialog = false">
+</app-user-training-list-dialog>
+
+<app-user-training-list-dialog [dialogHeader]="'trainingCampaignsDashboard.notStartedUsers' | translate"
+    [displayDialog]="displayCurrentCampaignNotStartedDialog" [userStatus]="'Not Started'" [campaignType]="'current'"
+    [campaignUsers]="campaignUsers" [filteredCampaignUsers]="getTrainingCampaignUsers()"
+    [currentCampaignNameForReport]="currentCampaignNameForReport"
+    (onHide)="displayCurrentCampaignNotStartedDialog = false">
+</app-user-training-list-dialog>
+
+<app-user-training-list-dialog [dialogHeader]="'trainingCampaignsDashboard.inProgressUsers' | translate"
+    [displayDialog]="displayCurrentCampaignInProgressDialog" [userStatus]="'In Progress'" [campaignType]="'current'"
+    [campaignUsers]="campaignUsers" [filteredCampaignUsers]="getTrainingCampaignUsers()"
+    [currentCampaignNameForReport]="currentCampaignNameForReport"
+    (onHide)="displayCurrentCampaignInProgressDialog = false">
+</app-user-training-list-dialog>
+
+<app-user-training-list-dialog [dialogHeader]="'trainingCampaignsDashboard.faildUsers' | translate"
+    [displayDialog]="displayCurrentCampaignFailedDialog" [userStatus]="'Failed'" [campaignType]="'current'"
+    [campaignUsers]="campaignUsers" [filteredCampaignUsers]="getTrainingCampaignUsers()"
+    [currentCampaignNameForReport]="currentCampaignNameForReport" (onHide)="displayCurrentCampaignFailedDialog = false">
+</app-user-training-list-dialog>
+
+<app-user-training-list-dialog [dialogHeader]="'trainingCampaignsDashboard.completedUsers' | translate"
+    [displayDialog]="displayCompletedCampaignCompletedDialog" [userStatus]="'Completed'" [campaignType]="'completed'"
+    [campaignUsers]="campaignUsers" [filteredCampaignUsers]="getTrainingCampaignUsers()"
+    [currentCampaignNameForReport]="completedCampaignNameForReport"
+    (onHide)="displayCompletedCampaignCompletedDialog = false">
+</app-user-training-list-dialog>
+
+<app-user-training-list-dialog [dialogHeader]="'trainingCampaignsDashboard.failedUsers' | translate"
+    [displayDialog]="displayCompletedCampaignFailedDialog" [userStatus]="'Failed'" [campaignType]="'completed'"
+    [campaignUsers]="campaignUsers" [filteredCampaignUsers]="getTrainingCampaignUsers()"
+    [currentCampaignNameForReport]="completedCampaignNameForReport"
+    (onHide)="displayCompletedCampaignFailedDialog = false">
+</app-user-training-list-dialog>

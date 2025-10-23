@@ -1,0 +1,12 @@
+<div class="grid">
+    <div class="col-12 text-center">
+        <h2>{{'shared.headers.sessionExpired' | translate}}</h2>
+    </div>
+    <div class="col-12 text-center">
+        <p class="centered-text">{{'shared.headers.sessionExpiredMessage' | translate}}</p>
+    </div>
+    <div class="col-12 text-center">
+        <button pButton type="button" [label]="'shared.actions.ok' | translate" (click)="onLogout()" class="p-button-primary"></button>
+    </div>
+    
+</div>

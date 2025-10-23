@@ -1,0 +1,2651 @@
+{
+    "validation": {
+        "requiredMessage": "This field is required",
+        "emailMessage": "Please enter a valid email",
+        "minLengthMessage": "Minimum length is {{min}}"
+    },
+    "menu": {
+        "adminAccount": "Admin - Account",
+        "dashboard": "Dashboard",
+        "users": "Users",
+        "roles": "Roles",
+        "companyGroups": "Company Groups",
+        "awarenessCampaign": "Campaign Management",
+        "phishingEmailDomains": "Phishing Email Domains",
+        "systemEmailDomains": "System Emails",
+        "systemEmailActivity": "System Email Activity",
+        "phishingCategory": "Phishing Category",
+        "phishingTemplates": "Phishing Templates",
+        "notifications": "Notifications",
+        "libraryBackground": "Library Background",
+        "libraryLanguageCharacter": "Library Language Character",
+        "libraryLanguageQuote": "Library Language Quote",
+        "libraryWallpaper": "Library Wallpaper",
+        "libraryWallpaperWizard": "Wallpaper Wizard",
+        "LibraryWallpaperIngredients": "Wallpapers Library",
+        "userAccount": "User - Account",
+        "awarenessCampaigns": "Training Campaigns",
+        "phishingAwarenessCampaigns": "Phishing Campaigns",
+        "iAwareTeam": "iAware - Team",
+        "pages": "Pages",
+        "languages": "Languages",
+        "badges": "Badges Management",
+        "trainingCategory": "Training Category",
+        "training": "Training Lessons",
+        "subscription": "Subscription",
+        "paymentReminder": "Payment Reminder",
+        "support": "Support",
+        "supportCategory": "Category",
+        "supportSubjects": "Subjects",
+        "supportStatus": "Status",
+        "tenantUnit": "Company Departments (OUs)",
+        "leaderboard": "Ranking",
+        "invoice": "Invoice",
+        "industry": "Industry",
+        "pointingSystem": "Pointing System",
+        "trainingLibrary": "Training Library",
+        "gamification": "Gamification",
+        "tages": "Tages",
+        "marketing": "marketing"
+    },
+    "layout": {
+        "ticket-chat-box": {
+            "details": "Details:",
+            "closedMessage": "this ticket is closed",
+            "myTicketClosedMessage": "this ticket is closed, if you problem not solved yet please",
+            "forwardMessage": "forward this ticket to another category",
+            "downloadMessage": "download ticket attachments",
+            "downloadMessageFile": "download message file",
+            "messagePlaceHolder": "Type a message",
+            "reopenTicket": "reopen ticket"
+        },
+        "app-breadcrumb": {
+            "iAwareDashboard": "iAware Dashboard",
+            "uikit": "UI Kit",
+            "utilities": "Utilities",
+            "pages": "Pages Management",
+            "profile": "User Management",
+            "users": "User Management",
+            "roles": "Role Management",
+            "pages-management": "Page Management",
+            "account-setting": "Account Management",
+            "tenant-group": "Tenant Group Management",
+            "language": "Language Management",
+            "badge": "Badge Management",
+            "documentation": "Documentation",
+            "blocks": "Prime Blocks",
+            "ecommerce": "E-Commerce",
+            "apps": "Apps",
+            "subscription": "Subscription",
+            "security-training": "Security Training",
+            "campaign-management": "Awareness Campaign Management",
+            "campaign": "Training Campaign",
+            "phishing-campaigns": "Phishing Campaigns",
+            "phishing-email-domains": "Phishing Email Domains",
+            "system-email-domains": "System Email Domains",
+            "system-email-activity": "System Email Activitiy",
+            "phishing-category": "Phishing Category",
+            "phishing-templates": "Phishing Email Template",
+            "notifications": "Notifications",
+            "wallpaper-libraries": "Wallpaper Libraries",
+            "wallpaper-wizard": "Wallpaper Wizard",
+            "support": "Support",
+            "auth": "Auth",
+            "simulation-phishing": "Simulation Phishing",
+            "details": "Details",
+            "pointing-system": "Pointing System",
+            "multimedia": "Multimedia",
+            "tenantUnit": "Department",
+            "statistics": "Statistics",
+            "leaderboard": "Ranking",
+            "industry": "Industry",
+            "gamification": "Gamification",
+            "tages": "Tages"
+        },
+        "app-layout": {
+            "actions": {
+                "hide": "hide?"
+            }
+        },
+        "app-menuProfile": {
+            "profile": "Profile",
+            "logout": "Logout",
+            "settings": "Settings"
+        },
+        "config": {
+            "layoutThemeScale": "Layout/Theme Scale",
+            "scenes": "Scenes",
+            "colorScheme": "Color Scheme",
+            "light": "Light",
+            "dark": "Dark",
+            "menuMode": "Menu Mode",
+            "static": "Static",
+            "overlay": "Overlay",
+            "slim": "Slim",
+            "slimPlus": "Slim +",
+            "reveal": "Reveal",
+            "drawer": "Drawer",
+            "horizontal": "Horizontal",
+            "menuProfilePosition": "Menu Profile Position",
+            "start": "Start",
+            "end": "End",
+            "inputStyle": "Input Style",
+            "outlined": "Outlined",
+            "filled": "Filled",
+            "rippleEffect": "Ripple Effect",
+            "menuThemes": "Menu Themes",
+            "menu_theme_selector": "Menu themes are only available in light mode by design as large surfaces can emit too much brightness in dark mode.",
+            "topbarThemes": "Topbar Themes",
+            "componentThemes": "Component Themes"
+        },
+        "support-tabmenu": {
+            "taps": {
+                "addTicket": "+Add Ticket",
+                "allTicket": "All Ticket",
+                "myTicket": "My Tickets"
+            },
+            "fields": {
+                "supportCategory": "Support Category:",
+                "subject": "Subject:",
+                "customSubject": "Custom Subject:",
+                "requestDetails": "Request Details:",
+                "file": "File:",
+                "upload": "Upload"
+            },
+            "placeHolders": {
+                "subject": "Selerct a Subject",
+                "category": "Select Category",
+                "openthisticket": "douple click to open this ticket",
+                "search": "search"
+            },
+            "emptyMessage": {
+                "title": "No Tickets Available",
+                "details": "If you encounter any issues, please raise a ticket by clicking the 'Add Ticket' button. Our support team will assist you promptly."
+            }
+        },
+        "top-bar": {
+            "markAllAsRead": "mark all as read"
+        }
+    },
+    "account": {
+        "account-integration-settings": {
+            "title": "Account Integration Settings",
+            "samlNotificationRecipients": "SAML Notification Recipients",
+            "idPSSOTargetURL": "IDP SSO Target URL",
+            "currentAuthnRequestCertificate": "Current Authn Request Certificate",
+            "entityId": "Entity ID",
+            "ssoSignInURL": "SSO Sign In URL",
+            "ssoSignOutURL": "SSO Sign Out URL",
+            "ssoCallbackURL": "SSO Callback URL",
+            "smalId": "SAML ID",
+            "metadataURL": "Metadata URL",
+            "bypassSSOLoginURL": "Bypass SSO Login URL",
+            "currentAuthnRequestCertificateValidFrom": "Current Authn Request Certificate Valid From",
+            "currentAuthnRequestCertificateValidTo": "Current Authn Request Certificate Valid To",
+            "enableSAMLSSO": "Enable SAML SSO",
+            "disableNonSMALLoginsForAllUsers": "Disable Non-SAML Logins For All Users",
+            "allowAdminswMFAToByPassSMALLogin": "Allow Admins w/ MFA To Bypass SAML Login",
+            "allowAccountCreationFromSAMLLogin": "Allow Account Creation From SAML Login",
+            "sha_1": "SHA-1",
+            "sha_256": "SHA-256",
+            "signUpAuthnRequest": "Sign Up Authn Request",
+            "enableSPAuthnRequesExpirationNotifications": "Enable SP Authn Request Expiration Notifications"
+        },
+        "ad-settings": {
+            "title": "Active Directory Settings",
+            "adISyncToken": "ADI Sync Token",
+            "ipAddress": "AD Server IP Address",
+            "adDomainName": "AD Domain Name",
+            "adDomainNameExtention": "AD Domain Extention",
+            "adUserName": "AD Administrator UserName",
+            "adPassword": "AD Administrator Password",
+            "showGroupAdmin": "Show Group Admin"
+        },
+        "branding": {
+            "title": "Branding Details",
+            "companyLogoURL": "Company Logo URL",
+            "brandCertificate": "Brand Certificate",
+            "companyLogo": "Company Logo",
+            "brandColor": "Brand Color",
+            "upload": "UPLOAD LOGO"
+        },
+        "learner-experience": {
+            "title": "Learner Experience",
+            "leaderboardType": "Leaderboard Type",
+            "defaultTrainingLanguage": "Default Training Language",
+            "leaderboardTimePeriod": "Leaderboard Time Period",
+            "groupsToIncludeInLeaderboard": "Groups To Include In Leaderboard",
+            "enableOptionalTrainingCampaigns": "Enable Optional Training Campaigns",
+            "enableAIDARecomendedOptionalLearning": "Enable AIDA Recomended Optional Learning",
+            "excludeTrainingCampaignsWithNoDueDate": "Exclude Training Campaigns With No DueDate",
+            "enableBadges": "Enable Badges",
+            "selectBadge": "Select Badge"
+        },
+        "organization-information": {
+            "title": "Organization Details",
+            "organizationName": "Organization Name",
+            "streetAddress1": "Street Address 1",
+            "streetAddress2": "Street Address 2",
+            "suiteNumber": "Suite Number",
+            "city": "City",
+            "state": "State",
+            "zipCode": "Zip Code",
+            "dateTimeFormat": "Date Time Format",
+            "extension": "Extension",
+            "defaultAdminConsoleLanguage": "Default Admin Console Language",
+            "businessHours": "Business Hours:",
+            "from": "Form",
+            "to": "To",
+            "businessDays": "Business Days"
+        },
+        "phishing-settings": {
+            "title": "Phishing Settings",
+            "defaultPhishingLanguage": "Default Phishing Language"
+        },
+        "profile-details": {
+            "title": "Profile Details",
+            "firstName": "First Name",
+            "lastName": "Last Name",
+            "companyName": "Company Name",
+            "phone": "Contact Phone",
+            "country": "Country",
+            "language": "Language",
+            "timeZone": "Time Zone",
+            "currency": "Currency",
+            "companyNameValidation": "Company Name is required",
+            "minLengthValidation": "Company Name must be at least 2 characters long.",
+            "maxLengthValidation": "Company Name cannot exceed 50 characters.",
+            "onlyLettersValidation": "Only letters and spaces are allowed. No special characters or numbers."
+        },
+        "training-settings": {
+            "title": "Training Settings",
+            "enableContentSurveysForAllNewTrainingCampaigns": "Enable Content Surveys For All New Training Campaigns",
+            "enableDirectLinksInTrainingNotifications": "Enable Direct Links in Training Notifications"
+        },
+        "user-provisioning": {
+            "title": "User Provisioning Details",
+            "enableUserProvisioning": "Enable User Provisioning",
+            "testMode": "Test Mode"
+        },
+        "user-provisioning-notifications": {
+            "title": "User Provisioning Notifications",
+            "enableUserProvisioningNotifications": "Enable User Provisioning Notifications",
+            "timeFrame": "Time Frame",
+            "notificationsRecipients": "Notifications Recipients"
+        },
+        "user-settings": {
+            "title": "Users Settings",
+            "adminSessionTimeout": "Admin Session Timeout",
+            "userSessionTimeout": "User Session Timeout",
+            "minimumPasswordLength": "Minimum Password Length",
+            "rememberDeviceFor": "Remember DeviceFor",
+            "requireMFA": "Require MFA",
+            "rememberTrustedDevice": "Remember Trusted Device"
+        },
+        "message": "All changes made will be applied across the entire company . Please review the updates carefully before proceeding."
+    },
+    "auth": {
+        "login": {
+            "title": "Sign in to iAware",
+            "fields": {
+                "username": "Username",
+                "password": "Password"
+            },
+            "forgotPasswordLink": "Forgot Password?",
+            "rememberMe": "Remember Me",
+            "pleaseWait": "Please wait...",
+            "submit": "Login",
+            "notMemeberYet": "Not a Member yet?",
+            "signUp": "Sign up",
+            "invalidCredentials": "login credentials incorrect"
+        },
+        "register": {
+            "title": "Sign Up to iAware",
+            "fields": {
+                "firstName": "First Name",
+                "lastName": "Last Name",
+                "companyname": "Company Name",
+                "email": "Email",
+                "phone": "Phone",
+                "currency": "Currency",
+                "country": "Country",
+                "NoOfUsers": "Users Limit",
+                "language": "Language",
+                "timezone": "Time Zone",
+                "password": "Password",
+                "cpassword": "Confirm Password"
+            },
+            "termsAndConditions": "I agree to the terms and conditions",
+            "submit": "Register",
+            "pleaseWait": "Please wait...",
+            "placeholders": {
+                "language": "Select Language",
+                "currency": "Select Currency",
+                "country": "Select Country",
+                "timezone": "Select Time Zone"
+            },
+            "validations": {
+                "firstName": "First Name is required",
+                "firstNameMinLength": "First Name should have at least 3 symbols",
+                "firstNameMaxLength": "First Name should have maximum 100 symbols",
+                "lastName": "Last Name is required",
+                "lastNameMinLength": "Last Name should have at least 3 symbols",
+                "lastNameMaxLength": "Last Name should have maximum 100 symbols",
+                "companyname": "Company Name is required",
+                "companynameMinLength": "Company Name should have at least 3 symbols",
+                "companynameMaxLength": "Company Name should have maximum 100 symbols",
+                "email": "Email is required",
+                "emailTaken": "Valid Email is required",
+                "companyEmail": "Company email is required (no Gmail, Outlook, etc.)",
+                "language": "Language is required",
+                "timezone": "Time zone is required",
+                "phone": "Phone number is required",
+                "currency": "Currency is required",
+                "country": "Country is required",
+                "password": "Password is required",
+                "passwordMinLength": "Password should have at least 8 symbols",
+                "passwordMaxLength": "Password should have maximum 100 symbols",
+                "passwordMismatch": "Passwords do not match",
+                "cpassword": "Confirm Password is required"
+            }
+        },
+        "reset-password": {
+            "title": "Reset Your Password",
+            "messages": {
+                "messageI": "To ensure the security of your account, please choose a new password that is",
+                "messageII": "at least 8 characters long and includes a combination of letters and numbers"
+            },
+            "fields": {
+                "newPass": "New Password",
+                "cpassword": "Confirm New Password",
+                "confirmPassword": "Confirm Password"
+            },
+            "actions": {
+                "submit": "Reset Now!"
+            },
+            "validations": {
+                "password": "Password is required.",
+                "cpassword": "Confirm Password is required",
+                "passwordsMismatch": "Passwords do not match",
+                "passMaxLength": "Password must not exceed 100 characters.",
+                "missingNumber": "Password must contain at least one number.",
+                "passMinLength": "Password must be at least 12 characters long.",
+                "missingUppercase": "Password must contain at least one uppercase letter.",
+                "missingLowercase": "Password must contain at least one lowercase letter.",
+                "missingSpecialChar": "Password must contain at least one special character."
+            }
+        },
+        "email-verified": {
+            "welcome": "Welcome!",
+            "message": "You are just a step away from confirming your email. Please don't close or refresh the page.",
+            "waitMessage": "We are confirming your email . Please wait a moment....."
+        },
+        "verification-email": {
+            "title": "Welcome to Our Service",
+            "message": "Your email address has been successfully registered with our service.",
+            "messageI": "To complete the registration process and verify your email,",
+            "messageII": "please check your inbox"
+        }
+    },
+    "badge": {
+        "badge-listing": {
+            "fields": {
+                "name": "Badge Name",
+                "image": "Badge Image",
+                "status": "Status"
+            },
+            "actions": {
+                "add": "Add New Badge"
+            },
+            "dialogs": {
+                "addDialog": {
+                    "header": "Add New Badge",
+                    "fields": {
+                        "name": "Badge Name",
+                        "description": "Badge Name Description",
+                        "image": "Badge Image"
+                    }
+                },
+                "editDialog": {
+                    "header": "Edit Badge",
+                    "fields": {
+                        "name": "Badge Name",
+                        "description": "Badge Name Description",
+                        "image": "Badge Image"
+                    }
+                }
+            }
+        }
+    },
+    "campaign": {
+        "taps": {
+            "current": "Current Campaigns",
+            "history": "Campaigns History"
+        },
+        "currentCampaign": {
+            "taps": {
+                "training": "Trining",
+                "phishing": "Phishing"
+            },
+            "training": {
+                "fields": {
+                    "name": "Name",
+                    "type": "Type",
+                    "lessonName": "Name",
+                    "book": "Book",
+                    "video": "Video",
+                    "language": "Language",
+                    "lessonsCount": "Training Lessons Count",
+                    "startDate": "Start Date",
+                    "endDate": "End Date",
+                    "description": "Description"
+                }
+            },
+            "phishing": {
+                "fields": {
+                    "name": "Name",
+                    "template": "Templates",
+                    "startDate": "Start Date",
+                    "endDate": "End Date"
+                }
+            },
+            "dialogs": {
+                "templateDialog": {
+                    "header": "Campaign Templates Scedual",
+                    "fields": {
+                        "name": "Template Name",
+                        "startDate": "Phishing Start Time",
+                        "endDate": "Phishing End Time",
+                        "users": "Users",
+                        "success": "Success Users",
+                        "faild": "Faild Users"
+                    }
+                },
+                "templateUserDialog": {
+                    "header": "Campaign Templates Scedual Users",
+                    "fields": {
+                        "name": "User Name",
+                        "results": "Results",
+                        "activities": "Activities"
+                    }
+                }
+            }
+        },
+        "campaignHistory": {
+            "fields": {
+                "name": "Name",
+                "type": "Type",
+                "startDate": "Start Date",
+                "endDate": "End Date",
+                "description": "Description"
+            }
+        },
+        "campaignDetails": {
+            "steps": {
+                "book": "Book",
+                "bookTitle": "You're currently reading the book. If you prefer watching the video, <a class='dynamic-link' style='cursor: pointer; font-size: medium; font-weight: 500' data-path='/training-campaign/[scedualUserId]/[campaignId]/video'>click here</a> to watch the video.",
+                "video": "Video",
+                "videoTitle": "You can watch the video in this step, or if you prefer reading, <a style='cursor: pointer; font-size: medium; font-weight: 500' class='dynamic-link' data-path='/training-campaign/[scedualUserId]/[campaignId]/book'>click here</a> to read the book",
+                "quiz": "Quiz",
+                "results": "Results"
+            },
+            "titles": {
+                "book": "Book",
+                "video": "Video",
+                "result": "Quiz Result"
+            },
+            "messages": {
+                "congrat": "Congratulations!",
+                "faild": "Failed",
+                "faildMessage": "Unfortunately, you did not pass the quiz.",
+                "congratMessage": "You passed the quiz.",
+                "score": "Your score:",
+                "answars": "Quiz Answers"
+            },
+            "actions": {
+                "next": "Next",
+                "back": "Back",
+                "submit": "Submit",
+                "previous": "Previous",
+                "finish": "Finish"
+            }
+        },
+        "messages": {
+            "emptyMessage": "There are no lessons for this campaign yet."
+        }
+    },
+    "campaign-management": {
+        "campaign-create": {
+            "campaign-type": {
+                "title": "Campaign Setup:",
+                "message": "Configure your campaign details. Review all inputs carefully before proceeding.",
+                "fields": {
+                    "name": "Name:",
+                    "type": "Type:",
+                    "startDate": "Start Date:",
+                    "endDate": "End Date:",
+                    "users": "Users:",
+                    "campaignUsers": "Campaign Users Filter:",
+                    "campaignEmails": "Campaign Emails",
+                    "groups": "Groups:",
+                    "emailSubject": "Awareness Campaign Email Subject",
+                    "emailContent": "Awareness Campaign Email Content Html",
+                    "sourceHeader": "Source",
+                    "targetHeader": "Target",
+                    "allUser": "All Users",
+                    "departments": "Departments",
+                    "groupss": "Groups",
+                    "campaigntype": "Select a Type of Campaign"
+                },
+                "validations": {
+                    "startDate": "Start date cannot be in the past. Please Select valid date.",
+                    "endDate": "The selected end date must be greater than the start date of this campaign."
+                },
+                "placeholders": {
+                    "users": "Select  Users",
+                    "type": "Select Type",
+                    "groups": "Select Group",
+                    "name": "Enater Campaign Name"
+                },
+                "actions": {
+                    "next": "Next"
+                }
+            },
+            "lessons": {
+                "message": "You can select multiple training lesson according to training categories to add the campaign.",
+                "actions": {
+                    "next": "Next",
+                    "back": "Back"
+                }
+            },
+            "phishing-email-templates": {
+                "title": "Phishing Template List:",
+                "defaultTemplateHeader": "Default Phishing Templates",
+                "tenantTemplatesHeader": "Company Phishing Templates",
+                "upgradeYourPlan": "Upgrade Your Plan",
+                "upgradeMessage": "Unlock this phishing template and many more by upgrading your plan.",
+                "upgradeBtn": "Upgrade Now",
+                "message": "Select phishing templates to include in your campaign.",
+                "noTemplates": "No phishing templates found",
+                "actions": {
+                    "next": "Next",
+                    "back": "Back"
+                }
+            },
+            "scedual": {
+                "title": "Campaign Schedual:",
+                "training": {
+                    "aiRecomindationMessage": "<div class='ml-1'>This schedule generated using <strong style='font-size: larger; font-weight: 700;'>AI</strong> to help you with planning. Feel free to adjust it as needed, but please make sure to keep the start and end dates you selected.</div>",
+                    "defaultEmailInstructions": "<div> <strong>Important:</strong> Please ensure you replace the following placeholders in all language versions of this email: <ul> <li><strong>[Information Security]</strong> - Replace this with your department name or email address (e.g., security@company.com).</li> <li><strong>[support contact info]</strong> - Replace this with your support contact information (e.g., support@company.com).</li> </ul>If these placeholders are not replaced, the email will be sent with the placeholders as is, in every language version of the email.</div>",
+                    "fields": {
+                        "trainingLessonName": "Lesson Name",
+                        "scedualedTime": "Scedualed Time",
+                        "lessonAwaernesEmail": "Lesson Awaernes Email",
+                        "awarenessCampaignScedual": "Awareness Campaign Scedual",
+                        "awarenessCampaignEmail": "Awareness Campaign Email"
+                    },
+                    "validations": {
+                        "startDate": "Start date cannot be in the past. Please Select valid date.",
+                        "endDate": "The selected end date must be greater than the start date of this campaign."
+                    },
+                    "dialogs": {
+                        "editEmailTrainingLanguageDialog": {
+                            "emailSubject": "Email Subject",
+                            "emailContent": "Email Content Html",
+                            "header": "Awaerness Email"
+                        }
+                    }
+                },
+                "phishing": {
+                    "message": " Set up the phishing campaign schedule and details.",
+                    "fields": {
+                        "template": "Phishing Templates",
+                        "phishingDomainEmailId":"Phishing Domain Email Address",
+                        "users": "Users",
+                        "isFrequently": "Scheduled",
+                        "isImmediately": "Immediately",
+                        "startTime": "Phishing Start Time",
+                        "endTime": "Phishing End Time",
+                        "frequencyDays": "Frequency (in Days)",
+                        "numberOfOccurrences": "Number of occurrences",
+                        "awarenessCampaignPhishingSchedule": "Awareness Campaign Phishing Schedule",
+                        "awarenessCampaignPhishingScedualResult": "Awareness Campaign Phishing Scedual Result"
+                    },
+                    "columns": {
+                        "template": "Phishing Template",
+                        "startTime": "Phishing Start Time",
+                        "endTime": "Phishing End Time",
+                        "frequencyDays": "Frequency Days",
+                        "usersCount": "User Count"
+                    },
+                    "placeholders": {
+                        "template": "Select Phishing Template",
+                        "users": "Select Users",
+                        "phishingDomainEmailId":"Select Phishing Domain Email Address"
+                    },
+                    "actions": {
+                        "add": "Add"
+                    },
+                    "validations": {
+                        "validationPhishingEndTimeMessage": "Selected Phishing End Time is not within the campaign's start and end date.",
+                        "validationPhishingStartTimeMessage": "Selected Phishing Start Time is not within the campaign's start and end date"
+                    }
+                }
+            },
+            "steps": {
+                "settings": "Campaign Setup",
+                "build": "Campaign Build",
+                "schedual": "Campaign Schedual"
+            }
+        },
+        "campaign-listing": {
+            "fields": {
+                "name": "Name",
+                "type": "Type",
+                "startDate": "Start Date",
+                "endDate": "End Date",
+                "status": "Status",
+                "usersCount": "User Count"
+            },
+            "actions": {
+                "add": "Add New Campaign"
+            },
+            "dialogs": {
+                "editDialog": {
+                    "header": "Edit Campaign",
+                    "fields": {
+                        "name": "Name",
+                        "type": "Type",
+                        "startDate": "Start Date",
+                        "endDate": "End Date",
+                        "users": "Users",
+                        "groups": "Groups",
+                        "campaignUsers": "Campaign Users",
+                        "sourceHeader": "Source",
+                        "targetHeader": "Target"
+                    },
+                    "validations": {
+                        "endDate": "The selected date must be greater than or equal to the current end date of this campaign."
+                    },
+                    "placeholders": {
+                        "users": "Select User",
+                        "type": "Select Type",
+                        "groups": "Select Group"
+                    }
+                }
+            }
+        }
+    },
+    "dashboards": {
+        "organization": {
+            "header": "Organization's Risk Score",
+            "pointsTitle": "Performance Summary",
+            "positivePoints": "Positive Points",
+            "negativePoints": "Negative Points",
+            "totalPoints": "Total Points",
+            "riskHistory": "Risk History",
+            "riskScore": "Risk Score"
+        },
+        "training": {
+            "header": "Training",
+            "securityAwarenessChartTitle": "Security Awareness Campaigns Chart (Last",
+            "months": "months)",
+            "seeAllCampaignsButton": "See All Campaigns",
+            "newCampaignButton": "New Campaign",
+            "recentCampaignsTitle": "Recent Campaigns in Progress",
+            "noRecentCampaignsTitle": "No Recent Campaigns in Progress",
+            "completedPercentage": "% Completed",
+            "completedUsersDialogHeader": "Completed Users",
+            "notStartedUsersDialogHeader": "Not Started Users",
+            "failedUsersDialogHeader": "Failed Users",
+            "userNameColumn": "User Name",
+            "campaignNameColumn": "Campaign Name",
+            "lessonNameColumn": "Lesson Name",
+            "scoreColumn": "Score",
+            "downloadCsvButton": "Download CSV",
+            "downloadPdfButton": "Download PDF"
+        },
+        "phishing": {
+            "header": "Phishing",
+            "phishingSecurity": "Phishing Security (Last ",
+            "months": "months)",
+            "yourPhishingVulnerability": "Your phishing vulnerability %",
+            "industryPhishingVulnerability": "Industry phishing vulnerability %",
+            "industryPlaceholder": "select industry",
+            "industryBenchmark": "Industry Benchmark",
+            "showIndustry": "Show Industry Benchmark Data",
+            "hideIndustry": "Hide Industry Benchmark Data"
+        },
+        "alertButton": {},
+        "user-dashboard": {
+            "buttons": {
+                "myDashboard": "My Dashboard",
+                "teamDashboard": "Team Dashboard",
+                "goToTraining": "Go to Training",
+                "learnHowToEarnBadges": "Learn How to Earn Badges?",
+                "viewLeaderboard": "View Leaderboard",
+                "viewTeam": "View"
+            },
+            "trainingProgress": {
+                "header": "Training Progress Overview",
+                "description": "Track your training progress and enhance your skills.",
+                "completed": "Completed",
+                "percentage": "{assignmentsPercentage}%",
+                "assignmentsMessage": "you have completed {completedAssignments} of {totalAssignments} assignments"
+            },
+            "phishingResults": {
+                "header": "Phishing Results Overview",
+                "description": "Track your phishing detection skills and cyber risk protection.",
+                "emailsflaggedasphishingthreats": "Emails flagged as phishing threats",
+                "emailsReportedPercentage": "{emailsReportedPercentage}% Success",
+                "reportedEmails": "Reported Phishing Emails",
+                "failures": "Phishing Failures",
+                "emailsnotrecognizedasphishingattempts": "Emails not recognized as phishing attempts",
+                "emailsReported": "{emailsReported} / {emailsDelivered}",
+                "noData": "No phishing data available yet.",
+                "emailsFailures": "{emailsFailures} / {emailsDelivered}",
+                "emailsFailuresPercentage": "{emailsFailuresPercentage}% Failure"
+            },
+            "riskScore": {
+                "header": "Personal Risk Score",
+                "description": "Evaluate your security awareness with a personalized risk score.",
+                "title": "Risk Score"
+            },
+            "badges": {
+                "header": "Achievements & Progress",
+                "message": "Track your milestones and monitor your journey to success.",
+                "learn": "Learn How to Earn Badges?",
+                "badgesEarned": "Badges Earned",
+                "youhaveearned": "You have earned <strong class=\"ranked-no\">{number} badges</strong> during your training. Keep up the amazing work!"
+            },
+            "groupRanking": {
+                "header": "Group Ranking",
+                "message": "Your group is currently ranked <strong class=\"ranked-no\">#{number}</strong>. Continue striving for excellence!"
+            },
+            "teamSelection": {
+                "header": "Select Team",
+                "description": "Select team to view information about their training progress, phishing results, and combined Team Risk Score.",
+                "dropdownPlaceholder": "Select Team"
+            },
+            "teamTrainingProgress": {
+                "header": "Training Progress",
+                "description": "the percentage of training assignments completed by your team members all time",
+                "completedAssignments": "{completedAssignments}/{totalAssignments}"
+            },
+            "teamPhishingResults": {
+                "header": "Phishing Results",
+                "reportedEmails": "Reported Phishing Emails",
+                "failures": "Phishing Failures",
+                "reportedPercentage": "{emailsReported}/{emailsDelivered}",
+                "noData": "None of your team members have received a Phishing Security Test."
+            },
+            "teamRiskScore": {
+                "header": "Team Risk Score",
+                "title": "Risk Score"
+            },
+            "teamDetails": {
+                "header": "Team Details"
+            }
+        },
+        "iAwareAdminDashboard": {
+            "header": "Client Management Dashboard",
+            "totalClients": "Total Clients",
+            "activeClients": "Active Clients",
+            "expiringSubscriptions": "Expiring Subscriptions",
+            "industry": "Industry:",
+            "industryy": "Industry",
+            "status": "Status:",
+            "statuss": "Status",
+            "subscriptionPlan": "Subscription Plan:",
+            "subscriptionPlann": "Subscription Plan",
+            "search": "Search:",
+            "searchh": "Search",
+            "searchclients": "Search clients...",
+            "clientName": "Client Name",
+            "contact": "Contact",
+            "plan": "Plan",
+            "licenses": "Licenses",
+            "lastActivity": "Last Activity",
+            "expiryDate": "Expiry Date",
+            "manager": "Manager",
+            "selectStatus": "Select Status",
+            "selectPlan": "Select Plan"
+        }
+    },
+    "email-domains": {
+        "email-domains-details": {
+            "addHeader": "Add Email",
+            "editHeader": "Edit Email",
+            "senderUserName": "Username",
+            "senderDisplayName": "Display Name",
+            "senderEmail": "Email",
+            "senderEmailPassword": "Password",
+            "outgoingServer": "Outgoing Server",
+            "outgoingServerPort": "Outgoing Server Port",
+            "enableSSL": "Enable SSL",
+            "noEmails": "No emails found",
+            "phishingDomainName": "Phishing Domain Name"
+        },
+        "email-domains-listing": {
+            "domainName": "Domain Name",
+            "addHeader": "Add New Domain",
+            "editHeader": "Edit Domain",
+            "phishingDomainEmailsCount": "Emails Count",
+            "status": "Domain Status"
+        }
+    },
+    "system-email-activity": {
+        "addHeader": "Add System Email Activity",
+        "editHeader": "Edit System Email Activity",
+        "noRecords": "No system email activities found",
+        "emailSubject": "Email Subject",
+        "emailBody": "Email Body",
+        "emailSubjectPlaceholder": "Enter email subject",
+        "actions":"Actions",
+        "systemEmailId":"System Email",
+        "systemActivity": "System Activity",
+        "systemActivityName": "System Activity Name",
+        "sendToCustomEmails": "Send to Custom Emails",
+        "isActive": "Is Active",
+        "sendToUser": "Send to User",
+        "sendToAdministrators": "Send to Administrators",
+        "sendToPhishingAdministrators": "Send to Phishing Administrators",
+        "sendToCampaignAdministrators": "Send to Campaign Administrators",
+        "sendToTenantAdministrators": "Send to Tenant Administrators",
+        "sendToTenantPhishingAdministrators": "Send to Tenant Phishing Administrators",
+        "sendToTenantCampaignAdministrators": "Send to Tenant Campaign Administrators",
+        "loadError": "Failed to load system email activities",
+        "addSuccess": "System email activity added successfully",
+        "addError": "Failed to add system email activity",
+        "editSuccess": "System email activity updated successfully",
+        "editError": "Failed to update system email activity",
+        "deleteSuccess": "System email activity deleted successfully",
+        "deleteError": "Failed to delete system email activity",
+        "invalidForm": "Please fill in all required fields",
+        "emailSubjectRequired": "Email subject is required",
+        "emailBodyRequired": "Email body is required",
+        "systemActivityRequired": "System activity is required",
+        "systemEmailIdRequired":"System email is required",
+        "languageSpecificContent": "Language-specific Content"
+    },
+    "gamification": {
+        "game_edit": {
+            "addNewGameLanguage": "Add New Game Language",
+            "general": "General",
+            "id": "Id",
+            "questionCount": "Question Count",
+            "autoNextAllowed": "Auto Next Allowed",
+            "previousAllowed": "Previous Allowed",
+            "gameImage": "Game Image",
+            "upload": "Upload",
+            "update": "Update",
+            "name": "Name",
+            "layoutUrl": "Layout URL",
+            "instruction": "Instruction",
+            "description": "Description",
+            "delete": "Delete",
+            "actions": "Actions",
+            "search": "Search...",
+            "noGameData": "No game data available for this language.",
+            "gameManagement": "Game Management",
+            "status": "Status",
+            "answer1": "Answer",
+            "answer2": "Answer",
+            "answer3": "Answer",
+            "answer4": "Answer",
+            "correctAnswer": "Correct Answer",
+            "incorrectAnswer": "Incorrect Answer",
+            "addNewQuestionDialog": {
+                "header": "Add New Question",
+                "question": "Question",
+                "writeQuestionPlaceholder": "Write Question",
+                "answer": "Answer",
+                "answerPlaceholder": "Answer ",
+                "save": "Save",
+                "cancel": "Cancel"
+            },
+            "addNewGameLanguageDialog": {
+                "header": "Add New Game Language",
+                "language": "Language",
+                "chooseLanguage": "Choose Language",
+                "name": "Name",
+                "description": "Description",
+                "instruction": "Instruction",
+                "layoutUrl": "Layout URL",
+                "save": "Save",
+                "cancel": "Cancel"
+            },
+            "deleteGameLanguageDialog": {
+                "header": "Delete Game Language",
+                "confirmationMessage": "Are you sure you want to delete the Game Language?",
+                "gameLanguage": "Game Language",
+                "no": "No",
+                "yes": "Yes"
+            },
+            "editGameLanguageQuestionDialog": {
+                "header": "Edit Question",
+                "question": "Question",
+                "answerSpace": "Answer ",
+                "answer": "Answer"
+            }
+        },
+        "game_list": {
+            "add_game_button": "Add Game",
+            "play_now_button": "Play Now",
+            "edit_button": "Edit",
+            "choose_language": "Choose Language",
+            "dialog": {
+                "add_game_header": "Add New Game Language",
+                "language_label": "Language",
+                "id_label": "Id",
+                "name_label": "Name",
+                "description_label": "Description",
+                "layout_url_label": "Layout Url",
+                "question_count_label": "Question Count",
+                "auto_next_allowed_label": "Auto Next Allowed",
+                "previous_allowed_label": "Previous Allowed",
+                "game_image_label": "Game Image"
+            }
+        }
+    },
+    "industry": {
+        "add": "Add New Industry",
+        "name": "Name",
+        "nameValidation": "Name is required",
+        "value": "Value",
+        "valueValidation": "Value is required",
+        "addHeader": "Add Industry",
+        "editHeader": "Edit Industry"
+    },
+    "invoice": {
+        "inProgressInvoices": "In Progress Invoices",
+        "completedInvoices": "Completed Invoices",
+        "management": "Invoices Management",
+        "expandAll": "Expand All",
+        "collapseAll": "Collapse All",
+        "company": "Company",
+        "subscriptionPlan": "Subscription Plan",
+        "invoiceType": "Invoice Type",
+        "total": "Total",
+        "amountDue": "Amount Due",
+        "issueDate": "Issue Date",
+        "paymentRequest": "Payment Request",
+        "payButton": "Pay",
+        "paidLabel": "Paid",
+        "requestTime": "Request Time",
+        "requestAmount": "Amount",
+        "referenceKey": "Reference Key",
+        "referenceImage": "Reference Image",
+        "paymentNote": "Payment Note",
+        "confirmed": "Confirmed",
+        "confirmationUserId": "Confirmation User ID",
+        "confirmationTime": "Confirmation Time",
+        "confirmButton": "Confirm",
+        "confirmedLabel": "Confirmed",
+        "pendingLabel": "Pending",
+        "doneLabel": "Done",
+        "paidAmount": "Paid Amount",
+        "paymentTime": "Payment Time",
+        "paymentReferenceKey": "Payment Reference Key",
+        "paymentType": "Payment Type",
+        "noPaymentRequestsMessage": "No payment requests found for this invoice.",
+        "dialogs": {
+            "editHeader": "Edit Invoice",
+            "editLanguageLabel": "Language",
+            "editTextLabel": "Text",
+            "editCancel": "Cancel",
+            "editSave": "Save",
+            "addHeader": "Add New Invoice",
+            "addLanguageLabel": "Language",
+            "addTextLabel": "Quote Text",
+            "paymentRequestHeader": "Invoice Payment Request",
+            "paymentRequestRefKeyLabel": "Request Reference Key",
+            "paymentRequestAmountLabel": "Request Amount",
+            "paymentRequestNoteLabel": "Request Payment Note",
+            "paymentRequestImageLabel": "Payment Request Image",
+            "paymentConfirmHeader": "Confirm Invoice Payment Request",
+            "confirmClientLabel": "Client",
+            "confirmAccountantLabel": "Accountant",
+            "confirmPaidAmountLabel": "Paid Amount",
+            "confirmPaymentRefKeyLabel": "Payment Reference Key",
+            "invoicePaymentRefKeyLabel": "Invoice Reference Key",
+            "confirmPaymentTypeLabel": "Payment Type",
+            "confirmCheckboxLabel": "Confirmed"
+        }
+    },
+    "leaderboard": {
+        "usersLeaderboard": "Users Leaderboard",
+        "unitLeaderboard": "Unit Leaderboard",
+        "ranking": "Ranking",
+        "name": "Name",
+        "points": "Points",
+        "pointsPercentage": "Points Percentage",
+        "noUsersAvailable": "No users available",
+        "noDepartmentsAvailable": "No departments available",
+        "congrats": "Congratulations!",
+        "yourGroupIs1d": "Your group is in 1st place!",
+        "yourGroupIs2d": "Your group is in 2nd place!",
+        "yourGroupIs3d": "Your group is in 3rd place!"
+    },
+    "multimedia-library": {
+        "readNow": "Read Now",
+        "watchNow": "Watch Now",
+        "watchVideo": "Watch Video",
+        "readBook": "Read Book",
+        "downloadScreensavers": "Download Screen Savers",
+        "selectScreensavers": "Download Screensavers",
+        "noScreensaversAvailable": "No screensavers are available.",
+        "addToDownload": "Download",
+        "platform": "Platform",
+        "downloadAll": "Download Selected",
+        "showLessons": "Show Lessons",
+        "lessons": "Lessons",
+        "upgradeYourPlan": "Upgrade Your Plan",
+        "upgradeMessage": "Unlock this lesson and many more by upgrading your plan.",
+        "upgradeBtn": "Upgrade Now"
+    },
+    "phishing-campaigns": {
+        "phishing-campaign-statistics": {
+            "overview": "Overview",
+            "templates": "Templates",
+            "top100Clickers": "Top (100) Clickers",
+            "userName": "User Name",
+            "userEmail": "User Email",
+            "clicksCount": "Number of Clicks",
+            "status": "Status:",
+            "name": "Name:",
+            "startDate": "Start Date:",
+            "endDate": "End Date:",
+            "templatesII": "Templates:",
+            "users": "Users:",
+            "campaignLeaderboard": "Campaign Leaderboard",
+            "campaignLeaderboardMessage": "Welcome to the Phishing Campaign Leaderboard! Here, you can see which users were phished and track their respective negative points. Encourage improvement to reduce phishing incidents over time!",
+            "ranking": "Ranking",
+            "points": "Points",
+            "noDataMessage": "No data available yet. Once users are phished, the leaderboard will update with their negative points.",
+            "templateName": "Template Name",
+            "startedOn": "Started On",
+            "endedOn": "Ended On",
+            "noOfUsers": "Number of Users",
+            "percentage": "Vulnerability Percentage",
+            "campaignSummary": "Campaign Summary",
+            "vulnerability": "Vulnerability %",
+            "vulnerabilityPercentage": "Vulnerability Percentage: [tooltipItem]%",
+            "vulnerabilityPercentagee": "Vulnerability Percentage"
+        },
+        "phishing-campaign-template-statistics": {
+            "overview": "Overview",
+            "users": "Users",
+            "failures": "Failures by Day",
+            "status": "Status:",
+            "name": "Name:",
+            "startDate": "Start Date:",
+            "endDate": "End Date:",
+            "percentage": "Vulnerability Percentage",
+            "recipients": "Recipients:",
+            "recipient": "Recipients:",
+            "delivered": "Delivered",
+            "opened": "Opened",
+            "qrCode": "QR Code Scanned",
+            "dataEntered": "Data Entered",
+            "reported": "Reported",
+            "clicked": "Clicked",
+            "nameAndEmail": "Name and Email",
+            "scheduled": "Scheduled",
+            "thisPhishingTemplateSummary": "This Phishing Template Summary",
+            "failuress": "Failures",
+            "failuresWithValue": "Failures: [value]",
+            "refresh": "Refresh"
+        },
+        "phishingcampaign": {
+            "dashboard": "Phishing Campaigns Dashboard",
+            "RunningCampaigns": "Running Phishing Campaigns",
+            "completedCampaigns": "Completed Phishing Campaigns",
+            "campaignName": "Campaign Name",
+            "templateName": "Template Name",
+            "phishingStartDate": "Phishing Start Date",
+            "phishingEndDate": "Phishing End Date",
+            "status": "Status",
+            "toatalTemplates": "Total Templates: {calculateCurrentTotalNumberOfTemplates}",
+            "clicktoviewcampaigndetails": "click to view campaign details"
+        }
+    },
+    "language": {
+        "language-listing": {
+            "fields": {
+                "languageName": "Language Name",
+                "languageCode": "language Code",
+                "status": "Status",
+                "isDefault": "Is Default Language",
+                "actions": "Actions"
+            },
+            "actions": {
+                "add": "Add New Language"
+            },
+            "dialogs": {
+                "editDialog": {
+                    "header": "Edit Language",
+                    "fields": {
+                        "languageName": "Language Name",
+                        "languageCode": "Language Code",
+                        "isDefaultLanguage": "Is Default Language",
+                        "isActive": "Is Active"
+                    }
+                },
+                "addDialog": {
+                    "header": "Add New Language",
+                    "fields": {
+                        "languageName": "Language Name",
+                        "languageCode": "Language Code",
+                        "isDefaultLanguage": "Is Default Language",
+                        "isActive": "Is Active"
+                    }
+                }
+            },
+            "notifications": {
+                "createSuccess": "Language created successfully",
+                "updateSuccess": "Language updated successfully",
+                "deleteSuccess": "Language deleted successfully"
+            }
+        }
+    },
+    "notification-settings": {
+        "notification-type-language": {
+            "title": "Notification Type Languages Management",
+            "language": "Language",
+            "languagePlaceholder": "Select Language",
+            "status": "Status",
+            "name": "Name",
+            "nameValidation": "Name is required",
+            "notificationValidation": "Notification Message is required.",
+            "notificationMessage": "Notification Message",
+            "editHeader": "Notification Type Language"
+        },
+        "notification-type-list": {
+            "title": "Notification Type",
+            "id": "ID",
+            "name": "Name",
+            "language": "Language",
+            "languagePlaceholder": "Select Language",
+            "notificationLogo": "Notification Logo",
+            "notificationMessage": "Notification Message",
+            "notificationIcon": "Notification Icon",
+            "notificationIconPlaceholder": "Select Notification Icon",
+            "redirectPageUrl": "Redirect Page Url",
+            "notificationParameterKey1": "Notification Parameter Key 1",
+            "notificationParameterKey2": "Notification Parameter Key 2",
+            "status": "Status",
+            "addHeader": "Add New Notification Type",
+            "editHeader": "Edit Phishing Category English Language",
+            "validations": {
+                "id": "ID is required.",
+                "name": "Name is required",
+                "redirectPageUrl": "redirectPageUrl is required.",
+                "notificationParameterKey1": "NotificationParameterKey 1 is required.",
+                "notificationParameterKey2": "NotificationParameterKey 2 is required.",
+                "notificationMessage": "Notification Message is required."
+            }
+        }
+    },
+    "page-management": {
+        "page-details": {},
+        "page-listing": {
+            "fields": {
+                "page-EN": "Page English Name",
+                "page-AR": "Page Arabic Name",
+                "status": "Status"
+            },
+            "actions": {
+                "add": "Add Page"
+            },
+            "dialogs": {
+                "addDialog": {
+                    "header": "Add New Page",
+                    "fields": {
+                        "page-EN": "Page English Name",
+                        "page-AR": "Page Arabic Name",
+                        "appUrl": "Application Url",
+                        "pageUrl": "Page Url",
+                        "dispalyInMenu": "Display in Menu",
+                        "orderNo": "Order Number",
+                        "helpText-AR": "Arabic Help Text",
+                        "helpText-EN": "English Help Text",
+                        "fontIconCode": "Font Icon Code",
+                        "isHeading": "Set as Heading"
+                    },
+                    "validations": {
+                        "page-EN": "Page English Name is required.",
+                        "page-AR": "Page Arabic Name is required.",
+                        "appUrl": "Application Url is required.",
+                        "pageUrl": "Page Url is required.",
+                        "dispalyInMenu": "Display in Menu is required."
+                    }
+                },
+                "editDialog": {
+                    "header": "Edite Page",
+                    "fields": {
+                        "page-EN": "Page English Name",
+                        "page-AR": "Page Arabic Name",
+                        "appUrl": "Application Url",
+                        "pageUrl": "Page Url",
+                        "dispalyInMenu": "Display in Menu",
+                        "orderNo": "Order Number",
+                        "helpText-AR": "Arabic Help Text",
+                        "helpText-EN": "English Help Text",
+                        "fontIconCode": "Font Icon Code",
+                        "isHeading": "Set as Heading"
+                    }
+                }
+            },
+            "notifications": {
+                "saveSuccess": "Page saved successfully",
+                "deleteSuccess": "Page deleted successfully"
+            }
+        }
+    },
+    "phishing-category": {
+        "phishing-category-language-list": {
+            "title": "Phishing Category Languages Management",
+            "add": "Add Phishing Category Language",
+            "imageField": "Upload Category Image",
+            "nameField": "Enter Category Name",
+            "descriptionField": "Enter Category Description",
+            "bannerField": "Upload Category Banner",
+            "categoryPageContentHtmlPlaceholder": "Compose Email Content",
+            "language": "Language",
+            "languagePlaceholder": "Select Language",
+            "category": "Category",
+            "name": "Category Name",
+            "banner": "Category Banner",
+            "description": "Category Description",
+            "pageContnt": "Category Page Content HTML",
+            "status": "Status",
+            "editHeader": "Phishing Category Language",
+            "phishingTemplateName": "Phishing Template Name",
+            "therearenotemplatesforthistraininglanguageyet": "There are no templates for this training language yet.",
+            "validations": {
+                "name": "Name is required",
+                "description": "Category Description is required.",
+                "banner": "Banner is required",
+                "pageContent": "Page Content is required",
+                "category": "Category is required"
+            }
+        },
+        "phishing-category-list": {
+            "title": "Phishing Category List",
+            "add": "Add Phishing Category",
+            "image": "Category Image",
+            "name": "Name",
+            "status": "Status",
+            "language": "Language",
+            "banner": "Category Banner",
+            "description": "Category Description",
+            "pageContent": "Page Content HTML",
+            "imageField": "Upload Category Image",
+            "nameField": "Enter Category Name",
+            "descriptionField": "Enter Category Description",
+            "bannerField": "Upload Category Banner",
+            "categoryPageContentHtmlPlaceholder": "Compose Email Content",
+            "category": "Category",
+            "languagePlaceholder": "Select Language",
+            "addHeader": "Add New Phishing Category English Language",
+            "editHeader": "Edit Phishing Category English Language",
+            "defaultPhishingCategories": "Default Phishing Categories",
+            "companyPhishingCategories": "Company Phishing Categories",
+            "validations": {
+                "name": "Name is required",
+                "description": "Category Description is required.",
+                "banner": "Banner is required",
+                "pageContent": "Page Content is required",
+                "category": "Category is required"
+            }
+        }
+    },
+    "phishing-email-template": {
+        "taps": {
+            "info": "Information",
+            "emailDeatails": "Email Details",
+            "landingPage": "Landing Page",
+            "feedbackPage": "Feedback Page"
+        },
+        "tages": "Phishing Template Tages",
+        "tagesPlaceHolder": "Select Tages",
+        "add": "Add Phishing Template",
+        "addLanguage": "Add Phishing Template Language",
+        "name": "Phishing Template Name",
+        "nameField": "Enter a descriptive phishing template name.",
+        "nameValidation": "Phishing Template Name is required",
+        "language": "Language",
+        "languagePlaceholder": "Select Language",
+        "languageValidation": "Language is required.",
+        "status": "Status",
+        "phishingCategory": "Phishing Category",
+        "phishingCategoryPlaceholder": "Select Category",
+        "phishingCategoryValidation": "Phishing Template Category is required.",
+        "phishingDomain": "Phishing Domains",
+        "phishingDomainPlaceholder": "Select the phishing domain to associate.",
+        "phishingDomainValidation": "Phishing Template Domain is required.",
+        "IsQrCodeChecked": "Add QRCode",
+        "description": "Phishing Template Description",
+        "descriptionField": "Enter Phishing Template Description",
+        "descriptionValidation": "Phishing Template Description is required.",
+        "emailInstruction": "Phishing Template Email Instruction",
+        "emailInstructionField": "Write clear and concise phishing template instructions.",
+        "phishingTemplateImage": "Phishing Template Image",
+        "emailImage": "Upload the phishing template image.",
+        "phishingEmailSubject": "Phishing Template Email Subject",
+        "phishingEmailSubjectField": "Enter Phishing Template Email Subject",
+        "phishingEmailContent": "Phishing Template Email Content",
+        "phishingEmailContentField": "Enter Phishing Template Email Content HTML",
+        "landingPageTitle": "Phishing Template Landing Page Title",
+        "landingPageTitleField": "Enter Phishing Template Landing Page Title",
+        "landingPageDescription": "Phishing Template Landing Page Description",
+        "landingPageDescriptionField": "Enter Phishing Template Landing Page Description",
+        "landingPageContentHtml": "Phishing Template Landing Page Content",
+        "phishingEmailSuccessMessageTitle": "Success Message Title",
+        "phishingEmailSuccessMessageTitleField": "Enter Success Message Title",
+        "phishingEmailSuccessMessagePageHtml": "Success Message Content",
+        "phishingEmailSuccessMessagePageHtmlField": "Enter Success Message Content HTML",
+        "inputChecklistDialogHeader": "Select Inputs To Track",
+        "cloneDialogHeader": "Clone Phishing Template Using URL",
+        "pageUrl": "Page Url",
+        "listTitle": "Phishing Template List",
+        "languages": "Languages",
+        "editHeader": "Edit Phishing Template",
+        "editEmailHeader": "Edit Phishing Template Language",
+        "addEmailHeader": "New Phishing Template Language",
+        "clone": "Try Clone Template Now",
+        "upgradeYourPlan": "Upgrade Your Plan",
+        "upgradeMessage": "Unlock this phishing template and many more by upgrading your plan.",
+        "upgradeBtn": "Upgrade Now",
+        "defaultPhishingTemplates": "Default Phishing Templates",
+        "companyPhishingTemplates": "Company Phishing Templates",
+        "cloningDescription": "Duplicate processes effortlessly with our cloning feature. Simply copy the link, paste it into the cloning field, and let the system handle the rest. It's fast, reliable, and ensures consistent results every time."
+    },
+    "pointing-system": {
+        "id": "ID",
+        "title": "Pointing Title",
+        "value": "Pointing Value",
+        "editHeader": "Edit Value"
+    },
+    "tenantUnit": {
+        "syncADOU": "Sync Active Directory OUs",
+        "add": "Add New Department",
+        "name": "Department Name",
+        "nameField": "Enter Department Name",
+        "status": "Status",
+        "editDialogHeader": "Edit Department",
+        "addDialogHeader": "Add New Department",
+        "showInLeaderboard": "Show in Rankings",
+        "showCompleteADDataDialog": "Complete Active Directory Data",
+        "showCompleteADDataDialogMessage": " <i class=\"pi pi-megaphone\"></i> We recommend to complete the Active Directory data first. {link} to do that."
+    },
+    "role": {
+        "role-create": {},
+        "role-listing": {
+            "fields": {
+                "name": "Role Name",
+                "users": "Users",
+                "permissions": "Permissions",
+                "status": "Status",
+                "search": "Global Search"
+            },
+            "actions": {
+                "add": "Add New Role"
+            },
+            "dialog": {
+                "addDialog": {
+                    "header": "Add New Role",
+                    "fields": {
+                        "name": "Role Name",
+                        "description": "Description",
+                        "permissions": "Permissions",
+                        "isTenantRole": "Is Tenant Role",
+                        "isTenantAdministratorRole": "Is Tenant Administrator Role"
+                    },
+                    "validations": {
+                        "name": "Role name is required"
+                    }
+                },
+                "editDialog": {
+                    "header": "Edit Role",
+                    "fields": {
+                        "name": "Role Name",
+                        "description": "Description",
+                        "isTenantRole": "Is Tenant Role",
+                        "isTenantAdministratorRole": "Is Tenant Administrator Role"
+                    },
+                    "validations": {
+                        "name": "Role name is required"
+                    }
+                },
+                "usersWithinRoleDialog": {
+                    "header": "",
+                    "firstName": "First Name",
+                    "lastName": "Last Name",
+                    "email": "Email",
+                    "search": "Global Search"
+                }
+            }
+        }
+    },
+    "security-training": {
+        "pdf-viewer-dialog": {
+            "header": "PDF Viewer",
+            "close": "Close"
+        },
+        "security-training-create": {
+            "title": "Create English Training Lesson",
+            "fields": {
+                "name": "Lesson Name",
+                "description": "Lesson Description",
+                "category": "Lesson Category",
+                "language": "Lesson Language",
+                "pdf": "Spice Book",
+                "video": "Spice Video",
+                "email": "Spice Awareness Email",
+                "emailSubject": "Awareness Email Subject",
+                "emailContent": "Awareness Email Content",
+                "screenSavers": "Spice Screen Savers",
+                "wallpaper": "Spice Wallpapers",
+                "quizzes": "Spice Quizzes",
+                "quotes": "Spice Quotes",
+                "tages": "Tages",
+                "tagesPlaceHolder": "Select Tages"
+            },
+            "placeholders": {
+                "category": "Select Category",
+                "namePlaceholder": "Enter Lesson Name",
+                "descriptionPlaceholder": "Enter Lesson Description",
+                "emailSubjectPlaceholder": "Enter Email Subject",
+                "emailContentPlaceholder": "Compose Email Content",
+                "language": "Select Language",
+                "title": "Screen Saver Title",
+                "platform": "Screen Saver Platform",
+                "writeQuestion": "Enter Question",
+                "question": "Question",
+                "writeQuote": "Enter Quote",
+                "answer": "Enter Answer { index }"
+            },
+            "validations": {
+                "name": "Name is required",
+                "description": "Description is required",
+                "category": "Category is required",
+                "language": "Language is required",
+                "pdf": "Lesson Book file is required",
+                "video": "Video file is required",
+                "emailSubject": "Lesson awareness email subject is required",
+                "emailContent": "Lesson awareness email conten is required",
+                "quizText": "At least two answers are required.",
+                "quizTextTrue": "One true answer is required."
+            },
+            "messages": {
+                "pdf": "Upload Pdf",
+                "video": "Upload Video",
+                "uploaded": "Uploaded",
+                "numberOfChosenWallpapers": "Number of chosen wallpapers",
+                "question": "Question"
+            },
+            "actions": {
+                "submit": "Submit"
+            },
+            "dialogs": {
+                "libraryWallpaperDialog": {
+                    "header": "Wallpapers Library",
+                    "actions": {
+                        "back": "Back to Choose Wallapapers"
+                    }
+                },
+                "chooseWllpapersDialog": {
+                    "header": "Choose Wallpaper",
+                    "fields": {
+                        "wallpaper": "Choose Wallpapers"
+                    },
+                    "actions": {
+                        "continue": "Continue",
+                        "add": "Add New Wallpaper"
+                    }
+                }
+            }
+        },
+        "security-training-details": {},
+        "training-lesson-category-list": {},
+        "security-training-list": {},
+        "training-lesson-language-create": {},
+        "video-viewer-dialog": {}
+    },
+    "simulation-phishing": {
+        "dynamic-landing-content": {},
+        "phishing-schedule-user-list": {}
+    },
+    "subscription": {
+        "payment-reminder-list": {
+            "title": "Manage Payment Reminders",
+            "fields": {
+                "daysBeforePayment": "Days Before Payment",
+                "status": "Status",
+                "title": "Title",
+                "message": "Message",
+                "subject": "Subject"
+            },
+            "message": {
+                "deleteAll": "Are you sure you want to delete the selected reminders?"
+            },
+            "actions": {
+                "add": "Add",
+                "deleteAll": "Delete All"
+            },
+            "dialogs": {
+                "reminderDialog": {
+                    "header": "Payment Reminder Details",
+                    "fields": {
+                        "title": "Title",
+                        "subject": "Subject",
+                        "message": "Message",
+                        "daysBeforePayment": "Days Before Payment"
+                    },
+                    "validations": {
+                        "title": "Title is required",
+                        "subject": "Subject is required",
+                        "message": "Message is required",
+                        "daysBeforePayment": "Days Before Payment is required"
+                    }
+                }
+            }
+        },
+        "subscription-list": {
+            "title": "Manage Subscriptions",
+            "actions": {
+                "add": "Add New Subscription"
+            },
+            "fields": {
+                "name": "Subscription Name",
+                "userPrice": "Price per User",
+                "duration": "Duration",
+                "features": "Features",
+                "freePlane": "Free Plan",
+                "status": "Status"
+            },
+            "dialogs": {
+                "subscriptionDialog": {
+                    "header": "Subscription Details",
+                    "fields": {
+                        "title": "Title",
+                        "description": "Description",
+                        "roles": "Roles",
+                        "rolesPlaceholder": "Select Roles",
+                        "durationNumber": "Duration Number",
+                        "durationType": "Duration Type",
+                        "trainingLessons": "Training Lessons",
+                        "defaultRole": "Defualt Role",
+                        "defaultRolePlaceholder": "Select Defualt Role",
+                        "userPrice": "User Price",
+                        "reminders": "Payment Reminders",
+                        "remindersPlaceholder": "Select Reminders",
+                        "phishingTemplates": "Phishing Templates",
+                        "unlimitedPhishingSimulation": "Unlimited Phishing Simulation",
+                        "awarenessVideos": "Awareness Videos",
+                        "comicBooks": "Comic Books",
+                        "knowledgeQuiz": "Knowledge Quiz",
+                        "securityQuotesAndTips": "Security Quotes and Tips",
+                        "advancedReporting": "Advanced Reporting",
+                        "awarenessEmails": "Awareness Emails",
+                        "wallpapers": "Wallpapers",
+                        "screenSavers": "Screen Savers",
+                        "games": "Games",
+                        "customizedPhishingExperience": "Customized Phishing Experience",
+                        "vrGamesAndTraining": "VR Games and Training",
+                        "localization": "Localization",
+                        "onSiteDeployment": "On-Site Deployment",
+                        "iawareMobileApp": "iAware Mobile App",
+                        "automatedTrainingCampaigns": "Automated Training Campaigns",
+                        "brandableContent": "Brandable Content",
+                        "phishAlertButton": "Phish Alert Button",
+                        "userProvisioningViaActiveDirectory": "User Provisioning via Active Directory",
+                        "technicalSupport": "Technical Support",
+                        "smartGroups": "Smart Groups"
+                    },
+                    "validation": {
+                        "title": "Title is required.",
+                        "defaultRole": "Defualt Role is requird.",
+                        "roles": "Roles is required."
+                    }
+                },
+                "featuresDetailsDialog": {
+                    "header": "Features Detials",
+                    "fields": {
+                        "unlimitedPhishingSimulation": "Unlimited Phishing Simulation",
+                        "awarenessVideos": "Awareness Videos",
+                        "comicBooks": "Comic Books",
+                        "knowledgeQuiz": "Knowledge Quiz",
+                        "securityQuotesAndTips": "Security Quotes and",
+                        "advancedReporting": "Advanced Reporting",
+                        "awarenessEmails": "Awareness Emails",
+                        "wallpapers": "Wallpapers",
+                        "screenSavers": "Screen Savers",
+                        "games": "Games",
+                        "customizedPhishingExperience": "Customized Phishing Experience",
+                        "vrGamesAndTraining": "VR Games and Training",
+                        "localization": "Localization",
+                        "onSiteDeployment": "On-Site Deployment",
+                        "iawareMobileApp": "iAware Mobile App",
+                        "automatedTrainingCampaigns": "Automated Training Campaigns",
+                        "brandableContent": "Brandable Content",
+                        "phishAlertButton": "Phish Alert Button",
+                        "userProvisioningViaActiveDirectory": "User Provisioning via Active Directory",
+                        "technicalSupport": "Technical Support",
+                        "smartGroups": "Smart Groups"
+                    }
+                },
+                "freeSubscriptionDialog": {
+                    "header": "Free subscription Status",
+                    "freeMessageI": "Are you sure you want to make ",
+                    "freeMessageII": "Free?",
+                    "notFreeMessageI": "Not Free?"
+                }
+            }
+        }
+    },
+    "support": {
+        "category": {
+            "fields": {
+                "members": "Members",
+                "description": "Description",
+                "title": "Title",
+                "status": "Status"
+            },
+            "actions": {
+                "add": "Add New Category"
+            },
+            "dialogs": {
+                "editDialog": {
+                    "header": "Edit Category",
+                    "fields": {
+                        "members": "Members",
+                        "description": "Description",
+                        "title": "Title"
+                    },
+                    "placeholders": {
+                        "members": "Select Members"
+                    }
+                },
+                "addDialog": {
+                    "header": "Add New Category",
+                    "fields": {
+                        "members": "Members",
+                        "description": "Description",
+                        "title": "Title"
+                    },
+                    "placeholders": {
+                        "members": "Select Members"
+                    }
+                },
+                "usersWithinDeptDialog": {
+                    "header": "Category Members",
+                    "fields": {
+                        "firstName": "First Name",
+                        "lastName": "Last Name",
+                        "email": "Email"
+                    }
+                }
+            }
+        },
+        "status": {
+            "fields": {
+                "title": "Title",
+                "category": "Category",
+                "colorCode": "Color Code",
+                "isClosedCase": "Is Closed Case",
+                "status": "Status"
+            },
+            "actions": {
+                "add": "Add New Status"
+            },
+            "dialogs": {
+                "editDialog": {
+                    "header": "Edit Status",
+                    "fields": {
+                        "title": "Title",
+                        "categories": "Cateogories",
+                        "colorCode": "Color Code",
+                        "isClosedCase": "Is Closed Case",
+                        "orderNo": "Order Number"
+                    },
+                    "placeholders": {
+                        "categories": "Select Category"
+                    }
+                },
+                "addDialog": {
+                    "header": "Add New Status",
+                    "fields": {
+                        "title": "Title",
+                        "categories": "Cateogories",
+                        "colorCode": "Color Code",
+                        "isClosedCase": "Is Closed Case",
+                        "orderNo": "Order Number"
+                    },
+                    "placeholders": {
+                        "categories": "Select Category"
+                    }
+                }
+            }
+        },
+        "subject": {
+            "fields": {
+                "category": "Cateogory",
+                "title": "Title",
+                "isCustomSubject": "Is Custom Subject",
+                "status": "Status"
+            },
+            "actions": {
+                "add": "Add New Subject"
+            },
+            "dialogs": {
+                "editDialog": {
+                    "header": "Edit Subject",
+                    "fields": {
+                        "categories": "Categories",
+                        "title": "Title",
+                        "isCustomSubject": "Is Custom Subject"
+                    },
+                    "placeholders": {
+                        "category": "Select Category"
+                    }
+                },
+                "addDialog": {
+                    "header": "Add New Subject",
+                    "fields": {
+                        "categories": "Cateogories",
+                        "title": "Title",
+                        "isCustomSubject": "Is Custom Subject"
+                    },
+                    "placeholders": {
+                        "category": "Select Category"
+                    }
+                }
+            }
+        }
+    },
+    "tenantgroup": {
+        "tenantgroup-listing": {
+            "fields": {
+                "groupName": "Group Name",
+                "status": "Status"
+            },
+            "actions": {
+                "add": "Add New Group",
+                "syncAD": "Sync AD Groups(OUs)"
+            },
+            "dialogs": {
+                "editDialog": {
+                    "header": "Edit Group",
+                    "fields": {
+                        "groupName": "Group Name",
+                        "groupMembers": "Group Memebers",
+                        "selectMemebers": "Select Members"
+                    }
+                },
+                "addDialog": {
+                    "header": "Add New Group",
+                    "fields": {
+                        "groupName": "Group Name",
+                        "groupMembers": "Group Memebers",
+                        "selectMemebers": "Select Members"
+                    }
+                }
+            }
+        }
+    },
+    "user": {
+        "user-create": {
+            "table": {
+                "title": "User List",
+                "columns": {
+                    "username": "Username",
+                    "email": "Email",
+                    "role": "Role",
+                    "status": "Status",
+                    "actions": "Actions"
+                }
+            },
+            "validation": {},
+            "dialogs": {
+                "editTitle": "Edit User",
+                "deleteConfirmation": "Are you sure you want to delete {{username}}?",
+                "statusConfirmation": "Are you sure you want to {{action}} {{username}}?"
+            },
+            "notifications": {
+                "saveSuccess": "User saved successfully",
+                "deleteSuccess": "User deleted successfully",
+                "statusUpdateSuccess": "User {{action}} successfully"
+            }
+        },
+        "subscription-details": {},
+        "user-details": {
+            "userInfoSection": {
+                "header": "User Info",
+                "firstName": "First Name",
+                "lastName": "Last Name",
+                "email": "Email",
+                "emailVerified": "Email Verified",
+                "phoneNumber": "Phone Number",
+                "language": "Language",
+                "createdAt": "Created At",
+                "accountStatus": "Account Status",
+                "notEntered": "Not Entered",
+                "active": "Active",
+                "inactive": "Inactive",
+                "emailConfirmedYes": "Yes",
+                "emailConfirmedNo": "No",
+                "points": "Points",
+                "badges": "Badges",
+                "ranking": "Ranking",
+                "positivePoints": "Positive Points",
+                "negativePoints": "Negative Points",
+                "totalPoints": "Total Points",
+                "noBadgesMessage": "No badges earned yet.",
+                "userRanking": "User Ranking",
+                "encouragementHighRank": "The user is performing well, encourage them to keep going!",
+                "encouragementLowRank": "The user's rank needs improvement. Encourage them to engage more.",
+                "noRankingAvailable": "No rankings available yet.",
+                "noRankingMessage": "Rankings will be available once users start earning points.",
+                "startTraining": "Start Training"
+            },
+            "organizationRiskScoreSection": {
+                "header": "Organization's Risk Score",
+                "riskHistory": "Risk History",
+                "riskScore": "Risk Score"
+            },
+            "trainingSection": {
+                "header": "Training",
+                "statusOfAllCampaigns": "Status of All Campaigns",
+                "totalCompletedAssignments": "Total Completed Assignments",
+                "completed": "Completed:",
+                "inProgress": "In Progress:",
+                "notStarted": "Not Started:",
+                "trainingLessonsDetails": "Training Lessons Details",
+                "campaignName": "Campaign Name",
+                "campaignProgress": "Campaign Progress",
+                "campaignStartDate": "Campaign Start Date",
+                "campaignEndDate": "Campaign End Date",
+                "noLessonsAvailable": "No lessons available for this campaign.",
+                "selectaCampaign": "Select a Campaign",
+                "completedd": "Completed",
+                "inProgresss": "In Progress",
+                "notStartedd": "Not Started",
+                "lessonName": "Lesson Name",
+                "lessonJoiningDate": "Lesson Joining Date",
+                "contentStatus": "Content Status",
+                "status": "Status",
+                "score": "Score",
+                "totalLessons": "Total Lessons: {number}",
+                "lessonScore": "{number} %",
+                "compelationPercentage": "{number} % Completed",
+                "statusofRunningCampaigns": "Status of Running Campaigns"
+            },
+            "phishingSection": {
+                "header": "Phishing",
+                "riskHistory": "Risk History",
+                "riskScore": "Risk Score",
+                "vulnerabilityRate": "Phishing Vulnerability Rate",
+                "emailsDelivered": "Emails Delivered:",
+                "emailsFailures": "Emails Failures:",
+                "emailsReported": "Emails Reported:",
+                "emailsNoActions": "Emails No Actions:",
+                "personalThreatPercentage": "Personal Phishing Threat Percentage:",
+                "basedonemailsDelivered": " (based on { emailsDelivered } emails delivered)",
+                "campaignDetails": "Phishing Campaign Details",
+                "showCampaignDetails": "Show Campaign Details",
+                "selectCampaign": "Select Campaign",
+                "clicked": "Clicked:",
+                "dataEntered": "Data Entered:",
+                "emailsDeliveredd": "Emails Delivered",
+                "emailsFailuress": "Emails Failures",
+                "emailsReportedd": "Emails Reported",
+                "emailsNoActionss": "Emails No Actions",
+                "clickedd": "Clicked",
+                "dataEnteredd": "Data Entered",
+                "campaignName": "Campaign Name",
+                "campaignDates": "Campaign Dates",
+                "templateName": "Template Name",
+                "delivered": "Delivered",
+                "Opened": "Opened",
+                "qRCodeScanned": "QR Code Scanned",
+                "reported": "Reported",
+                "totalTemplates": "Total Templates: {number}"
+            },
+            "charts": {
+                "totalAssignments": "Total Assignments",
+                "totalAssignmentsinCampaign": "Total Assignments in Campaign",
+                "lessons": "Lessons: [value]",
+                "lessonDetails": "Lesson Details",
+                "completed": "Completed",
+                "inProgress": "In Progress",
+                "notStarted": "Not Started",
+                "failed": "Failed",
+                "reported": "Reported",
+                "noActions": "No Actions",
+                "clicked": "Clicked",
+                "dataEntered": "Data Entered"
+            }
+        },
+        "user-listing": {
+            "usersTable": {
+                "fields": {
+                    "firstName": "First Name",
+                    "lastName": "Last Name",
+                    "roles": "Roles",
+                    "groups": "Groups",
+                    "email": "Email",
+                    "emailConfirmed": "Email Confirmed",
+                    "status": "Status",
+                    "unit": "Department"
+                }
+            },
+            "actions": {
+                "save": "Save Changes",
+                "cancel": "Cancel",
+                "exportExcelSample": "Export Excel Sample",
+                "exportUsers": "Export Users",
+                "addUser": "Add New Users",
+                "delete": "Delete User",
+                "globalSearch": "Global Search",
+                "editUser": "Edit User",
+                "importUsers": "Import Users",
+                "syncADUsers": "Sync Active Directory Users",
+                "refresh": "Refresh",
+                "exportDeletedUsers": "Export Deleted Users",
+                "activeUsers": "Active & Inactive Users",
+                "deletedUsers": "Deleted Users",
+                "noActiveUsersavailable": "No active Users available",
+                "noDeletedUsersavailable": "No deleted Users available",
+                "editUserRoles": "Edit User Roles"
+            },
+            "notifications": {
+                "updateSuccess": "Profile updated successfully"
+            },
+            "validations": {},
+            "dialogs": {
+                "editeUserDialog": {
+                    "header": "Edit User",
+                    "fields": {
+                        "firstName": "First Name",
+                        "lastName": "Last Name",
+                        "language": "Language",
+                        "roles": "Roles",
+                        "group": "Group"
+                    },
+                    "validations": {
+                        "firstName": "First Name is required.",
+                        "lastName": "Last Name is required.",
+                        "language": "Email is required.",
+                        "roles": "Roles is required."
+                    },
+                    "placeHolders": {
+                        "firstName": "First Name",
+                        "lastName": "Last Name",
+                        "language": "Select Language",
+                        "roles": "Select Roles",
+                        "group": "Select Group"
+                    }
+                },
+                "addUserDialog": {
+                    "header": "Add New Users",
+                    "taps": {
+                        "adUser": "Add Manual",
+                        "excelUsers": "Import from Excel",
+                        "adSync": "Sync from Active Directory"
+                    },
+                    "messages": {
+                        "adUser": "Manually add users by filling out their details, such as first name, last name, email, groups, and language preferences. This option allows direct user registration and active status management.",
+                        "excelUsers": "Add users in bulk by importing an Excel file. This option streamlines the process of adding multiple users at once. Ensure your file is correctly formatted, with all the necessary user details, before uploading.",
+                        "excelUsersMessage": "Please ensure that the Organization Units in the Excel file are already present in the system to avoid data mismatches. If the OUs dosn't exist, ",
+                        "adSync": "Automatically sync users from your Active Directory. This option keeps your system in sync with your organization's AD, making sure user information is up to date and consistent across both platforms."
+                    },
+                    "fields": {
+                        "firstName": "First Name",
+                        "lastName": "Last Name",
+                        "userName": "User Name",
+                        "language": "Language",
+                        "email": "Email",
+                        "dept": "Department",
+                        "roles": "Roles",
+                        "isActive": "Active",
+                        "group": "Group"
+                    },
+                    "validations": {
+                        "firstName": "First Name is required.",
+                        "lastName": "Last Name is required.",
+                        "userNameRequired": "User Name is required.",
+                        "userNamePattern": "User name must contain only letters, numbers, periods, hyphens, and underscores.",
+                        "userNameConsecutivePeriods": "User name cannot contain consecutive periods.",
+                        "language": "Language is required.",
+                        "roles": "Selectt least one role.",
+                        "email": "Email  is required.",
+                        "emailAddress": "Email Address is Invalid."
+                    },
+                    "placeHolders": {
+                        "firstName": "First Name",
+                        "userName": "User Name",
+                        "dept": "Select Department",
+                        "lastName": "Last Name",
+                        "language": "Select Language",
+                        "roles": "Select Roles",
+                        "email": "Email"
+                    }
+                },
+                "adUsersDialog": {
+                    "usersTable": {
+                        "fields": {
+                            "firstName": "First Name",
+                            "lastName": "Last Name",
+                            "email": "Email"
+                        }
+                    }
+                },
+                "excelUsersDialog": {
+                    "usersTable": {
+                        "fields": {
+                            "firstName": "First Name",
+                            "lastName": "Last Name",
+                            "email": "Email",
+                            "search": "Search Users",
+                            "groups": "Groups"
+                        }
+                    }
+                },
+                "importUsersToaster": {
+                    "fileName": " File Name",
+                    "fileSize": "File Size",
+                    "confirm": "Confirm?",
+                    "cancel": "Cancel",
+                    "totalRecords": "Total Records",
+                    "duplicatedRecords": "Duplicated Records",
+                    "uniqueRecords": "Unique Records",
+                    "numOfUsers": "Number Of Users",
+                    "groups": "Groups",
+                    "ous": "Organization Units",
+                    "excelDataOverview": "Excel Data Overview",
+                    "invalidRecords": "Invalid Records"
+                }
+            }
+        },
+        "user-tenant-profile": {
+            "userProfile": "User Profile",
+            "tenantProfile": "Company Profile",
+            "AdminProfile": "Administrator Profile",
+            "subscription": "Subscription",
+            "activeDirectorySettings": "Active Directory Settings",
+            "administrators": "Administrators",
+            "badges": "Badges",
+            "positivePoints": "Positive Points",
+            "negativePoints": "Negative Points",
+            "totalPoints": "Total Points",
+            "firstName": "First Name",
+            "firstNameValidation": "First Name is required.",
+            "lastName": "Last Name",
+            "lastNameValidation": "Last Name is required",
+            "timeZone": "Time Zone",
+            "timeZoneValidation": "Time Zone is required",
+            "phone": "Phone",
+            "phoneValidation": "Phone is required",
+            "email": "Email",
+            "emailValidation": "Email is required",
+            "revokeAdmin": "Revoke Admin",
+            "renewSubscription": "Renew Subscription",
+            "remainingDays": "Remaining Days: ",
+            "renew": "Renew",
+            "updgradeSubscription": "Updgrade Subscription",
+            "currentPlan": "Current Plan:",
+            "purchaseUsers": "Purchase Users",
+            "currentUsersNumber": "Current Users Number:",
+            "refundRequest": "Refund Request",
+            "request": "Request",
+            "yourSubscriptionDetails": "Your Subscription Details",
+            "company": "Company:",
+            "subscriptionPlan": "Subscription Plan:",
+            "startDate": "Start Date:",
+            "endDate": "End Date:",
+            "invoice": "Invoice",
+            "subscriptionPlann": "Subscription Plan",
+            "startDatee": "Start Date",
+            "endDatee": "End Date",
+            "userCount": "User Count",
+            "priceUser": "Price/User",
+            "total": "Total",
+            "paymentMethods": "Payment Methods",
+            "paymentMethodsMessage": "Choose your preferred payment method from the options below. You can select Credit Card, PayPal, Wire Transfer, or Bitcoin. Your choice will determine how you will complete your payment.",
+            "creditCard": "Credit Card",
+            "creditCardMessage": "Pay securely using your Credit Card. Enjoy the convenience and safety of online payment with all major credit cards accepted.",
+            "payPal": "PayPal",
+            "payPalMessage": "Use PayPal for a quick and secure payment. Log in to your PayPal account to complete the transaction easily.",
+            "wireTransfer": "Wire Transfer",
+            "wireTransferMessage": "Choose Wire Transfer to make a direct bank transfer. Follow the instructions provided to complete your payment securely.",
+            "bitCoin": "BitCoin",
+            "bitCoinMessage": "Pay with Bitcoin for a modern and innovative payment experience. Ensure you have a Bitcoin wallet set up for this method.",
+            "invoiceKey": "Invoice Key {{key}}",
+            "amount": "Amount",
+            "requestReferenceKey": "Request Reference Key",
+            "requestPaymentNote": "Request Payment Note",
+            "paymentReuqestImage": "Payment Reuqest Image",
+            "pricingPlans": "Pricing Plans",
+            "pricingPlansMessage": "Choose the perfect plan for your organization and start strengthening your security awareness. Whether you're a small team or a large enterprise, we have a solution tailored to meet your needs.",
+            "peruser": "per user",
+            "activeLanguages": "Active Languages",
+            "features": "Features",
+            "unlimitedPhishingSimulations": "Unlimited Phishing Simulations",
+            "awarenessVideos": "Awareness Videos",
+            "comicBooks": "Comic Books",
+            "knowledgeQuiz": "Knowledge Quiz",
+            "securityQuotes& Tips": "Security Quotes & Tips",
+            "awarenessEmails": "Awareness Emails",
+            "wallpapers": "Wallpapers",
+            "screenSavers": "Screen Savers",
+            "games": "Games",
+            "vRGames&Training": "VR Games & Training",
+            "localization": "Localization",
+            "onSiteDeployment": "On-Site Deployment",
+            "iAwareMobileApp": "iAware Mobile App",
+            "automatedTrainingCampaigns": "Automated Training Campaigns",
+            "brandableContent": "Brandable Content",
+            "phishAlertButton": "Phish Alert Button",
+            "userProvisioningviaActiveDirectory": "User Provisioning via Active Directory",
+            "advancedReporting": "Advanced Reporting",
+            "technicalSupport": "Technical Support",
+            "smartGroups": "Smart Groups",
+            "customizedPhishingExperience": "Customized Phishing Experience",
+            "requestAQuote": "Request A Quote",
+            "yourRequestCompletedSuccessfully": "Your Request Completed Successfully",
+            "yourRequestCompletedSuccessfullyMessage": "You will receive an email within 48 hours once our accounting department completes their verification. Please check your inbox for further updates.",
+            "checkInvoice": "Check Invoice",
+            "userCountRequest": "User Count Request",
+            "userCountRequestValidation": "Please enter a valid number of users greater than 0.",
+            "calculateTotalPrice": "Calculate Total Price",
+            "nobadgesearned": "No badges earned yet.",
+            "earnedTimes": "Earned: {times} time(s)",
+            "onlyLettersValidation": "Only letters and spaces are allowed. No special characters or numbers.",
+            "minLengthValidation": "Name must be at least 2 characters long.",
+            "maxLengthValidation": "Name cannot exceed 50 characters.",
+            "dialogs": {
+                "returnAdminDialog": {
+                    "header": "Return Administrator to User Role",
+                    "message": "You are about to revoke administrative privileges from this user. This action will affect their access across the entire organization. Please ensure that this decision aligns with your organization's policies and requirements before proceeding."
+                },
+                "addNewAdministratorDialog": {
+                    "header": "Add New Administrator",
+                    "message": "You are about to add a new administrator to the system.",
+                    "user": "User",
+                    "userValidation": "User is requird",
+                    "userPlaceholder": "Select User",
+                    "roles": "Roles",
+                    "rolesValidation": "At least one role is required",
+                    "rolesPlaceholder": "Select Roles"
+                }
+            },
+            "profileImagevalidation": {
+                "allowedTypes": "Only image files (JPEG, PNG, WEBP) are allowed.",
+                "allowedSize": "File size must be less than 5MB."
+            }
+        }
+    },
+    "wallpaper-libraries": {
+        "library-background": {},
+        "library-language-character": {},
+        "library-language-quote": {},
+        "library-wallpaper": {},
+        "library-wallpaper-ingredients": {},
+        "library-wallpaper-language": {}
+    },
+    "wallpaper-wizard": {
+        "wall-lang-list-wiz": {
+            "background-lang-wiz": {
+                "actions": {
+                    "add": "Add New Background"
+                },
+                "addDialog": {
+                    "header": "Add New Background",
+                    "title": "Background Image"
+                },
+                "editDialog": {
+                    "header": "Edit Background",
+                    "title": "Background Image"
+                }
+            },
+            "character-lang-wiz": {
+                "actions": {
+                    "add": "Add New Character"
+                },
+                "addDialog": {
+                    "header": "Add New Character",
+                    "language": "Language",
+                    "languagePlaceholder": "Select Language",
+                    "name": "Name",
+                    "nameValidation": "Name is required",
+                    "image": "Character Image",
+                    "imageThumbnail": "Character Thumbnail"
+                },
+                "editDialog": {
+                    "header": "Edit Character",
+                    "language": "Language",
+                    "languagePlaceholder": "Select Language",
+                    "name": "Name",
+                    "nameValidation": "Name is required",
+                    "image": "Character Image",
+                    "imageThumbnail": "Character Thumbnail"
+                }
+            },
+            "quote-lang-wiz": {
+                "actions": {
+                    "add": "Add New Quote"
+                },
+                "fields": {
+                    "quote": "Quote Text",
+                    "language": "Language"
+                },
+                "addDialog": {
+                    "header": "Add New Quote",
+                    "language": "Language",
+                    "languagePlaceholder": "Select Language",
+                    "quoteText": "Quote Text",
+                    "quotePlaceholder": "Type here...",
+                    "quoteValidation": "Quote Text is required."
+                },
+                "editDialog": {
+                    "header": "Edit Quote",
+                    "language": "Language",
+                    "languagePlaceholder": "Select Language",
+                    "quoteText": "Quote Text",
+                    "quotePlaceholder": "Type here...",
+                    "quoteValidation": "Quote Text is required."
+                }
+            },
+            "wall-create-lang-wiz": {
+                "background": "Backgrounds",
+                "character": "Characters",
+                "quote": "Quotes",
+                "schedule": "Preview"
+            },
+            "wall-lang-preview": {
+                "wallpaper": "Wallpaper Name",
+                "wallpaperValidation": "Wallpaper name is required.",
+                "language": "Language",
+                "languagePlaceholder": "Select Language",
+                "languageValidation": "Language is required.",
+                "selectedCharacter": "Selected Character",
+                "selectedBackground": "Selected Background",
+                "selectedQuote": "Selected Quote",
+                "createWallpaper": "Create Wallpaper"
+            },
+            "title": "Languages",
+            "addDialog": {
+                "header": "Add New Wallpaper",
+                "fields": {
+                    "title": "Wallpaper Title",
+                    "titleValidations": "Title is required",
+                    "language": "Language",
+                    "languagePlaceholder": "Select Language",
+                    "languageValidation": "Language is required.",
+                    "searchPlaceholder": "Search..."
+                }
+            },
+            "editDialog": {
+                "header": "Edit Wallpaper",
+                "fields": {
+                    "title": "Wallpaper Title",
+                    "titleValidations": "Title is required",
+                    "language": "Language",
+                    "languagePlaceholder": "Select Language"
+                }
+            },
+            "actions": {
+                "add1": "Add Custom Wallpaper Language",
+                "add2": "Upload Default Wallpaper Language"
+            }
+        },
+        "wallpaper-list-wizard": {
+            "library-background-wizard": {
+                "title": "Background Library",
+                "actions": {
+                    "add": "Add New Background"
+                },
+                "addDialog": {
+                    "header": "Add New Background",
+                    "title": "Background Image",
+                    "titleThumbnail": "Background Thumbnail"
+                },
+                "editDialog": {
+                    "header": "Edit Background",
+                    "title": "Background Image",
+                    "titleThumbnail": "Background Thumbnail"
+                }
+            },
+            "library-character-wizard": {
+                "title": "Character Library",
+                "actions": {
+                    "add": "Add New Character"
+                },
+                "addDialog": {
+                    "header": "Add New Character",
+                    "language": "Language",
+                    "languagePlaceholder": "Select Language",
+                    "name": "Name",
+                    "nameValidation": "Name is required",
+                    "image": "Character Image",
+                    "imageThumbnail": "Character Thumbnail"
+                },
+                "editDialog": {
+                    "header": "Edit Character",
+                    "language": "Language",
+                    "languagePlaceholder": "Select Language",
+                    "name": "Name",
+                    "nameValidation": "Name is required",
+                    "image": "Character Image",
+                    "imageThumbnail": "Character Thumbnail"
+                }
+            },
+            "library-quote-wizard": {
+                "title": "Quotes Library",
+                "actions": {
+                    "add": "Add New Quote"
+                },
+                "fields": {
+                    "quote": "Quote Text",
+                    "language": "Language",
+                    "status": "Status",
+                    "quoteText": "Quote Text"
+                },
+                "addDialog": {
+                    "header": "Add New Quote",
+                    "language": "Language",
+                    "languagePlaceholder": "Select Language",
+                    "quoteText": "Quote Text",
+                    "quotePlaceholder": "Type here...",
+                    "quoteValidation": "Quote Text is required."
+                },
+                "editDialog": {
+                    "header": "Edit Quote",
+                    "language": "Language",
+                    "languagePlaceholder": "Select Language",
+                    "quoteText": "Quote Text",
+                    "quotePlaceholder": "Type here...",
+                    "quoteValidation": "Quote Text is required."
+                }
+            },
+            "wall-preview": {
+                "wallpaper": "Wallpaper Name",
+                "wallpaperValidation": "Wallpaper name is required.",
+                "selectedCharacter": "Selected Character",
+                "selectedBackground": "Selected Background",
+                "selectedQuote": "Selected Quote",
+                "createWallpaper": "Create Wallpaper"
+            },
+            "wallpaper-create-wizard": {
+                "background": "Backgrounds",
+                "character": "Characters",
+                "quote": "Quotes",
+                "schedule": "Preview"
+            },
+            "title": "Wallapapers Gallery",
+            "addDialog": {
+                "header": "Add Wallpaper",
+                "fields": {
+                    "title": "Wallpaper Title",
+                    "titleValidations": "Title is required",
+                    "language": "Language",
+                    "languagePlaceholder": "Select Language",
+                    "tag": "Tags",
+                    "tagsPlaceholder": "Select Tags"
+                }
+            },
+            "actions": {
+                "add1": "Add Custom Wallpaper",
+                "add2": "Upload Default Wallpaper",
+                "title": "Title",
+                "titleisrequired": "Title is required.",
+                "wallpaperImage": "Wallpaper Image",
+                "wallpaperImageValidation": "Wallpaper image is required.",
+                "wallpaperThumbnailImage": "Wallpaper Thumbnail Image"
+            }
+        }
+    },
+    "training-campaigns": {
+        "campaign-details": {
+            "readingMessage": "<i class=\"pi pi-sun\" style=\"color: rgb(255, 196, 0);font-size: 1.5rem\"></i> You're currently reading the book. If you prefer watching the video, <a style=\"cursor: pointer; font-size: medium; font-weight: 500;\" (click)=\"navigateToVideo()\">click here</a> to watch the video.",
+            "question": "Question ( {currentQuestionIndex}/{quizzes} )",
+            "correctAnswers": "You got <strong>{ correctanswers }</strong> correct answers",
+            "earnedPoints": "You earned <strong>{ points }</strong> points from correct answers",
+            "videoPoints": "You earned <strong>{videoPointValue} points</strong> from watching video",
+            "bookPoints": "You earned <strong>{bookPointValue} points</strong> from reading book",
+            "watchOrRead": "You can watch the video in this step, or if you prefer reading, <a style='cursor: pointer; font-size: medium; font-weight: 500;' (click)='navigateToBook()'>click here</a> to read the book",
+            "congratulations": "🎉 Congratulations! 🎉"
+        },
+        "current-campaign": {
+            "dashboard": "Training Campaigns Dashboard",
+            "currentCampaigns": "Current Runinig Campaigns",
+            "currentMessage": "Current Campaigns: Access the latest lessons, including videos, books, and quizzes, designed to expand your knowledge. Complete activities to track your progress and stay on course!",
+            "completedCampaigns": "Completed Campaigns",
+            "completedCampaignsMessage": "Campaign History: Revisit completed lessons—videos, books, and quizzes—to earn additional points. Enhance your knowledge and boost your score by exploring these valuable resources again!",
+            "name": "Campaign Name",
+            "progress": "Campaign Progress",
+            "lessonName": "Lesson Name",
+            "lessonJoiningDate": "Lesson Joining Date",
+            "contentStatus": "Content Status",
+            "status": "Status",
+            "score": "Score",
+            "totalLessons": "Total Lessons: {number}",
+            "lessonScore": "{number} %",
+            "compelationPercentage": "{number} % Completed",
+            "viewCertificate": "View Certificate",
+            "clickviewdetails": "click to view campaign details",
+            "noCampaignsAvailable": "No campaigns available",
+            "clicktocontinue": "Click to continue",
+            "clicktostart": "Click to start"
+        },
+        "training-campaign-statistics": {
+            "campaignContent": "Campaign Content",
+            "viewUsersProgress": "View Users Progress",
+            "compelationPercentage": "{number} % Completed",
+            "userCompletionActivity": "User Completion Activity",
+            "campaignSummary": "Campaign Summary",
+            "status": "Status:",
+            "name": "Name:",
+            "startDate": "Start Date:",
+            "endDate": "End Date:",
+            "duration": "Duration:",
+            "durationValue": "{valueString}",
+            "users": "Users:",
+            "CampaignLeaderboardHeader": "Campaign Leaderboard",
+            "CampaignLeaderboardMessage": " Welcome to the Campaigns Leaderboard! Here you can view user rankings across all campaigns or focus on a specific campaign. Track who's leading and see the first users to complete their lessons in each campaign. Compete to be at the top and motivate others to complete their training on time!",
+            "ranking": "Ranking",
+            "nameII": "Name",
+            "points": "Points",
+            "noData": "No users have started yet. Points will be awarded once participation begins. The leaderboard will update as soon as users start participating.",
+            "usersProgressDilogHeader": "Users Progress",
+            "userName": "User Name",
+            "userEmail": "User Email",
+            "percentage": "Progress Percentage",
+            "numberofUserswhohavenotcompletedtheirassignments": "Number of Users who have not completed their assignments",
+            "remaining": "Remaining",
+            "completed": "Completed",
+            "completedUsers": "Completed Users",
+            "remainingUsers": "Remaining Users"
+        }
+    },
+    "phishingCampaignsDashboard": {
+        "currentCampaigns": "Current Campaigns",
+        "completedCampaigns": "Completed Campaigns",
+        "selectACampaign": "Select a Campaign",
+        "reportedd": "Reported:",
+        "noActionn": "No Action:",
+        "failedd": "Failed:",
+        "trendAnalysis": "Trend Analysis",
+        "trendAnalysisMessage": "Welcome to the Phishing Campaign Trend Analysis. This chart provides an overview of users expected to report phishing attempts compared to those who have yet to take action. Monitoring these trends supports improved security awareness and fosters timely responses across all campaigns.",
+        "selectAMonth": "Select a Month",
+        "campaignLeaderboard": "Phishing Failure Board",
+        "campaignLeaderboardMessage": "Phishing Campaign Leaderboard: Track users impacted by phishing attempts and their corresponding negative points. Foster improvement to minimize phishing incidents over time.",
+        "campaignLeaderboardNoDataMessage": "No data available yet. Once users are phished, the leaderboard will update with their negative points.",
+        "ranking": "Ranking",
+        "name": "Name",
+        "points": "Points",
+        "userName": "User Name",
+        "campaign": "Campaign",
+        "template": "Template",
+        "delivered": "Delivered",
+        "opened": "Opened",
+        "qrCode": "QR Code Scanned",
+        "clicked": "Clicked",
+        "dataEntered": "Data Entered",
+        "reported": "Reported",
+        "noAction": "No Action",
+        "failed": "Failed",
+        "reportedUsers": "Reported Users",
+        "noActionUsers": "No Action Users",
+        "failedUsers": "Failed Users"
+    },
+    "trainingCampaignsDashboard": {
+        "currentCampaigns": "Current Campaigns",
+        "completedCampaigns": "Completed Campaigns",
+        "selectACampaign": "Select a Campaign",
+        "trendAnalysis": "Trend Analysis",
+        "trendAnalysisMessage": "Training Campaign Trend Analysis: This chart tracks progress toward monthly targets, comparing users expected to complete their campaigns with those who have already finished. Stay focused to ensure timely completion for all users.",
+        "selectAMonth": "Select a Month",
+        "campaignLeaderboard": "Campaign Leaderboard",
+        "campaignLeaderboardMessage": "Campaigns Leaderboard: View user rankings across all campaigns or filter by a specific campaign. Track top performers and the first to complete their lessons, encouraging timely training completion and healthy competition.",
+        "campaignLeaderboardNoDataMessage": "No users have started yet. Points will be awarded once participation begins. The leaderboard will update as soon as users start participating.",
+        "ranking": "Ranking",
+        "name": "Name",
+        "points": "Points",
+        "userName": "User Name",
+        "campaign": "Campaign",
+        "completed": "Completed",
+        "completedd": "Completed:",
+        "completedUsers": "Completed Users",
+        "notStarted": "Not Started",
+        "notStartedd": "Not Started:",
+        "notStartedUsers": "Not Started Users",
+        "inProgress": "In Progress",
+        "inProgresss": "In Progress:",
+        "inProgressUsers": "In Progress Users",
+        "failedd": "Failed:",
+        "failed": "Faild",
+        "failedUsers": "Faild Users",
+        "lesson": "Lesson",
+        "score": "Quiz Score",
+        "excepted": "Excepted",
+        "actual": "Actual"
+    },
+    "tag": {
+        "tagName": "Tag Name",
+        "priorityNumber": "Priority Number",
+        "tagNameValidation": "Tag Name is required.",
+        "priorityNumberValidation": "Priority Number is required.",
+        "add": "Add New Tag",
+        "blogAllowed": "Blog Allowed",
+        "gameAllowed": "Game Allowed",
+        "newsAllowed": "News Allowed",
+        "phishingAllowed": "Phishing Allowed",
+        "trainingAllowed": "Training Allowed",
+        "wallpaperAllowed": "Wallpaper Allowed",
+        "languages": "Language Versions",
+        "addLanguage": "Add Language",
+        "permissions": "Permissions",
+        "duplicateLanguages": "Duplicate Languages Not Accepted"
+    },
+    "shared": {
+        "actions": {
+            "save": "Save",
+            "submit": "Submit",
+            "search": "Global Search",
+            "searchWithParameter": "Search {term}",
+            "cancel": "Cancel",
+            "close": "Close",
+            "edit": "Edit",
+            "delete": "Delete",
+            "view": "View",
+            "upload": "Upload",
+            "download": "Download",
+            "export": "Export",
+            "action": "Actions",
+            "confirm": "Confirm",
+            "saveChanges": "Save Changes",
+            "new": "New",
+            "back": "Back",
+            "next": "Next",
+            "add": "Add",
+            "defaultInSystem": "Default in System",
+            "type": "Type here...",
+            "clone": "Clone",
+            "preview": "Preview",
+            "hide": "Hide",
+            "csv": "CSV",
+            "pdf": "PDF",
+            "update": "Update",
+            "showMore": "Show More",
+            "showLess": "Show Less",
+            "upgrade": "Upgrade",
+            "ok": "Ok"
+        },
+        "search": {
+            "activeUser": "Search Active Users",
+            "deletedUser": "Search Deleted Users",
+            "role": "Search Roles",
+            "page": "Search Pages",
+            "group": "Search Groups",
+            "tenantUnit": "Search Departments",
+            "subscription": "Search Subscriptions",
+            "domain": "Search Domains",
+            "phishingCategory": "Search Phishing Categories"
+        },
+        "headers": {
+            "delete": "Confirm Delete",
+            "active": "Confirm Activation",
+            "defaultWallpapers": "Default Wallpapers",
+            "companyWallpapers": "Company Wallpapers",
+            "defaultBackgrounds": "Default Backgrounds",
+            "companyBackgrounds": "Company Backgrounds",
+            "sessionExpired": "Session Expired",
+            "sessionExpiredMessage": "Someone kicked you out. Please log in again.",
+            "logoutaccount": "Are you sure you want to log out of your account?",
+            "confirmLogout": "Confirm Logout"
+        },
+        "labels": {
+            "*": "* "
+        },
+        "messages": {
+            "filterMessages": "Filtering data according to tags for the {componentName} page.",
+            "delete": "Are you sure you want to delete",
+            "active": "Are you sure you want to activate",
+            "deactive": "Are you sure you want to deactive",
+            "success": "Success",
+            "required": "This Field Is Required.",
+            "noDataAvailable": "No data available",
+            "recommendedDimensions": "Recommended dimensions: ",
+            "1920x1080": "1920x1080",
+            "300x300": "300x300",
+            "1200x300": "1200x300",
+            "800x449": "800x449",
+            "600x600": "600x600",
+            "314x91": "314x91",
+            "pixels": "pixels.",
+            "editCampaignMessage": "You have selected the 'All Users' option for this campaign. As a result, the user list is automatically populated with all users in the system. Since the selection includes every user, you cannot make individual edits to the users in this campaign. If you wish to customize the user selection, please choose an alternative source, such as specific departments or groups."
+        },
+        "pagination": {
+            "showing": "Showing {first} to {last} of {totalRecords} entries"
+        },
+        "loading": "Loading, please wait..."
+    },
+    "system-emails": {
+        "system-emails-listing": {
+            "addHeader": "Add System Email",
+            "editHeader": "Edit System Email",
+            "senderName": "Username",
+            "senderDisplayName": "Display Name",
+            "senderEmail": "Email",
+            "senderEmailPassword": "Password",
+            "outgoingServer": "Outgoing Server",
+            "outgoingServerPort": "Outgoing Server Port",
+            "enableSSL": "Enable SSL",
+            "noEmails": "No system emails found"
+        }
+    }
+}
