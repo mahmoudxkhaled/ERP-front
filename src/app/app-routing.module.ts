@@ -13,12 +13,12 @@ const routes: Routes = [
         path: '',
         component: AppLayoutComponent,
         children: [
-            // {
-            //     path: '',
-            //     canActivate: [AuthGuard],
-            //     data: { breadcrumb: 'iAwareDashboard' },
-            //     loadChildren: () => import('./modules/dashboards/dashboards.module').then((m) => m.DashboardsModule),
-            // },
+            {
+                path: '',
+                canActivate: [AuthGuard],
+                data: { breadcrumb: 'iAwareDashboard' },
+                loadChildren: () => import('./modules/dashboard/dashboard.module').then((m) => m.DashboardModule),
+            },
             // {
             //     path: 'users',
             //     canActivate: [AuthGuard],

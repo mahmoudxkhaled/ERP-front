@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ERP System — Dashboard (Wireframe)</title>
+    <style>
+        :root {
+            --bg: #f6f7f9;
+            --panel: #ffffff;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --primary: #0ea5e9;
+            --border: #e5e7eb;
+            --focus: #2563eb;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+            color: var(--text);
+            background: var(--bg);
+        }
+
+        body {
+            display: grid;
+            min-height: 100vh;
+            grid-template-rows: auto 1fr auto;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: #282c34;
+            color: #fff;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 20px 16px;
+            border-bottom: 1px solid #3a3f4a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand-sidebar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .brand-sidebar .logo-sidebar {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary), #60a5fa);
+            display: grid;
+            place-items: center;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .collapse-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #3a3f4a;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+        }
+
+        .nav-section {
+            padding: 16px;
+            border-bottom: 1px solid #3a3f4a;
+        }
+
+        .nav-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #9ca3af;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-menu {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-item {
+            margin-bottom: 4px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            color: #e5e7eb;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: #374151;
+            color: #fff;
+        }
+
+        .nav-link .icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 16px;
+            border-top: 1px solid #3a3f4a;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #8b5cf6;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .user-url {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .user-menu-btn {
+            width: 20px;
+            height: 20px;
+            border: none;
+            background: none;
+            color: #9ca3af;
+            cursor: pointer;
+        }
+
+        .main-content {
+            background: #f6f7f9;
+        }
+
+        .main-header {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            /* extra bottom space for breadcrumb */
+            border-bottom: 1px solid var(--border);
+            background: #fff;
+        }
+
+        .header-breadcrumb {
+            position: absolute;
+            left: 24px;
+            top: 100%;
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 0 0 8px 8px;
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .header-breadcrumb a {
+            color: var(--muted);
+            text-decoration: none;
+        }
+
+        .header-breadcrumb a:hover {
+            color: var(--text);
+        }
+
+        .header-breadcrumb-separator {
+            color: var(--border);
+            margin: 0 4px;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+
+        .brand .logo {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            background: linear-gradient(135deg, #8b5cf6, #a855f7);
+            display: grid;
+            place-items: center;
+            color: #fff;
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        .brand .logo::after {
+            content: "E";
+        }
+
+        .right {
+            display: inline-flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-icons {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: #fff;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            color: var(--muted);
+            transition: all 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .breadcrumb a {
+            color: var(--muted);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--text);
+        }
+
+        .breadcrumb-separator {
+            color: var(--border);
+        }
+
+        .company {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .company .logo-mini {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            border: 2px dashed var(--border);
+            background: #fff;
+            color: var(--muted);
+            display: inline-grid;
+            place-items: center;
+            font-size: 10px;
+        }
+
+        .user {
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 37px auto;
+            padding: 0 16px;
+        }
+
+        .grid {
+            display: grid;
+            gap: 16px;
+            grid-template-columns: repeat(12, 1fr);
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .panel h2 {
+            margin: 0 0 8px 0;
+            font-size: 16px;
+        }
+
+        .panel p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .col-12 {
+            grid-column: span 12;
+        }
+
+        .col-6 {
+            grid-column: span 6;
+        }
+
+        .col-4 {
+            grid-column: span 4;
+        }
+
+        /* Dashboard Stacks */
+        .dashboard-stacks {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .stack-category {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .stack-title {
+            margin: 0 0 16px 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 8px;
+        }
+
+        .stack-items {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .stack-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 16px;
+            background: #f8f9fa;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            min-width: 120px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .stack-item:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(14, 165, 233, 0.2);
+        }
+
+        .item-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .item-label {
+            font-size: 12px;
+            font-weight: 500;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        @media (max-width: 768px) {
+            .stack-items {
+                flex-direction: column;
+            }
+
+            .stack-item {
+                min-width: auto;
+                width: 100%;
+            }
+        }
+
+        footer {
+            text-align: center;
+            color: var(--muted);
+            font-size: 13px;
+            padding: 12px;
+            border-top: 1px solid var(--border);
+            background: #fff;
+        }
+
+        @media (max-width: 900px) {
+
+            .col-6,
+            .col-4 {
+                grid-column: span 12;
+            }
+
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-sidebar">
+                    <div class="logo-sidebar">A</div>
+                    <span>Acme Corp</span>
+                </div>
+                <button class="collapse-btn" aria-label="Collapse sidebar">→</button>
+            </div>
+
+            <!-- Active Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Active</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="dashboard_wireframe.html" class="nav-link active">
+                            <span class="icon">📊</span>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="employee_timesheets.html" class="nav-link">
+                            <span class="icon">🧑‍💼</span>
+                            <span>My Entries</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="supervisor_timesheets.html" class="nav-link">
+                            <span class="icon">🧾</span>
+                            <span>Approvals</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="admin_timesheets.html" class="nav-link">
+                            <span class="icon">📈</span>
+                            <span>Reports</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Summary Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Summary</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="dashboard_wireframe.html" class="nav-link active">
+                            <span class="icon">📊</span>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="icon">⚡</span>
+                            <span>Actions</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="icon">🔔</span>
+                            <span>Notifications</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="icon">👤</span>
+                            <span>Profile</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="icon">⚙️</span>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="icon">🚪</span>
+                            <span>Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Company Administration Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Company Administration</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="icon">🏢</span>
+                            <span>Company Details</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="icon">👥</span>
+                            <span>Users Details</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="icon">🔄</span>
+                            <span>Workflows</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Document Control Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Document Control</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="icon">📄</span>
+                            <span>Shared Documents</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Human Resources Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Human Resources</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="employee_timesheets.html" class="nav-link">
+                            <span class="icon">🧑‍💼</span>
+                            <span>Timesheets</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="icon">📝</span>
+                            <span>Contract</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Financials Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Financials</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="icon">🧾</span>
+                            <span>Invoices</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar"
+                        style="background: #8b5cf6; color: white; display: grid; place-items: center; font-weight: bold;">
+                        JD</div>
+                    <div class="user-info">
+                        <div class="user-name">Jane Doe</div>
+                        <div class="user-url">System Admin</div>
+                    </div>
+                    <button class="user-menu-btn" aria-label="User menu">↑</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <header class="main-header">
+                <div class="brand" role="img" aria-label="ERP System">
+                    <div class="logo" aria-hidden="true"></div>
+                    <span>ERP System</span>
+                </div>
+                <div class="right">
+                    <div class="header-icons">
+                        <button class="icon-btn" aria-label="Change Theme">🌙</button>
+                        <button class="icon-btn" aria-label="Notifications">🔔</button>
+                        <button class="icon-btn" aria-label="Logout">🚪</button>
+                    </div>
+                </div>
+                <div class="header-breadcrumb">
+                    <a href="#">Home</a>
+                    <span class="header-breadcrumb-separator">/</span>
+                    <span>Dashboard</span>
+                </div>
+            </header>
+
+            <main>
+                <div class="dashboard-stacks">
+                    <!-- Stackable Category 1: Summary -->
+                    <div class="stack-category">
+                        <h2 class="stack-title">Summary</h2>
+                        <div class="stack-items">
+                            <div class="stack-item">
+                                <div class="item-icon">⚡</div>
+                                <div class="item-label">Actions</div>
+                            </div>
+                            <div class="stack-item">
+                                <div class="item-icon">🔔</div>
+                                <div class="item-label">Notifications</div>
+                            </div>
+                            <div class="stack-item">
+                                <div class="item-icon">👤</div>
+                                <div class="item-label">Profile</div>
+                            </div>
+                            <div class="stack-item">
+                                <div class="item-icon">⚙️</div>
+                                <div class="item-label">Settings</div>
+                            </div>
+                            <div class="stack-item">
+                                <div class="item-icon">🚪</div>
+                                <div class="item-label">Logout</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stackable Category 2: Company Administration -->
+                    <div class="stack-category">
+                        <h2 class="stack-title">Company Administration</h2>
+                        <div class="stack-items">
+                            <div class="stack-item">
+                                <div class="item-icon">🏢</div>
+                                <div class="item-label">Company Details</div>
+                            </div>
+                            <div class="stack-item">
+                                <div class="item-icon">👥</div>
+                                <div class="item-label">Users Details</div>
+                            </div>
+                            <div class="stack-item">
+                                <div class="item-icon">🔄</div>
+                                <div class="item-label">Workflows</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stackable Category 2: Document Control -->
+                    <div class="stack-category">
+                        <h2 class="stack-title">Document Control</h2>
+                        <div class="stack-items">
+                            <div class="stack-item">
+                                <div class="item-icon">📄</div>
+                                <div class="item-label">Shared Documents</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stackable Category 3: Human Resources -->
+                    <div class="stack-category">
+                        <h2 class="stack-title">Human Resources</h2>
+                        <div class="stack-items">
+                            <div class="stack-item">
+                                <div class="item-icon">🧑‍💼</div>
+                                <div class="item-label">Timesheets</div>
+                            </div>
+                            <div class="stack-item">
+                                <div class="item-icon">📝</div>
+                                <div class="item-label">Contract</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stackable Category 4: Financials -->
+                    <div class="stack-category">
+                        <h2 class="stack-title">Financials</h2>
+                        <div class="stack-items">
+                            <div class="stack-item">
+                                <div class="item-icon">🧾</div>
+                                <div class="item-label">Invoices</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <footer>
+                © 2025 ERP System
+            </footer>
+        </div>
+    </div>
+</body>
+
+</html>

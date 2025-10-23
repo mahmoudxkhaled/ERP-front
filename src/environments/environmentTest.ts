@@ -3,10 +3,11 @@ export const environment = {
     appVersion: 'v8.2.4',
     USERDATA_KEY: 'authf649fc9a5f55',
     isMockEnabled: true,
+    useMockData: true, // Use mock data for testing
     defaultTenantId: 'iex',
     apiUrl: 'https://testapi.iaware.co/api',
     apiUrlWithoutAPI: 'https://testapi.iaware.co',
-    gamificationEnvironment : 'test',
+    gamificationEnvironment: 'test',
     assetsPath: '../assets',
     CloudFlareAccountId: '54420c1ab525f6db898a46cca426931c',
     CloudFlareAPIKey: '84310999836a310fa258fc2299f22ff84a994',

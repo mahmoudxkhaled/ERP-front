@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, catchError, finalize, map, tap, throwError } from 'rxjs';
 import { ApiResult } from 'src/app/core/Dtos/ApiResult';
 import { DataService } from 'src/app/core/Services/data-service.service';
+import { MockAuthService } from 'src/app/core/Services/mock-auth.service';
 import { environment } from 'src/environments/environment';
 import { TenantModel } from '../models/TenantModel';
 import { ISendEmailRequest } from '../models/ISendEmailRequest';
@@ -15,15 +16,35 @@ const API_USERS_URL = environment.apiUrl;
 })
 export class AuthService {
     isLoadingSubject = new BehaviorSubject<boolean>(false);
-    constructor(private httpClient: HttpClient, private dataService: DataService) {
+    constructor(
+        private httpClient: HttpClient,
+        private dataService: DataService,
+        private mockAuthService: MockAuthService
+    ) {
         this.isLoadingSubject = new BehaviorSubject<boolean>(false);
     }
 
     login(credentials: any): Observable<ApiResult> {
+        this.isLoadingSubject.next(true);
+
+        // Use mock service if enabled, otherwise use real API
+        if (environment.useMockData) {
+            console.log('🔐 Using Mock Authentication Service');
+            return this.mockAuthService.login(credentials).pipe(
+                tap((res) => {
+                    if (res.isSuccess) {
+                        this.setAuthFromLocalStorage(res.data);
+                    }
+                }),
+                finalize(() => this.isLoadingSubject.next(false))
+            );
+        }
+
+        // Real API call
+        console.log('🔐 Using Real API Authentication');
         const httpHeaders = new HttpHeaders({
             tenant: environment.defaultTenantId,
         });
-        this.isLoadingSubject.next(true);
 
         return this.httpClient
             .post<ApiResult>(`${API_USERS_URL}/AppUser/Login`, credentials, { headers: httpHeaders })
@@ -42,6 +63,13 @@ export class AuthService {
 
     register(tenantModel: TenantModel): Observable<ApiResult> {
         this.isLoadingSubject.next(true);
+
+        if (environment.useMockData) {
+            return this.mockAuthService.register(tenantModel).pipe(
+                finalize(() => this.isLoadingSubject.next(false))
+            );
+        }
+
         const httpHeaders = new HttpHeaders({
             tenant: environment.defaultTenantId,
         });
@@ -51,6 +79,10 @@ export class AuthService {
     }
 
     resetPassword(data: any): Observable<ApiResult> {
+        if (environment.useMockData) {
+            return this.mockAuthService.resetPassword(data);
+        }
+
         const httpHeaders = new HttpHeaders({
             tenant: environment.defaultTenantId,
         });
@@ -72,10 +104,17 @@ export class AuthService {
     }
 
     confirmEmail(email: string): Observable<boolean> {
+        this.isLoadingSubject.next(true);
+
+        if (environment.useMockData) {
+            return this.mockAuthService.confirmEmail(email).pipe(
+                finalize(() => this.isLoadingSubject.next(false))
+            );
+        }
+
         const httpHeaders = new HttpHeaders({
             tenant: environment.defaultTenantId,
         });
-        this.isLoadingSubject.next(true);
         return this.httpClient
             .post<ApiResult>(`${API_USERS_URL}/AppUser/ConfirmEmail/${email}`, null, { headers: httpHeaders })
             .pipe(
@@ -87,10 +126,17 @@ export class AuthService {
     }
 
     verifyCode(email: string, code: string): Observable<ApiResult> {
+        this.isLoadingSubject.next(true);
+
+        if (environment.useMockData) {
+            return this.mockAuthService.verifyCode(email, code).pipe(
+                finalize(() => this.isLoadingSubject.next(false))
+            );
+        }
+
         const httpHeaders = new HttpHeaders({
             tenant: environment.defaultTenantId,
         });
-        this.isLoadingSubject.next(true)
         const formData = new FormData();
         formData.append('email', email);
         formData.append('code', code);
@@ -102,10 +148,17 @@ export class AuthService {
     }
 
     forgetPassword(email: string): Observable<ApiResult> {
+        this.isLoadingSubject.next(true);
+
+        if (environment.useMockData) {
+            return this.mockAuthService.forgetPassword(email).pipe(
+                finalize(() => this.isLoadingSubject.next(false))
+            );
+        }
+
         const httpHeaders = new HttpHeaders({
             tenant: environment.defaultTenantId,
         });
-        this.isLoadingSubject.next(true);
         return this.httpClient
             .post<ApiResult>(`${API_USERS_URL}/AppUser/ForgetPassword/${email}`, null, { headers: httpHeaders })
             .pipe(finalize(() => this.isLoadingSubject.next(false)));
@@ -183,20 +236,37 @@ export class AuthService {
     }
 
     forceLogout(userData: IForceLogoutModel): Observable<ApiResult> {
+        this.isLoadingSubject.next(true);
+
+        // Use mock service if enabled, otherwise use real API
+        if (environment.useMockData) {
+            console.log('🔐 Using Mock Force Logout');
+            return this.mockAuthService.forceLogout(userData).pipe(
+                tap((res) => {
+                    if (res.isSuccess) {
+                        this.setAuthFromLocalStorage(res.data);
+                    }
+                }),
+                finalize(() => this.isLoadingSubject.next(false))
+            );
+        }
+
+        // Real API call
+        console.log('🔐 Using Real API Force Logout');
         const httpHeaders = new HttpHeaders({
             tenant: environment.defaultTenantId,
         });
-        this.isLoadingSubject.next(true)
+
         return this.httpClient.post<ApiResult>(`${API_USERS_URL}/AppUser/ForceLogout`, userData, { headers: httpHeaders })
-        .pipe(
-            tap((res) => {
-                this.setAuthFromLocalStorage(res.data);
-            }),
-            catchError((error) => {
-                console.error('Login error:', error);
-                return throwError(() => error);
-            }),
-            finalize(() => this.isLoadingSubject.next(false))
-        );
+            .pipe(
+                tap((res) => {
+                    this.setAuthFromLocalStorage(res.data);
+                }),
+                catchError((error) => {
+                    console.error('Force logout error:', error);
+                    return throwError(() => error);
+                }),
+                finalize(() => this.isLoadingSubject.next(false))
+            );
     }
 }

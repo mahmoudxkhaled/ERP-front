@@ -3,6 +3,7 @@ export const environment = {
     appVersion: 'v8.2.4',
     USERDATA_KEY: 'authf649fc9a5f55',
     isMockEnabled: true,
+    useMockData: true, // Flag to enable/disable mock authentication
     defaultTenantId: 'iex',
     apiUrl: 'https://localhost:7201/api',
     apiUrlWithoutAPI: 'https://localhost:7201',

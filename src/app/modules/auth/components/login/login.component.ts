@@ -8,6 +8,7 @@ import { AuthService } from '../../services/auth.service';
 import { LanguageDIRService } from 'src/app/core/Services/LanguageDIR.service';
 import { IForceLogoutModel } from '../../models/IForceLogoutModel';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
     templateUrl: './login.component.html',
@@ -24,6 +25,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     userId: string = '';
     showDialog: boolean = false;
     showPassword: boolean = false;
+    production = environment.production;
 
     dialogMessage: string = 'We noticed that your account is currently active in another session. Would you like to log out from the previous session and continue here?';
 

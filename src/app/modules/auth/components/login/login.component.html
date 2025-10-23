@@ -1,4 +1,7 @@
 <div class="body">
+    <!-- Mock Credentials Component (only in development) -->
+    <app-mock-credentials *ngIf="!production"></app-mock-credentials>
+
     <div class="wave"></div>
     <div class="wave"></div>
     <div class="wave"></div>
@@ -27,13 +30,12 @@
                 </div>
             </div>
             <div class="form-group password-group">
-                <input  [type]="showPassword ? 'text' : 'password'" id="password" name="password" placeholder=" " formControlName="password" required
+                <input [type]="showPassword ? 'text' : 'password'" id="password" name="password" placeholder=" "
+                    formControlName="password" required
                     [ngClass]="{ 'is-invalid': password?.touched && password?.invalid }" />
                 <label for="password">Password</label>
                 <!-- Eye Icon to Toggle Password -->
-                    <i class="pi" 
-                    [ngClass]="showPassword ? 'pi-eye-slash' : 'pi-eye'"
-                    (click)="togglePasswordVisibility()">
+                <i class="pi" [ngClass]="showPassword ? 'pi-eye-slash' : 'pi-eye'" (click)="togglePasswordVisibility()">
                 </i>
                 <div *ngIf="password?.touched && password?.errors" class="error">
                     <small *ngIf="password?.errors?.['required']">Password is required</small>
