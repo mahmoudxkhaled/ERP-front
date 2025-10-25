@@ -42,6 +42,58 @@
         "financials": "المالية",
         "invoices": "الفواتير"
     },
+    "companyAdministration": {
+        "usersDetails": {
+            "title": "إدارة المستخدمين",
+            "actions": {
+                "add": "إضافة مستخدم"
+            },
+            "fields": {
+                "name": "الاسم",
+                "email": "البريد الإلكتروني",
+                "role": "الدور",
+                "status": "الحالة"
+            },
+            "dialogs": {
+                "addDialog": {
+                    "header": "إضافة مستخدم جديد",
+                    "fields": {
+                        "name": "الاسم",
+                        "email": "البريد الإلكتروني",
+                        "role": "الدور",
+                        "isActive": "نشط"
+                    }
+                },
+                "editDialog": {
+                    "header": "تعديل المستخدم",
+                    "fields": {
+                        "name": "الاسم",
+                        "email": "البريد الإلكتروني",
+                        "role": "الدور"
+                    }
+                }
+            }
+        }
+    },
+    "profile": {
+        "title": "الملف الشخصي",
+        "description": "إدارة معلومات ملفك الشخصي",
+        "overview": "نظرة عامة على الملف الشخصي",
+        "personalInfo": "المعلومات الشخصية",
+        "fields": {
+            "firstName": "الاسم الأول",
+            "lastName": "الاسم الأخير",
+            "email": "البريد الإلكتروني",
+            "phone": "الهاتف",
+            "role": "الدور",
+            "department": "القسم"
+        },
+        "actions": {
+            "save": "حفظ التغييرات",
+            "reset": "إعادة تعيين",
+            "cancel": "إلغاء"
+        }
+    },
     "layout": {
         "app-breadcrumb": {
             "iAwareDashboard": "لوحة تحكم ERP",
@@ -310,6 +362,57 @@
             "showing": "عرض {first} إلى {last} من {totalRecords} إدخال"
         },
         "loading": "جاري التحميل، يرجى الانتظار..."
+    },
+    "timesheets": {
+        "title": "جداول الأوقات",
+        "description": "تتبع وإدارة ساعات عمل الموظفين",
+        "summary": {
+            "hoursThisWeek": "الساعات هذا الأسبوع",
+            "daysWorked": "أيام العمل",
+            "submitted": "المُرسلة"
+        },
+        "actions": {
+            "add": "إضافة إدخال",
+            "edit": "تعديل الإدخال",
+            "delete": "حذف الإدخال",
+            "changeStatus": "تغيير الحالة"
+        },
+        "fields": {
+            "date": "التاريخ",
+            "project": "المشروع",
+            "task": "المهمة",
+            "hours": "الساعات",
+            "remarks": "الملاحظات",
+            "status": "الحالة"
+        },
+        "dialogs": {
+            "addDialog": {
+                "header": "إضافة إدخال جدول الأوقات"
+            },
+            "editDialog": {
+                "header": "تعديل إدخال جدول الأوقات"
+            },
+            "deleteDialog": {
+                "header": "تأكيد الحذف",
+                "message": "هل أنت متأكد من أنك تريد حذف هذا الإدخال من جدول الأوقات؟"
+            },
+            "statusDialog": {
+                "header": "تغيير الحالة",
+                "newStatus": "الحالة الجديدة"
+            }
+        },
+        "status": {
+            "draft": "مسودة",
+            "pending": "معلق",
+            "approved": "موافق عليه",
+            "rejected": "مرفوض"
+        },
+        "projects": {
+            "erpSystem": "نظام ERP",
+            "hrPortal": "بوابة الموارد البشرية",
+            "invoicing": "الفواتير",
+            "documentControl": "التحكم في المستندات"
+        }
     },
     "system-emails": {
         "system-emails-listing": {

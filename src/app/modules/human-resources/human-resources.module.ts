@@ -5,6 +5,7 @@ import { HumanResourcesRoutingModule } from './human-resources-routing.module';
 // Components
 import { TimesheetsComponent } from './components/timesheets/timesheets.component';
 import { ContractComponent } from './components/contract/contract.component';
+import { SharedModule } from 'src/app/Shared/shared/shared.module';
 
 @NgModule({
     declarations: [
@@ -12,8 +13,8 @@ import { ContractComponent } from './components/contract/contract.component';
         ContractComponent
     ],
     imports: [
-        CommonModule,
-        HumanResourcesRoutingModule
+        HumanResourcesRoutingModule,
+        SharedModule
     ]
 })
 export class HumanResourcesModule { }

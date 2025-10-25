@@ -1,44 +1,107 @@
-<div class="profile-container">
-    <div class="page-header">
-        <h1>{{ translate.getInstant('dashboard.profile') }}</h1>
-        <p class="page-description">Manage your profile information</p>
+<div class="p-4 card">
+    <p-toast></p-toast>
+
+    <!-- Page Header -->
+    <div class="mb-4">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">{{ translate.getInstant('dashboard.profile') }}</h1>
+        <p class="text-gray-600">Manage your profile information</p>
     </div>
 
-    <div class="profile-content">
-        <div class="profile-card">
-            <div class="profile-avatar">
-                <div class="avatar">👤</div>
-            </div>
-
-            <div class="profile-info">
-                <h2>John Doe</h2>
-                <p class="profile-role">System Administrator</p>
-                <p class="profile-email">john.doe&#64;company.com</p>
-            </div>
-        </div>
-
-        <div class="profile-details">
-            <div class="detail-section">
-                <h3>Personal Information</h3>
-                <div class="detail-grid">
-                    <div class="detail-item">
-                        <label>First Name</label>
-                        <span>John</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Last Name</label>
-                        <span>Doe</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Phone</label>
-                        <span>+1 (555) 123-4567</span>
-                    </div>
-                    <div class="detail-item">
-                        <label>Department</label>
-                        <span>IT Administration</span>
-                    </div>
-                </div>
+    <!-- Profile Overview Card -->
+    <p-card header="Profile Overview" class="mb-4">
+        <div class="flex align-items-center gap-4">
+            <p-avatar icon="pi pi-user" size="xlarge" shape="circle"></p-avatar>
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">
+                    {{ profileForm.get('firstName')?.value }} {{ profileForm.get('lastName')?.value }}
+                </h2>
+                <p-tag [value]="profileForm.get('role')?.value" [severity]="profileForm.get('role')?.value === 'System Admin' ? 'danger' : 
+                                   profileForm.get('role')?.value === 'Company Admin' ? 'warning' : 
+                                   profileForm.get('role')?.value === 'Supervisor' ? 'info' : 'success'" class="mb-2">
+                </p-tag>
+                <p class="text-gray-600 flex align-items-center gap-2">
+                    <i class="pi pi-envelope text-blue-500"></i>
+                    {{ profileForm.get('email')?.value }}
+                </p>
             </div>
         </div>
+    </p-card>
+
+    <!-- Profile Form -->
+    <form [formGroup]="profileForm" (ngSubmit)="saveProfileInfo()" *ngIf="profileForm">
+        <div class="grid mt-4">
+            <!-- Personal Information Panel -->
+            <div class="col-12">
+                <p-panel header="Personal Information" class="h-full">
+                    <div class="grid">
+                        <!-- First Name -->
+                        <div class="col-12 md:col-6">
+                            <label class="block text-sm font-medium  mb-2">
+                                <i class="pi pi-user mr-2 text-blue-500"></i>
+                                First Name
+                            </label>
+                            <input pInputText formControlName="firstName" placeholder="Enter first name" class="w-full">
+                        </div>
+
+                        <!-- Last Name -->
+                        <div class="col-12 md:col-6">
+                            <label class="block text-sm font-medium  mb-2">
+                                <i class="pi pi-user mr-2 text-blue-500"></i>
+                                Last Name
+                            </label>
+                            <input pInputText formControlName="lastName" placeholder="Enter last name" class="w-full">
+                        </div>
+
+                        <!-- Email -->
+                        <div class="col-12 md:col-6">
+                            <label class="block text-sm font-medium  mb-2">
+                                <i class="pi pi-envelope mr-2 text-blue-500"></i>
+                                Email
+                            </label>
+                            <input pInputText formControlName="email" placeholder="Enter email address" class="w-full">
+                        </div>
+
+                        <!-- Phone -->
+                        <div class="col-12 md:col-6">
+                            <label class="block text-sm font-medium  mb-2">
+                                <i class="pi pi-phone mr-2 text-blue-500"></i>
+                                Phone
+                            </label>
+                            <p-inputMask formControlName="phone" mask="(999) 999-9999" placeholder="(555) 123-4567"
+                                class="w-full">
+                            </p-inputMask>
+                        </div>
+
+                        <!-- Role -->
+                        <div class="col-12 md:col-6">
+                            <label class="block text-sm font-medium  mb-2">
+                                <i class="pi pi-briefcase mr-2 text-blue-500"></i>
+                                Role
+                            </label>
+                            <p-dropdown [options]="roleOptions" formControlName="role" optionLabel="label"
+                                optionValue="value" placeholder="Select role" class="w-full">
+                            </p-dropdown>
+                        </div>
+
+                        <!-- Department -->
+                        <div class="col-12 md:col-6">
+                            <label class="block text-sm font-medium  mb-2">
+                                <i class="pi pi-building mr-2 text-blue-500"></i>
+                                Department
+                            </label>
+                            <input pInputText formControlName="department" placeholder="Enter department"
+                                class="w-full">
+                        </div>
+                    </div>
+                </p-panel>
+            </div>
+        </div>
+    </form>
+
+    <!-- Action Buttons -->
+    <div class="flex justify-content-center gap-3 my-4">
+        <p-button label="Save Changes" icon="pi pi-save" severity="success" (onClick)="saveProfileInfo()"></p-button>
+        <p-button label="Reset" icon="pi pi-refresh" severity="secondary" (onClick)="resetForm()"></p-button>
+        <p-button label="Cancel" icon="pi pi-times" severity="danger" (onClick)="cancelEdit()"></p-button>
     </div>
 </div>

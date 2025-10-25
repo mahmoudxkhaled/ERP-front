@@ -42,6 +42,58 @@
         "financials": "Financials",
         "invoices": "Invoices"
     },
+    "companyAdministration": {
+        "usersDetails": {
+            "title": "Users Management",
+            "actions": {
+                "add": "Add User"
+            },
+            "fields": {
+                "name": "Name",
+                "email": "Email",
+                "role": "Role",
+                "status": "Status"
+            },
+            "dialogs": {
+                "addDialog": {
+                    "header": "Add New User",
+                    "fields": {
+                        "name": "Name",
+                        "email": "Email",
+                        "role": "Role",
+                        "isActive": "Active"
+                    }
+                },
+                "editDialog": {
+                    "header": "Edit User",
+                    "fields": {
+                        "name": "Name",
+                        "email": "Email",
+                        "role": "Role"
+                    }
+                }
+            }
+        }
+    },
+    "profile": {
+        "title": "Profile",
+        "description": "Manage your profile information",
+        "overview": "Profile Overview",
+        "personalInfo": "Personal Information",
+        "fields": {
+            "firstName": "First Name",
+            "lastName": "Last Name",
+            "email": "Email",
+            "phone": "Phone",
+            "role": "Role",
+            "department": "Department"
+        },
+        "actions": {
+            "save": "Save Changes",
+            "reset": "Reset",
+            "cancel": "Cancel"
+        }
+    },
     "layout": {
         "app-breadcrumb": {
             "iAwareDashboard": "ERP Dashboard",
@@ -454,6 +506,57 @@
             "showing": "Showing {first} to {last} of {totalRecords} entries"
         },
         "loading": "Loading, please wait..."
+    },
+    "timesheets": {
+        "title": "Timesheets",
+        "description": "Track and manage employee work hours",
+        "summary": {
+            "hoursThisWeek": "Hours This Week",
+            "daysWorked": "Days Worked",
+            "submitted": "Submitted"
+        },
+        "actions": {
+            "add": "Add Entry",
+            "edit": "Edit Entry",
+            "delete": "Delete Entry",
+            "changeStatus": "Change Status"
+        },
+        "fields": {
+            "date": "Date",
+            "project": "Project",
+            "task": "Task",
+            "hours": "Hours",
+            "remarks": "Remarks",
+            "status": "Status"
+        },
+        "dialogs": {
+            "addDialog": {
+                "header": "Add Timesheet Entry"
+            },
+            "editDialog": {
+                "header": "Edit Timesheet Entry"
+            },
+            "deleteDialog": {
+                "header": "Confirm Delete",
+                "message": "Are you sure you want to delete this timesheet entry?"
+            },
+            "statusDialog": {
+                "header": "Change Status",
+                "newStatus": "New Status"
+            }
+        },
+        "status": {
+            "draft": "Draft",
+            "pending": "Pending",
+            "approved": "Approved",
+            "rejected": "Rejected"
+        },
+        "projects": {
+            "erpSystem": "ERP System",
+            "hrPortal": "HR Portal",
+            "invoicing": "Invoicing",
+            "documentControl": "Document Control"
+        }
     },
     "system-emails": {
         "system-emails-listing": {

@@ -221,7 +221,7 @@ export class AppTopbarComponent implements OnInit {
         console.log('isRtl', this.isRtl);
         this.rtlService.setRtl(this.isRtl);
         this.langLoading = false; // Reset loading state
-        // window.location.reload();
+        window.location.reload();
         this.ref.detectChanges();
 
     }

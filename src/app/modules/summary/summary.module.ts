@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SummaryRoutingModule } from './summary-routing.module';
+import { SharedModule } from 'src/app/Shared/shared/shared.module';
 
 // Components
 import { ActionsComponent } from './components/actions/actions.component';
@@ -18,8 +19,8 @@ import { LogoutComponent } from './components/logout/logout.component';
         LogoutComponent
     ],
     imports: [
-        CommonModule,
-        SummaryRoutingModule
+        SummaryRoutingModule,
+        SharedModule
     ]
 })
 export class SummaryModule { }
