@@ -1,0 +1,83 @@
+<div class="contract-container">
+    <div class="page-header">
+        <h1>{{ translate.getInstant('dashboard.contract') }}</h1>
+        <p class="page-description">Manage employee contracts and agreements</p>
+    </div>
+
+    <div class="contract-content">
+        <div class="contract-stats">
+            <div class="stat-card">
+                <div class="stat-icon">📝</div>
+                <div class="stat-info">
+                    <h3>Active Contracts</h3>
+                    <span class="stat-number">142</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">⏰</div>
+                <div class="stat-info">
+                    <h3>Expiring Soon</h3>
+                    <span class="stat-number">8</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-info">
+                    <h3>Renewed</h3>
+                    <span class="stat-number">15</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="contract-table">
+            <div class="table-header">
+                <h3>Recent Contracts</h3>
+                <button class="btn btn-primary">New Contract</button>
+            </div>
+
+            <div class="table-content">
+                <div class="contract-row">
+                    <div class="employee-info">
+                        <div class="employee-avatar">👤</div>
+                        <div class="employee-details">
+                            <h4>John Doe</h4>
+                            <p>Software Developer</p>
+                        </div>
+                    </div>
+                    <div class="contract-details">
+                        <span class="contract-type">Full-time</span>
+                        <span class="contract-duration">2 years</span>
+                    </div>
+                    <div class="contract-status">
+                        <span class="status active">Active</span>
+                    </div>
+                    <div class="contract-expiry">
+                        <span class="expiry-date">2025-12-31</span>
+                    </div>
+                </div>
+
+                <div class="contract-row">
+                    <div class="employee-info">
+                        <div class="employee-avatar">👤</div>
+                        <div class="employee-details">
+                            <h4>Jane Smith</h4>
+                            <p>Project Manager</p>
+                        </div>
+                    </div>
+                    <div class="contract-details">
+                        <span class="contract-type">Full-time</span>
+                        <span class="contract-duration">1 year</span>
+                    </div>
+                    <div class="contract-status">
+                        <span class="status expiring">Expiring Soon</span>
+                    </div>
+                    <div class="contract-expiry">
+                        <span class="expiry-date">2024-03-15</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

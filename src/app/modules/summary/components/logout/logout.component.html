@@ -1,0 +1,16 @@
+<div class="logout-container">
+    <div class="logout-card">
+        <div class="logout-icon">🚪</div>
+        <h1>{{ translate.getInstant('dashboard.logout') }}</h1>
+        <p class="logout-message">Are you sure you want to log out of your account?</p>
+
+        <div class="logout-actions">
+            <button class="btn btn-secondary" (click)="cancelLogout()">
+                Cancel
+            </button>
+            <button class="btn btn-danger" (click)="confirmLogout()">
+                Logout
+            </button>
+        </div>
+    </div>
+</div>

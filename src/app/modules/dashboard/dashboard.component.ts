@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
+import { TranslationService } from 'src/app/core/Services/translation.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -14,7 +15,8 @@ export class DashboardComponent implements OnInit {
 
     constructor(
         private localStorageService: LocalStorageService,
-        private router: Router
+        private router: Router,
+        private translate: TranslationService
     ) { }
 
     ngOnInit(): void {
@@ -34,62 +36,50 @@ export class DashboardComponent implements OnInit {
     }
 
     getDashboardCategories(): any[] {
-        const baseCategories = [
+        // Show all categories for now - role-based filtering will be implemented later
+        return [
             {
-                title: 'Summary',
+                title: this.translate.getInstant('dashboard.summary'),
                 items: [
-                    { icon: '⚡', label: 'Actions', route: '/actions' },
-                    { icon: '🔔', label: 'Notifications', route: '/notifications' },
-                    { icon: '👤', label: 'Profile', route: '/profile' },
-                    { icon: '⚙️', label: 'Settings', route: '/settings' },
-                    { icon: '🚪', label: 'Logout', route: '/logout' }
+                    { icon: '⚡', label: this.translate.getInstant('dashboard.actions'), route: '/summary/actions' },
+                    { icon: '🔔', label: this.translate.getInstant('dashboard.notifications'), route: '/summary/notifications' },
+                    { icon: '👤', label: this.translate.getInstant('dashboard.profile'), route: '/summary/profile' },
+                    { icon: '⚙️', label: this.translate.getInstant('dashboard.settings'), route: '/summary/settings' },
+                    { icon: '🚪', label: this.translate.getInstant('dashboard.logout'), route: '/summary/logout' }
+                ]
+            },
+            {
+                title: this.translate.getInstant('dashboard.companyAdministration'),
+                items: [
+                    { icon: '🏢', label: this.translate.getInstant('dashboard.companyDetails'), route: '/company-administration/company-details' },
+                    { icon: '👥', label: this.translate.getInstant('dashboard.usersDetails'), route: '/company-administration/users-details' },
+                    { icon: '🔄', label: this.translate.getInstant('dashboard.workflows'), route: '/company-administration/workflows' }
+                ]
+            },
+            {
+                title: this.translate.getInstant('dashboard.documentControl'),
+                items: [
+                    { icon: '📄', label: this.translate.getInstant('dashboard.sharedDocuments'), route: '/document-control' }
+                ]
+            },
+            {
+                title: this.translate.getInstant('dashboard.humanResources'),
+                items: [
+                    { icon: '🧑‍💼', label: this.translate.getInstant('dashboard.timesheets'), route: '/human-resources/timesheets' },
+                    { icon: '📝', label: this.translate.getInstant('dashboard.contract'), route: '/human-resources/contract' }
+                ]
+            },
+            {
+                title: this.translate.getInstant('dashboard.financials'),
+                items: [
+                    { icon: '🧾', label: this.translate.getInstant('dashboard.invoices'), route: '/financials' }
                 ]
             }
         ];
-
-        // Add role-specific categories
-        if (this.userRole === 'system-admin' || this.userRole === 'company-admin') {
-            baseCategories.push({
-                title: 'Company Administration',
-                items: [
-                    { icon: '🏢', label: 'Company Details', route: '/company-details' },
-                    { icon: '👥', label: 'Users Details', route: '/users' },
-                    { icon: '🔄', label: 'Workflows', route: '/workflows' }
-                ]
-            });
-        }
-
-        if (this.userRole === 'system-admin' || this.userRole === 'company-admin' || this.userRole === 'supervisor') {
-            baseCategories.push({
-                title: 'Document Control',
-                items: [
-                    { icon: '📄', label: 'Shared Documents', route: '/documents' }
-                ]
-            });
-
-            baseCategories.push({
-                title: 'Human Resources',
-                items: [
-                    { icon: '🧑‍💼', label: 'Timesheets', route: '/timesheets' },
-                    { icon: '📝', label: 'Contract', route: '/contracts' }
-                ]
-            });
-        }
-
-        if (this.userRole === 'system-admin' || this.userRole === 'company-admin') {
-            baseCategories.push({
-                title: 'Financials',
-                items: [
-                    { icon: '🧾', label: 'Invoices', route: '/invoices' }
-                ]
-            });
-        }
-
-        return baseCategories;
     }
 
     navigateToRoute(route: string): void {
-        if (route === '/logout') {
+        if (route === '/summary/logout') {
             // Handle logout
             this.localStorageService.removeItem('userData');
             this.router.navigate(['/auth']);

@@ -1,0 +1,94 @@
+<div class="invoices-container">
+    <div class="page-header">
+        <h1>{{ translate.getInstant('dashboard.invoices') }}</h1>
+        <p class="page-description">Manage financial invoices and billing</p>
+    </div>
+
+    <div class="invoices-content">
+        <div class="invoice-stats">
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-info">
+                    <h3>Total Revenue</h3>
+                    <span class="stat-number">$125,430</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📄</div>
+                <div class="stat-info">
+                    <h3>Pending Invoices</h3>
+                    <span class="stat-number">23</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-info">
+                    <h3>Paid This Month</h3>
+                    <span class="stat-number">45</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="invoices-table">
+            <div class="table-header">
+                <h3>Recent Invoices</h3>
+                <button class="btn btn-primary">Create Invoice</button>
+            </div>
+
+            <div class="table-content">
+                <div class="invoice-row">
+                    <div class="invoice-number">
+                        <span class="invoice-id">#INV-2024-001</span>
+                        <span class="invoice-date">2024-01-15</span>
+                    </div>
+                    <div class="client-info">
+                        <h4>Acme Corporation</h4>
+                        <p>Software Development Services</p>
+                    </div>
+                    <div class="invoice-amount">
+                        <span class="amount">$5,250.00</span>
+                    </div>
+                    <div class="invoice-status">
+                        <span class="status paid">Paid</span>
+                    </div>
+                </div>
+
+                <div class="invoice-row">
+                    <div class="invoice-number">
+                        <span class="invoice-id">#INV-2024-002</span>
+                        <span class="invoice-date">2024-01-18</span>
+                    </div>
+                    <div class="client-info">
+                        <h4>Tech Solutions Ltd</h4>
+                        <p>Consulting Services</p>
+                    </div>
+                    <div class="invoice-amount">
+                        <span class="amount">$3,800.00</span>
+                    </div>
+                    <div class="invoice-status">
+                        <span class="status pending">Pending</span>
+                    </div>
+                </div>
+
+                <div class="invoice-row">
+                    <div class="invoice-number">
+                        <span class="invoice-id">#INV-2024-003</span>
+                        <span class="invoice-date">2024-01-20</span>
+                    </div>
+                    <div class="client-info">
+                        <h4>Global Enterprises</h4>
+                        <p>Project Management</p>
+                    </div>
+                    <div class="invoice-amount">
+                        <span class="amount">$7,200.00</span>
+                    </div>
+                    <div class="invoice-status">
+                        <span class="status overdue">Overdue</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

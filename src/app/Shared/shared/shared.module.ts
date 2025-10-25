@@ -77,6 +77,7 @@ import { IAwareVariablesComponent } from '../components/iaware-variables/iaware-
 import { LogoutComponent } from '../components/logout/logout.component';
 import { TableLoadingSpinnerComponent } from '../components/table-loading-spinner/table-loading-spinner/table-loading-spinner.component';
 import { MockCredentialsComponent } from '../components/mock-credentials/mock-credentials.component';
+import { InputMaskModule } from 'primeng/inputmask';
 const components = [
     EmptyDataComponent,
     IAwareRichTextComponent,
@@ -89,19 +90,11 @@ const components = [
 ];
 
 const imports = [
-    ReactiveFormsModule,
-    RippleModule,
+    InputMaskModule,
     SkeletonModule,
-    InputTextModule,
-    ReactiveFormsModule,
     TableModule,
-    ProgressBarModule,
-    CommonModule,
     FormsModule,
-    ReactiveFormsModule,
     ButtonModule,
-    RippleModule,
-    InputTextModule,
     DropdownModule,
     FileUploadModule,
     InputTextareaModule,
@@ -123,8 +116,6 @@ const imports = [
     DividerModule,
     GalleriaModule,
     AppConfigModule,
-    InputTextModule,
-    ReactiveFormsModule,
     TableModule,
     ProgressBarModule,
     CommonModule,

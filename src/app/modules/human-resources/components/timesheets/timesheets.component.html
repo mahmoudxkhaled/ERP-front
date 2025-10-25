@@ -1,0 +1,79 @@
+<div class="timesheets-container">
+    <div class="page-header">
+        <h1>{{ translate.getInstant('dashboard.timesheets') }}</h1>
+        <p class="page-description">Track and manage employee work hours</p>
+    </div>
+
+    <div class="timesheets-content">
+        <div class="timesheet-stats">
+            <div class="stat-card">
+                <div class="stat-icon">⏰</div>
+                <div class="stat-info">
+                    <h3>Hours This Week</h3>
+                    <span class="stat-number">42.5</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📅</div>
+                <div class="stat-info">
+                    <h3>Days Worked</h3>
+                    <span class="stat-number">5</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-info">
+                    <h3>Submitted</h3>
+                    <span class="stat-number">3</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="timesheet-table">
+            <div class="table-header">
+                <h3>Recent Timesheets</h3>
+                <button class="btn btn-primary">Add Entry</button>
+            </div>
+
+            <div class="table-content">
+                <div class="timesheet-row">
+                    <div class="date-column">
+                        <span class="date">2024-01-15</span>
+                        <span class="day">Monday</span>
+                    </div>
+                    <div class="time-column">
+                        <span class="start-time">09:00</span>
+                        <span class="separator">-</span>
+                        <span class="end-time">17:30</span>
+                    </div>
+                    <div class="hours-column">
+                        <span class="total-hours">8.5 hours</span>
+                    </div>
+                    <div class="status-column">
+                        <span class="status approved">Approved</span>
+                    </div>
+                </div>
+
+                <div class="timesheet-row">
+                    <div class="date-column">
+                        <span class="date">2024-01-14</span>
+                        <span class="day">Sunday</span>
+                    </div>
+                    <div class="time-column">
+                        <span class="start-time">10:00</span>
+                        <span class="separator">-</span>
+                        <span class="end-time">18:00</span>
+                    </div>
+                    <div class="hours-column">
+                        <span class="total-hours">8.0 hours</span>
+                    </div>
+                    <div class="status-column">
+                        <span class="status pending">Pending</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

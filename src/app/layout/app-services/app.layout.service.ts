@@ -166,7 +166,7 @@ export class LayoutService {
             this.menuProfileOpen.next(null);
         }
     }
-    
+
     ///////////////////////////////////////////////////////////////////////
     // changeTheme() {
     //     let { colorScheme, componentTheme } = this.config();
@@ -257,13 +257,13 @@ export class LayoutService {
         document.documentElement.style.fontSize = `${value}px`;
     }
 
-    getCompanyLogo(): Observable<ApiResult> {
-        return this.dataService.getAllReguest<ApiResult>('/Tenant/GetTenantLogo');
-    }
+    // getCompanyLogo(): Observable<ApiResult> {
+    //     return this.dataService.getAllReguest<ApiResult>('/Tenant/GetTenantLogo');
+    // }
 
-    getCompanyLogoVI(): Observable<ApiResult> {
-        return this.dataService.getAllReguest<ApiResult>('/Tenant/GetTenantLogoVI');
-    }
+    // getCompanyLogoVI(): Observable<ApiResult> {
+    //     return this.dataService.getAllReguest<ApiResult>('/Tenant/GetTenantLogoVI');
+    // }
 
     getUserPoints() {
         this.dataService.getAllReguest<ApiResult>('/PointingType/GetUserPoints');

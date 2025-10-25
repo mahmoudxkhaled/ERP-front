@@ -287,11 +287,11 @@ export class AppLayoutComponent implements OnInit, OnDestroy {
     }
 
     fetchCompanyLogo() {
-        this.layoutService.getCompanyLogo().subscribe({
-            next: (logo) => {
-                this.companyLogo = logo.data ?? this.companyLogo;
-            },
-        });
+        // this.layoutService.getCompanyLogo().subscribe({
+        //     next: (logo) => {
+        //         this.companyLogo = logo.data ?? this.companyLogo;
+        //     },
+        // });
     }
 
     ngOnDestroy() {

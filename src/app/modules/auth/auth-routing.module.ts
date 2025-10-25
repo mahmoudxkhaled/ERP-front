@@ -6,6 +6,7 @@ import { EmailVerifiedComponent } from './components/email-verified/email-verifi
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { ForgetPasswordComponent } from './components/forget-password/forget-password.component';
 import { VerifyCodeComponent } from './components/verify-code/verify-code.component';
+import { AccountLockedComponent } from './components/account-locked/account-locked.component';
 
 const routes: Routes = [
     { path: '', component: LoginComponent },
@@ -14,6 +15,7 @@ const routes: Routes = [
     { path: 'verificationEmail', component: VerificationEmailComponent },
     { path: 'forget-password', component: ForgetPasswordComponent },
     { path: 'verify-code', component: VerifyCodeComponent },
+    { path: 'account-locked', component: AccountLockedComponent },
 ];
 
 @NgModule({

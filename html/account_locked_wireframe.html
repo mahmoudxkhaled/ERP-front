@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ERP System — Account Locked (Wireframe)</title>
+    <style>
+        /* Minimal styling for a clean wireframe look */
+        :root {
+            --maxw: 420px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.6;
+            background: #fafafa;
+            color: #222;
+            display: grid;
+            min-height: 100dvh;
+            grid-template-rows: auto 1fr auto;
+        }
+
+        header,
+        footer {
+            padding: 16px;
+            background: #fff;
+            border-bottom: 1px solid #eee;
+        }
+
+        footer {
+            border-top: 1px solid #eee;
+            border-bottom: 0;
+            text-align: center;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .container {
+            display: grid;
+            place-items: center;
+            padding: 32px 16px;
+        }
+
+        .card {
+            width: 100%;
+            max-width: var(--maxw);
+            background: #fff;
+            border: 1px solid #e6e6e6;
+            border-radius: 10px;
+            padding: 24px 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, .03);
+        }
+
+        .logo {
+            display: grid;
+            place-items: center;
+            margin-bottom: 10px;
+            width: 100%;
+            height: 64px;
+            border: 2px dashed #d8d8d8;
+            border-radius: 10px;
+            color: #888;
+            font-weight: 700;
+            letter-spacing: .08em;
+        }
+
+        h1 {
+            margin: 12px 0 16px;
+            font-size: 24px;
+            color: #d32f2f;
+        }
+
+        .message {
+            background: #ffebee;
+            border: 1px solid #ffcdd2;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            color: #c62828;
+        }
+
+        .links {
+            margin-top: 14px;
+            display: grid;
+            gap: 6px;
+            text-align: center;
+        }
+
+        .links a {
+            color: #333;
+            text-decoration: none;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #666;
+            margin-top: 16px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+            <strong>ERP System</strong>
+            <div style="display:inline-flex; align-items:center; gap:8px; font-weight:600;">
+                <div
+                    style="width:24px;height:24px;border-radius:6px;border:2px dashed #e6e6e6;display:inline-grid;place-items:center;color:#6b7280;font-size:10px;">
+                    L</div>
+                <span>Acme Corp</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="card" aria-labelledby="locked-title">
+            <div class="logo" role="img" aria-label="Company Logo Placeholder">LOGO</div>
+            <h1 id="locked-title">Account Locked</h1>
+
+            <div class="message">
+                <strong>Your account has been temporarily locked</strong><br>
+                This may be due to multiple failed login attempts or security reasons.
+            </div>
+
+            <p>To unlock your account, please contact your system administrator or support team.</p>
+
+            <div class="links">
+                <a href="mailto:support@company.com">Contact Support</a>
+                <a href="login_wireframe.html">Back to Login</a>
+            </div>
+
+            <p class="hint">Phase 1: HTML-only wireframe — replace with Angular component later.</p>
+        </section>
+    </main>
+
+    <footer>
+        <small>© 2025 ERP System</small>
+    </footer>
+</body>
+
+</html>

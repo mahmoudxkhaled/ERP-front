@@ -1,0 +1,73 @@
+<div class="users-details-container">
+    <div class="page-header">
+        <h1>{{ translate.getInstant('dashboard.usersDetails') }}</h1>
+        <p class="page-description">Manage company users and their permissions</p>
+    </div>
+
+    <div class="users-details-content">
+        <div class="users-stats">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-info">
+                    <h3>Total Users</h3>
+                    <span class="stat-number">156</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-info">
+                    <h3>Active Users</h3>
+                    <span class="stat-number">142</span>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">👑</div>
+                <div class="stat-info">
+                    <h3>Administrators</h3>
+                    <span class="stat-number">8</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="users-table">
+            <div class="table-header">
+                <h3>Recent Users</h3>
+                <button class="btn btn-primary">Add User</button>
+            </div>
+
+            <div class="table-content">
+                <div class="user-row">
+                    <div class="user-avatar">👤</div>
+                    <div class="user-info">
+                        <h4>John Doe</h4>
+                        <p>john.doe&#64;company.com</p>
+                    </div>
+                    <div class="user-role">Administrator</div>
+                    <div class="user-status active">Active</div>
+                </div>
+
+                <div class="user-row">
+                    <div class="user-avatar">👤</div>
+                    <div class="user-info">
+                        <h4>Jane Smith</h4>
+                        <p>jane.smith&#64;company.com</p>
+                    </div>
+                    <div class="user-role">Manager</div>
+                    <div class="user-status active">Active</div>
+                </div>
+
+                <div class="user-row">
+                    <div class="user-avatar">👤</div>
+                    <div class="user-info">
+                        <h4>Mike Johnson</h4>
+                        <p>mike.johnson&#64;company.com</p>
+                    </div>
+                    <div class="user-role">Employee</div>
+                    <div class="user-status inactive">Inactive</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

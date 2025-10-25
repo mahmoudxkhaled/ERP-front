@@ -1,0 +1,30 @@
+<div class="body">
+    <div class="locked-container">
+        <div class="lock-icon">
+            <i class="pi pi-lock" style="font-size: 3rem; color: #ff6b6b;"></i>
+        </div>
+        <h2>Account Locked</h2>
+        <p>Your account has been temporarily locked due to multiple failed login attempts or security reasons.</p>
+
+        <div class="warning-message">
+            <i class="pi pi-exclamation-triangle" style="margin-right: 10px; color: #ff6b6b;"></i>
+            <span>Please contact your system administrator or support team to unlock your account.</span>
+        </div>
+
+        <div class="action-buttons">
+            <button class="contact-btn" (click)="contactSupport()">
+                <i class="pi pi-envelope" style="margin-right: 8px;"></i>
+                Contact Support
+            </button>
+            <button class="back-btn" (click)="backToLogin()">
+                <i class="pi pi-arrow-left" style="margin-right: 8px;"></i>
+                Back to Login
+            </button>
+        </div>
+
+        <div class="links">
+            <a routerLink="/auth">Back to Login</a>
+        </div>
+        <div class="footer">© 2025 iAware. All rights reserved.</div>
+    </div>
+</div>

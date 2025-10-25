@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ERP System — Timesheets (Reports)</title>
+    <style>
+        :root {
+            --bg: #f6f7f9;
+            --panel: #ffffff;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --primary: #0ea5e9;
+            --border: #e5e7eb;
+            --focus: #2563eb;
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+            color: var(--text);
+            background: var(--bg)
+        }
+
+        body {
+            display: grid;
+            min-height: 100vh;
+            grid-template-rows: auto 1fr auto
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh
+        }
+
+        .sidebar {
+            background: #282c34;
+            color: #fff;
+            padding: 0;
+            display: flex;
+            flex-direction: column
+        }
+
+        .sidebar-header {
+            padding: 20px 16px;
+            border-bottom: 1px solid #3a3f4a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between
+        }
+
+        .brand-sidebar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 18px
+        }
+
+        .brand-sidebar .logo-sidebar {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary), #60a5fa);
+            display: grid;
+            place-items: center;
+            color: #fff;
+            font-weight: 700
+        }
+
+        .collapse-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #3a3f4a;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            display: grid;
+            place-items: center
+        }
+
+        .nav-section {
+            padding: 16px;
+            border-bottom: 1px solid #3a3f4a
+        }
+
+        .nav-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #9ca3af;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: .5px
+        }
+
+        .nav-menu {
+            list-style: none;
+            margin: 0;
+            padding: 0
+        }
+
+        .nav-item {
+            margin-bottom: 4px
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            color: #e5e7eb;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background .2s
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: #374151;
+            color: #fff
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 16px;
+            border-top: 1px solid #3a3f4a
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #8b5cf6
+        }
+
+        .user-info {
+            flex: 1
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 2px
+        }
+
+        .user-url {
+            font-size: 12px;
+            color: #9ca3af
+        }
+
+        .user-menu-btn {
+            width: 20px;
+            height: 20px;
+            border: none;
+            background: none;
+            color: #9ca3af;
+            cursor: pointer
+        }
+
+        .main-content {
+            background: #f6f7f9
+        }
+
+        .main-header {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--border);
+            background: #fff
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700
+        }
+
+        .brand .logo {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            background: linear-gradient(135deg, #8b5cf6, #a855f7);
+            display: grid;
+            place-items: center;
+            color: #fff;
+            font-weight: 700;
+            font-size: 12px
+        }
+
+        .brand .logo::after {
+            content: "E"
+        }
+
+        .right {
+            display: inline-flex;
+            align-items: center;
+            gap: 16px
+        }
+
+        .header-icons {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: #fff;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            color: var(--muted)
+        }
+
+        .header-breadcrumb {
+            position: absolute;
+            left: 24px;
+            top: 100%;
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 0 0 8px 8px;
+            font-size: 14px;
+            color: var(--muted);
+            margin-bottom: 16px;
+        }
+
+        .header-breadcrumb-separator {
+            color: var(--border);
+            margin: 0 4px
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 37px auto;
+            padding: 0 16px
+        }
+
+        .section {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px
+        }
+
+        h2 {
+            margin: 0 0 12px 0;
+            font-size: 18px
+        }
+
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin: 12px 0 16px 0
+        }
+
+        .tab {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            background: #fff;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text);
+            font-size: 14px
+        }
+
+        .tab.active {
+            background: #eef2ff;
+            border-color: #c7d2fe
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse
+        }
+
+        th,
+        td {
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            padding: 10px 8px;
+            font-size: 14px
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px
+        }
+
+        .summary-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center
+        }
+
+        .summary-card h3 {
+            margin: 0 0 8px 0;
+            font-size: 14px;
+            color: var(--muted)
+        }
+
+        .summary-card .number {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text)
+        }
+
+        footer {
+            text-align: center;
+            color: var(--muted);
+            font-size: 13px;
+            padding: 12px;
+            border-top: 1px solid var(--border);
+            background: #fff
+        }
+
+        @media (max-width:900px) {
+            .layout {
+                grid-template-columns: 1fr
+            }
+
+            .sidebar {
+                display: none
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-sidebar">
+                    <div class="logo-sidebar">A</div><span>Acme Corp</span>
+                </div>
+                <button class="collapse-btn" aria-label="Collapse sidebar">→</button>
+            </div>
+
+            <!-- Active (working) links -->
+            <div class="nav-section">
+                <div class="nav-section-title">Active</div>
+                <ul class="nav-menu">
+                    <li class="nav-item"><a class="nav-link" href="dashboard_wireframe.html"><span
+                                class="icon">📊</span><span>Dashboard</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="employee_timesheets.html"><span
+                                class="icon">🧑‍💼</span><span>My Entries</span></a></li>
+                    <li class="nav-item"><a class="nav-link" href="supervisor_timesheets.html"><span
+                                class="icon">🧾</span><span>Approvals</span></a></li>
+                    <li class="nav-item"><a class="nav-link active" href="admin_timesheets.html"><span
+                                class="icon">📈</span><span>Reports</span></a></li>
+                </ul>
+            </div>
+
+            <!-- Summary Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Summary</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="dashboard_wireframe.html" class="nav-link">
+                            <span class="icon">📊</span>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="icon">⚡</span>
+                            <span>Actions</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="icon">🔔</span>
+                            <span>Notifications</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="icon">👤</span>
+                            <span>Profile</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="icon">⚙️</span>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="icon">🚪</span>
+                            <span>Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Company Administration Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Company Administration</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="icon">🏢</span>
+                            <span>Company Details</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="icon">👥</span>
+                            <span>Users Details</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="icon">🔄</span>
+                            <span>Workflows</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Document Control Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Document Control</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="icon">📄</span>
+                            <span>Shared Documents</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Human Resources Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Human Resources</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="employee_timesheets.html" class="nav-link">
+                            <span class="icon">🧑‍💼</span>
+                            <span>Timesheets</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="icon">📝</span>
+                            <span>Contract</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Financials Section -->
+            <div class="nav-section">
+                <div class="nav-section-title">Financials</div>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="icon">🧾</span>
+                            <span>Invoices</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar" style="background:#8b5cf6"></div>
+                    <div class="user-info">
+                        <div class="user-name">Jane Doe</div>
+                        <div class="user-url">System Admin</div>
+                    </div><button class="user-menu-btn" aria-label="User menu">↑</button>
+                </div>
+            </div>
+        </aside>
+
+        <div class="main-content">
+            <header class="main-header">
+                <div class="brand" role="img" aria-label="ERP System">
+                    <div class="logo" aria-hidden="true"></div><span>ERP System</span>
+                </div>
+                <div class="right">
+                    <div class="header-icons"><button class="icon-btn" aria-label="Change Theme">🌙</button><button
+                            class="icon-btn" aria-label="Notifications">🔔</button><button class="icon-btn"
+                            aria-label="Logout">🚪</button></div>
+                </div>
+                <div class="header-breadcrumb"><a href="#">Home</a><span class="header-breadcrumb-separator">/</span><a
+                        href="#">Timesheets</a><span class="header-breadcrumb-separator">/</span><span>My Entries</span>
+                </div>
+            </header>
+
+            <main>
+                <div class="tabs" role="tablist" aria-label="Timesheets views">
+                    <a class="tab" href="employee_timesheets.html">My Entries</a>
+                    <a class="tab" href="supervisor_timesheets.html">Approvals</a>
+                    <a class="tab active" href="admin_timesheets.html" aria-current="page">Reports</a>
+                </div>
+
+                <section class="section" aria-labelledby="reports-title">
+                    <h2 id="reports-title">Summary Reports</h2>
+                    <div class="summary-cards">
+                        <div class="summary-card">
+                            <h3>Total Hours This Week</h3>
+                            <div class="number">540h</div>
+                        </div>
+                        <div class="summary-card">
+                            <h3>Total Hours This Month</h3>
+                            <div class="number">2,180h</div>
+                        </div>
+                        <div class="summary-card">
+                            <h3>Pending Approvals</h3>
+                            <div class="number">24</div>
+                        </div>
+                        <div class="summary-card">
+                            <h3>Approved Entries</h3>
+                            <div class="number">1,756</div>
+                        </div>
+                        <div class="summary-card">
+                            <h3>Rejected Entries</h3>
+                            <div class="number">41</div>
+                        </div>
+                        <div class="summary-card">
+                            <h3>Active Projects</h3>
+                            <div class="number">12</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="section" aria-labelledby="by-project-title">
+                    <h2 id="by-project-title">Timesheet Overview by Project</h2>
+                    <table aria-label="By project table">
+                        <thead>
+                            <tr>
+                                <th>Project</th>
+                                <th>Total Hours</th>
+                                <th>Employees</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ERP System</td>
+                                <td>920h</td>
+                                <td>18</td>
+                                <td>Active</td>
+                            </tr>
+                            <tr>
+                                <td>HR Portal</td>
+                                <td>410h</td>
+                                <td>9</td>
+                                <td>Active</td>
+                            </tr>
+                            <tr>
+                                <td>Invoicing</td>
+                                <td>280h</td>
+                                <td>6</td>
+                                <td>Paused</td>
+                            </tr>
+                            <tr>
+                                <td>Docs Control</td>
+                                <td>150h</td>
+                                <td>5</td>
+                                <td>Active</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <section class="section" aria-labelledby="contributors-title">
+                    <h2 id="contributors-title">Top Contributors This Month</h2>
+                    <table aria-label="Top contributors table">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Department</th>
+                                <th>Total Hours</th>
+                                <th>Entries</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Jane Doe</td>
+                                <td>Engineering</td>
+                                <td>176h</td>
+                                <td>48</td>
+                            </tr>
+                            <tr>
+                                <td>Ahmed Ali</td>
+                                <td>QA</td>
+                                <td>162h</td>
+                                <td>43</td>
+                            </tr>
+                            <tr>
+                                <td>Sarah Johnson</td>
+                                <td>Engineering</td>
+                                <td>158h</td>
+                                <td>41</td>
+                            </tr>
+                            <tr>
+                                <td>Omar Zaki</td>
+                                <td>DevOps</td>
+                                <td>150h</td>
+                                <td>40</td>
+                            </tr>
+                            <tr>
+                                <td>Mike Wilson</td>
+                                <td>Docs</td>
+                                <td>138h</td>
+                                <td>36</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+            </main>
+
+            <footer>© 2025 ERP System</footer>
+        </div>
+    </div>
+</body>
+
+</html>

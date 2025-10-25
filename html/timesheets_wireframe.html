@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ERP System — Timesheets (Wireframe)</title>
+    <style>
+        :root {
+            --bg: #f6f7f9;
+            --panel: #ffffff;
+            --text: #1f2937;
+            --muted: #6b7280;
+            --primary: #0ea5e9;
+            --border: #e5e7eb;
+            --focus: #2563eb;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+            color: var(--text);
+            background: var(--bg);
+        }
+
+        body {
+            display: grid;
+            min-height: 100vh;
+            grid-template-rows: auto 1fr auto;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: #282c34;
+            color: #fff;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 20px 16px;
+            border-bottom: 1px solid #3a3f4a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand-sidebar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .brand-sidebar .logo-sidebar {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary), #60a5fa);
+            display: grid;
+            place-items: center;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .collapse-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #3a3f4a;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            display: grid;
+            place-items: center;
+        }
+
+        .nav-section {
+            padding: 16px;
+            border-bottom: 1px solid #3a3f4a;
+        }
+
+        .nav-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #9ca3af;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-menu {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-item {
+            margin-bottom: 4px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            color: #e5e7eb;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: #374151;
+            color: #fff;
+        }
+
+        .nav-link .icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 16px;
+            border-top: 1px solid #3a3f4a;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #8b5cf6;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .user-url {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .user-menu-btn {
+            width: 20px;
+            height: 20px;
+            border: none;
+            background: none;
+            color: #9ca3af;
+            cursor: pointer;
+        }
+
+        .main-content {
+            background: #f6f7f9;
+        }
+
+        .main-header {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px 56px 24px;
+            /* extra bottom space for breadcrumb */
+            border-bottom: 1px solid var(--border);
+            background: #fff;
+        }
+
+        .header-breadcrumb {
+            position: absolute;
+            left: 24px;
+            top: 100%;
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 0 0 8px 8px;
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .header-breadcrumb a {
+            color: var(--muted);
+            text-decoration: none;
+        }
+
+        .header-breadcrumb a:hover {
+            color: var(--text);
+        }
+
+        .header-breadcrumb-separator {
+            color: var(--border);
+            margin: 0 4px;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+
+        .brand .logo {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            background: linear-gradient(135deg, #8b5cf6, #a855f7);
+            display: grid;
+            place-items: center;
+            color: #fff;
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        .brand .logo::after {
+            content: "E";
+        }
+
+        .right {
+            display: inline-flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-icons {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: #fff;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            color: var(--muted);
+            transition: all 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 37px auto;
+            padding: 0 16px;
+        }
+
+        .section {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        h2 {
+            margin: 0 0 12px 0;
+            font-size: 18px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            padding: 10px 8px;
+            font-size: 14px;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .btn {
+            border: 1px solid var(--border);
+            background: #fff;
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn:focus {
+            outline: 3px solid rgba(37, 99, 235, 0.2);
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-draft {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .status-approved {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .status-rejected {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .summary-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .summary-card h3 {
+            margin: 0 0 8px 0;
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .summary-card .number {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        footer {
+            text-align: center;
+            color: var(--muted);
+            font-size: 13px;
+            padding: 12px;
+            border-top: 1px solid var(--border);
+            background: #fff;
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="layout">
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="brand-sidebar">
+                    <div class="logo-sidebar">A</div>
+                    <span>Acme Corp</span>
+                </div>
+                <button class="collapse-btn" aria-label="Collapse sidebar">→</button>
+            </div>
+
+            <!-- Active (working) links -->
+            <div class="nav-section">
+                <div class="nav-section-title">Active</div>
+                <ul class="nav-menu">
+                    <li class="nav-item"><a href="dashboard_wireframe.html" class="nav-link"><span
+                                class="icon">📊</span><span>Dashboard</span></a></li>
+                    <li class="nav-item"><a href="employee_timesheets.html" class="nav-link"><span
+                                class="icon">🧑‍💼</span><span>My Entries</span></a></li>
+                    <li class="nav-item"><a href="supervisor_timesheets.html" class="nav-link"><span
+                                class="icon">🧾</span><span>Approvals</span></a></li>
+                    <li class="nav-item"><a href="admin_timesheets.html" class="nav-link"><span
+                                class="icon">📈</span><span>Reports</span></a></li>
+                </ul>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Core</div>
+                <ul class="nav-menu">
+                    <li class="nav-item"><a href="dashboard_wireframe.html" class="nav-link"><span
+                                class="icon">📊</span><span>Summary</span></a></li>
+                    <li class="nav-item"><a href="#" class="nav-link"><span
+                                class="icon">⚡</span><span>Actions</span></a></li>
+                    <li class="nav-item"><a href="#" class="nav-link"><span
+                                class="icon">🔔</span><span>Notifications</span></a></li>
+                    <li class="nav-item"><a href="#" class="nav-link"><span
+                                class="icon">👤</span><span>Profile</span></a></li>
+                    <li class="nav-item"><a href="#" class="nav-link"><span
+                                class="icon">⚙️</span><span>Settings</span></a></li>
+                    <li class="nav-item"><a href="#" class="nav-link"><span
+                                class="icon">🚪</span><span>Logout</span></a></li>
+                </ul>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Modules</div>
+                <ul class="nav-menu">
+                    <li class="nav-item"><a href="timesheets_wireframe.html" class="nav-link active"><span
+                                class="icon">⏰</span><span>Timesheets</span></a></li>
+                    <li class="nav-item"><a href="#" class="nav-link"><span class="icon">📄</span><span>Shared
+                                Documents</span></a></li>
+                    <li class="nav-item"><a href="#" class="nav-link"><span class="icon">📋</span><span>Document
+                                Control</span></a></li>
+                    <li class="nav-item"><a href="#" class="nav-link"><span class="icon">👥</span><span>Human
+                                Resources</span></a></li>
+                    <li class="nav-item"><a href="#" class="nav-link"><span
+                                class="icon">📝</span><span>Contracts</span></a></li>
+                    <li class="nav-item"><a href="#" class="nav-link"><span
+                                class="icon">💰</span><span>Financials</span></a></li>
+                    <li class="nav-item"><a href="#" class="nav-link"><span
+                                class="icon">🧾</span><span>Invoices</span></a></li>
+                </ul>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Company Admin</div>
+                <ul class="nav-menu">
+                    <li class="nav-item"><a href="#" class="nav-link"><span class="icon">🏢</span><span>Company
+                                Details</span></a></li>
+                    <li class="nav-item"><a href="#" class="nav-link"><span class="icon">👥</span><span>Users
+                                Details</span></a></li>
+                    <li class="nav-item"><a href="#" class="nav-link"><span
+                                class="icon">🔄</span><span>Workflows</span></a></li>
+                </ul>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">System Admin</div>
+                <ul class="nav-menu">
+                    <li class="nav-item"><a href="#" class="nav-link"><span
+                                class="icon">🏢</span><span>Companies</span></a></li>
+                    <li class="nav-item"><a href="#" class="nav-link"><span class="icon">👑</span><span>Company
+                                Admins</span></a></li>
+                    <li class="nav-item"><a href="#" class="nav-link"><span class="icon">📊</span><span>System Status &
+                                Usage</span></a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="user-avatar"
+                        style="background: #8b5cf6; color: white; display: grid; place-items: center; font-weight: bold;">
+                        JD</div>
+                    <div class="user-info">
+                        <div class="user-name">Jane Doe</div>
+                        <div class="user-url">System Admin</div>
+                    </div>
+                    <button class="user-menu-btn" aria-label="User menu">↑</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <header class="main-header">
+                <div class="brand" role="img" aria-label="ERP System">
+                    <div class="logo" aria-hidden="true"></div>
+                    <span>ERP System</span>
+                </div>
+                <div class="right">
+                    <div class="header-icons">
+                        <button class="icon-btn" aria-label="Change Theme">🌙</button>
+                        <button class="icon-btn" aria-label="Notifications">🔔</button>
+                        <button class="icon-btn" aria-label="Logout">🚪</button>
+                    </div>
+                </div>
+                <div class="header-breadcrumb">
+                    <a href="#">Home</a>
+                    <span class="header-breadcrumb-separator">/</span>
+                    <span>Timesheets</span>
+                </div>
+            </header>
+
+            <main>
+                <!-- Section 1: Employee Timesheet Entries -->
+                <section class="section" aria-labelledby="timesheet-entries-title">
+                    <h2 id="timesheet-entries-title">My Timesheet Entries</h2>
+                    <div class="toolbar" role="group" aria-label="Timesheet actions">
+                        <button class="btn" type="button">+ Add Entry</button>
+                        <button class="btn" type="button">Edit</button>
+                        <button class="btn" type="button">Delete</button>
+                        <button class="btn" type="button">Submit for Approval</button>
+                    </div>
+                    <table aria-label="Timesheet entries table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Project</th>
+                                <th>Task</th>
+                                <th>Hours</th>
+                                <th>Remarks</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2025-01-15</td>
+                                <td>ERP System</td>
+                                <td>Login Module</td>
+                                <td>4h</td>
+                                <td>Completed login wireframe</td>
+                                <td><span class="status-badge status-draft">Draft</span></td>
+                                <td>
+                                    <button class="btn" type="button">Edit</button>
+                                    <button class="btn" type="button">Delete</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2025-01-14</td>
+                                <td>ERP System</td>
+                                <td>Dashboard UI</td>
+                                <td>6h</td>
+                                <td>Created dashboard layout</td>
+                                <td><span class="status-badge status-pending">Pending</span></td>
+                                <td>
+                                    <button class="btn" type="button">Edit</button>
+                                    <button class="btn" type="button">Delete</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2025-01-13</td>
+                                <td>ERP System</td>
+                                <td>Admin Panel</td>
+                                <td>5h</td>
+                                <td>User management interface</td>
+                                <td><span class="status-badge status-approved">Approved</span></td>
+                                <td>
+                                    <button class="btn" type="button">View</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>2025-01-12</td>
+                                <td>ERP System</td>
+                                <td>API Integration</td>
+                                <td>3h</td>
+                                <td>REST API setup</td>
+                                <td><span class="status-badge status-rejected">Rejected</span></td>
+                                <td>
+                                    <button class="btn" type="button">Edit</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <!-- Section 2: Pending Approvals (Supervisor View) -->
+                <section class="section" aria-labelledby="pending-approvals-title">
+                    <h2 id="pending-approvals-title">Pending Approvals</h2>
+                    <div class="toolbar" role="group" aria-label="Approval actions">
+                        <select class="btn" aria-label="Filter by employee">
+                            <option>All Employees</option>
+                            <option>John Smith</option>
+                            <option>Sarah Johnson</option>
+                        </select>
+                    </div>
+                    <table aria-label="Pending approvals table">
+                        <thead>
+                            <tr>
+                                <th>Employee Name</th>
+                                <th>Date</th>
+                                <th>Project</th>
+                                <th>Task</th>
+                                <th>Hours</th>
+                                <th>Remarks</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>John Smith</td>
+                                <td>2025-01-15</td>
+                                <td>ERP System</td>
+                                <td>Database Design</td>
+                                <td>7h</td>
+                                <td>Schema creation and optimization</td>
+                                <td>
+                                    <button class="btn" type="button">Approve</button>
+                                    <button class="btn" type="button">Reject</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Sarah Johnson</td>
+                                <td>2025-01-15</td>
+                                <td>ERP System</td>
+                                <td>Testing</td>
+                                <td>4h</td>
+                                <td>Unit testing for login module</td>
+                                <td>
+                                    <button class="btn" type="button">Approve</button>
+                                    <button class="btn" type="button">Reject</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Mike Wilson</td>
+                                <td>2025-01-14</td>
+                                <td>ERP System</td>
+                                <td>Documentation</td>
+                                <td>3h</td>
+                                <td>API documentation update</td>
+                                <td>
+                                    <button class="btn" type="button">Approve</button>
+                                    <button class="btn" type="button">Reject</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <!-- Section 3: Summary Reports (Admin View) -->
+                <section class="section" aria-labelledby="summary-reports-title">
+                    <h2 id="summary-reports-title">Summary Reports</h2>
+                    <div class="summary-cards">
+                        <div class="summary-card">
+                            <h3>Total Hours This Week</h3>
+                            <div class="number">32h</div>
+                        </div>
+                        <div class="summary-card">
+                            <h3>Pending Approvals</h3>
+                            <div class="number">5</div>
+                        </div>
+                        <div class="summary-card">
+                            <h3>Approved Entries</h3>
+                            <div class="number">18</div>
+                        </div>
+                        <div class="summary-card">
+                            <h3>Rejected Entries</h3>
+                            <div class="number">2</div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+
+            <footer>
+                © 2025 ERP System
+            </footer>
+        </div>
+    </div>
+</body>
+
+</html>

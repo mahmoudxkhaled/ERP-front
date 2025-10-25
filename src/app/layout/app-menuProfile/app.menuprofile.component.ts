@@ -17,7 +17,6 @@ export interface GetUser {
     email: string;
     theme: string;
     photoUrl: string;
-    isDefaultTenantUser?: boolean;
     iAwareTeam?: boolean;
 }
 

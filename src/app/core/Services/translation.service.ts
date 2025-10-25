@@ -6,7 +6,7 @@ import { map, Observable } from 'rxjs';
     providedIn: 'root',
 })
 export class TranslationService {
-    private availableLanguages = ['en', 'ar', 'nl', 'fr'];
+    private availableLanguages = ['en', 'ar'];
 
     constructor(private translate: TranslateService) {
         this.setDefaultLang('en');

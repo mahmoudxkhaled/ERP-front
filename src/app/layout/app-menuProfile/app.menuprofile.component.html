@@ -1,6 +1,6 @@
 <div class="layout-menu-profile">
-    <button class="p-link border-noround" (click)="toggleMenu()" pTooltip="{{'layout.app-menuProfile.profile' | translate }}"
-        [tooltipDisabled]="isTooltipDisabled">
+    <button class="p-link border-noround" (click)="toggleMenu()"
+        pTooltip="{{'layout.app-menuProfile.profile' | translate }}" [tooltipDisabled]="isTooltipDisabled">
         <img [src]="imageUrl" alt="avatar" style="width: 32px; height: 32px; vertical-align: middle;
         border-radius: 50%;
         border: 1px solid gray;" />
@@ -18,7 +18,7 @@
         <li pTooltip="Settings" [tooltipDisabled]="isTooltipDisabled">
             <button class="p-link" [routerLink]="['/users/profile']">
                 <i class="pi pi-cog pi-fw"></i>
-                <span>{{ user.isDefaultTenantUser === true ? ('layout.app-menuProfile.settings' | translate) :
+                <span>{{
                     ('layout.app-menuProfile.profile' | translate) }}</span>
             </button>
         </li>

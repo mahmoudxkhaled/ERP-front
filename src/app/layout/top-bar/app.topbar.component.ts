@@ -8,7 +8,6 @@ import { LanguageDIRService } from 'src/app/core/Services/LanguageDIR.service';
 import { DialogService } from 'primeng/dynamicdialog';
 import { LogoutComponent } from 'src/app/Shared/components/logout/logout.component';
 import { TranslationService } from 'src/app/core/Services/translation.service';
-import { DropdownListDataSourceService } from 'src/app/core/Services/dropdown-list-data-source.service';
 enum NotificationTypeEnum {
     SendCampaignNotification = 1,
     SendCampaignLessonNotification = 2,
@@ -80,7 +79,6 @@ export class AppTopbarComponent implements OnInit {
         private rtlService: LanguageDIRService,
         private dialogService: DialogService,
         private translate: TranslationService,
-        private dropdownListDataSourceService: DropdownListDataSourceService,
     ) {
     }
 
@@ -90,7 +88,7 @@ export class AppTopbarComponent implements OnInit {
 
         this.fetchUserTheme();
         this.fetchNotifications();
-        this.fetchLanguages();
+        this.initializeStaticLanguages();
     }
 
     fetchUserTheme() {
@@ -108,12 +106,11 @@ export class AppTopbarComponent implements OnInit {
         // );
     }
 
-    fetchLanguages() {
-        this.subs.add(
-            this.dropdownListDataSourceService.getActiveLanguages().subscribe((res) => {
-                this.languages = res.data;
-            })
-        );
+    initializeStaticLanguages() {
+        this.languages = [
+            { id: 'en', name: 'English', code: 'en' },
+            { id: 'ar', name: 'العربية', code: 'ar' },
+        ];
     }
 
     handleClick(): void {
@@ -197,6 +194,9 @@ export class AppTopbarComponent implements OnInit {
 
         // Call the method to change the theme, based on the updated color scheme
         this.layoutService.changeTheme();
+
+        // Reset loading state after theme change is complete
+        this.themeLoading = false;
         this.ref.detectChanges();
     }
 
@@ -204,11 +204,26 @@ export class AppTopbarComponent implements OnInit {
         if (!event.value || this.langLoading) {
             return; // Prevent unnecessary calls or multiple requests
         }
+        this.userLanguageCode = event.value;
+        console.log(event.value);
 
         this.langLoading = true; // Set loading to true
         this.isListboxVisible = false; // Hide the listbox after selection
-        this.userLanguageCode = event.value;
-        this.userLanguageId = event.value;
+
+        const data = this.localStorage.getCurrentUserData();
+        console.log(data);
+        data.languageId = this.userLanguageCode;
+        data.language = this.userLanguageId;
+        this.localStorage.setItem('userData', data);
+        console.log('userLanguageCode', this.userLanguageCode);
+        this.rtlService.setUserLanguageCode(this.userLanguageCode || 'en');
+        this.isRtl = event.value === 'ar';
+        console.log('isRtl', this.isRtl);
+        this.rtlService.setRtl(this.isRtl);
+        this.langLoading = false; // Reset loading state
+        // window.location.reload();
+        this.ref.detectChanges();
+
     }
 
     toggleLanguageDropdown() {
