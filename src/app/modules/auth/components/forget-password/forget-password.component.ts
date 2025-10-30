@@ -14,7 +14,7 @@ import { EcncryptionService } from 'src/app/core/Services/ecncryption.service';
 export class ForgetPasswordComponent implements OnInit, OnDestroy {
 
   loginCreditials: FormGroup;
-  validationMessage : string = '';
+  validationMessage: string = '';
   isLoading$: Observable<boolean>;
   unsubscribe: Subscription[] = [];
 
@@ -23,11 +23,11 @@ export class ForgetPasswordComponent implements OnInit, OnDestroy {
   }
 
   constructor(private router: Router,
-    private apiService: AuthService, 
-    private localStorageService : LocalStorageService,    
+    private apiService: AuthService,
+    private localStorageService: LocalStorageService,
     private ecncrypServ: EcncryptionService) {
     this.isLoading$ = this.apiService.isLoadingSubject;
-   }
+  }
 
   ngOnInit(): void {
     this.initForm();
@@ -40,29 +40,14 @@ export class ForgetPasswordComponent implements OnInit, OnDestroy {
   }
 
   sendCode() {
-    this.validationMessage = ''
-    if (this.email && this.email.value) {
-      this.apiService.forgetPassword(this.email.value).subscribe({
-        next: (res) => {
-          if (res.isSuccess) {
-            this.localStorageService.setItem('email', this.ecncrypServ.encryptText(res.data));
-            this.router.navigateByUrl('/auth/verify-code')
-          }else{
-            this.validationMessage = 'Email doesn’t exist';
-          }
-        },
-        error: (err) => {
-          console.log(err)
-        }
-      })
-    } else {
-      this.loginCreditials.controls['email'].setErrors({ invalid: true });
-    }
+    // Static flow: navigate directly to reset password without API/validation
+    const emailValue = (this.email?.value as string) || 'user@example.com';
+    this.router.navigate(['/auth/resetPassword', emailValue]);
   }
 
   ngOnDestroy(): void {
     this.unsubscribe.forEach((u) => {
-        u.unsubscribe();
+      u.unsubscribe();
     });
   }
 }

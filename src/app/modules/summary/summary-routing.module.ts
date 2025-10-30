@@ -10,11 +10,11 @@ import { LogoutComponent } from './components/logout/logout.component';
 
 const routes: Routes = [
     { path: '', redirectTo: 'actions', pathMatch: 'full' },
-    { path: 'actions', component: ActionsComponent },
-    { path: 'notifications', component: NotificationsComponent },
-    { path: 'profile', component: ProfileComponent },
-    { path: 'settings', component: SettingsComponent },
-    { path: 'logout', component: LogoutComponent }
+    { path: 'actions', component: ActionsComponent, data: { breadcrumb: 'actions' } },
+    { path: 'notifications', component: NotificationsComponent, data: { breadcrumb: 'notifications' } },
+    { path: 'profile', component: ProfileComponent, data: { breadcrumb: 'profile' } },
+    { path: 'settings', component: SettingsComponent, data: { breadcrumb: 'settings' } },
+    { path: 'logout', component: LogoutComponent, data: { breadcrumb: 'logout' } }
 ];
 
 @NgModule({

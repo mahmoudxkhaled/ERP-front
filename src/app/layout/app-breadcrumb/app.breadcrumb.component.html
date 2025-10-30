@@ -4,7 +4,7 @@
             <li><a routerLink="/"><i class="pi pi-home"></i></a> </li>
             <ng-template ngFor let-item let-last="last" [ngForOf]="breadcrumbs$ | async">
                 <li><i class="pi pi-angle-right"></i></li>
-                <li><a [routerLink]="item.url">{{getTranslationItem(item.label) | translate}}</a></li>
+                <li><a [routerLink]="item.url">{{getTranslationItem(item.label)}}</a></li>
             </ng-template>
         </ol>
     </nav>

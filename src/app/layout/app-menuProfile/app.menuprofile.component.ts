@@ -42,7 +42,7 @@ export interface GetUser {
 })
 export class AppMenuProfileComponent implements OnInit {
     isAdmin: boolean = false;
-    userName: string = '';
+    userName: string = 'John Doe';
     imageUrl: string = '../../assets/media/avatar.png';
     subs: Subscription = new Subscription();
     user: GetUser;

@@ -1,5 +1,6 @@
 import { OnInit } from '@angular/core';
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { TranslationService } from '../../core/Services/translation.service';
 import { constants } from '../../core/constatnts/constatnts';
 
@@ -13,7 +14,10 @@ export class AppMenuComponent implements OnInit {
     iAwarePages = constants.pages;
     iAwareActions = constants.pageActions;
 
-    constructor(private translate: TranslationService) {
+    constructor(
+        private translate: TranslationService,
+        private router: Router
+    ) {
     }
 
     ngOnInit(): void {
@@ -37,26 +41,31 @@ export class AppMenuComponent implements OnInit {
                         label: this.translate.getInstant('menu.actions'),
                         hasPermession: true,
                         icon: 'fa fa-bolt',
+                        routerLink: ['/summary/actions']
                     },
                     {
                         label: this.translate.getInstant('menu.notifications'),
                         hasPermession: true,
                         icon: 'fa fa-bell',
+                        routerLink: ['/summary/notifications']
                     },
                     {
                         label: this.translate.getInstant('menu.profile'),
                         hasPermession: true,
                         icon: 'fa fa-user',
+                        routerLink: ['/summary/profile']
                     },
                     {
                         label: this.translate.getInstant('menu.settings'),
                         hasPermession: true,
                         icon: 'fa fa-cog',
+                        routerLink: ['/summary/settings']
                     },
                     {
                         label: this.translate.getInstant('menu.logout'),
                         hasPermession: true,
                         icon: 'fa fa-sign-out-alt',
+                        command: () => this.handleLogout()
                     },
                 ],
             },
@@ -69,16 +78,19 @@ export class AppMenuComponent implements OnInit {
                         label: this.translate.getInstant('menu.companyDetails'),
                         hasPermession: true,
                         icon: 'fa fa-building',
+                        routerLink: ['/company-administration/company-details']
                     },
                     {
                         label: this.translate.getInstant('menu.usersDetails'),
                         hasPermession: true,
                         icon: 'fa fa-users',
+                        routerLink: ['/company-administration/users-details']
                     },
                     {
                         label: this.translate.getInstant('menu.workflows'),
                         hasPermession: true,
                         icon: 'fa fa-sync-alt',
+                        routerLink: ['/company-administration/workflows']
                     },
                 ],
             },
@@ -91,6 +103,7 @@ export class AppMenuComponent implements OnInit {
                         label: this.translate.getInstant('menu.sharedDocuments'),
                         hasPermession: true,
                         icon: 'fa fa-file-alt',
+                        routerLink: ['/document-control']
                     },
                 ],
             },
@@ -100,14 +113,28 @@ export class AppMenuComponent implements OnInit {
                 icon: 'fa fa-user-tie',
                 items: [
                     {
-                        label: this.translate.getInstant('menu.timesheets'),
+                        label: 'My Timesheets',
                         hasPermession: true,
                         icon: 'fa fa-clock',
+                        routerLink: ['/human-resources/timesheets']
+                    },
+                    {
+                        label: 'Approvals',
+                        hasPermession: true,
+                        icon: 'fa fa-check-circle',
+                        routerLink: ['/human-resources/supervisor-timesheets']
+                    },
+                    {
+                        label: 'Reports',
+                        hasPermession: true,
+                        icon: 'fa fa-chart-line',
+                        routerLink: ['/human-resources/admin-timesheets']
                     },
                     {
                         label: this.translate.getInstant('menu.contract'),
                         hasPermession: true,
                         icon: 'fa fa-file-contract',
+                        routerLink: ['/human-resources/contract']
                     },
                 ],
             },
@@ -120,6 +147,7 @@ export class AppMenuComponent implements OnInit {
                         label: this.translate.getInstant('menu.invoices'),
                         hasPermession: true,
                         icon: 'fa fa-receipt',
+                        routerLink: ['/financials']
                     },
                 ],
             },
@@ -129,5 +157,12 @@ export class AppMenuComponent implements OnInit {
     hassPermession(pageName: string): boolean {
         // return this.currentPages.includes(pageName);
         return true;
+    }
+
+    handleLogout(): void {
+        // Handle logout logic here
+        // For example: clear localStorage, navigate to auth page
+        localStorage.removeItem('userData');
+        this.router.navigate(['/auth']);
     }
 }

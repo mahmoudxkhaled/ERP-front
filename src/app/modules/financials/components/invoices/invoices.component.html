@@ -1,94 +1,112 @@
-<div class="invoices-container">
-    <div class="page-header">
-        <h1>{{ translate.getInstant('dashboard.invoices') }}</h1>
-        <p class="page-description">Manage financial invoices and billing</p>
+<div class="card">
+    <p-toast></p-toast>
+
+    <!-- Page Header -->
+    <div class="mb-4">
+        <h1 class="text-3xl font-bold  mb-2">Invoice Management</h1>
+        <p class="text-gray-600">Manage financial invoices and billing</p>
     </div>
 
-    <div class="invoices-content">
-        <div class="invoice-stats">
-            <div class="stat-card">
-                <div class="stat-icon">💰</div>
-                <div class="stat-info">
-                    <h3>Total Revenue</h3>
-                    <span class="stat-number">$125,430</span>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-icon">📄</div>
-                <div class="stat-info">
-                    <h3>Pending Invoices</h3>
-                    <span class="stat-number">23</span>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-icon">✅</div>
-                <div class="stat-info">
-                    <h3>Paid This Month</h3>
-                    <span class="stat-number">45</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="invoices-table">
-            <div class="table-header">
-                <h3>Recent Invoices</h3>
-                <button class="btn btn-primary">Create Invoice</button>
-            </div>
-
-            <div class="table-content">
-                <div class="invoice-row">
-                    <div class="invoice-number">
-                        <span class="invoice-id">#INV-2024-001</span>
-                        <span class="invoice-date">2024-01-15</span>
+    <!-- Invoice Stats -->
+    <div class="grid mb-4">
+        <div class="col-12 md:col-4">
+            <div class="surface-card border-round p-4">
+                <div class="flex align-items-center">
+                    <div class="mr-3">
+                        <i class="pi pi-dollar text-2xl text-green-500"></i>
                     </div>
-                    <div class="client-info">
-                        <h4>Acme Corporation</h4>
-                        <p>Software Development Services</p>
-                    </div>
-                    <div class="invoice-amount">
-                        <span class="amount">$5,250.00</span>
-                    </div>
-                    <div class="invoice-status">
-                        <span class="status paid">Paid</span>
-                    </div>
-                </div>
-
-                <div class="invoice-row">
-                    <div class="invoice-number">
-                        <span class="invoice-id">#INV-2024-002</span>
-                        <span class="invoice-date">2024-01-18</span>
-                    </div>
-                    <div class="client-info">
-                        <h4>Tech Solutions Ltd</h4>
-                        <p>Consulting Services</p>
-                    </div>
-                    <div class="invoice-amount">
-                        <span class="amount">$3,800.00</span>
-                    </div>
-                    <div class="invoice-status">
-                        <span class="status pending">Pending</span>
-                    </div>
-                </div>
-
-                <div class="invoice-row">
-                    <div class="invoice-number">
-                        <span class="invoice-id">#INV-2024-003</span>
-                        <span class="invoice-date">2024-01-20</span>
-                    </div>
-                    <div class="client-info">
-                        <h4>Global Enterprises</h4>
-                        <p>Project Management</p>
-                    </div>
-                    <div class="invoice-amount">
-                        <span class="amount">$7,200.00</span>
-                    </div>
-                    <div class="invoice-status">
-                        <span class="status overdue">Overdue</span>
+                    <div>
+                        <span class="text-500 text-sm">Total Revenue</span>
+                        <div class="text-2xl font-bold text-900">$125,430</div>
                     </div>
                 </div>
             </div>
         </div>
+        <div class="col-12 md:col-4">
+            <div class="surface-card border-round p-4">
+                <div class="flex align-items-center">
+                    <div class="mr-3">
+                        <i class="pi pi-file text-2xl text-orange-500"></i>
+                    </div>
+                    <div>
+                        <span class="text-500 text-sm">Pending Invoices</span>
+                        <div class="text-2xl font-bold text-900">23</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 md:col-4">
+            <div class="surface-card border-round p-4">
+                <div class="flex align-items-center">
+                    <div class="mr-3">
+                        <i class="pi pi-check-circle text-2xl text-blue-500"></i>
+                    </div>
+                    <div>
+                        <span class="text-500 text-sm">Paid This Month</span>
+                        <div class="text-2xl font-bold text-900">45</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Invoices Table -->
+    <div class="iAware-loading-table-container" style="position: relative;">
+        <app-table-loading-spinner *ngIf="tableLoadingSpinner"></app-table-loading-spinner>
+        <p-table #invoiceTable [value]="invoices" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
+            responsiveLayout="scroll" [rowsPerPageOptions]="[10, 25, 50]"
+            [globalFilterFields]="['invoiceNumber', 'clientName', 'description', 'status']">
+
+            <ng-template pTemplate="caption">
+                <div class="flex flex-wrap gap-2 align-items-center justify-content-between">
+                    <span class="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
+                        <i class="pi pi-search"></i>
+                        <input pInputText type="text" (input)="onGlobalFilter(invoiceTable, $event)"
+                            placeholder="Search invoices..." class="w-full" />
+                    </span>
+                    <p-button (onClick)="navigateToCreateInvoice()"
+                        class="p-button-outlined w-full sm:w-auto flex-order-0 sm:flex-order-1" icon="pi pi-plus"
+                        label="Create Invoice"></p-button>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="header">
+                <tr>
+                    <th pSortableColumn="invoiceNumber" class="white-space-nowrap" style="width: 20%">
+                        Invoice #<p-sortIcon field="invoiceNumber"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="clientName" class="white-space-nowrap" style="width: 25%">
+                        Client<p-sortIcon field="clientName"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="description" class="white-space-nowrap" style="width: 25%">
+                        Description<p-sortIcon field="description"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="amount" class="white-space-nowrap" style="width: 15%">
+                        Amount<p-sortIcon field="amount"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="status" class="white-space-nowrap" style="width: 10%">
+                        Status<p-sortIcon field="status"></p-sortIcon>
+                    </th>
+                    <th style="width: 5%" class="text-right"></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-invoice>
+                <tr>
+                    <td class="font-semibold">{{ invoice.invoiceNumber }}</td>
+                    <td>{{ invoice.clientName }}</td>
+                    <td>{{ invoice.description }}</td>
+                    <td class="font-semibold">{{ invoice.amount | currency:'USD':'symbol':'1.2-2' }}</td>
+                    <td>
+                        <p-tag [value]="invoice.status" [severity]="getStatusSeverity(invoice.status)">
+                        </p-tag>
+                    </td>
+                    <td>
+                        <button *ngIf="invoiceMenuItems.length > 0" pButton pRipple type="button"
+                            icon="pi pi-ellipsis-v" class="p-button-rounded p-button-text p-button-plain ml-3"
+                            (click)="invoiceMenu.toggle($event); assignCurrentInvoice(invoice)"></button>
+                        <p-menu #invoiceMenu [model]="invoiceMenuItems" [appendTo]="'body'" [popup]="true"></p-menu>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
     </div>
 </div>

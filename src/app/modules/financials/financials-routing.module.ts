@@ -5,7 +5,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { InvoicesComponent } from './components/invoices/invoices.component';
 
 const routes: Routes = [
-    { path: '', component: InvoicesComponent }
+    { path: '', component: InvoicesComponent, data: { breadcrumb: 'invoices' } }
 ];
 
 @NgModule({

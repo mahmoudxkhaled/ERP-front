@@ -65,7 +65,9 @@ export class DashboardComponent implements OnInit {
             {
                 title: this.translate.getInstant('dashboard.humanResources'),
                 items: [
-                    { icon: '🧑‍💼', label: this.translate.getInstant('dashboard.timesheets'), route: '/human-resources/timesheets' },
+                    { icon: '🧑‍💼', label: 'My Timesheets', route: '/human-resources/timesheets' },
+                    { icon: '🧾', label: 'Approvals', route: '/human-resources/supervisor-timesheets' },
+                    { icon: '📈', label: 'Reports', route: '/human-resources/admin-timesheets' },
                     { icon: '📝', label: this.translate.getInstant('dashboard.contract'), route: '/human-resources/contract' }
                 ]
             },

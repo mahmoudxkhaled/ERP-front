@@ -25,7 +25,7 @@ export class MockDataService {
     private mockUsers: MockUser[] = [
         {
             userId: 'system-admin-001',
-            email: 'system.admin@iaware.com',
+            email: 'system.admin@erp.com',
             password: 'SystemAdmin@123',
             firstName: 'System',
             lastName: 'Administrator',
@@ -47,73 +47,7 @@ export class MockDataService {
             department: 'IT Administration',
             jobTitle: 'System Administrator'
         },
-        {
-            userId: 'company-admin-001',
-            email: 'company.admin@company.com',
-            password: 'CompanyAdmin@123',
-            firstName: 'Company',
-            lastName: 'Administrator',
-            role: 'company-admin',
-            permissions: [
-                'Users', 'TenantGroups', 'TenantUnit', 'Campaign', 'CampaignManagement',
-                'PhishingCategory', 'PhishingEmailTemplates', 'Leaderboard', 'Gamification',
-                'Invoice', 'TrainingCampaigns', 'PhishingCampaigns', 'MultimediaLibrary',
-                'TenantAdminPortal', 'TenantUserPortal', 'Badge', 'PointingSystem'
-            ],
-            theme: 'light',
-            isEmailConfirmed: true,
-            tenantId: 'company-001',
-            department: 'Human Resources',
-            jobTitle: 'Company Administrator'
-        },
-        {
-            userId: 'supervisor-001',
-            email: 'supervisor@company.com',
-            password: 'Supervisor@123',
-            firstName: 'Team',
-            lastName: 'Supervisor',
-            role: 'supervisor',
-            permissions: [
-                'Users', 'Campaign', 'Leaderboard', 'Gamification', 'TrainingCampaigns',
-                'PhishingCampaigns', 'MultimediaLibrary', 'TenantUserPortal', 'Badge'
-            ],
-            theme: 'light',
-            isEmailConfirmed: true,
-            tenantId: 'company-001',
-            department: 'Security Training',
-            jobTitle: 'Security Training Supervisor'
-        },
-        {
-            userId: 'employee-001',
-            email: 'employee@company.com',
-            password: 'Employee@123',
-            firstName: 'John',
-            lastName: 'Employee',
-            role: 'employee',
-            permissions: [
-                'Campaign', 'Leaderboard', 'Gamification', 'TrainingCampaigns',
-                'PhishingCampaigns', 'MultimediaLibrary', 'TenantUserPortal'
-            ],
-            theme: 'light',
-            isEmailConfirmed: true,
-            tenantId: 'company-001',
-            department: 'Marketing',
-            jobTitle: 'Marketing Specialist'
-        },
-        {
-            userId: 'unconfirmed-001',
-            email: 'unconfirmed@company.com',
-            password: 'Unconfirmed@123',
-            firstName: 'Unconfirmed',
-            lastName: 'User',
-            role: 'employee',
-            permissions: [],
-            theme: 'light',
-            isEmailConfirmed: false,
-            tenantId: 'company-001',
-            department: 'IT',
-            jobTitle: 'IT Support'
-        }
+
     ];
 
     // Active sessions tracking for force logout simulation

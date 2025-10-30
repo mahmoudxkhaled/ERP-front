@@ -8,9 +8,9 @@ import { WorkflowsComponent } from './components/workflows/workflows.component';
 
 const routes: Routes = [
     { path: '', redirectTo: 'company-details', pathMatch: 'full' },
-    { path: 'company-details', component: CompanyDetailsComponent },
-    { path: 'users-details', component: UsersDetailsComponent },
-    { path: 'workflows', component: WorkflowsComponent }
+    { path: 'company-details', component: CompanyDetailsComponent, data: { breadcrumb: 'companyDetails' } },
+    { path: 'users-details', component: UsersDetailsComponent, data: { breadcrumb: 'usersDetails' } },
+    { path: 'workflows', component: WorkflowsComponent, data: { breadcrumb: 'workflows' } }
 ];
 
 @NgModule({

@@ -5,7 +5,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { SharedDocumentsComponent } from './components/shared-documents/shared-documents.component';
 
 const routes: Routes = [
-    { path: '', component: SharedDocumentsComponent }
+    { path: '', component: SharedDocumentsComponent, data: { breadcrumb: 'sharedDocuments' } }
 ];
 
 @NgModule({

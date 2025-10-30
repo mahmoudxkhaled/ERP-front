@@ -68,29 +68,18 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
             next: (r) => {
                 this.tenantLogoUrl = r.data;
             },
-            error: (e) => {},
+            error: (e) => { },
         });
     }
 
     submit() {
-        const data: IResetPasswordModel = {
-            email: this.email,
-            newPassword: this.resetPassForm.get('password')?.value,
-            cNewPassword: this.resetPassForm.get('cPassword')?.value,
-        };
-
-        const x = this.authService.resetPassword(data).subscribe({
-            next: (r) => {
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Success',
-                    detail: 'Password reset successful!',
-                });
-                this.router.navigate(['/auth']);
-            },
-            error: (e) => {},
+        // Static flow: skip API call and navigate back to login directly
+        this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Password reset successful!',
         });
-        this.unsubscribe.push(x);
+        this.router.navigate(['/auth']);
     }
 
     initForm() {

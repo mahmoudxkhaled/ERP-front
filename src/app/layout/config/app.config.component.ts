@@ -21,7 +21,7 @@ export class AppConfigComponent implements OnInit {
 
     selectedScene = signal<string>('');
 
-    constructor(public layoutService: LayoutService, public menuService: MenuService) {}
+    constructor(public layoutService: LayoutService, public menuService: MenuService) { }
 
     get visible(): boolean {
         return this.layoutService.state.configSidebarVisible;
@@ -135,7 +135,7 @@ export class AppConfigComponent implements OnInit {
 
     ngOnInit() {
         this.componentThemes = [
-            { name: 'purple', color: '#6f42c1' },
+            { name: 'purple', color: '#005f6b' },
             { name: 'indigo', color: '#6610f2' },
             { name: 'pink', color: '#d63384' },
             { name: 'blue', color: '#0d6efd' },
@@ -307,6 +307,6 @@ export class AppConfigComponent implements OnInit {
         this.topbarTheme = topbarTheme;
         this.menuMode = menuMode;
 
-        
+
     }
 }

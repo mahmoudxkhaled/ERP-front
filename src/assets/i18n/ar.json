@@ -136,7 +136,24 @@
             "leaderboard": "الترتيب",
             "industry": "الصناعة",
             "gamification": "التلعيب",
-            "tages": "العلامات"
+            "tages": "العلامات",
+            "adminTimesheets": "جداول الأوقات الإدارية",
+            "supervisorTimesheets": "جداول الأوقات للمشرف",
+            "summary": "الملخص",
+            "documentControl": "التحكم في المستندات",
+            "humanResources": "الموارد البشرية",
+            "financials": "المالية",
+            "companyAdministration": "إدارة الشركة",
+            "actions": "الإجراءات",
+            "settings": "الإعدادات",
+            "logout": "تسجيل الخروج",
+            "timesheets": "جداول الأوقات",
+            "contract": "العقد",
+            "invoices": "الفواتير",
+            "sharedDocuments": "المستندات المشتركة",
+            "companyDetails": "تفاصيل الشركة",
+            "usersDetails": "تفاصيل المستخدمين",
+            "workflows": "سير العمل"
         },
         "app-layout": {
             "actions": {
@@ -412,6 +429,94 @@
             "hrPortal": "بوابة الموارد البشرية",
             "invoicing": "الفواتير",
             "documentControl": "التحكم في المستندات"
+        }
+    },
+    "adminTimesheets": {
+        "title": "جداول الأوقات الإدارية",
+        "description": "الإدارة النظامية - إدارة الشركات والمستخدمين",
+        "companies": {
+            "title": "الشركات",
+            "addCompany": "إضافة شركة",
+            "editCompany": "تعديل الشركة",
+            "deleteCompany": "حذف الشركة",
+            "fields": {
+                "name": "اسم الشركة",
+                "status": "الحالة",
+                "industry": "الصناعة",
+                "founded": "سنة التأسيس",
+                "employees": "عدد الموظفين",
+                "admins": "المديرين"
+            }
+        },
+        "users": {
+            "title": "المستخدمين",
+            "addUser": "إضافة مستخدم",
+            "editUser": "تعديل المستخدم",
+            "deleteUser": "حذف المستخدم",
+            "fields": {
+                "name": "الاسم الكامل",
+                "email": "البريد الإلكتروني",
+                "role": "الدور",
+                "company": "الشركة",
+                "status": "الحالة"
+            }
+        },
+        "roles": {
+            "systemAdmin": "مدير النظام",
+            "companyAdmin": "مدير الشركة",
+            "supervisor": "مشرف",
+            "employee": "موظف"
+        },
+        "status": {
+            "active": "نشط",
+            "inactive": "غير نشط"
+        }
+    },
+    "supervisorTimesheets": {
+        "title": "جداول الأوقات للمشرف",
+        "description": "إدارة موافقات جداول الأوقات للفريق ومراقبة ساعات العمل",
+        "summary": {
+            "pendingHours": "الساعات المعلقة",
+            "approvedHours": "الساعات الموافق عليها",
+            "teamHours": "ساعات الفريق"
+        },
+        "tabs": {
+            "pendingApprovals": "الموافقات المعلقة",
+            "recentlyApproved": "الموافقات الأخيرة"
+        },
+        "filters": {
+            "employee": "تصفية حسب الموظف",
+            "period": "تصفية حسب الفترة",
+            "allEmployees": "جميع الموظفين",
+            "thisWeek": "هذا الأسبوع",
+            "thisMonth": "هذا الشهر",
+            "last3Months": "آخر 3 أشهر",
+            "allTime": "جميع الأوقات"
+        },
+        "actions": {
+            "approve": "موافقة",
+            "reject": "رفض"
+        },
+        "fields": {
+            "employee": "الموظف",
+            "date": "التاريخ",
+            "project": "المشروع",
+            "task": "المهمة",
+            "hours": "الساعات",
+            "remarks": "الملاحظات",
+            "status": "الحالة",
+            "approvedDate": "تاريخ الموافقة",
+            "approvedBy": "موافق عليه من قبل"
+        },
+        "dialogs": {
+            "approveDialog": {
+                "header": "موافقة على إدخال جدول الأوقات",
+                "message": "الموافقة على هذا الإدخال من جدول الأوقات؟"
+            },
+            "rejectDialog": {
+                "header": "رفض إدخال جدول الأوقات",
+                "message": "رفض هذا الإدخال من جدول الأوقات؟"
+            }
         }
     },
     "system-emails": {

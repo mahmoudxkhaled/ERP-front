@@ -78,7 +78,9 @@ import { LogoutComponent } from '../components/logout/logout.component';
 import { TableLoadingSpinnerComponent } from '../components/table-loading-spinner/table-loading-spinner/table-loading-spinner.component';
 import { MockCredentialsComponent } from '../components/mock-credentials/mock-credentials.component';
 import { InputMaskModule } from 'primeng/inputmask';
+import { ComingSoonComponent } from 'src/app/demo/components/pages/coming-soon/coming-soon.component';
 const components = [
+    ComingSoonComponent,
     EmptyDataComponent,
     IAwareRichTextComponent,
     ColorScemaSettingsComponent,

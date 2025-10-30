@@ -100,7 +100,7 @@
             "uikit": "UI Kit",
             "utilities": "Utilities",
             "pages": "Pages Management",
-            "profile": "User Management",
+            "profile": "Profile",
             "users": "User Management",
             "roles": "Role Management",
             "pages-management": "Page Management",
@@ -136,7 +136,24 @@
             "leaderboard": "Ranking",
             "industry": "Industry",
             "gamification": "Gamification",
-            "tages": "Tages"
+            "tages": "Tages",
+            "adminTimesheets": "Admin Timesheets",
+            "supervisorTimesheets": "Supervisor Timesheets",
+            "summary": "Summary",
+            "documentControl": "Document Control",
+            "humanResources": "Human Resources",
+            "financials": "Financials",
+            "companyAdministration": "Company Administration",
+            "actions": "Actions",
+            "settings": "Settings",
+            "logout": "Logout",
+            "timesheets": "Timesheets",
+            "contract": "Contract",
+            "invoices": "Invoices",
+            "sharedDocuments": "Shared Documents",
+            "companyDetails": "Company Details",
+            "usersDetails": "Users Details",
+            "workflows": "Workflows"
         },
         "app-layout": {
             "actions": {
@@ -556,6 +573,94 @@
             "hrPortal": "HR Portal",
             "invoicing": "Invoicing",
             "documentControl": "Document Control"
+        }
+    },
+    "adminTimesheets": {
+        "title": "Admin Timesheets",
+        "description": "System administration - Manage companies and users",
+        "companies": {
+            "title": "Companies",
+            "addCompany": "Add Company",
+            "editCompany": "Edit Company",
+            "deleteCompany": "Delete Company",
+            "fields": {
+                "name": "Company Name",
+                "status": "Status",
+                "industry": "Industry",
+                "founded": "Founded Year",
+                "employees": "Number of Employees",
+                "admins": "Admins"
+            }
+        },
+        "users": {
+            "title": "Users",
+            "addUser": "Add User",
+            "editUser": "Edit User",
+            "deleteUser": "Delete User",
+            "fields": {
+                "name": "Full Name",
+                "email": "Email",
+                "role": "Role",
+                "company": "Company",
+                "status": "Status"
+            }
+        },
+        "roles": {
+            "systemAdmin": "System Admin",
+            "companyAdmin": "Company Admin",
+            "supervisor": "Supervisor",
+            "employee": "Employee"
+        },
+        "status": {
+            "active": "Active",
+            "inactive": "Inactive"
+        }
+    },
+    "supervisorTimesheets": {
+        "title": "Supervisor Timesheets",
+        "description": "Manage team timesheet approvals and monitor work hours",
+        "summary": {
+            "pendingHours": "Pending Hours",
+            "approvedHours": "Approved Hours",
+            "teamHours": "Team Hours"
+        },
+        "tabs": {
+            "pendingApprovals": "Pending Approvals",
+            "recentlyApproved": "Recently Approved"
+        },
+        "filters": {
+            "employee": "Filter by Employee",
+            "period": "Filter by Period",
+            "allEmployees": "All Employees",
+            "thisWeek": "This Week",
+            "thisMonth": "This Month",
+            "last3Months": "Last 3 Months",
+            "allTime": "All Time"
+        },
+        "actions": {
+            "approve": "Approve",
+            "reject": "Reject"
+        },
+        "fields": {
+            "employee": "Employee",
+            "date": "Date",
+            "project": "Project",
+            "task": "Task",
+            "hours": "Hours",
+            "remarks": "Remarks",
+            "status": "Status",
+            "approvedDate": "Approved Date",
+            "approvedBy": "Approved By"
+        },
+        "dialogs": {
+            "approveDialog": {
+                "header": "Approve Timesheet Entry",
+                "message": "Approve this timesheet entry?"
+            },
+            "rejectDialog": {
+                "header": "Reject Timesheet Entry",
+                "message": "Reject this timesheet entry?"
+            }
         }
     },
     "system-emails": {

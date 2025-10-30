@@ -6,19 +6,19 @@
     <div class="wave"></div>
     <div class="wave"></div>
     <div class="login-container">
-        <div class="brand-logo">
+        <!-- <div class="brand-logo">
             <div class="i-background">
                 <img src="../../../../../favicon.ico" alt="logo" />
             </div>
-        </div>
-        <h2>Welcome to iAware</h2>
-        <div *ngIf="hasError" class="backend-error-message">
+        </div> -->
+        <h2>Welcome to ERP</h2>
+        <!-- <div *ngIf="hasError" class="backend-error-message">
             <i class="pi pi-exclamation-circle" style="margin-right: 10px;"></i>
             <span>
                 {{ 'auth.login.invalidCredentials' | translate }}
             </span>
-        </div>
-        <div class="message">1 # Revolutionizing Ideas</div>
+        </div> -->
+        <!-- <div class="message">1 # Revolutionizing Ideas</div> -->
         <form [formGroup]="loginCreditials" (ngSubmit)="submit()">
             <div class="form-group">
                 <input type="email" id="username" name="username" placeholder=" " formControlName="email" required
@@ -59,7 +59,7 @@
             <a routerLink="/auth/forget-password">Forgot Password?</a>
         </div>
         <div class="footer">
-            © 2025 iAware. All rights reserved.
+            © 2025 ERP. All rights reserved.
         </div>
     </div>
 </div>
