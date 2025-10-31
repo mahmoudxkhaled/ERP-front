@@ -84,31 +84,9 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
     submit() {
-        const subscription = this.apiService
-            .login(this.loginCreditials.value)
-            .subscribe({
-                next: (res: any) => {
-                    if (res.issuccess === false) {
-                        this.hasError = true;
-                    } else if (res.code === 800) {
-                        // Active sessions detected
-                        this.showDialog = true;
-                        this.userId = res.data.userId;
-                        this.dialogMessage = res.message;
-                    } else if (res.message === "Email Not Confirmed") {
-                        // Email not confirmed
-                        this.hasError = true;
-                    } else {
-                        // Successful login
-                        this.handleSuccessfulLogin();
-                    }
-                },
-                error: (error) => {
-                    console.error('Login error:', error);
-                    this.hasError = true;
-                },
-            });
-        this.unsubscribe.push(subscription);
+        console.log('submit');
+        this.router.navigate(['/']);
+
     }
 
     forceLogout(userId: string) {

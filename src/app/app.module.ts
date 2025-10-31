@@ -53,16 +53,16 @@ import { DialogService } from 'primeng/dynamicdialog';
     providers: [
         { provide: LocationStrategy, useClass: HashLocationStrategy },
         DialogService,
-        {
-            provide: HTTP_INTERCEPTORS,
-            useClass: authInterceptor,
-            multi: true,
-        },
-        {
-            provide: HTTP_INTERCEPTORS,
-            useClass: tokenInterceptor,
-            multi: true,
-        },
+        // {
+        //     provide: HTTP_INTERCEPTORS,
+        //     useClass: authInterceptor,
+        //     multi: true,
+        // },
+        // {
+        //     provide: HTTP_INTERCEPTORS,
+        //     useClass: tokenInterceptor,
+        //     multi: true,
+        // },
         MessageService,
         {
             provide: HTTP_INTERCEPTORS,

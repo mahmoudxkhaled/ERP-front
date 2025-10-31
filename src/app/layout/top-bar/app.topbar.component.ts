@@ -8,6 +8,7 @@ import { LanguageDIRService } from 'src/app/core/Services/LanguageDIR.service';
 import { DialogService } from 'primeng/dynamicdialog';
 import { LogoutComponent } from 'src/app/Shared/components/logout/logout.component';
 import { TranslationService } from 'src/app/core/Services/translation.service';
+import { Router } from '@angular/router';
 enum NotificationTypeEnum {
     SendCampaignNotification = 1,
     SendCampaignLessonNotification = 2,
@@ -79,15 +80,16 @@ export class AppTopbarComponent implements OnInit {
         private rtlService: LanguageDIRService,
         private dialogService: DialogService,
         private translate: TranslationService,
+        private router: Router,
     ) {
     }
 
     ngOnInit(): void {
-        const data = this.localStorage.getCurrentUserData();
-        this.userLanguageId = data.language;
+        // const data = this.localStorage.getCurrentUserData();
+        // this.userLanguageId = data.language;
 
-        this.fetchUserTheme();
-        this.fetchNotifications();
+        // this.fetchUserTheme();
+        // this.fetchNotifications();
         this.initializeStaticLanguages();
     }
 
@@ -113,52 +115,10 @@ export class AppTopbarComponent implements OnInit {
         ];
     }
 
-    handleClick(): void {
-        if (this.unreadCount > 0) {
-            this.markAllNotifcationAsRead();
-        }
-    }
 
-    markAllNotifcationAsRead() {
-        const datas = this.localStorageServ.getCurrentUserData();
 
-    }
 
-    handleIncomingNotification(notification: notificiationDto) {
-        this.fetchNotifications();
-        this.ref.detectChanges();
-    }
 
-    processNotification(notification: notificiationDto): notificiationDto {
-        if (notification.notificationTypeId === this.notificationTypeEnum.SendCampaignNotification) {
-            notification.title = notification.notificationMessage;
-            notification.notificationMessage = notification.notificationParameter1;
-        } else if (notification.notificationTypeId === this.notificationTypeEnum.SendCampaignLessonNotification) {
-            notification.title = notification.notificationMessage;
-            notification.notificationMessage = notification.notificationParameter1;
-        }
-
-        return notification;
-    }
-
-    processNotifications(notifications: notificiationDto[]): notificiationDto[] {
-        return notifications?.map((notification) => {
-            if (notification.notificationTypeId === this.notificationTypeEnum.SendCampaignNotification) {
-                notification.title = notification.notificationMessage;
-                notification.redirectPageUrl = notification.redirectPageUrl;
-                notification.notificationMessage = notification.notificationParameter1;
-            } else if (notification.notificationTypeId === this.notificationTypeEnum.SendCampaignLessonNotification) {
-                notification.title = notification.notificationMessage;
-                notification.redirectPageUrl = notification.redirectPageUrl;
-                notification.notificationMessage = notification.notificationParameter1;
-            }
-            return notification;
-        });
-    }
-
-    calculateUnreadCount() {
-        this.unreadCount = this.notifications?.filter((notification) => !notification.isRead).length ?? 0;
-    }
 
 
 
@@ -231,15 +191,17 @@ export class AppTopbarComponent implements OnInit {
     }
 
     logOut() {
-        this.dialogService.open(LogoutComponent, {
-            showHeader: true,
-            header: this.translate.getInstant('shared.headers.confirmLogout'),
-            styleClass: 'custom-dialog',
-            maskStyleClass: 'custom-backdrop',
-            dismissableMask: true,
-            width: '30vw',
-            closable: true,
-        });
+        // this.dialogService.open(LogoutComponent, {
+        //     showHeader: true,
+        //     header: this.translate.getInstant('shared.headers.confirmLogout'),
+        //     styleClass: 'custom-dialog',
+        //     maskStyleClass: 'custom-backdrop',
+        //     dismissableMask: true,
+        //     width: '30vw',
+        //     closable: true,
+        // });
+        this.router.navigate(['/auth']);
+
     }
 
     search(event: any) {

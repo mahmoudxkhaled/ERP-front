@@ -20,8 +20,11 @@ export class LogoutComponent implements OnInit {
     }
 
     confirmLogout(): void {
-        this.localStorageService.removeItem('userData');
+
         this.router.navigate(['/auth']);
+
+        console.log('confirmLogout');
+        // this.localStorageService.removeItem('userData');
     }
 
     cancelLogout(): void {
