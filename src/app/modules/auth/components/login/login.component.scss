@@ -17,7 +17,7 @@
     position: relative;
     justify-content: center;
     align-items: center;
-    background: radial-gradient(circle, #69189b, #9c25b1, #522cac);
+    background: radial-gradient(circle, #001f3f, #004080, #0059b3);;
     background-size: 400% 400%;
     animation: gradientShift 20s ease infinite;
 }
@@ -88,7 +88,7 @@
     font-size: 36px;
     margin-bottom: 15px;
     font-weight: bold;
-    color: #673ab7;
+    color: #003366;
 }
 
 /* Input Fields */
@@ -114,7 +114,7 @@
 }
 
 .form-group input:focus {
-    border: 1px solid #673ab7;
+    border: 1px solid #003366;
     box-shadow: 0 3px 8px rgba(103, 58, 183, 0.2);
 }
 
@@ -141,7 +141,7 @@
     top: -10px;
     left: 12px;
     font-size: 12px;
-    color: #673ab7;
+    color: #003366;
     background: #ffffff;
     padding: 0 5px;
     border-radius: 5px;
@@ -155,7 +155,7 @@
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    background: linear-gradient(90deg, #800080, #4b0082) !important;
+    background: linear-gradient(90deg, #001f3f, #0059b3) !important;
     color: white !important;
     font-weight: bold;
     transition: all 0.3s ease;
@@ -174,7 +174,7 @@
 }
 
 .links a {
-    color: #673ab7;
+    color: #003366;
     text-decoration: none;
     margin: 0 5px;
     font-weight: bold;
@@ -227,7 +227,7 @@
 
 .message {
     font-size: 18px;
-    color: #673ab7;
+    color: #003366;
     margin: 15px 0;
     text-align: center;
     font-weight: 600;
