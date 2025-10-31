@@ -1,0 +1,680 @@
+{
+    "validation": {
+        "requiredMessage": "This field is required",
+        "emailMessage": "Please enter a valid email",
+        "minLengthMessage": "Minimum length is {{min}}"
+    },
+    "menu": {
+        "summary": "Summary",
+        "actions": "Actions",
+        "notifications": "Notifications",
+        "profile": "Profile",
+        "settings": "Settings",
+        "logout": "Logout",
+        "companyAdministration": "Company Administration",
+        "companyDetails": "Company Details",
+        "usersDetails": "Users Details",
+        "workflows": "Workflows",
+        "documentControl": "Document Control",
+        "sharedDocuments": "Shared Documents",
+        "humanResources": "Human Resources",
+        "timesheets": "Timesheets",
+        "contract": "Contract",
+        "financials": "Financials",
+        "invoices": "Invoices"
+    },
+    "dashboard": {
+        "summary": "Summary",
+        "actions": "Actions",
+        "notifications": "Notifications",
+        "profile": "Profile",
+        "settings": "Settings",
+        "logout": "Logout",
+        "companyAdministration": "Company Administration",
+        "companyDetails": "Company Details",
+        "usersDetails": "Users Details",
+        "workflows": "Workflows",
+        "documentControl": "Document Control",
+        "sharedDocuments": "Shared Documents",
+        "humanResources": "Human Resources",
+        "timesheets": "Timesheets",
+        "contract": "Contract",
+        "financials": "Financials",
+        "invoices": "Invoices"
+    },
+    "companyAdministration": {
+        "usersDetails": {
+            "title": "Users Management",
+            "actions": {
+                "add": "Add User"
+            },
+            "fields": {
+                "name": "Name",
+                "email": "Email",
+                "role": "Role",
+                "status": "Status"
+            },
+            "dialogs": {
+                "addDialog": {
+                    "header": "Add New User",
+                    "fields": {
+                        "name": "Name",
+                        "email": "Email",
+                        "role": "Role",
+                        "isActive": "Active"
+                    }
+                },
+                "editDialog": {
+                    "header": "Edit User",
+                    "fields": {
+                        "name": "Name",
+                        "email": "Email",
+                        "role": "Role"
+                    }
+                }
+            }
+        }
+    },
+    "profile": {
+        "title": "Profile",
+        "description": "Manage your profile information",
+        "overview": "Profile Overview",
+        "personalInfo": "Personal Information",
+        "fields": {
+            "firstName": "First Name",
+            "lastName": "Last Name",
+            "email": "Email",
+            "phone": "Phone",
+            "role": "Role",
+            "department": "Department"
+        },
+        "actions": {
+            "save": "Save Changes",
+            "reset": "Reset",
+            "cancel": "Cancel"
+        }
+    },
+    "layout": {
+        "app-breadcrumb": {
+            "iAwareDashboard": "ERP Dashboard",
+            "uikit": "UI Kit",
+            "utilities": "Utilities",
+            "pages": "Pages Management",
+            "profile": "Profile",
+            "users": "User Management",
+            "roles": "Role Management",
+            "pages-management": "Page Management",
+            "account-setting": "Account Management",
+            "tenant-group": "Tenant Group Management",
+            "language": "Language Management",
+            "badge": "Badge Management",
+            "documentation": "Documentation",
+            "blocks": "Prime Blocks",
+            "ecommerce": "E-Commerce",
+            "apps": "Apps",
+            "subscription": "Subscription",
+            "security-training": "Security Training",
+            "campaign-management": "Awareness Campaign Management",
+            "campaign": "Training Campaign",
+            "phishing-campaigns": "Phishing Campaigns",
+            "phishing-email-domains": "Phishing Email Domains",
+            "system-email-domains": "System Email Domains",
+            "system-email-activity": "System Email Activitiy",
+            "phishing-category": "Phishing Category",
+            "phishing-templates": "Phishing Email Template",
+            "notifications": "Notifications",
+            "wallpaper-libraries": "Wallpaper Libraries",
+            "wallpaper-wizard": "Wallpaper Wizard",
+            "support": "Support",
+            "auth": "Auth",
+            "simulation-phishing": "Simulation Phishing",
+            "details": "Details",
+            "pointing-system": "Pointing System",
+            "multimedia": "Multimedia",
+            "tenantUnit": "Department",
+            "statistics": "Statistics",
+            "leaderboard": "Ranking",
+            "industry": "Industry",
+            "gamification": "Gamification",
+            "tages": "Tages",
+            "adminTimesheets": "Admin Timesheets",
+            "supervisorTimesheets": "Supervisor Timesheets",
+            "summary": "Summary",
+            "documentControl": "Document Control",
+            "humanResources": "Human Resources",
+            "financials": "Financials",
+            "companyAdministration": "Company Administration",
+            "actions": "Actions",
+            "settings": "Settings",
+            "logout": "Logout",
+            "timesheets": "Timesheets",
+            "contract": "Contract",
+            "invoices": "Invoices",
+            "sharedDocuments": "Shared Documents",
+            "companyDetails": "Company Details",
+            "usersDetails": "Users Details",
+            "workflows": "Workflows"
+        },
+        "app-layout": {
+            "actions": {
+                "hide": "hide?"
+            }
+        },
+        "app-menuProfile": {
+            "profile": "Profile",
+            "logout": "Logout",
+            "settings": "Settings"
+        },
+        "config": {
+            "layoutThemeScale": "Layout/Theme Scale",
+            "scenes": "Scenes",
+            "colorScheme": "Color Scheme",
+            "light": "Light",
+            "dark": "Dark",
+            "menuMode": "Menu Mode",
+            "static": "Static",
+            "overlay": "Overlay",
+            "slim": "Slim",
+            "slimPlus": "Slim +",
+            "reveal": "Reveal",
+            "drawer": "Drawer",
+            "horizontal": "Horizontal",
+            "menuProfilePosition": "Menu Profile Position",
+            "start": "Start",
+            "end": "End",
+            "inputStyle": "Input Style",
+            "outlined": "Outlined",
+            "filled": "Filled",
+            "rippleEffect": "Ripple Effect",
+            "menuThemes": "Menu Themes",
+            "menu_theme_selector": "Menu themes are only available in light mode by design as large surfaces can emit too much brightness in dark mode.",
+            "topbarThemes": "Topbar Themes",
+            "componentThemes": "Component Themes"
+        },
+        "support-tabmenu": {
+            "taps": {
+                "addTicket": "+Add Ticket",
+                "allTicket": "All Ticket",
+                "myTicket": "My Tickets"
+            },
+            "fields": {
+                "supportCategory": "Support Category:",
+                "subject": "Subject:",
+                "customSubject": "Custom Subject:",
+                "requestDetails": "Request Details:",
+                "file": "File:",
+                "upload": "Upload"
+            },
+            "placeHolders": {
+                "subject": "Selerct a Subject",
+                "category": "Select Category",
+                "openthisticket": "douple click to open this ticket",
+                "search": "search"
+            },
+            "emptyMessage": {
+                "title": "No Tickets Available",
+                "details": "If you encounter any issues, please raise a ticket by clicking the 'Add Ticket' button. Our support team will assist you promptly."
+            }
+        },
+        "top-bar": {
+            "markAllAsRead": "mark all as read"
+        }
+    },
+    "account": {
+        "account-integration-settings": {
+            "title": "Account Integration Settings",
+            "samlNotificationRecipients": "SAML Notification Recipients",
+            "idPSSOTargetURL": "IDP SSO Target URL",
+            "currentAuthnRequestCertificate": "Current Authn Request Certificate",
+            "entityId": "Entity ID",
+            "ssoSignInURL": "SSO Sign In URL",
+            "ssoSignOutURL": "SSO Sign Out URL",
+            "ssoCallbackURL": "SSO Callback URL",
+            "smalId": "SAML ID",
+            "metadataURL": "Metadata URL",
+            "bypassSSOLoginURL": "Bypass SSO Login URL",
+            "currentAuthnRequestCertificateValidFrom": "Current Authn Request Certificate Valid From",
+            "currentAuthnRequestCertificateValidTo": "Current Authn Request Certificate Valid To",
+            "enableSAMLSSO": "Enable SAML SSO",
+            "disableNonSMALLoginsForAllUsers": "Disable Non-SAML Logins For All Users",
+            "allowAdminswMFAToByPassSMALLogin": "Allow Admins w/ MFA To Bypass SAML Login",
+            "allowAccountCreationFromSAMLLogin": "Allow Account Creation From SAML Login",
+            "sha_1": "SHA-1",
+            "sha_256": "SHA-256",
+            "signUpAuthnRequest": "Sign Up Authn Request",
+            "enableSPAuthnRequesExpirationNotifications": "Enable SP Authn Request Expiration Notifications"
+        },
+        "ad-settings": {
+            "title": "Active Directory Settings",
+            "adISyncToken": "ADI Sync Token",
+            "ipAddress": "AD Server IP Address",
+            "adDomainName": "AD Domain Name",
+            "adDomainNameExtention": "AD Domain Extention",
+            "adUserName": "AD Administrator UserName",
+            "adPassword": "AD Administrator Password",
+            "showGroupAdmin": "Show Group Admin"
+        },
+        "branding": {
+            "title": "Branding Details",
+            "companyLogoURL": "Company Logo URL",
+            "brandCertificate": "Brand Certificate",
+            "companyLogo": "Company Logo",
+            "brandColor": "Brand Color",
+            "upload": "UPLOAD LOGO"
+        },
+        "learner-experience": {
+            "title": "Learner Experience",
+            "leaderboardType": "Leaderboard Type",
+            "defaultTrainingLanguage": "Default Training Language",
+            "leaderboardTimePeriod": "Leaderboard Time Period",
+            "groupsToIncludeInLeaderboard": "Groups To Include In Leaderboard",
+            "enableOptionalTrainingCampaigns": "Enable Optional Training Campaigns",
+            "enableAIDARecomendedOptionalLearning": "Enable AIDA Recomended Optional Learning",
+            "excludeTrainingCampaignsWithNoDueDate": "Exclude Training Campaigns With No DueDate",
+            "enableBadges": "Enable Badges",
+            "selectBadge": "Select Badge"
+        },
+        "organization-information": {
+            "title": "Organization Details",
+            "organizationName": "Organization Name",
+            "streetAddress1": "Street Address 1",
+            "streetAddress2": "Street Address 2",
+            "suiteNumber": "Suite Number",
+            "city": "City",
+            "state": "State",
+            "zipCode": "Zip Code",
+            "dateTimeFormat": "Date Time Format",
+            "extension": "Extension",
+            "defaultAdminConsoleLanguage": "Default Admin Console Language",
+            "businessHours": "Business Hours:",
+            "from": "Form",
+            "to": "To",
+            "businessDays": "Business Days"
+        },
+        "phishing-settings": {
+            "title": "Phishing Settings",
+            "defaultPhishingLanguage": "Default Phishing Language"
+        },
+        "profile-details": {
+            "title": "Profile Details",
+            "firstName": "First Name",
+            "lastName": "Last Name",
+            "companyName": "Company Name",
+            "phone": "Contact Phone",
+            "country": "Country",
+            "language": "Language",
+            "timeZone": "Time Zone",
+            "currency": "Currency",
+            "companyNameValidation": "Company Name is required",
+            "minLengthValidation": "Company Name must be at least 2 characters long.",
+            "maxLengthValidation": "Company Name cannot exceed 50 characters.",
+            "onlyLettersValidation": "Only letters and spaces are allowed. No special characters or numbers."
+        },
+        "training-settings": {
+            "title": "Training Settings",
+            "enableContentSurveysForAllNewTrainingCampaigns": "Enable Content Surveys For All New Training Campaigns",
+            "enableDirectLinksInTrainingNotifications": "Enable Direct Links in Training Notifications"
+        },
+        "user-provisioning": {
+            "title": "User Provisioning Details",
+            "enableUserProvisioning": "Enable User Provisioning",
+            "testMode": "Test Mode"
+        },
+        "user-provisioning-notifications": {
+            "title": "User Provisioning Notifications",
+            "enableUserProvisioningNotifications": "Enable User Provisioning Notifications",
+            "timeFrame": "Time Frame",
+            "notificationsRecipients": "Notifications Recipients"
+        },
+        "user-settings": {
+            "title": "Users Settings",
+            "adminSessionTimeout": "Admin Session Timeout",
+            "userSessionTimeout": "User Session Timeout",
+            "minimumPasswordLength": "Minimum Password Length",
+            "rememberDeviceFor": "Remember DeviceFor",
+            "requireMFA": "Require MFA",
+            "rememberTrustedDevice": "Remember Trusted Device"
+        },
+        "message": "All changes made will be applied across the entire company . Please review the updates carefully before proceeding."
+    },
+    "auth": {
+        "login": {
+            "title": "Sign in to ERP",
+            "fields": {
+                "username": "Username",
+                "password": "Password"
+            },
+            "forgotPasswordLink": "Forgot Password?",
+            "rememberMe": "Remember Me",
+            "pleaseWait": "Please wait...",
+            "submit": "Login",
+            "notMemeberYet": "Not a Member yet?",
+            "signUp": "Sign up",
+            "invalidCredentials": "login credentials incorrect"
+        },
+        "register": {
+            "title": "Sign Up to ERP",
+            "fields": {
+                "firstName": "First Name",
+                "lastName": "Last Name",
+                "companyname": "Company Name",
+                "email": "Email",
+                "phone": "Phone",
+                "currency": "Currency",
+                "country": "Country",
+                "NoOfUsers": "Users Limit",
+                "language": "Language",
+                "timezone": "Time Zone",
+                "password": "Password",
+                "cpassword": "Confirm Password"
+            },
+            "termsAndConditions": "I agree to the terms and conditions",
+            "submit": "Register",
+            "pleaseWait": "Please wait...",
+            "placeholders": {
+                "language": "Select Language",
+                "currency": "Select Currency",
+                "country": "Select Country",
+                "timezone": "Select Time Zone"
+            },
+            "validations": {
+                "firstName": "First Name is required",
+                "firstNameMinLength": "First Name should have at least 3 symbols",
+                "firstNameMaxLength": "First Name should have maximum 100 symbols",
+                "lastName": "Last Name is required",
+                "lastNameMinLength": "Last Name should have at least 3 symbols",
+                "lastNameMaxLength": "Last Name should have maximum 100 symbols",
+                "companyname": "Company Name is required",
+                "companynameMinLength": "Company Name should have at least 3 symbols",
+                "companynameMaxLength": "Company Name should have maximum 100 symbols",
+                "email": "Email is required",
+                "emailTaken": "Valid Email is required",
+                "companyEmail": "Company email is required (no Gmail, Outlook, etc.)",
+                "language": "Language is required",
+                "timezone": "Time zone is required",
+                "phone": "Phone number is required",
+                "currency": "Currency is required",
+                "country": "Country is required",
+                "password": "Password is required",
+                "passwordMinLength": "Password should have at least 8 symbols",
+                "passwordMaxLength": "Password should have maximum 100 symbols",
+                "passwordMismatch": "Passwords do not match",
+                "cpassword": "Confirm Password is required"
+            }
+        },
+        "reset-password": {
+            "title": "Reset Your Password",
+            "messages": {
+                "messageI": "To ensure the security of your account, please choose a new password that is",
+                "messageII": "at least 8 characters long and includes a combination of letters and numbers"
+            },
+            "fields": {
+                "newPass": "New Password",
+                "cpassword": "Confirm New Password",
+                "confirmPassword": "Confirm Password"
+            },
+            "actions": {
+                "submit": "Reset Now!"
+            },
+            "validations": {
+                "password": "Password is required.",
+                "cpassword": "Confirm Password is required",
+                "passwordsMismatch": "Passwords do not match",
+                "passMaxLength": "Password must not exceed 100 characters.",
+                "missingNumber": "Password must contain at least one number.",
+                "passMinLength": "Password must be at least 12 characters long.",
+                "missingUppercase": "Password must contain at least one uppercase letter.",
+                "missingLowercase": "Password must contain at least one lowercase letter.",
+                "missingSpecialChar": "Password must contain at least one special character."
+            }
+        },
+        "email-verified": {
+            "welcome": "Welcome!",
+            "message": "You are just a step away from confirming your email. Please don't close or refresh the page.",
+            "waitMessage": "We are confirming your email . Please wait a moment....."
+        },
+        "verification-email": {
+            "title": "Welcome to Our Service",
+            "message": "Your email address has been successfully registered with our service.",
+            "messageI": "To complete the registration process and verify your email,",
+            "messageII": "please check your inbox"
+        }
+    },
+
+    "shared": {
+        "actions": {
+            "save": "Save",
+            "submit": "Submit",
+            "search": "Global Search",
+            "searchWithParameter": "Search {term}",
+            "cancel": "Cancel",
+            "close": "Close",
+            "edit": "Edit",
+            "delete": "Delete",
+            "view": "View",
+            "upload": "Upload",
+            "download": "Download",
+            "export": "Export",
+            "action": "Actions",
+            "confirm": "Confirm",
+            "saveChanges": "Save Changes",
+            "new": "New",
+            "back": "Back",
+            "next": "Next",
+            "add": "Add",
+            "defaultInSystem": "Default in System",
+            "type": "Type here...",
+            "clone": "Clone",
+            "preview": "Preview",
+            "hide": "Hide",
+            "csv": "CSV",
+            "pdf": "PDF",
+            "update": "Update",
+            "showMore": "Show More",
+            "showLess": "Show Less",
+            "upgrade": "Upgrade",
+            "ok": "Ok"
+        },
+        "search": {
+            "activeUser": "Search Active Users",
+            "deletedUser": "Search Deleted Users",
+            "role": "Search Roles",
+            "page": "Search Pages",
+            "group": "Search Groups",
+            "tenantUnit": "Search Departments",
+            "subscription": "Search Subscriptions",
+            "domain": "Search Domains",
+            "phishingCategory": "Search Phishing Categories"
+        },
+        "headers": {
+            "delete": "Confirm Delete",
+            "active": "Confirm Activation",
+            "defaultWallpapers": "Default Wallpapers",
+            "companyWallpapers": "Company Wallpapers",
+            "defaultBackgrounds": "Default Backgrounds",
+            "companyBackgrounds": "Company Backgrounds",
+            "sessionExpired": "Session Expired",
+            "sessionExpiredMessage": "Someone kicked you out. Please log in again.",
+            "logoutaccount": "Are you sure you want to log out of your account?",
+            "confirmLogout": "Confirm Logout"
+        },
+        "labels": {
+            "*": "* "
+        },
+        "messages": {
+            "filterMessages": "Filtering data according to tags for the {componentName} page.",
+            "delete": "Are you sure you want to delete",
+            "active": "Are you sure you want to activate",
+            "deactive": "Are you sure you want to deactive",
+            "success": "Success",
+            "required": "This Field Is Required.",
+            "noDataAvailable": "No data available",
+            "recommendedDimensions": "Recommended dimensions: ",
+            "1920x1080": "1920x1080",
+            "300x300": "300x300",
+            "1200x300": "1200x300",
+            "800x449": "800x449",
+            "600x600": "600x600",
+            "314x91": "314x91",
+            "pixels": "pixels.",
+            "editCampaignMessage": "You have selected the 'All Users' option for this campaign. As a result, the user list is automatically populated with all users in the system. Since the selection includes every user, you cannot make individual edits to the users in this campaign. If you wish to customize the user selection, please choose an alternative source, such as specific departments or groups."
+        },
+        "pagination": {
+            "showing": "Showing {first} to {last} of {totalRecords} entries"
+        },
+        "loading": "Loading, please wait..."
+    },
+    "timesheets": {
+        "title": "Timesheets",
+        "description": "Track and manage employee work hours",
+        "summary": {
+            "hoursThisWeek": "Hours This Week",
+            "daysWorked": "Days Worked",
+            "submitted": "Submitted"
+        },
+        "actions": {
+            "add": "Add Entry",
+            "edit": "Edit Entry",
+            "delete": "Delete Entry",
+            "changeStatus": "Change Status"
+        },
+        "fields": {
+            "date": "Date",
+            "project": "Project",
+            "task": "Task",
+            "hours": "Hours",
+            "remarks": "Remarks",
+            "status": "Status"
+        },
+        "dialogs": {
+            "addDialog": {
+                "header": "Add Timesheet Entry"
+            },
+            "editDialog": {
+                "header": "Edit Timesheet Entry"
+            },
+            "deleteDialog": {
+                "header": "Confirm Delete",
+                "message": "Are you sure you want to delete this timesheet entry?"
+            },
+            "statusDialog": {
+                "header": "Change Status",
+                "newStatus": "New Status"
+            }
+        },
+        "status": {
+            "draft": "Draft",
+            "pending": "Pending",
+            "approved": "Approved",
+            "rejected": "Rejected"
+        },
+        "projects": {
+            "erpSystem": "ERP System",
+            "hrPortal": "HR Portal",
+            "invoicing": "Invoicing",
+            "documentControl": "Document Control"
+        }
+    },
+    "adminTimesheets": {
+        "title": "Admin Timesheets",
+        "description": "System administration - Manage companies and users",
+        "companies": {
+            "title": "Companies",
+            "addCompany": "Add Company",
+            "editCompany": "Edit Company",
+            "deleteCompany": "Delete Company",
+            "fields": {
+                "name": "Company Name",
+                "status": "Status",
+                "industry": "Industry",
+                "founded": "Founded Year",
+                "employees": "Number of Employees",
+                "admins": "Admins"
+            }
+        },
+        "users": {
+            "title": "Users",
+            "addUser": "Add User",
+            "editUser": "Edit User",
+            "deleteUser": "Delete User",
+            "fields": {
+                "name": "Full Name",
+                "email": "Email",
+                "role": "Role",
+                "company": "Company",
+                "status": "Status"
+            }
+        },
+        "roles": {
+            "systemAdmin": "System Admin",
+            "companyAdmin": "Company Admin",
+            "supervisor": "Supervisor",
+            "employee": "Employee"
+        },
+        "status": {
+            "active": "Active",
+            "inactive": "Inactive"
+        }
+    },
+    "supervisorTimesheets": {
+        "title": "Supervisor Timesheets",
+        "description": "Manage team timesheet approvals and monitor work hours",
+        "summary": {
+            "pendingHours": "Pending Hours",
+            "approvedHours": "Approved Hours",
+            "teamHours": "Team Hours"
+        },
+        "tabs": {
+            "pendingApprovals": "Pending Approvals",
+            "recentlyApproved": "Recently Approved"
+        },
+        "filters": {
+            "employee": "Filter by Employee",
+            "period": "Filter by Period",
+            "allEmployees": "All Employees",
+            "thisWeek": "This Week",
+            "thisMonth": "This Month",
+            "last3Months": "Last 3 Months",
+            "allTime": "All Time"
+        },
+        "actions": {
+            "approve": "Approve",
+            "reject": "Reject"
+        },
+        "fields": {
+            "employee": "Employee",
+            "date": "Date",
+            "project": "Project",
+            "task": "Task",
+            "hours": "Hours",
+            "remarks": "Remarks",
+            "status": "Status",
+            "approvedDate": "Approved Date",
+            "approvedBy": "Approved By"
+        },
+        "dialogs": {
+            "approveDialog": {
+                "header": "Approve Timesheet Entry",
+                "message": "Approve this timesheet entry?"
+            },
+            "rejectDialog": {
+                "header": "Reject Timesheet Entry",
+                "message": "Reject this timesheet entry?"
+            }
+        }
+    },
+    "system-emails": {
+        "system-emails-listing": {
+            "addHeader": "Add System Email",
+            "editHeader": "Edit System Email",
+            "senderName": "Username",
+            "senderDisplayName": "Display Name",
+            "senderEmail": "Email",
+            "senderEmailPassword": "Password",
+            "outgoingServer": "Outgoing Server",
+            "outgoingServerPort": "Outgoing Server Port",
+            "enableSSL": "Enable SSL",
+            "noEmails": "No system emails found"
+        }
+    }
+}

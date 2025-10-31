@@ -1,0 +1,2657 @@
+{
+    "validation": {
+      "requiredMessage": "Dit veld is verplicht",
+      "emailMessage": "Voer een geldig e-mailadres in",
+      "minLengthMessage": "Minimale lengte is {{min}}"
+    },
+    "menu": {
+      "adminAccount": "Beheerder - Account",
+      "dashboard": "Dashboard",
+      "users": "Gebruikers",
+      "roles": "Rollen",
+      "companyGroups": "Bedrijfsgroepen",
+      "awarenessCampaign": "Campagnebeheer",
+      "phishingEmailDomains": "Phishing-e-maildomeinen",
+      "systemEmailDomains": "Systeeme-mails",
+      "systemEmailActivity": "Activiteit systeeme-mail",
+      "phishingCategory": "Phishingcategorie",
+      "phishingTemplates": "Phishing-sjablonen",
+      "notifications": "Meldingen",
+      "libraryBackground": "Achtergrondenbibliotheek",
+      "libraryLanguageCharacter": "Taal & Personagebibliotheek",
+      "libraryLanguageQuote": "Taal & Citatenbibliotheek",
+      "libraryWallpaper": "Achtergrondenbibliotheek",
+      "libraryWallpaperWizard": "Achtergrondwizard",
+      "LibraryWallpaperIngredients": "Achtergrondenverzameling",
+      "userAccount": "Gebruiker - Account",
+      "awarenessCampaigns": "Trainingscampagnes",
+      "phishingAwarenessCampaigns": "Phishingcampagnes",
+      "iAwareTeam": "iAware - Team",
+      "pages": "Pagina's",
+      "languages": "Talen",
+      "badges": "Badgesbeheer",
+      "trainingCategory": "Trainingscategorie",
+      "training": "Trainingslessen",
+      "subscription": "Abonnement",
+      "paymentReminder": "Betalingsherinnering",
+      "support": "Ondersteuning",
+      "supportCategory": "Categorie",
+      "supportSubjects": "Onderwerpen",
+      "supportStatus": "Status",
+      "tenantUnit": "Bedrijfsafdelingen (OUs)",
+      "leaderboard": "Ranglijst",
+      "invoice": "Factuur",
+      "industry": "Industrie",
+      "pointingSystem": "Puntensysteem",
+      "trainingLibrary": "Trainingsbibliotheek",
+      "gamification": "Gamificatie",
+      "tages": "Tags",
+      "marketing": "Marketing"
+    },
+    "layout": {
+      "ticket-chat-box": {
+        "details": "Details:",
+        "closedMessage": "dit ticket is gesloten",
+        "myTicketClosedMessage": "dit ticket is gesloten, als je probleem nog niet is opgelost,",
+        "forwardMessage": "stuur dit ticket door naar een andere categorie",
+        "downloadMessage": "download ticketbijlagen",
+        "downloadMessageFile": "download berichtbestand",
+        "messagePlaceHolder": "Typ een bericht",
+        "reopenTicket": "ticket heropenen"
+      },
+      "app-breadcrumb": {
+        "iAwareDashboard": "iAware Dashboard",
+        "uikit": "UI Kit",
+        "utilities": "Hulpmiddelen",
+        "pages": "Paginabeheer",
+        "profile": "Gebruikersbeheer",
+        "users": "Gebruikersbeheer",
+        "roles": "Rollenbeheer",
+        "pages-management": "Paginabeheer",
+        "account-setting": "Accountbeheer",
+        "tenant-group": "Tenantgroepbeheer",
+        "language": "Taalbeheer",
+        "badge": "Badgebeheer",
+        "documentation": "Documentatie",
+        "blocks": "Prime Blocks",
+        "ecommerce": "E-commerce",
+        "apps": "Apps",
+        "subscription": "Abonnement",
+        "security-training": "Security Training",
+        "campaign-management": "Beheer van bewustwordingscampagnes",
+        "campaign": "Trainingscampagne",
+        "phishing-campaigns": "Phishingcampagnes",
+        "phishing-email-domains": "Phishing-e-maildomeinen",
+        "system-email-domains": "Systeeme-maildomeinen",
+        "system-email-activity": "Systeeme-mailactiviteit",
+        "phishing-category": "Phishingcategorie",
+        "phishing-templates": "Phishing-e-mailsjabloon",
+        "notifications": "Meldingen",
+        "wallpaper-libraries": "Achtergrondenbibliotheken",
+        "wallpaper-wizard": "Achtergrondwizard",
+        "support": "Ondersteuning",
+        "auth": "Authenticatie",
+        "simulation-phishing": "Phishingsimulatie",
+        "details": "Details",
+        "pointing-system": "Puntensysteem",
+        "multimedia": "Multimedia",
+        "tenantUnit": "Afdeling",
+        "statistics": "Statistieken",
+        "leaderboard": "Ranglijst",
+        "industry": "Industrie",
+        "gamification": "Gamificatie",
+        "tages": "Tags"
+      },
+      "app-layout": {
+        "actions": {
+          "hide": "verbergen?"
+        }
+      },
+      "app-menuProfile": {
+        "profile": "Profiel",
+        "logout": "Uitloggen",
+        "settings": "Instellingen"
+      },
+      "config": {
+        "layoutThemeScale": "Layout-/themaschaal",
+        "scenes": "Scènes",
+        "colorScheme": "Kleurschema",
+        "light": "Licht",
+        "dark": "Donker",
+        "menuMode": "Menuweergave",
+        "static": "Statisch",
+        "overlay": "Overlay",
+        "slim": "Slank",
+        "slimPlus": "Slank +",
+        "reveal": "Onthullen",
+        "drawer": "Zijmenu",
+        "horizontal": "Horizontaal",
+        "menuProfilePosition": "Menuprofielpositie",
+        "start": "Begin",
+        "end": "Einde",
+        "inputStyle": "Invoerstijl",
+        "outlined": "Omlijnd",
+        "filled": "Ingevuld",
+        "rippleEffect": "Ripple-effect",
+        "menuThemes": "Menu-thema's",
+        "menu_theme_selector": "Menu-thema's zijn alleen beschikbaar in de lichte modus, omdat grote vlakken in de donkere modus te veel helderheid kunnen uitstralen.",
+        "topbarThemes": "Topbar-thema's",
+        "componentThemes": "Componentthema's"
+      },
+      "support-tabmenu": {
+        "taps": {
+          "addTicket": "+Ticket toevoegen",
+          "allTicket": "Alle tickets",
+          "myTicket": "Mijn tickets"
+        },
+        "fields": {
+          "supportCategory": "Ondersteuningscategorie:",
+          "subject": "Onderwerp:",
+          "customSubject": "Aangepast onderwerp:",
+          "requestDetails": "Verzoekdetails:",
+          "file": "Bestand:",
+          "upload": "Uploaden"
+        },
+        "placeHolders": {
+          "subject": "Selecteer een onderwerp",
+          "category": "Selecteer een categorie",
+          "openthisticket": "dubbelklik om dit ticket te openen",
+          "search": "zoeken"
+        },
+        "emptyMessage": {
+          "title": "Geen tickets beschikbaar",
+          "details": "Als je een probleem hebt, dien dan een ticket in via de knop 'Ticket toevoegen'. Ons ondersteuningsteam helpt je graag verder."
+        }
+      },
+      "top-bar": {
+        "markAllAsRead": "alles als gelezen markeren"
+      }
+    },
+    "account": {
+      "account-integration-settings": {
+        "title": "Instellingen voor accountintegratie",
+        "samlNotificationRecipients": "SAML-meldingsontvangers",
+        "idPSSOTargetURL": "IDP SSO-doel-URL",
+        "currentAuthnRequestCertificate": "Huidig Authn-aanvraagcertificaat",
+        "entityId": "Entity ID",
+        "ssoSignInURL": "SSO-aanmeld-URL",
+        "ssoSignOutURL": "SSO-afmeld-URL",
+        "ssoCallbackURL": "SSO-callback-URL",
+        "smalId": "SAML-ID",
+        "metadataURL": "Metadata-URL",
+        "bypassSSOLoginURL": "SSO-aanmelding omzeilen-URL",
+        "currentAuthnRequestCertificateValidFrom": "Certificaat geldig vanaf",
+        "currentAuthnRequestCertificateValidTo": "Certificaat geldig tot",
+        "enableSAMLSSO": "SAML SSO inschakelen",
+        "disableNonSMALLoginsForAllUsers": "Niet-SAML-aanmeldingen uitschakelen voor alle gebruikers",
+        "allowAdminswMFAToByPassSMALLogin": "Sta beheerders met MFA toe om SAML-login te omzeilen",
+        "allowAccountCreationFromSAMLLogin": "Accountaanmaak via SAML-login toestaan",
+        "sha_1": "SHA-1",
+        "sha_256": "SHA-256",
+        "signUpAuthnRequest": "Aanmelden Authn-aanvraag",
+        "enableSPAuthnRequesExpirationNotifications": "Notificaties inschakelen voor vervaldatum Authn-aanvraag SP"
+      },
+      "ad-settings": {
+        "title": "Active Directory-instellingen",
+        "adISyncToken": "ADI-synchronisatietoken",
+        "ipAddress": "IP-adres AD-server",
+        "adDomainName": "AD-domeinnaam",
+        "adDomainNameExtention": "AD-domeinextensie",
+        "adUserName": "Gebruikersnaam AD-beheerder",
+        "adPassword": "Wachtwoord AD-beheerder",
+        "showGroupAdmin": "Groepsbeheerder tonen"
+      },
+      "branding": {
+        "title": "Merkgegevens",
+        "companyLogoURL": "URL bedrijfslogo",
+        "brandCertificate": "Merkcertificaat",
+        "companyLogo": "Bedrijfslogo",
+        "brandColor": "Merkkleur",
+        "upload": "LOGO UPLOADEN"
+      },
+      "learner-experience": {
+        "title": "Leerervaring",
+        "leaderboardType": "Type klassement",
+        "defaultTrainingLanguage": "Standaard trainingstaal",
+        "leaderboardTimePeriod": "Periode voor klassement",
+        "groupsToIncludeInLeaderboard": "Groepen opnemen in klassement",
+        "enableOptionalTrainingCampaigns": "Optionele trainingscampagnes inschakelen",
+        "enableAIDARecomendedOptionalLearning": "AIDA-aanbevolen optionele training inschakelen",
+        "excludeTrainingCampaignsWithNoDueDate": "Trainingscampagnes zonder vervaldatum uitsluiten",
+        "enableBadges": "Badges inschakelen",
+        "selectBadge": "Selecteer badge"
+      },
+      "organization-information": {
+        "title": "Organisatiegegevens",
+        "organizationName": "Naam van organisatie",
+        "streetAddress1": "Adresregel 1",
+        "streetAddress2": "Adresregel 2",
+        "suiteNumber": "Kantoornummer",
+        "city": "Stad",
+        "state": "Provincie",
+        "zipCode": "Postcode",
+        "dateTimeFormat": "Datum-/tijdnotatie",
+        "extension": "Extensie",
+        "defaultAdminConsoleLanguage": "Standaardtaal adminconsole",
+        "businessHours": "Openingstijden:",
+        "from": "Van",
+        "to": "Tot",
+        "businessDays": "Werkdagen"
+      },
+      "phishing-settings": {
+        "title": "Phishinginstellingen",
+        "defaultPhishingLanguage": "Standaard phishingtaal"
+      },
+      "profile-details": {
+        "title": "Profielgegevens",
+        "firstName": "Voornaam",
+        "lastName": "Achternaam",
+        "companyName": "Bedrijfsnaam",
+        "phone": "Telefoonnummer",
+        "country": "Land",
+        "language": "Taal",
+        "timeZone": "Tijdzone",
+        "currency": "Valuta",
+        "companyNameValidation": "Bedrijfsnaam is verplicht",
+        "minLengthValidation": "Bedrijfsnaam moet minimaal 2 tekens lang zijn.",
+        "maxLengthValidation": "Bedrijfsnaam mag niet langer zijn dan 50 tekens.",
+        "onlyLettersValidation": "Alleen letters en spaties zijn toegestaan. Geen speciale tekens of cijfers."
+      },
+      "training-settings": {
+        "title": "Trainingsinstellingen",
+        "enableContentSurveysForAllNewTrainingCampaigns": "Inhoudsenquêtes inschakelen voor alle nieuwe trainingscampagnes",
+        "enableDirectLinksInTrainingNotifications": "Directe links in trainingsmeldingen inschakelen"
+      },
+      "user-provisioning": {
+        "title": "Gebruikersvoorziening",
+        "enableUserProvisioning": "Gebruikersvoorziening inschakelen",
+        "testMode": "Testmodus"
+      },
+      "user-provisioning-notifications": {
+        "title": "Meldingen gebruikersvoorziening",
+        "enableUserProvisioningNotifications": "Meldingen gebruikersvoorziening inschakelen",
+        "timeFrame": "Tijdframe",
+        "notificationsRecipients": "Ontvangers meldingen"
+      },
+      "user-settings": {
+        "title": "Gebruikersinstellingen",
+        "adminSessionTimeout": "Time-out voor beheersessie",
+        "userSessionTimeout": "Time-out voor gebruikerssessie",
+        "minimumPasswordLength": "Minimale wachtwoordlengte",
+        "rememberDeviceFor": "Apparaat onthouden voor",
+        "requireMFA": "MFA vereisen",
+        "rememberTrustedDevice": "Vertrouwd apparaat onthouden"
+      },
+      "message": "Alle wijzigingen worden toegepast op het hele bedrijf. Controleer de updates zorgvuldig voordat je doorgaat."
+    },
+    "auth": {
+      "login": {
+        "title": "Aanmelden bij iAware",
+        "fields": {
+          "username": "Gebruikersnaam",
+          "password": "Wachtwoord"
+        },
+        "forgotPasswordLink": "Wachtwoord vergeten?",
+        "rememberMe": "Ingelogd blijven",
+        "pleaseWait": "Even geduld...",
+        "submit": "Inloggen",
+        "notMemeberYet": "Nog geen lid?",
+        "signUp": "Aanmelden",
+        "invalidCredentials": "Inloggegevens onjuist"
+      },
+      "register": {
+        "title": "Aanmelden bij iAware",
+        "fields": {
+          "firstName": "Voornaam",
+          "lastName": "Achternaam",
+          "companyname": "Bedrijfsnaam",
+          "email": "E-mail",
+          "phone": "Telefoon",
+          "currency": "Valuta",
+          "country": "Land",
+          "NoOfUsers": "Gebruikerslimiet",
+          "language": "Taal",
+          "timezone": "Tijdzone",
+          "password": "Wachtwoord",
+          "cpassword": "Bevestig wachtwoord"
+        },
+        "termsAndConditions": "Ik ga akkoord met de algemene voorwaarden",
+        "submit": "Registreren",
+        "pleaseWait": "Even geduld...",
+        "placeholders": {
+          "language": "Selecteer taal",
+          "currency": "Selecteer valuta",
+          "country": "Selecteer land",
+          "timezone": "Selecteer tijdzone"
+        },
+        "validations": {
+          "firstName": "Voornaam is verplicht",
+          "firstNameMinLength": "Voornaam moet minstens 3 tekens bevatten",
+          "firstNameMaxLength": "Voornaam mag maximaal 100 tekens bevatten",
+          "lastName": "Achternaam is verplicht",
+          "lastNameMinLength": "Achternaam moet minstens 3 tekens bevatten",
+          "lastNameMaxLength": "Achternaam mag maximaal 100 tekens bevatten",
+          "companyname": "Bedrijfsnaam is verplicht",
+          "companynameMinLength": "Bedrijfsnaam moet minstens 3 tekens bevatten",
+          "companynameMaxLength": "Bedrijfsnaam mag maximaal 100 tekens bevatten",
+          "email": "E-mail is verplicht",
+          "emailTaken": "Geldig e-mailadres is verplicht",
+          "companyEmail": "Bedrijfse-mail is vereist (geen Gmail, Outlook, etc.)",
+          "language": "Taal is verplicht",
+          "timezone": "Tijdzone is verplicht",
+          "phone": "Telefoonnummer is verplicht",
+          "currency": "Valuta is verplicht",
+          "country": "Land is verplicht",
+          "password": "Wachtwoord is verplicht",
+          "passwordMinLength": "Wachtwoord moet minstens 8 tekens bevatten",
+          "passwordMaxLength": "Wachtwoord mag maximaal 100 tekens bevatten",
+          "passwordMismatch": "Wachtwoorden komen niet overeen",
+          "cpassword": "Bevestig wachtwoord is verplicht"
+        }
+      },
+      "reset-password": {
+        "title": "Reset je wachtwoord",
+        "messages": {
+          "messageI": "Om je account veilig te houden, kies een nieuw wachtwoord dat",
+          "messageII": "minstens 8 tekens bevat en een combinatie is van letters en cijfers"
+        },
+        "fields": {
+          "newPass": "Nieuw wachtwoord",
+          "cpassword": "Bevestig nieuw wachtwoord",
+          "confirmPassword": "Bevestig wachtwoord"
+        },
+        "actions": {
+          "submit": "Nu resetten!"
+        },
+        "validations": {
+          "password": "Wachtwoord is verplicht.",
+          "cpassword": "Bevestig wachtwoord is verplicht",
+          "passwordsMismatch": "Wachtwoorden komen niet overeen",
+          "passMaxLength": "Wachtwoord mag niet langer zijn dan 100 tekens.",
+          "missingNumber": "Wachtwoord moet minstens één cijfer bevatten.",
+          "passMinLength": "Wachtwoord moet minstens 12 tekens bevatten.",
+          "missingUppercase": "Wachtwoord moet minstens één hoofdletter bevatten.",
+          "missingLowercase": "Wachtwoord moet minstens één kleine letter bevatten.",
+          "missingSpecialChar": "Wachtwoord moet minstens één speciaal teken bevatten."
+        }
+      },
+      "email-verified": {
+        "welcome": "Welkom!",
+        "message": "Je bent nog één stap verwijderd van het bevestigen van je e-mailadres. Sluit of vernieuw de pagina niet.",
+        "waitMessage": "We bevestigen je e-mailadres. Een ogenblik geduld..."
+      },
+      "verification-email": {
+        "title": "Welkom bij onze service",
+        "message": "Je e-mailadres is succesvol geregistreerd bij onze service.",
+        "messageI": "Om het registratieproces te voltooien en je e-mail te verifiëren,",
+        "messageII": "controleer je inbox"
+      }
+    },
+    "badge": {
+      "badge-listing": {
+        "fields": {
+          "name": "Badge-naam",
+          "image": "Badge-afbeelding",
+          "status": "Status"
+        },
+        "actions": {
+          "add": "Nieuwe badge toevoegen"
+        },
+        "dialogs": {
+          "addDialog": {
+            "header": "Nieuwe badge toevoegen",
+            "fields": {
+              "name": "Badge-naam",
+              "description": "Beschrijving van badge-naam",
+              "image": "Badge-afbeelding"
+            }
+          },
+          "editDialog": {
+            "header": "Badge bewerken",
+            "fields": {
+              "name": "Badge-naam",
+              "description": "Beschrijving van badge-naam",
+              "image": "Badge-afbeelding"
+            }
+          }
+        }
+      }
+    },
+    "campaign": {
+      "taps": {
+        "current": "Lopende campagnes",
+        "history": "Campagnegeschiedenis"
+      },
+      "currentCampaign": {
+        "taps": {
+          "training": "Training",
+          "phishing": "Phishing"
+        },
+        "training": {
+          "fields": {
+            "name": "Naam",
+            "type": "Type",
+            "lessonName": "Naam",
+            "book": "Boek",
+            "video": "Video",
+            "language": "Taal",
+            "lessonsCount": "Aantal trainingslessen",
+            "startDate": "Startdatum",
+            "endDate": "Einddatum",
+            "description": "Beschrijving"
+          }
+        },
+        "phishing": {
+          "fields": {
+            "name": "Naam",
+            "template": "Sjablonen",
+            "startDate": "Startdatum",
+            "endDate": "Einddatum"
+          }
+        },
+        "dialogs": {
+          "templateDialog": {
+            "header": "Campagnesjablonenplanning",
+            "fields": {
+              "name": "Naam sjabloon",
+              "startDate": "Phishing starttijd",
+              "endDate": "Phishing eindtijd",
+              "users": "Gebruikers",
+              "success": "Geslaagde gebruikers",
+              "faild": "Gebruikers mislukt"
+            }
+          },
+          "templateUserDialog": {
+            "header": "Gebruikersplanning campagnesjablonen",
+            "fields": {
+              "name": "Gebruikersnaam",
+              "results": "Resultaten",
+              "activities": "Activiteiten"
+            }
+          }
+        }
+      },
+      "campaignHistory": {
+        "fields": {
+          "name": "Naam",
+          "type": "Type",
+          "startDate": "Startdatum",
+          "endDate": "Einddatum",
+          "description": "Beschrijving"
+        }
+      },
+      "campaignDetails": {
+        "steps": {
+          "book": "Boek",
+          "bookTitle": "Je leest momenteel het boek. Wil je liever de video bekijken? <a class='dynamic-link' style='cursor: pointer; font-size: medium; font-weight: 500' data-path='/training-campaign/[scedualUserId]/[campaignId]/video'>klik hier</a> om de video te bekijken.",
+          "video": "Video",
+          "videoTitle": "Je kunt de video in deze stap bekijken of, als je liever leest, <a style='cursor: pointer; font-size: medium; font-weight: 500' class='dynamic-link' data-path='/training-campaign/[scedualUserId]/[campaignId]/book'>klik hier</a> om het boek te lezen",
+          "quiz": "Quiz",
+          "results": "Resultaten"
+        },
+        "titles": {
+          "book": "Boek",
+          "video": "Video",
+          "result": "Quizresultaat"
+        },
+        "messages": {
+          "congrat": "Gefeliciteerd!",
+          "faild": "Niet geslaagd",
+          "faildMessage": "Helaas ben je niet geslaagd voor de quiz.",
+          "congratMessage": "Je bent geslaagd voor de quiz.",
+          "score": "Je score:",
+          "answars": "Quizantwoorden"
+        },
+        "actions": {
+          "next": "Volgende",
+          "back": "Terug",
+          "submit": "Verzenden",
+          "previous": "Vorige",
+          "finish": "Voltooien"
+        }
+      },
+      "messages": {
+        "emptyMessage": "Er zijn nog geen lessen beschikbaar voor deze campagne."
+      }
+    },
+    "campaign-management": {
+      "campaign-create": {
+        "campaign-type": {
+          "title": "Campagneconfiguratie:",
+          "message": "Configureer de details van je campagne. Controleer alle invoervelden zorgvuldig voordat je verdergaat.",
+          "fields": {
+            "name": "Naam:",
+            "type": "Type:",
+            "startDate": "Startdatum:",
+            "endDate": "Einddatum:",
+            "users": "Gebruikers:",
+            "campaignUsers": "Filter campagnegebruikers:",
+            "campaignEmails": "Campagne-e-mails",
+            "groups": "Groepen:",
+            "emailSubject": "Onderwerp e-mail bewustwordingscampagne",
+            "emailContent": "HTML-inhoud e-mail bewustwordingscampagne",
+            "sourceHeader": "Bron",
+            "targetHeader": "Doel",
+            "allUser": "Alle gebruikers",
+            "departments": "Afdelingen",
+            "groupss": "Groepen",
+            "campaigntype": "Selecteer een campagnetype"
+          },
+          "validations": {
+            "startDate": "Startdatum mag niet in het verleden liggen. Selecteer een geldige datum.",
+            "endDate": "De einddatum moet na de startdatum van deze campagne liggen."
+          },
+          "placeholders": {
+            "users": "Selecteer gebruikers",
+            "type": "Selecteer type",
+            "groups": "Selecteer groep",
+            "name": "Voer campagnenaam in"
+          },
+          "actions": {
+            "next": "Volgende"
+          }
+        },
+        "lessons": {
+          "message": "Je kunt meerdere trainingslessen selecteren op basis van trainingscategorieën om toe te voegen aan de campagne.",
+          "actions": {
+            "next": "Volgende",
+            "back": "Terug"
+          }
+        },
+        "phishing-email-templates": {
+          "title": "Lijst met phishing-sjablonen:",
+          "defaultTemplateHeader": "Standaard phishing-sjablonen",
+          "tenantTemplatesHeader": "Bedrijfssjablonen phishing",
+          "upgradeYourPlan": "Upgrade je abonnement",
+          "upgradeMessage": "Ontgrendel dit phishing-sjabloon en nog veel meer door je abonnement te upgraden.",
+          "upgradeBtn": "Nu upgraden",
+          "message": "Selecteer phishing-sjablonen om op te nemen in je campagne.",
+          "actions": {
+            "next": "Volgende",
+            "back": "Terug"
+          }
+        },
+        "scedual": {
+          "title": "Campagneplanning:",
+          "training": {
+            "aiRecomindationMessage": "<div class='ml-1'>Dit schema is gegenereerd met behulp van <strong style='font-size: larger; font-weight: 700;'>AI</strong> om je te helpen met de planning. Pas het gerust aan indien nodig, maar houd de geselecteerde begin- en einddatums aan.</div>",
+            "defaultEmailInstructions": "<div> <strong>Belangrijk:</strong> Vervang in alle taalversies van deze e-mail de volgende placeholders: <ul> <li><strong>[Information Security]</strong> – Vervang dit door de naam of e-mailadres van je afdeling (bijv. security@bedrijf.nl).</li> <li><strong>[support contact info]</strong> – Vervang dit door je supportcontactgegevens (bijv. support@bedrijf.nl).</li> </ul>Als deze placeholders niet worden vervangen, worden ze letterlijk verzonden in elke taalversie van de e-mail.</div>",
+            "fields": {
+              "trainingLessonName": "Lesnaam",
+              "scedualedTime": "Geplande tijd",
+              "lessonAwaernesEmail": "Bewustwordingsmail voor les",
+              "awarenessCampaignScedual": "Bewustwordingscampagneplanning",
+              "awarenessCampaignEmail": "E-mail bewustwordingscampagne"
+            },
+            "validations": {
+              "startDate": "Startdatum mag niet in het verleden liggen. Selecteer een geldige datum.",
+              "endDate": "De einddatum moet na de startdatum van deze campagne liggen."
+            },
+            "dialogs": {
+              "editEmailTrainingLanguageDialog": {
+                "emailSubject": "Onderwerp e-mail",
+                "emailContent": "E-mailinhoud HTML",
+                "header": "Bewustwordingsmail"
+              }
+            }
+          },
+          "phishing": {
+            "message": " Stel het schema en de details van de phishingcampagne in.",
+            "fields": {
+              "template": "Phishing-sjablonen",
+              "phishingDomainEmailId": "Phishing domein-e-mailadres",
+              "users": "Gebruikers",
+              "isFrequently": "Gepland",
+              "isImmediately": "Onmiddellijk",
+              "startTime": "Phishing starttijd",
+              "endTime": "Phishing eindtijd",
+              "frequencyDays": "Frequentie (in dagen)",
+              "numberOfOccurrences": "Aantal herhalingen",
+              "awarenessCampaignPhishingSchedule": "Phishingcampagneplanning",
+              "awarenessCampaignPhishingScedualResult": "Resultaat phishingcampagneplanning"
+            },
+            "columns": {
+              "template": "Phishing-sjabloon",
+              "startTime": "Starttijd phishing",
+              "endTime": "Eindtijd phishing",
+              "frequencyDays": "Frequentiedagen",
+              "usersCount": "Aantal gebruikers"
+            },
+            "placeholders": {
+              "template": "Selecteer phishing-sjabloon",
+              "users": "Selecteer gebruikers",
+              "phishingDomainEmailId": "Selecteer phishing domein-e-mailadres"
+            },
+            "actions": {
+              "add": "Toevoegen"
+            },
+            "validations": {
+              "validationPhishingEndTimeMessage": "Geselecteerde phishing-eindtijd valt buiten de geldige campagnedatum.",
+              "validationPhishingStartTimeMessage": "Geselecteerde phishing-starttijd valt buiten de geldige campagnedatum."
+            }
+          }
+        },
+        "steps": {
+          "settings": "Campagne-instellingen",
+          "build": "Campagneopbouw",
+          "schedual": "Campagneplanning"
+        }
+      },
+      "campaign-listing": {
+        "fields": {
+          "name": "Naam",
+          "type": "Type",
+          "startDate": "Startdatum",
+          "endDate": "Einddatum",
+          "status": "Status",
+          "usersCount": "Aantal gebruikers"
+        },
+        "actions": {
+          "add": "Nieuwe campagne toevoegen"
+        },
+        "dialogs": {
+          "editDialog": {
+            "header": "Campagne bewerken",
+            "fields": {
+              "name": "Naam",
+              "type": "Type",
+              "startDate": "Startdatum",
+              "endDate": "Einddatum",
+              "users": "Gebruikers",
+              "groups": "Groepen",
+              "campaignUsers": "Campagnegebruikers",
+              "sourceHeader": "Bron",
+              "targetHeader": "Doel"
+            },
+            "validations": {
+              "endDate": "De geselecteerde datum moet gelijk zijn aan of later zijn dan de huidige einddatum van deze campagne."
+            },
+            "placeholders": {
+              "users": "Selecteer gebruiker",
+              "type": "Selecteer type",
+              "groups": "Selecteer groep"
+            }
+          }
+        }
+      }
+    },
+    "dashboards": {
+      "organization": {
+        "header": "Risicoscore van de organisatie",
+        "pointsTitle": "Prestatieoverzicht",
+        "positivePoints": "Positieve punten",
+        "negativePoints": "Negatieve punten",
+        "totalPoints": "Totale punten",
+        "riskHistory": "Risicogeschiedenis",
+        "riskScore": "Risicoscore"
+      },
+      "training": {
+        "header": "Training",
+        "securityAwarenessChartTitle": "Grafiek bewustwordingscampagnes (Laatste",
+        "months": "maanden)",
+        "seeAllCampaignsButton": "Bekijk alle campagnes",
+        "newCampaignButton": "Nieuwe campagne",
+        "recentCampaignsTitle": "Lopende recente campagnes",
+        "noRecentCampaignsTitle": "Geen recente lopende campagnes",
+        "completedPercentage": "% Voltooid",
+        "completedUsersDialogHeader": "Voltooide gebruikers",
+        "notStartedUsersDialogHeader": "Niet-gestarte gebruikers",
+        "failedUsersDialogHeader": "Gebruikers die faalden",
+        "userNameColumn": "Gebruikersnaam",
+        "campaignNameColumn": "Campagnenaam",
+        "lessonNameColumn": "Lesnaam",
+        "scoreColumn": "Score",
+        "downloadCsvButton": "CSV downloaden",
+        "downloadPdfButton": "PDF downloaden"
+      },
+      "phishing": {
+        "header": "Phishing",
+        "phishingSecurity": "Phishingbeveiliging (Laatste ",
+        "months": "maanden)",
+        "yourPhishingVulnerability": "Jouw phishinggevoeligheid %",
+        "industryPhishingVulnerability": "Phishinggevoeligheid in de sector %",
+        "industryPlaceholder": "selecteer sector",
+        "industryBenchmark": "Sectorbenchmark",
+        "showIndustry": "Toon sectorbenchmarkgegevens",
+        "hideIndustry": "Verberg sectorbenchmarkgegevens"
+      },
+      "alertButton": {},
+      "user-dashboard": {
+        "buttons": {
+          "myDashboard": "Mijn dashboard",
+          "teamDashboard": "Teamdashboard",
+          "goToTraining": "Ga naar training",
+          "learnHowToEarnBadges": "Hoe verdien je badges?",
+          "viewLeaderboard": "Bekijk ranglijst",
+          "viewTeam": "Bekijk"
+        },
+        "trainingProgress": {
+          "header": "Overzicht trainingsvoortgang",
+          "description": "Volg je trainingsvoortgang en verbeter je vaardigheden.",
+          "completed": "Voltooid",
+          "percentage": "{assignmentsPercentage}%",
+          "assignmentsMessage": "je hebt {completedAssignments} van de {totalAssignments} opdrachten voltooid"
+        },
+        "phishingResults": {
+          "header": "Overzicht phishingresultaten",
+          "description": "Volg je detectievaardigheden en bescherming tegen cyberrisico's.",
+          "emailsflaggedasphishingthreats": "E-mails gemarkeerd als phishingbedreiging",
+          "emailsReportedPercentage": "{emailsReportedPercentage}% Succes",
+          "reportedEmails": "Gerelateerde phishing-e-mails",
+          "failures": "Phishingmislukkingen",
+          "emailsnotrecognizedasphishingattempts": "E-mails niet herkend als phishingpogingen",
+          "emailsReported": "{emailsReported} / {emailsDelivered}",
+          "noData": "Nog geen phishinggegevens beschikbaar.",
+          "emailsFailures": "{emailsFailures} / {emailsDelivered}",
+          "emailsFailuresPercentage": "{emailsFailuresPercentage}% Fout"
+        },
+        "riskScore": {
+          "header": "Persoonlijke risicoscore",
+          "description": "Beoordeel je beveiligingsbewustzijn met een persoonlijke risicoscore.",
+          "title": "Risicoscore"
+        },
+        "badges": {
+          "header": "Prestaties en voortgang",
+          "message": "Volg je mijlpalen en bekijk je groeipad naar succes.",
+          "learn": "Hoe verdien je badges?",
+          "badgesEarned": "Verdiende badges",
+          "youhaveearned": "Je hebt <strong class=\"ranked-no\">{number} badges</strong> verdiend tijdens je training. Goed bezig!"
+        },
+        "groupRanking": {
+          "header": "Groepsranglijst",
+          "message": "Je groep staat momenteel op <strong class=\"ranked-no\">#{number}</strong>. Blijf streven naar topresultaten!"
+        },
+        "teamSelection": {
+          "header": "Team selecteren",
+          "description": "Selecteer een team om informatie te bekijken over trainingsvoortgang, phishingresultaten en gezamenlijke teamrisicoscore.",
+          "dropdownPlaceholder": "Selecteer team"
+        },
+        "teamTrainingProgress": {
+          "header": "Trainingsvoortgang",
+          "description": "het percentage voltooide trainingsopdrachten door je teamleden (altijd)",
+          "completedAssignments": "{completedAssignments}/{totalAssignments}"
+        },
+        "teamPhishingResults": {
+          "header": "Phishingresultaten",
+          "reportedEmails": "Gerelateerde phishing-e-mails",
+          "failures": "Phishingmislukkingen",
+          "reportedPercentage": "{emailsReported}/{emailsDelivered}",
+          "noData": "Geen van je teamleden heeft een phishingtest ontvangen."
+        },
+        "teamRiskScore": {
+          "header": "Teamrisicoscore",
+          "title": "Risicoscore"
+        },
+        "teamDetails": {
+          "header": "Teamdetails"
+        }
+      },
+      "iAwareAdminDashboard": {
+        "header": "Dashboard klantenbeheer",
+        "totalClients": "Totaal aantal klanten",
+        "activeClients": "Actieve klanten",
+        "expiringSubscriptions": "Abonnementen die binnenkort verlopen",
+        "industry": "Sector:",
+        "industryy": "Sector",
+        "status": "Status:",
+        "statuss": "Status",
+        "subscriptionPlan": "Abonnementstype:",
+        "subscriptionPlann": "Abonnementstype",
+        "search": "Zoeken:",
+        "searchh": "Zoeken",
+        "searchclients": "Zoek klanten...",
+        "clientName": "Klantnaam",
+        "contact": "Contact",
+        "plan": "Plan",
+        "licenses": "Licenties",
+        "lastActivity": "Laatste activiteit",
+        "expiryDate": "Vervaldatum",
+        "manager": "Manager",
+        "selectStatus": "Selecteer status",
+        "selectPlan": "Selecteer plan"
+      }
+    },
+    "email-domains": {
+      "email-domains-details": {
+        "addHeader": "E-mail toevoegen",
+        "editHeader": "E-mail bewerken",
+        "senderUserName": "Gebruikersnaam",
+        "senderDisplayName": "Weergavenaam",
+        "senderEmail": "E-mailadres",
+        "senderEmailPassword": "Wachtwoord",
+        "outgoingServer": "Uitgaande server",
+        "outgoingServerPort": "Poort uitgaande server",
+        "enableSSL": "SSL inschakelen",
+        "noEmails": "Geen e-mails gevonden",
+        "phishingDomainName": "Phishing domeinnaam"
+      },
+      "email-domains-listing": {
+        "domainName": "Domeinnaam",
+        "addHeader": "Nieuw domein toevoegen",
+        "editHeader": "Domein bewerken",
+        "phishingDomainEmailsCount": "Aantal e-mails",
+        "status": "Domeinstatus"
+      }
+    },
+    "system-email-activity": {
+      "addHeader": "Systeem-e-mailactiviteit toevoegen",
+      "editHeader": "Systeem-e-mailactiviteit bewerken",
+      "noRecords": "Geen systeem-e-mailactiviteiten gevonden",
+      "emailSubject": "Onderwerp e-mail",
+      "emailBody": "Inhoud e-mail",
+      "emailSubjectPlaceholder": "Voer onderwerp van e-mail in",
+      "actions": "Acties",
+      "systemEmailId": "Systeem-e-mail",
+      "systemActivity": "Systeemactiviteit",
+      "systemActivityName": "Naam systeemactiviteit",
+      "sendToCustomEmails": "Verzenden naar aangepaste e-mails",
+      "isActive": "Actief",
+      "sendToUser": "Verzenden naar gebruiker",
+      "sendToAdministrators": "Verzenden naar beheerders",
+      "sendToPhishingAdministrators": "Verzenden naar phishingbeheerders",
+      "sendToCampaignAdministrators": "Verzenden naar campagnebeheerders",
+      "sendToTenantAdministrators": "Verzenden naar tenantbeheerders",
+      "sendToTenantPhishingAdministrators": "Verzenden naar tenant phishingbeheerders",
+      "sendToTenantCampaignAdministrators": "Verzenden naar tenant campagnebeheerders",
+      "loadError": "Laden van systeem-e-mailactiviteiten mislukt",
+      "addSuccess": "Systeem-e-mailactiviteit succesvol toegevoegd",
+      "addError": "Toevoegen van systeem-e-mailactiviteit mislukt",
+      "editSuccess": "Systeem-e-mailactiviteit succesvol bijgewerkt",
+      "editError": "Bijwerken van systeem-e-mailactiviteit mislukt",
+      "deleteSuccess": "Systeem-e-mailactiviteit succesvol verwijderd",
+      "deleteError": "Verwijderen van systeem-e-mailactiviteit mislukt",
+      "invalidForm": "Vul alle verplichte velden in",
+      "emailSubjectRequired": "Onderwerp van e-mail is verplicht",
+      "emailBodyRequired": "Inhoud van e-mail is verplicht",
+      "systemActivityRequired": "Systeemactiviteit is verplicht",
+      "systemEmailIdRequired": "Systeem-e-mail is verplicht",
+      "languageSpecificContent": "Taal specifieke inhoud"
+    },
+    "gamification": {
+      "game_edit": {
+        "addNewGameLanguage": "Nieuwe gametaal toevoegen",
+        "general": "Algemeen",
+        "id": "ID",
+        "questionCount": "Aantal vragen",
+        "autoNextAllowed": "Automatisch volgende toegestaan",
+        "previousAllowed": "Vorige toegestaan",
+        "gameImage": "Spelafbeelding",
+        "upload": "Uploaden",
+        "update": "Bijwerken",
+        "name": "Naam",
+        "layoutUrl": "Layout-URL",
+        "instruction": "Instructie",
+        "description": "Beschrijving",
+        "delete": "Verwijderen",
+        "actions": "Acties",
+        "search": "Zoeken...",
+        "noGameData": "Geen spelgegevens beschikbaar voor deze taal.",
+        "gameManagement": "Spelbeheer",
+        "status": "Status",
+        "answer1": "Antwoord",
+        "answer2": "Antwoord",
+        "answer3": "Antwoord",
+        "answer4": "Antwoord",
+        "correctAnswer": "Juiste antwoord",
+        "incorrectAnswer": "Onjuist antwoord",
+        "addNewQuestionDialog": {
+          "header": "Nieuwe vraag toevoegen",
+          "question": "Vraag",
+          "writeQuestionPlaceholder": "Typ de vraag",
+          "answer": "Antwoord",
+          "answerPlaceholder": "Antwoord",
+          "save": "Opslaan",
+          "cancel": "Annuleren"
+        },
+        "addNewGameLanguageDialog": {
+          "header": "Nieuwe gametaal toevoegen",
+          "language": "Taal",
+          "chooseLanguage": "Kies taal",
+          "name": "Naam",
+          "description": "Beschrijving",
+          "instruction": "Instructie",
+          "layoutUrl": "Layout-URL",
+          "save": "Opslaan",
+          "cancel": "Annuleren"
+        },
+        "deleteGameLanguageDialog": {
+          "header": "Gametaal verwijderen",
+          "confirmationMessage": "Weet je zeker dat je deze gametaal wilt verwijderen?",
+          "gameLanguage": "Gametaal",
+          "no": "Nee",
+          "yes": "Ja"
+        },
+        "editGameLanguageQuestionDialog": {
+          "header": "Vraag bewerken",
+          "question": "Vraag",
+          "answerSpace": "Antwoord",
+          "answer": "Antwoord"
+        }
+      },
+      "game_list": {
+        "add_game_button": "Spel toevoegen",
+        "play_now_button": "Nu spelen",
+        "edit_button": "Bewerken",
+        "choose_language": "Kies taal",
+        "dialog": {
+          "add_game_header": "Nieuwe gametaal toevoegen",
+          "language_label": "Taal",
+          "id_label": "ID",
+          "name_label": "Naam",
+          "description_label": "Beschrijving",
+          "layout_url_label": "Layout-URL",
+          "question_count_label": "Aantal vragen",
+          "auto_next_allowed_label": "Automatisch volgende toegestaan",
+          "previous_allowed_label": "Vorige toegestaan",
+          "game_image_label": "Spelafbeelding"
+        }
+      }
+    },
+    "industry": {
+      "add": "Nieuwe sector toevoegen",
+      "name": "Naam",
+      "nameValidation": "Naam is verplicht",
+      "value": "Waarde",
+      "valueValidation": "Waarde is verplicht",
+      "addHeader": "Sector toevoegen",
+      "editHeader": "Sector bewerken"
+    },
+    "invoice": {
+      "inProgressInvoices": "Facturen in behandeling",
+      "completedInvoices": "Voltooide facturen",
+      "management": "Factuurbeheer",
+      "expandAll": "Alles uitvouwen",
+      "collapseAll": "Alles samenvouwen",
+      "company": "Bedrijf",
+      "subscriptionPlan": "Abonnementstype",
+      "invoiceType": "Factuurtype",
+      "total": "Totaal",
+      "amountDue": "Verschuldigd bedrag",
+      "issueDate": "Uitgiftedatum",
+      "paymentRequest": "Betalingsverzoek",
+      "payButton": "Betalen",
+      "paidLabel": "Betaald",
+      "requestTime": "Verzoektijd",
+      "requestAmount": "Bedrag",
+      "referenceKey": "Referentiesleutel",
+      "referenceImage": "Referentieafbeelding",
+      "paymentNote": "Betalingsopmerking",
+      "confirmed": "Bevestigd",
+      "confirmationUserId": "Bevestigd door gebruiker (ID)",
+      "confirmationTime": "Bevestigingstijd",
+      "confirmButton": "Bevestigen",
+      "confirmedLabel": "Bevestigd",
+      "pendingLabel": "In afwachting",
+      "doneLabel": "Voltooid",
+      "paidAmount": "Betaald bedrag",
+      "paymentTime": "Betaaltijd",
+      "paymentReferenceKey": "Referentiesleutel betaling",
+      "paymentType": "Betalingsmethode",
+      "noPaymentRequestsMessage": "Geen betalingsverzoeken gevonden voor deze factuur.",
+      "dialogs": {
+        "editHeader": "Factuur bewerken",
+        "editLanguageLabel": "Taal",
+        "editTextLabel": "Tekst",
+        "editCancel": "Annuleren",
+        "editSave": "Opslaan",
+        "addHeader": "Nieuwe factuur toevoegen",
+        "addLanguageLabel": "Taal",
+        "addTextLabel": "Offerte tekst",
+        "paymentRequestHeader": "Betalingsverzoek factuur",
+        "paymentRequestRefKeyLabel": "Referentiesleutel verzoek",
+        "paymentRequestAmountLabel": "Verzoeksbedrag",
+        "paymentRequestNoteLabel": "Opmerking betalingsverzoek",
+        "paymentRequestImageLabel": "Afbeelding betalingsverzoek",
+        "paymentConfirmHeader": "Betaling factuurverzoek bevestigen",
+        "confirmClientLabel": "Klant",
+        "confirmAccountantLabel": "Boekhouder",
+        "confirmPaidAmountLabel": "Betaald bedrag",
+        "confirmPaymentRefKeyLabel": "Referentiesleutel betaling",
+        "invoicePaymentRefKeyLabel": "Referentiesleutel factuur",
+        "confirmPaymentTypeLabel": "Betalingsmethode",
+        "confirmCheckboxLabel": "Bevestigd"
+      }
+    },
+    "leaderboard": {
+      "noUsersAvailable": "Er zijn nog geen gebruikers beschikbaar.",
+      "noDepartmentsAvailable": "Er zijn nog geen afdelingen beschikbaar.",
+      "usersLeaderboard": "Gebruikersranglijst",
+      "unitLeaderboard": "Afdelingsranglijst",
+      "ranking": "Rang",
+      "name": "Naam",
+      "points": "Punten",
+      "pointsPercentage": "Percentage voltooid",
+      "congrats": "Gefeliciteerd!",
+      "yourGroupIs2d": "je groep staat op de 2e plaats",
+      "yourGroupIs3d": "je groep staat op de 3e plaats",
+      "yourGroupIs1d": "je groep staat op de 1e plaats",
+      "first": "1e",
+      "second": "2e",
+      "third": "3e",
+      "star1": "ster 1",
+      "star2": "ster 2",
+      "star3": "ster 3",
+      "userPoints": "{{ userPoints }} punten",
+      "uniqueBadge": "Jij",
+      "tenantUnitPercentage": "{{ tenantUnitPercentage }}%",
+      "tenantUnitName": "{{ tenantUnitName }}"
+    },
+    "multimedia-library": {
+      "readNow": "Nu lezen",
+      "watchNow": "Nu kijken",
+      "watchVideo": "Bekijk video",
+      "readBook": "Lees boek",
+      "downloadScreensavers": "Screensavers downloaden",
+      "selectScreensavers": "Screensavers selecteren",
+      "noScreensaversAvailable": "Er zijn geen screensavers beschikbaar.",
+      "addToDownload": "Downloaden",
+      "platform": "Platform",
+      "downloadAll": "Selectie downloaden",
+      "showLessons": "Toon lessen",
+      "lessons": "Lessen",
+      "upgradeYourPlan": "Upgrade je abonnement",
+      "upgradeMessage": "Ontgrendel deze les en nog veel meer door je abonnement te upgraden.",
+      "upgradeBtn": "Nu upgraden"
+    },
+    "phishing-campaigns": {
+      "phishing-campaign-statistics": {
+        "overview": "Overzicht",
+        "templates": "Templates",
+        "top100Clickers": "Top (100) Clickers",
+        "userName": "Gebruikersnaam",
+        "userEmail": "E-mailadres",
+        "clicksCount": "Aantal klikken",
+        "status": "Status:",
+        "name": "Naam:",
+        "startDate": "Startdatum:",
+        "endDate": "Einddatum:",
+        "templatesII": "Templates:",
+        "users": "Gebruikers:",
+        "campaignLeaderboard": "Campagne-ranglijst",
+        "campaignLeaderboardMessage": "Welkom bij de Phishing Campagne Ranglijst! Hier kun je zien welke gebruikers zijn misleid en hun respectievelijke negatieve punten volgen. Moedig verbetering aan om phishingincidenten in de toekomst te verminderen!",
+        "ranking": "Rang",
+        "points": "Punten",
+        "noDataMessage": "Nog geen gegevens beschikbaar. Zodra gebruikers worden misleid, wordt de ranglijst bijgewerkt met hun negatieve punten.",
+        "templateName": "Template-naam",
+        "startedOn": "Gestart op",
+        "endedOn": "Beëindigd op",
+        "noOfUsers": "Aantal gebruikers",
+        "percentage": "Kwetsbaarheidspercentage",
+        "campaignSummary": "Campagnesamenvatting",
+        "vulnerability": "Kwetsbaarheid %",
+        "vulnerabilityPercentage": "Kwetsbaarheidspercentage: [tooltipItem]%",
+        "vulnerabilityPercentagee": "Kwetsbaarheidspercentage"
+      },
+      "phishing-campaign-template-statistics": {
+        "overview": "Overzicht",
+        "users": "Gebruikers",
+        "failures": "Mislukkingen per dag",
+        "status": "Status:",
+        "name": "Naam:",
+        "startDate": "Startdatum:",
+        "endDate": "Einddatum:",
+        "percentage": "Kwetsbaarheidspercentage",
+        "recipients": "Ontvangers:",
+        "recipient": "Ontvangers:",
+        "delivered": "Bezorgd",
+        "opened": "Geopend",
+        "qrCode": "QR-code gescand",
+        "dataEntered": "Gegevens ingevoerd",
+        "reported": "Gerapporteerd",
+        "clicked": "Geklikt",
+        "nameAndEmail": "Naam en e-mail",
+        "scheduled": "Gepland",
+        "thisPhishingTemplateSummary": "Samenvatting van deze phishingtemplate",
+        "failuress": "Mislukkingen",
+        "failuresWithValue": "Mislukkingen: [value]",
+        "refresh": "Vernieuwen"
+      },
+      "phishingcampaign": {
+        "dashboard": "Phishingcampagnes-dashboard",
+        "RunningCampaigns": "Lopende phishingcampagnes",
+        "completedCampaigns": "Voltooide phishingcampagnes",
+        "campaignName": "Campagnenaam",
+        "templateName": "Template-naam",
+        "phishingStartDate": "Startdatum phishing",
+        "phishingEndDate": "Einddatum phishing",
+        "status": "Status",
+        "toatalTemplates": "Totaal aantal templates: {calculateCurrentTotalNumberOfTemplates}",
+        "clicktoviewcampaigndetails": "klik om campagnedetails te bekijken"
+      }
+    },
+    "language": {
+      "language-listing": {
+        "fields": {
+          "languageName": "Taalnaam",
+          "languageCode": "Taalcode",
+          "status": "Status",
+          "isDefault": "Is standaardtaal",
+          "actions": "Acties"
+        },
+        "actions": {
+          "add": "Nieuwe taal toevoegen"
+        },
+        "dialogs": {
+          "editDialog": {
+            "header": "Taal bewerken",
+            "fields": {
+              "languageName": "Taalnaam",
+              "languageCode": "Taalcode",
+              "isDefaultLanguage": "Is standaardtaal",
+              "isActive": "Is actief"
+            }
+          },
+          "addDialog": {
+            "header": "Nieuwe taal toevoegen",
+            "fields": {
+              "languageName": "Taalnaam",
+              "languageCode": "Taalcode",
+              "isDefaultLanguage": "Is standaardtaal",
+              "isActive": "Is actief"
+            }
+          }
+        },
+        "notifications": {
+          "createSuccess": "Taal succesvol aangemaakt",
+          "updateSuccess": "Taal succesvol bijgewerkt",
+          "deleteSuccess": "Taal succesvol verwijderd"
+        }
+      }
+    },
+    "notification-settings": {
+      "notification-type-language": {
+        "title": "Beheer van notificatietypen per taal",
+        "language": "Taal",
+        "languagePlaceholder": "Selecteer taal",
+        "status": "Status",
+        "name": "Naam",
+        "nameValidation": "Naam is verplicht",
+        "notificationValidation": "Notificatiebericht is verplicht.",
+        "notificationMessage": "Notificatiebericht",
+        "editHeader": "Taal van notificatietype"
+      },
+      "notification-type-list": {
+        "title": "Notificatietype",
+        "id": "ID",
+        "name": "Naam",
+        "language": "Taal",
+        "languagePlaceholder": "Selecteer taal",
+        "notificationLogo": "Notificatielogo",
+        "notificationMessage": "Notificatiebericht",
+        "notificationIcon": "Notificatie-icoon",
+        "notificationIconPlaceholder": "Selecteer notificatie-icoon",
+        "redirectPageUrl": "URL van omleidingspagina",
+        "notificationParameterKey1": "Notificatieparameter sleutel 1",
+        "notificationParameterKey2": "Notificatieparameter sleutel 2",
+        "status": "Status",
+        "addHeader": "Nieuw notificatietype toevoegen",
+        "editHeader": "Phishingcategorie Engelse taal bewerken",
+        "validations": {
+          "id": "ID is verplicht.",
+          "name": "Naam is verplicht",
+          "redirectPageUrl": "redirectPageUrl is verplicht.",
+          "notificationParameterKey1": "NotificationParameterKey 1 is verplicht.",
+          "notificationParameterKey2": "NotificationParameterKey 2 is verplicht.",
+          "notificationMessage": "Notificatiebericht is verplicht."
+        }
+      }
+    },
+    "page-management": {
+      "page-details": {},
+      "page-listing": {
+        "fields": {
+          "page-EN": "Pagina Engelse naam",
+          "page-AR": "Pagina Arabische naam",
+          "status": "Status"
+        },
+        "actions": {
+          "add": "Pagina toevoegen"
+        },
+        "dialogs": {
+          "addDialog": {
+            "header": "Nieuwe pagina toevoegen",
+            "fields": {
+              "page-EN": "Pagina Engelse naam",
+              "page-AR": "Pagina Arabische naam",
+              "appUrl": "Applicatie-URL",
+              "pageUrl": "Pagina-URL",
+              "dispalyInMenu": "Weergeven in menu",
+              "orderNo": "Volgnummer",
+              "helpText-AR": "Arabische helptekst",
+              "helpText-EN": "Engelse helptekst",
+              "fontIconCode": "Font Icon-code",
+              "isHeading": "Instellen als koptekst"
+            },
+            "validations": {
+              "page-EN": "Pagina Engelse naam is verplicht.",
+              "page-AR": "Pagina Arabische naam is verplicht.",
+              "appUrl": "Applicatie-URL is verplicht.",
+              "pageUrl": "Pagina-URL is verplicht.",
+              "dispalyInMenu": "Weergeven in menu is verplicht."
+            }
+          },
+          "editDialog": {
+            "header": "Pagina bewerken",
+            "fields": {
+              "page-EN": "Pagina Engelse naam",
+              "page-AR": "Pagina Arabische naam",
+              "appUrl": "Applicatie-URL",
+              "pageUrl": "Pagina-URL",
+              "dispalyInMenu": "Weergeven in menu",
+              "orderNo": "Volgnummer",
+              "helpText-AR": "Arabische helptekst",
+              "helpText-EN": "Engelse helptekst",
+              "fontIconCode": "Font Icon-code",
+              "isHeading": "Instellen als koptekst"
+            }
+          }
+        },
+        "notifications": {
+          "saveSuccess": "Pagina succesvol opgeslagen",
+          "deleteSuccess": "Pagina succesvol verwijderd"
+        }
+      }
+    },
+    "phishing-category": {
+      "phishing-category-language-list": {
+        "title": "Beheer van phishingcategorieën per taal",
+        "add": "Phishingcategorie-taal toevoegen",
+        "imageField": "Categorieafbeelding uploaden",
+        "nameField": "Voer categorienaam in",
+        "descriptionField": "Voer categoriebeschrijving in",
+        "bannerField": "Categoriebanner uploaden",
+        "categoryPageContentHtmlPlaceholder": "Stel e-mailinhoud op",
+        "language": "Taal",
+        "languagePlaceholder": "Selecteer taal",
+        "category": "Categorie",
+        "name": "Categorienaam",
+        "banner": "Categoriebanner",
+        "description": "Categoriebeschrijving",
+        "pageContnt": "Categoriepagina-inhoud HTML",
+        "status": "Status",
+        "editHeader": "Phishingcategorie-taal",
+        "phishingTemplateName": "Naam phishingtemplate",
+        "therearenotemplatesforthistraininglanguageyet": "Er zijn nog geen templates voor deze trainingstaal.",
+        "validations": {
+          "name": "Naam is verplicht",
+          "description": "Categoriebeschrijving is verplicht.",
+          "banner": "Banner is verplicht",
+          "pageContent": "Pagina-inhoud is verplicht",
+          "category": "Categorie is verplicht"
+        }
+      },
+      "phishing-category-list": {
+        "title": "Lijst van phishingcategorieën",
+        "add": "Phishingcategorie toevoegen",
+        "image": "Categorieafbeelding",
+        "name": "Naam",
+        "status": "Status",
+        "language": "Taal",
+        "banner": "Categoriebanner",
+        "description": "Categoriebeschrijving",
+        "pageContent": "Pagina-inhoud HTML",
+        "imageField": "Categorieafbeelding uploaden",
+        "nameField": "Voer categorienaam in",
+        "descriptionField": "Voer categoriebeschrijving in",
+        "bannerField": "Categoriebanner uploaden",
+        "categoryPageContentHtmlPlaceholder": "Stel e-mailinhoud op",
+        "category": "Categorie",
+        "languagePlaceholder": "Selecteer taal",
+        "addHeader": "Nieuwe phishingcategorie Engelse taal toevoegen",
+        "editHeader": "Phishingcategorie Engelse taal bewerken",
+        "defaultPhishingCategories": "Standaard phishingcategorieën",
+        "companyPhishingCategories": "Bedrijf phishingcategorieën",
+        "validations": {
+          "name": "Naam is verplicht",
+          "description": "Categoriebeschrijving is verplicht.",
+          "banner": "Banner is verplicht",
+          "pageContent": "Pagina-inhoud is verplicht",
+          "category": "Categorie is verplicht"
+        }
+      }
+    },
+    "phishing-email-template": {
+      "taps": {
+        "info": "Informatie",
+        "emailDeatails": "E-maildetails",
+        "landingPage": "Landingspagina",
+        "feedbackPage": "Feedbackpagina"
+      },
+      "tages": "Phishingtemplate-tags",
+      "tagesPlaceHolder": "Selecteer tags",
+      "add": "Phishingtemplate toevoegen",
+      "addLanguage": "Taalversie van phishingtemplate toevoegen",
+      "name": "Naam phishingtemplate",
+      "nameField": "Voer een beschrijvende naam in voor de phishingtemplate.",
+      "nameValidation": "Naam van de phishingtemplate is verplicht",
+      "language": "Taal",
+      "languagePlaceholder": "Selecteer taal",
+      "languageValidation": "Taal is verplicht.",
+      "status": "Status",
+      "phishingCategory": "Phishingcategorie",
+      "phishingCategoryPlaceholder": "Selecteer categorie",
+      "phishingCategoryValidation": "Categorie van phishingtemplate is verplicht.",
+      "phishingDomain": "Phishingdomeinen",
+      "phishingDomainPlaceholder": "Selecteer het phishingdomein dat je wilt koppelen.",
+      "phishingDomainValidation": "Phishingtemplate-domein is verplicht.",
+      "IsQrCodeChecked": "QR-code toevoegen",
+      "description": "Beschrijving phishingtemplate",
+      "descriptionField": "Voer een beschrijving in voor de phishingtemplate",
+      "descriptionValidation": "Beschrijving van de phishingtemplate is verplicht.",
+      "emailInstruction": "Instructie phishingtemplate-e-mail",
+      "emailInstructionField": "Schrijf duidelijke en beknopte instructies voor de phishingtemplate.",
+      "phishingTemplateImage": "Afbeelding phishingtemplate",
+      "emailImage": "Upload de afbeelding van de phishingtemplate.",
+      "phishingEmailSubject": "Onderwerp phishingtemplate-e-mail",
+      "phishingEmailSubjectField": "Voer het onderwerp van de phishingtemplate-e-mail in",
+      "phishingEmailContent": "Inhoud phishingtemplate-e-mail",
+      "phishingEmailContentField": "Voer de HTML-inhoud van de phishingtemplate-e-mail in",
+      "landingPageTitle": "Titel landingspagina phishingtemplate",
+      "landingPageTitleField": "Voer de titel in van de landingspagina",
+      "landingPageDescription": "Beschrijving landingspagina phishingtemplate",
+      "landingPageDescriptionField": "Voer een beschrijving in van de landingspagina",
+      "landingPageContentHtml": "HTML-inhoud landingspagina phishingtemplate",
+      "phishingEmailSuccessMessageTitle": "Titel succesbericht",
+      "phishingEmailSuccessMessageTitleField": "Voer titel van succesbericht in",
+      "phishingEmailSuccessMessagePageHtml": "Inhoud succesbericht",
+      "phishingEmailSuccessMessagePageHtmlField": "Voer HTML-inhoud van succesbericht in",
+      "inputChecklistDialogHeader": "Selecteer invoervelden om te volgen",
+      "cloneDialogHeader": "Phishingtemplate klonen via URL",
+      "pageUrl": "Pagina-URL",
+      "listTitle": "Lijst van phishingtemplates",
+      "languages": "Talen",
+      "editHeader": "Phishingtemplate bewerken",
+      "editEmailHeader": "Taalversie phishingtemplate bewerken",
+      "addEmailHeader": "Nieuwe taalversie phishingtemplate",
+      "clone": "Probeer nu te klonen",
+      "upgradeYourPlan": "Upgrade je abonnement",
+      "upgradeMessage": "Ontgrendel deze phishingtemplate en nog veel meer door je abonnement te upgraden.",
+      "upgradeBtn": "Nu upgraden",
+      "defaultPhishingTemplates": "Standaard phishingtemplates",
+      "companyPhishingTemplates": "Phishingtemplates van het bedrijf",
+      "cloningDescription": "Dupliceer processen moeiteloos met onze kloonfunctie. Kopieer de link, plak deze in het kloonveld en laat het systeem de rest doen. Snel, betrouwbaar en altijd consistente resultaten."
+    },
+    "pointing-system": {
+      "id": "ID",
+      "title": "Puntentitel",
+      "value": "Puntenwaarde",
+      "editHeader": "Waarde bewerken"
+    },
+    "tenantUnit": {
+      "syncADOU": "Active Directory OUs synchroniseren",
+      "add": "Nieuwe afdeling toevoegen",
+      "name": "Afdelingsnaam",
+      "nameField": "Voer de naam van de afdeling in",
+      "status": "Status",
+      "editDialogHeader": "Afdeling bewerken",
+      "addDialogHeader": "Nieuwe afdeling toevoegen",
+      "showInLeaderboard": "Weergeven in ranglijst",
+      "showCompleteADDataDialog": "Active Directory-gegevens aanvullen",
+      "showCompleteADDataDialogMessage": " <i class=\"pi pi-megaphone\"></i> We raden aan om eerst de Active Directory-gegevens aan te vullen. {link} om dat te doen."
+    },
+    "role": {
+      "role-create": {},
+      "role-listing": {
+        "fields": {
+          "name": "Rolnaam",
+          "users": "Gebruikers",
+          "permissions": "Rechten",
+          "status": "Status",
+          "search": "Globale zoekopdracht"
+        },
+        "actions": {
+          "add": "Nieuwe rol toevoegen"
+        },
+        "dialog": {
+          "addDialog": {
+            "header": "Nieuwe rol toevoegen",
+            "fields": {
+              "name": "Rolnaam",
+              "description": "Beschrijving",
+              "permissions": "Rechten",
+              "isTenantRole": "Is tenantrol",
+              "isTenantAdministratorRole": "Is tenantbeheerderrol"
+            },
+            "validations": {
+              "name": "Rolnaam is verplicht"
+            }
+          },
+          "editDialog": {
+            "header": "Rol bewerken",
+            "fields": {
+              "name": "Rolnaam",
+              "description": "Beschrijving",
+              "isTenantRole": "Is tenantrol",
+              "isTenantAdministratorRole": "Is tenantbeheerderrol"
+            },
+            "validations": {
+              "name": "Rolnaam is verplicht"
+            }
+          },
+          "usersWithinRoleDialog": {
+            "header": "",
+            "firstName": "Voornaam",
+            "lastName": "Achternaam",
+            "email": "E-mail",
+            "search": "Globale zoekopdracht"
+          }
+        }
+      }
+    },
+    "security-training": {
+      "pdf-viewer-dialog": {
+        "header": "PDF Viewer",
+        "close": "Sluiten"
+      },
+      "security-training-create": {
+        "title": "Maak Engelse Trainingsles",
+        "fields": {
+          "name": "Lesnaam",
+          "description": "Lesbeschrijving",
+          "category": "Lescategorie",
+          "language": "Lestaal",
+          "pdf": "Spice Boek",
+          "video": "Spice Video",
+          "email": "Spice Bewustzijns-e-mail",
+          "emailSubject": "Onderwerp bewustzijns-e-mail",
+          "emailContent": "Inhoud bewustzijns-e-mail",
+          "screenSavers": "Spice Screensavers",
+          "wallpaper": "Spice Achtergronden",
+          "quizzes": "Spice Quizzen",
+          "quotes": "Spice Citaten",
+          "tages": "Tags",
+          "tagesPlaceHolder": "Selecteer tags"
+        },
+        "placeholders": {
+          "category": "Selecteer categorie",
+          "namePlaceholder": "Voer lesnaam in",
+          "descriptionPlaceholder": "Voer lesbeschrijving in",
+          "emailSubjectPlaceholder": "Voer e-mailonderwerp in",
+          "emailContentPlaceholder": "Schrijf e-mailinhoud",
+          "language": "Selecteer taal",
+          "title": "Titel screensaver",
+          "platform": "Platform screensaver",
+          "writeQuestion": "Voer vraag in",
+          "question": "Vraag",
+          "writeQuote": "Voer citaat in",
+          "answer": "Voer antwoord in { index }"
+        },
+        "validations": {
+          "name": "Naam is verplicht",
+          "description": "Beschrijving is verplicht",
+          "category": "Categorie is verplicht",
+          "language": "Taal is verplicht",
+          "pdf": "Lesboekbestand is verplicht",
+          "video": "Videobestand is verplicht",
+          "emailSubject": "Onderwerp van bewustzijns-e-mail is verplicht",
+          "emailContent": "Inhoud van bewustzijns-e-mail is verplicht",
+          "quizText": "Minimaal twee antwoorden zijn vereist.",
+          "quizTextTrue": "Eén juist antwoord is vereist."
+        },
+        "messages": {
+          "pdf": "PDF uploaden",
+          "video": "Video uploaden",
+          "uploaded": "Geüpload",
+          "numberOfChosenWallpapers": "Aantal gekozen achtergronden",
+          "question": "Vraag"
+        },
+        "actions": {
+          "submit": "Verzenden"
+        },
+        "dialogs": {
+          "libraryWallpaperDialog": {
+            "header": "Achtergrondenbibliotheek",
+            "actions": {
+              "back": "Terug naar keuze achtergronden"
+            }
+          },
+          "chooseWllpapersDialog": {
+            "header": "Kies Achtergrond",
+            "fields": {
+              "wallpaper": "Kies achtergronden"
+            },
+            "actions": {
+              "continue": "Doorgaan",
+              "add": "Nieuwe achtergrond toevoegen"
+            }
+          }
+        }
+      },
+      "security-training-details": {},
+      "training-lesson-category-list": {},
+      "security-training-list": {},
+      "training-lesson-language-create": {},
+      "video-viewer-dialog": {}
+    },
+    "simulation-phishing": {
+      "dynamic-landing-content": {},
+      "phishing-schedule-user-list": {}
+    },
+    "subscription": {
+      "payment-reminder-list": {
+        "title": "Beheer Betaalherinneringen",
+        "fields": {
+          "daysBeforePayment": "Dagen voor betaling",
+          "status": "Status",
+          "title": "Titel",
+          "message": "Bericht",
+          "subject": "Onderwerp"
+        },
+        "message": {
+          "deleteAll": "Weet je zeker dat je de geselecteerde herinneringen wilt verwijderen?"
+        },
+        "actions": {
+          "add": "Toevoegen",
+          "deleteAll": "Alles verwijderen"
+        },
+        "dialogs": {
+          "reminderDialog": {
+            "header": "Details betaalherinnering",
+            "fields": {
+              "title": "Titel",
+              "subject": "Onderwerp",
+              "message": "Bericht",
+              "daysBeforePayment": "Dagen voor betaling"
+            },
+            "validations": {
+              "title": "Titel is verplicht",
+              "subject": "Onderwerp is verplicht",
+              "message": "Bericht is verplicht",
+              "daysBeforePayment": "Aantal dagen voor betaling is verplicht"
+            }
+          }
+        }
+      },
+      "subscription-list": {
+        "title": "Abonnementen beheren",
+        "actions": {
+          "add": "Nieuw abonnement toevoegen"
+        },
+        "fields": {
+          "name": "Naam abonnement",
+          "userPrice": "Prijs per gebruiker",
+          "duration": "Duur",
+          "features": "Functies",
+          "freePlane": "Gratis abonnement",
+          "status": "Status"
+        },
+        "dialogs": {
+          "subscriptionDialog": {
+            "header": "Abonnementsgegevens",
+            "fields": {
+              "title": "Titel",
+              "description": "Beschrijving",
+              "roles": "Rollen",
+              "rolesPlaceholder": "Selecteer rollen",
+              "durationNumber": "Aantal eenheden",
+              "durationType": "Type duur",
+              "trainingLessons": "Trainingslessen",
+              "defaultRole": "Standaardrol",
+              "defaultRolePlaceholder": "Selecteer standaardrol",
+              "userPrice": "Gebruikersprijs",
+              "reminders": "Betaalherinneringen",
+              "remindersPlaceholder": "Selecteer herinneringen",
+              "phishingTemplates": "Phishing-sjablonen",
+              "unlimitedPhishingSimulation": "Onbeperkte phishing-simulatie",
+              "awarenessVideos": "Bewustzijnsvideo's",
+              "comicBooks": "Stripboeken",
+              "knowledgeQuiz": "Kennisquiz",
+              "securityQuotesAndTips": "Beveiligingstips en citaten",
+              "advancedReporting": "Geavanceerde rapportage",
+              "awarenessEmails": "Bewustzijns-e-mails",
+              "wallpapers": "Achtergronden",
+              "screenSavers": "Screensavers",
+              "games": "Spellen",
+              "customizedPhishingExperience": "Aangepaste phishing-ervaring",
+              "vrGamesAndTraining": "VR-spellen en training",
+              "localization": "Lokalisatie",
+              "onSiteDeployment": "On-site implementatie",
+              "iawareMobileApp": "iAware mobiele app",
+              "automatedTrainingCampaigns": "Geautomatiseerde trainingscampagnes",
+              "brandableContent": "Aanpasbare inhoud",
+              "phishAlertButton": "Phish Alert-knop",
+              "userProvisioningViaActiveDirectory": "Gebruikersbeheer via Active Directory",
+              "technicalSupport": "Technische ondersteuning",
+              "smartGroups": "Slimme groepen"
+            },
+            "validation": {
+              "title": "Titel is verplicht.",
+              "defaultRole": "Standaardrol is verplicht.",
+              "roles": "Rollen zijn verplicht."
+            }
+          },
+          "featuresDetailsDialog": {
+            "header": "Functiedetails",
+            "fields": {
+              "unlimitedPhishingSimulation": "Onbeperkte phishing-simulatie",
+              "awarenessVideos": "Bewustzijnsvideo's",
+              "comicBooks": "Stripboeken",
+              "knowledgeQuiz": "Kennisquiz",
+              "securityQuotesAndTips": "Beveiligingstips en citaten",
+              "advancedReporting": "Geavanceerde rapportage",
+              "awarenessEmails": "Bewustzijns-e-mails",
+              "wallpapers": "Achtergronden",
+              "screenSavers": "Screensavers",
+              "games": "Spellen",
+              "customizedPhishingExperience": "Aangepaste phishing-ervaring",
+              "vrGamesAndTraining": "VR-spellen en training",
+              "localization": "Lokalisatie",
+              "onSiteDeployment": "On-site implementatie",
+              "iawareMobileApp": "iAware mobiele app",
+              "automatedTrainingCampaigns": "Geautomatiseerde trainingscampagnes",
+              "brandableContent": "Aanpasbare inhoud",
+              "phishAlertButton": "Phish Alert-knop",
+              "userProvisioningViaActiveDirectory": "Gebruikersbeheer via Active Directory",
+              "technicalSupport": "Technische ondersteuning",
+              "smartGroups": "Slimme groepen"
+            }
+          },
+          "freeSubscriptionDialog": {
+            "header": "Gratis abonnementsstatus",
+            "freeMessageI": "Weet je zeker dat je ",
+            "freeMessageII": "gratis wilt maken?",
+            "notFreeMessageI": "Niet gratis?"
+          }
+        }
+      }
+    },
+    "support": {
+      "category": {
+        "fields": {
+          "members": "Leden",
+          "description": "Beschrijving",
+          "title": "Titel",
+          "status": "Status"
+        },
+        "actions": {
+          "add": "Nieuwe categorie toevoegen"
+        },
+        "dialogs": {
+          "editDialog": {
+            "header": "Categorie bewerken",
+            "fields": {
+              "members": "Leden",
+              "description": "Beschrijving",
+              "title": "Titel"
+            },
+            "placeholders": {
+              "members": "Selecteer leden"
+            }
+          },
+          "addDialog": {
+            "header": "Nieuwe categorie toevoegen",
+            "fields": {
+              "members": "Leden",
+              "description": "Beschrijving",
+              "title": "Titel"
+            },
+            "placeholders": {
+              "members": "Selecteer leden"
+            }
+          },
+          "usersWithinDeptDialog": {
+            "header": "Categorieleden",
+            "fields": {
+              "firstName": "Voornaam",
+              "lastName": "Achternaam",
+              "email": "E-mail"
+            }
+          }
+        }
+      },
+      "status": {
+        "fields": {
+          "title": "Titel",
+          "category": "Categorie",
+          "colorCode": "Kleurcode",
+          "isClosedCase": "Afgesloten zaak",
+          "status": "Status"
+        },
+        "actions": {
+          "add": "Nieuwe status toevoegen"
+        },
+        "dialogs": {
+          "editDialog": {
+            "header": "Status bewerken",
+            "fields": {
+              "title": "Titel",
+              "categories": "Categorieën",
+              "colorCode": "Kleurcode",
+              "isClosedCase": "Afgesloten zaak",
+              "orderNo": "Volgnummer"
+            },
+            "placeholders": {
+              "categories": "Selecteer categorie"
+            }
+          },
+          "addDialog": {
+            "header": "Nieuwe status toevoegen",
+            "fields": {
+              "title": "Titel",
+              "categories": "Categorieën",
+              "colorCode": "Kleurcode",
+              "isClosedCase": "Afgesloten zaak",
+              "orderNo": "Volgnummer"
+            },
+            "placeholders": {
+              "categories": "Selecteer categorie"
+            }
+          }
+        }
+      },
+      "subject": {
+        "fields": {
+          "category": "Categorie",
+          "title": "Titel",
+          "isCustomSubject": "Aangepast onderwerp",
+          "status": "Status"
+        },
+        "actions": {
+          "add": "Nieuw onderwerp toevoegen"
+        },
+        "dialogs": {
+          "editDialog": {
+            "header": "Onderwerp bewerken",
+            "fields": {
+              "categories": "Categorieën",
+              "title": "Titel",
+              "isCustomSubject": "Aangepast onderwerp"
+            },
+            "placeholders": {
+              "category": "Selecteer categorie"
+            }
+          },
+          "addDialog": {
+            "header": "Nieuw onderwerp toevoegen",
+            "fields": {
+              "categories": "Categorieën",
+              "title": "Titel",
+              "isCustomSubject": "Aangepast onderwerp"
+            },
+            "placeholders": {
+              "category": "Selecteer categorie"
+            }
+          }
+        }
+      }
+    },
+    "tenantgroup": {
+      "tenantgroup-listing": {
+        "fields": {
+          "groupName": "Groepsnaam",
+          "status": "Status"
+        },
+        "actions": {
+          "add": "Nieuwe groep toevoegen",
+          "syncAD": "AD-groepen (OUs) synchroniseren"
+        },
+        "dialogs": {
+          "editDialog": {
+            "header": "Groep bewerken",
+            "fields": {
+              "groupName": "Groepsnaam",
+              "groupMembers": "Groepsleden",
+              "selectMemebers": "Selecteer leden"
+            }
+          },
+          "addDialog": {
+            "header": "Nieuwe groep toevoegen",
+            "fields": {
+              "groupName": "Groepsnaam",
+              "groupMembers": "Groepsleden",
+              "selectMemebers": "Selecteer leden"
+            }
+          }
+        }
+      }
+    },
+    "user": {
+      "user-create": {
+        "table": {
+          "title": "Gebruikerslijst",
+          "columns": {
+            "username": "Gebruikersnaam",
+            "email": "E-mail",
+            "role": "Rol",
+            "status": "Status",
+            "actions": "Acties"
+          }
+        },
+        "validation": {},
+        "dialogs": {
+          "editTitle": "Gebruiker bewerken",
+          "deleteConfirmation": "Weet je zeker dat je {{username}} wilt verwijderen?",
+          "statusConfirmation": "Weet je zeker dat je {{username}} wilt {{action}}?"
+        },
+        "notifications": {
+          "saveSuccess": "Gebruiker succesvol opgeslagen",
+          "deleteSuccess": "Gebruiker succesvol verwijderd",
+          "statusUpdateSuccess": "Gebruiker succesvol {{action}}"
+        }
+      },
+      "subscription-details": {},
+      "user-details": {
+        "userInfoSection": {
+          "header": "Gebruikersinformatie",
+          "firstName": "Voornaam",
+          "lastName": "Achternaam",
+          "email": "E-mail",
+          "emailVerified": "E-mail geverifieerd",
+          "phoneNumber": "Telefoonnummer",
+          "language": "Taal",
+          "createdAt": "Aangemaakt op",
+          "accountStatus": "Accountstatus",
+          "notEntered": "Niet ingevoerd",
+          "active": "Actief",
+          "inactive": "Inactief",
+          "emailConfirmedYes": "Ja",
+          "emailConfirmedNo": "Nee",
+          "points": "Punten",
+          "badges": "Badges",
+          "ranking": "Ranglijst",
+          "positivePoints": "Positieve punten",
+          "negativePoints": "Negatieve punten",
+          "totalPoints": "Totaal punten",
+          "noBadgesMessage": "Nog geen badges verdiend.",
+          "userRanking": "Gebruikersrang",
+          "encouragementHighRank": "Deze gebruiker presteert goed, blijf hen aanmoedigen!",
+          "encouragementLowRank": "Deze gebruiker kan verbeteren. Moedig hen aan meer deel te nemen.",
+          "noRankingAvailable": "Nog geen ranglijst beschikbaar.",
+          "noRankingMessage": "Ranglijsten verschijnen zodra gebruikers punten verdienen.",
+          "startTraining": "Start Training"
+        },
+        "organizationRiskScoreSection": {
+          "header": "Risicoscore organisatie",
+          "riskHistory": "Risicogeschiedenis",
+          "riskScore": "Risicoscore"
+        },
+        "trainingSection": {
+          "header": "Training",
+          "statusOfAllCampaigns": "Status van alle campagnes",
+          "totalCompletedAssignments": "Totaal voltooide opdrachten",
+          "completed": "Voltooid:",
+          "inProgress": "Bezig:",
+          "notStarted": "Niet gestart:",
+          "trainingLessonsDetails": "Trainingslessen Details",
+          "campaignName": "Campagnenaam",
+          "campaignProgress": "Campagnevoortgang",
+          "campaignStartDate": "Startdatum campagne",
+          "campaignEndDate": "Einddatum campagne",
+          "noLessonsAvailable": "Geen lessen beschikbaar voor deze campagne.",
+          "selectaCampaign": "Selecteer een campagne",
+          "completedd": "Voltooid",
+          "inProgresss": "Bezig",
+          "notStartedd": "Niet gestart",
+          "lessonName": "Lesnaam",
+          "lessonJoiningDate": "Datum les begonnen",
+          "contentStatus": "Inhoudsstatus",
+          "status": "Status",
+          "score": "Score",
+          "totalLessons": "Totaal lessen: {number}",
+          "lessonScore": "{number} %",
+          "compelationPercentage": "{number} % voltooid",
+          "statusofRunningCampaigns": "Status van lopende campagnes"
+        },
+        "phishingSection": {
+          "header": "Phishing",
+          "riskHistory": "Risicogeschiedenis",
+          "riskScore": "Risicoscore",
+          "vulnerabilityRate": "Phishing-kwetsbaarheid",
+          "emailsDelivered": "E-mails verzonden:",
+          "emailsFailures": "Gefaalde e-mails:",
+          "emailsReported": "Gerapporteerde e-mails:",
+          "emailsNoActions": "E-mails zonder actie:",
+          "personalThreatPercentage": "Persoonlijk phishing-risico percentage:",
+          "basedonemailsDelivered": "(gebaseerd op { emailsDelivered } verzonden e-mails)",
+          "campaignDetails": "Phishingcampagne details",
+          "showCampaignDetails": "Toon campagnedetails",
+          "selectCampaign": "Selecteer campagne",
+          "clicked": "Geklikt:",
+          "dataEntered": "Gegevens ingevoerd:",
+          "emailsDeliveredd": "E-mails verzonden",
+          "emailsFailuress": "Gefaalde e-mails",
+          "emailsReportedd": "Gerapporteerde e-mails",
+          "emailsNoActionss": "E-mails zonder actie",
+          "clickedd": "Geklikt",
+          "dataEnteredd": "Gegevens ingevoerd",
+          "campaignName": "Campagnenaam",
+          "campaignDates": "Campagnedata",
+          "templateName": "Sjabloonnaam",
+          "delivered": "Verzonden",
+          "Opened": "Geopend",
+          "qRCodeScanned": "QR-code gescand",
+          "reported": "Gerapporteerd",
+          "totalTemplates": "Totaal sjablonen: {number}"
+        },
+        "charts": {
+          "totalAssignments": "Totaal opdrachten",
+          "totalAssignmentsinCampaign": "Totaal opdrachten in campagne",
+          "lessons": "Lessen: [value]",
+          "lessonDetails": "Lesdetails",
+          "completed": "Voltooid",
+          "inProgress": "Bezig",
+          "notStarted": "Niet gestart",
+          "failed": "Mislukt",
+          "reported": "Gerapporteerd",
+          "noActions": "Geen acties",
+          "clicked": "Geklikt",
+          "dataEntered": "Gegevens ingevoerd"
+        }
+      },
+      "user-listing": {
+        "usersTable": {
+          "fields": {
+            "firstName": "Voornaam",
+            "lastName": "Achternaam",
+            "roles": "Rollen",
+            "groups": "Groepen",
+            "email": "E-mail",
+            "emailConfirmed": "E-mail Bevestigd",
+            "status": "Status",
+            "unit": "Afdeling"
+          }
+        },
+        "actions": {
+          "save": "Wijzigingen Opslaan",
+          "cancel": "Annuleren",
+          "exportExcelSample": "Exporteer Excel Voorbeeld",
+          "exportUsers": "Exporteer Gebruikers",
+          "addUser": "Nieuwe Gebruikers Toevoegen",
+          "delete": "Gebruiker Verwijderen",
+          "globalSearch": "Globale Zoekopdracht",
+          "editUser": "Gebruiker Bewerken",
+          "importUsers": "Gebruikers Importeren",
+          "syncADUsers": "Synchroniseer Active Directory Gebruikers",
+          "refresh": "Vernieuwen",
+          "exportDeletedUsers": "Verwijderde Gebruikers Exporteren",
+          "activeUsers": "Actieve & Inactieve Gebruikers",
+          "deletedUsers": "Verwijderde Gebruikers",
+          "noActiveUsersavailable": "Geen actieve gebruikers beschikbaar",
+          "noDeletedUsersavailable": "Geen verwijderde gebruikers beschikbaar",
+          "editUserRoles": "Gebruikersrollen Bewerken"
+        },
+        "notifications": {
+          "updateSuccess": "Profiel succesvol bijgewerkt"
+        },
+        "validations": {},
+        "dialogs": {
+          "editeUserDialog": {
+            "header": "Gebruiker Bewerken",
+            "fields": {
+              "firstName": "Voornaam",
+              "lastName": "Achternaam",
+              "language": "Taal",
+              "roles": "Rollen",
+              "group": "Groep"
+            },
+            "validations": {
+              "firstName": "Voornaam is verplicht.",
+              "lastName": "Achternaam is verplicht.",
+              "language": "Taal is verplicht.",
+              "roles": "Rollen zijn verplicht."
+            },
+            "placeHolders": {
+              "firstName": "Voornaam",
+              "lastName": "Achternaam",
+              "language": "Selecteer Taal",
+              "roles": "Selecteer Rollen",
+              "group": "Selecteer Groep"
+            }
+          },
+          "addUserDialog": {
+            "header": "Nieuwe Gebruikers Toevoegen",
+            "taps": {
+              "adUser": "Handmatig Toevoegen",
+              "excelUsers": "Importeer via Excel",
+              "adSync": "Synchroniseer via Active Directory"
+            },
+            "messages": {
+              "adUser": "Voeg handmatig gebruikers toe met voornaam, achternaam, e-mail, groepen en taalvoorkeuren.",
+              "excelUsers": "Voeg gebruikers in bulk toe via een Excel-bestand. Zorg ervoor dat het bestand correct is opgemaakt.",
+              "excelUsersMessage": "Zorg ervoor dat de organisatie-eenheden in het Excel-bestand al in het systeem bestaan om fouten te voorkomen.",
+              "adSync": "Synchroniseer gebruikers automatisch met uw Active Directory."
+            },
+            "fields": {
+              "firstName": "Voornaam",
+              "lastName": "Achternaam",
+              "userName": "Gebruikersnaam",
+              "language": "Taal",
+              "email": "E-mail",
+              "dept": "Afdeling",
+              "roles": "Rollen",
+              "isActive": "Actief",
+              "group": "Groep"
+            },
+            "validations": {
+              "firstName": "Voornaam is verplicht.",
+              "lastName": "Achternaam is verplicht.",
+              "userNameRequired": "Gebruikersnaam is verplicht.",
+              "userNamePattern": "Gebruikersnaam mag alleen letters, cijfers, punten, streepjes en onderstreepjes bevatten.",
+              "userNameConsecutivePeriods": "Gebruikersnaam mag geen opeenvolgende punten bevatten.",
+              "language": "Taal is verplicht.",
+              "roles": "Selecteer ten minste één rol.",
+              "email": "E-mail is verplicht.",
+              "emailAddress": "E-mailadres is ongeldig."
+            },
+            "placeHolders": {
+              "firstName": "Voornaam",
+              "userName": "Gebruikersnaam",
+              "dept": "Selecteer Afdeling",
+              "lastName": "Achternaam",
+              "language": "Selecteer Taal",
+              "roles": "Selecteer Rollen",
+              "email": "E-mail"
+            }
+          },
+          "adUsersDialog": {
+            "usersTable": {
+              "fields": {
+                "firstName": "Voornaam",
+                "lastName": "Achternaam",
+                "email": "E-mail"
+              }
+            }
+          },
+          "excelUsersDialog": {
+            "usersTable": {
+              "fields": {
+                "firstName": "Voornaam",
+                "lastName": "Achternaam",
+                "email": "E-mail",
+                "search": "Zoek Gebruikers",
+                "groups": "Groepen"
+              }
+            }
+          },
+          "importUsersToaster": {
+            "fileName": "Bestandsnaam",
+            "fileSize": "Bestandsgrootte",
+            "confirm": "Bevestigen?",
+            "cancel": "Annuleren",
+            "totalRecords": "Totaal Records",
+            "duplicatedRecords": "Gedupliceerde Records",
+            "uniqueRecords": "Unieke Records",
+            "numOfUsers": "Aantal Gebruikers",
+            "groups": "Groepen",
+            "ous": "Organisatie-eenheden",
+            "excelDataOverview": "Excel Dataoverzicht",
+            "invalidRecords": "Ongeldige Records"
+          }
+        }
+      },
+      "user-tenant-profile": {
+        "userProfile": "Gebruikersprofiel",
+        "tenantProfile": "Bedrijfsprofiel",
+        "AdminProfile": "Beheerdersprofiel",
+        "subscription": "Abonnement",
+        "activeDirectorySettings": "Active Directory-instellingen",
+        "administrators": "Beheerders",
+        "badges": "Badges",
+        "positivePoints": "Positieve Punten",
+        "negativePoints": "Negatieve Punten",
+        "totalPoints": "Totale Punten",
+        "firstName": "Voornaam",
+        "firstNameValidation": "Voornaam is verplicht.",
+        "lastName": "Achternaam",
+        "lastNameValidation": "Achternaam is verplicht.",
+        "timeZone": "Tijdzone",
+        "timeZoneValidation": "Tijdzone is verplicht.",
+        "phone": "Telefoon",
+        "phoneValidation": "Telefoonnummer is verplicht.",
+        "email": "E-mail",
+        "emailValidation": "E-mail is verplicht.",
+        "revokeAdmin": "Beheerderstoegang intrekken",
+        "renewSubscription": "Abonnement Verlengen",
+        "remainingDays": "Resterende Dagen: ",
+        "renew": "Verlengen",
+        "updgradeSubscription": "Abonnement Upgraden",
+        "currentPlan": "Huidig Plan:",
+        "purchaseUsers": "Gebruikers Aanschaffen",
+        "currentUsersNumber": "Huidig Aantal Gebruikers:",
+        "refundRequest": "Restitutieaanvraag",
+        "request": "Aanvragen",
+        "yourSubscriptionDetails": "Details van uw Abonnement",
+        "company": "Bedrijf:",
+        "subscriptionPlan": "Abonnementsplan:",
+        "startDate": "Startdatum:",
+        "endDate": "Einddatum:",
+        "invoice": "Factuur",
+        "subscriptionPlann": "Abonnementsplan",
+        "startDatee": "Startdatum",
+        "endDatee": "Einddatum",
+        "userCount": "Aantal Gebruikers",
+        "priceUser": "Prijs per Gebruiker",
+        "total": "Totaal",
+        "paymentMethods": "Betaalmethoden",
+        "paymentMethodsMessage": "Kies uw gewenste betaalmethode. U kunt kiezen voor Creditcard, PayPal, Overschrijving of Bitcoin.",
+        "creditCard": "Creditcard",
+        "creditCardMessage": "Betaal veilig met uw creditcard. Alle grote kaarten worden geaccepteerd.",
+        "payPal": "PayPal",
+        "payPalMessage": "Gebruik PayPal voor een snelle en veilige betaling. Log in op uw account om af te rekenen.",
+        "wireTransfer": "Overschrijving",
+        "wireTransferMessage": "Maak direct geld over via bankoverschrijving. Volg de instructies zorgvuldig.",
+        "bitCoin": "Bitcoin",
+        "bitCoinMessage": "Betaal met Bitcoin. Zorg dat u een Bitcoin-wallet hebt ingesteld.",
+        "invoiceKey": "Factuursleutel {{key}}",
+        "amount": "Bedrag",
+        "requestReferenceKey": "Referentiesleutel Aanvraag",
+        "requestPaymentNote": "Betalingsnotitie Aanvraag",
+        "paymentReuqestImage": "Betalingsbewijs Afbeelding",
+        "pricingPlans": "Prijsplannen",
+        "pricingPlansMessage": "Kies het juiste plan voor uw organisatie en versterk uw cyberbewustzijn. Voor elk formaat bedrijf is er een oplossing.",
+        "peruser": "per gebruiker",
+        "activeLanguages": "Actieve Talen",
+        "features": "Functies",
+        "unlimitedPhishingSimulations": "Onbeperkte Phishing-simulaties",
+        "awarenessVideos": "Bewustzijnsvideo's",
+        "comicBooks": "Stripboeken",
+        "knowledgeQuiz": "Kennisquiz",
+        "securityQuotes& Tips": "Beveiligingscitaten & Tips",
+        "awarenessEmails": "Bewustzijnsemails",
+        "wallpapers": "Achtergronden",
+        "screenSavers": "Schermbeveiligingen",
+        "games": "Spellen",
+        "vRGames&Training": "VR-spellen & Training",
+        "localization": "Lokalisatie",
+        "onSiteDeployment": "On-Site Implementatie",
+        "iAwareMobileApp": "iAware Mobiele App",
+        "automatedTrainingCampaigns": "Geautomatiseerde Trainingscampagnes",
+        "brandableContent": "Aanpasbare Inhoud",
+        "phishAlertButton": "Phish Alert-knop",
+        "userProvisioningviaActiveDirectory": "Gebruikersbeheer via Active Directory",
+        "advancedReporting": "Geavanceerde Rapportage",
+        "technicalSupport": "Technische Ondersteuning",
+        "smartGroups": "Slimme Groepen",
+        "customizedPhishingExperience": "Aangepaste Phishingervaring",
+        "requestAQuote": "Vraag een Offerte aan",
+        "yourRequestCompletedSuccessfully": "Uw aanvraag is succesvol voltooid",
+        "yourRequestCompletedSuccessfullyMessage": "U ontvangt binnen 48 uur een e-mail zodra onze boekhouding de verificatie heeft afgerond. Controleer uw inbox voor updates.",
+        "checkInvoice": "Bekijk Factuur",
+        "userCountRequest": "Gebruikersaantal Aanvraag",
+        "userCountRequestValidation": "Voer een geldig aantal gebruikers in dat groter is dan 0.",
+        "calculateTotalPrice": "Bereken Totale Prijs",
+        "nobadgesearned": "Nog geen badges verdiend.",
+        "earnedTimes": "Verdiend: {times} keer",
+        "onlyLettersValidation": "Alleen letters en spaties zijn toegestaan. Geen speciale tekens of cijfers.",
+        "minLengthValidation": "Naam moet minimaal 2 tekens lang zijn.",
+        "maxLengthValidation": "Naam mag niet langer zijn dan 50 tekens.",
+        "dialogs": {
+          "returnAdminDialog": {
+            "header": "Beheerder terugzetten naar Gebruiker",
+            "message": "U staat op het punt om de beheerdersrechten van deze gebruiker in te trekken. Deze actie beïnvloedt hun toegang tot het hele systeem. Zorg ervoor dat dit besluit past binnen het beleid van uw organisatie."
+          },
+          "addNewAdministratorDialog": {
+            "header": "Nieuwe Beheerder Toevoegen",
+            "message": "U staat op het punt een nieuwe beheerder toe te voegen aan het systeem.",
+            "user": "Gebruiker",
+            "userValidation": "Gebruiker is verplicht",
+            "userPlaceholder": "Selecteer Gebruiker",
+            "roles": "Rollen",
+            "rolesValidation": "Ten minste één rol is vereist",
+            "rolesPlaceholder": "Selecteer Rollen"
+          }
+        },
+        "profileImagevalidation": {
+          "allowedTypes": "Alleen afbeeldingsbestanden (JPEG, PNG, WEBP) zijn toegestaan.",
+          "allowedSize": "Bestandsgrootte moet minder zijn dan 5 MB."
+        }
+      }
+    },
+    "wallpaper-libraries": {
+      "library-background": {},
+      "library-language-character": {},
+      "library-language-quote": {},
+      "library-wallpaper": {},
+      "library-wallpaper-ingredients": {},
+      "library-wallpaper-language": {}
+    },
+    "wallpaper-wizard": {
+      "wall-lang-list-wiz": {
+        "background-lang-wiz": {
+          "actions": {
+            "add": "Nieuwe Achtergrond Toevoegen"
+          },
+          "addDialog": {
+            "header": "Nieuwe Achtergrond Toevoegen",
+            "title": "Achtergrondafbeelding"
+          },
+          "editDialog": {
+            "header": "Achtergrond Bewerken",
+            "title": "Achtergrondafbeelding"
+          }
+        },
+        "character-lang-wiz": {
+          "actions": {
+            "add": "Nieuw Karakter Toevoegen"
+          },
+          "addDialog": {
+            "header": "Nieuw Karakter Toevoegen",
+            "language": "Taal",
+            "languagePlaceholder": "Selecteer Taal",
+            "name": "Naam",
+            "nameValidation": "Naam is verplicht",
+            "image": "Karakterafbeelding",
+            "imageThumbnail": "Karakter Miniatuur"
+          },
+          "editDialog": {
+            "header": "Karakter Bewerken",
+            "language": "Taal",
+            "languagePlaceholder": "Selecteer Taal",
+            "name": "Naam",
+            "nameValidation": "Naam is verplicht",
+            "image": "Karakterafbeelding",
+            "imageThumbnail": "Karakter Miniatuur"
+          }
+        },
+        "quote-lang-wiz": {
+          "actions": {
+            "add": "Nieuwe Quote Toevoegen"
+          },
+          "fields": {
+            "quote": "Quote Tekst",
+            "language": "Taal"
+          },
+          "addDialog": {
+            "header": "Nieuwe Quote Toevoegen",
+            "language": "Taal",
+            "languagePlaceholder": "Selecteer Taal",
+            "quoteText": "Quote Tekst",
+            "quotePlaceholder": "Typ hier...",
+            "quoteValidation": "Quote Tekst is verplicht."
+          },
+          "editDialog": {
+            "header": "Quote Bewerken",
+            "language": "Taal",
+            "languagePlaceholder": "Selecteer Taal",
+            "quoteText": "Quote Tekst",
+            "quotePlaceholder": "Typ hier...",
+            "quoteValidation": "Quote Tekst is verplicht."
+          }
+        },
+        "wall-create-lang-wiz": {
+          "background": "Achtergronden",
+          "character": "Karakters",
+          "quote": "Quotes",
+          "schedule": "Voorbeeld"
+        },
+        "wall-lang-preview": {
+          "wallpaper": "Naam van Wallpaper",
+          "wallpaperValidation": "Wallpapernaam is verplicht.",
+          "language": "Taal",
+          "languagePlaceholder": "Selecteer Taal",
+          "languageValidation": "Taal is verplicht.",
+          "selectedCharacter": "Geselecteerd Karakter",
+          "selectedBackground": "Geselecteerde Achtergrond",
+          "selectedQuote": "Geselecteerde Quote",
+          "createWallpaper": "Maak Wallpaper"
+        },
+        "title": "Talen",
+        "addDialog": {
+          "header": "Nieuwe Wallpaper Toevoegen",
+          "fields": {
+            "title": "Wallpaper Titel",
+            "titleValidations": "Titel is verplicht",
+            "language": "Taal",
+            "languagePlaceholder": "Selecteer Taal",
+            "languageValidation": "Taal is verplicht.",
+            "searchPlaceholder": "Zoeken..."
+          }
+        },
+        "editDialog": {
+          "header": "Wallpaper Bewerken",
+          "fields": {
+            "title": "Wallpaper Titel",
+            "titleValidations": "Titel is verplicht",
+            "language": "Taal",
+            "languagePlaceholder": "Selecteer Taal"
+          }
+        },
+        "actions": {
+          "add1": "Aangepaste Wallpaper Taal Toevoegen",
+          "add2": "Standaard Wallpaper Taal Uploaden"
+        }
+      },
+      "wallpaper-list-wizard": {
+        "library-background-wizard": {
+          "title": "Achtergrondbibliotheek",
+          "actions": {
+            "add": "Nieuwe Achtergrond Toevoegen"
+          },
+          "addDialog": {
+            "header": "Nieuwe Achtergrond Toevoegen",
+            "title": "Achtergrondafbeelding",
+            "titleThumbnail": "Achtergrond Miniatuur"
+          },
+          "editDialog": {
+            "header": "Achtergrond Bewerken",
+            "title": "Achtergrondafbeelding",
+            "titleThumbnail": "Achtergrond Miniatuur"
+          }
+        },
+        "library-character-wizard": {
+          "title": "Karakterbibliotheek",
+          "actions": {
+            "add": "Nieuw Karakter Toevoegen"
+          },
+          "addDialog": {
+            "header": "Nieuw Karakter Toevoegen",
+            "language": "Taal",
+            "languagePlaceholder": "Selecteer Taal",
+            "name": "Naam",
+            "nameValidation": "Naam is verplicht",
+            "image": "Karakterafbeelding",
+            "imageThumbnail": "Karakter Miniatuur"
+          },
+          "editDialog": {
+            "header": "Karakter Bewerken",
+            "language": "Taal",
+            "languagePlaceholder": "Selecteer Taal",
+            "name": "Naam",
+            "nameValidation": "Naam is verplicht",
+            "image": "Karakterafbeelding",
+            "imageThumbnail": "Karakter Miniatuur"
+          }
+        },
+        "library-quote-wizard": {
+          "title": "Quotes Bibliotheek",
+          "actions": {
+            "add": "Nieuwe Quote Toevoegen"
+          },
+          "fields": {
+            "quote": "Quote Tekst",
+            "language": "Taal",
+            "status": "Status",
+            "quoteText": "Quote Tekst"
+          },
+          "addDialog": {
+            "header": "Nieuwe Quote Toevoegen",
+            "language": "Taal",
+            "languagePlaceholder": "Selecteer Taal",
+            "quoteText": "Quote Tekst",
+            "quotePlaceholder": "Typ hier...",
+            "quoteValidation": "Quote Tekst is verplicht."
+          },
+          "editDialog": {
+            "header": "Quote Bewerken",
+            "language": "Taal",
+            "languagePlaceholder": "Selecteer Taal",
+            "quoteText": "Quote Tekst",
+            "quotePlaceholder": "Typ hier...",
+            "quoteValidation": "Quote Tekst is verplicht."
+          }
+        },
+        "wall-preview": {
+          "wallpaper": "Naam van Wallpaper",
+          "wallpaperValidation": "Wallpapernaam is verplicht.",
+          "selectedCharacter": "Geselecteerd Karakter",
+          "selectedBackground": "Geselecteerde Achtergrond",
+          "selectedQuote": "Geselecteerde Quote",
+          "createWallpaper": "Maak Wallpaper"
+        },
+        "wallpaper-create-wizard": {
+          "background": "Achtergronden",
+          "character": "Karakters",
+          "quote": "Quotes",
+          "schedule": "Voorbeeld"
+        },
+        "title": "Wallpaper Galerij",
+        "addDialog": {
+          "header": "Wallpaper Toevoegen",
+          "fields": {
+            "title": "Wallpaper Titel",
+            "titleValidations": "Titel is verplicht",
+            "language": "Taal",
+            "languagePlaceholder": "Selecteer Taal",
+            "tag": "Tags",
+            "tagsPlaceholder": "Selecteer Tags"
+          }
+        },
+        "actions": {
+          "add1": "Aangepaste Wallpaper Toevoegen",
+          "add2": "Standaard Wallpaper Uploaden",
+          "title": "Titel",
+          "titleisrequired": "Titel is verplicht.",
+          "wallpaperImage": "Wallpaper Afbeelding",
+          "wallpaperImageValidation": "Wallpaper afbeelding is verplicht.",
+          "wallpaperThumbnailImage": "Wallpaper Miniatuur Afbeelding"
+        }
+      }
+    },
+    "training-campaigns": {
+      "campaign-details": {
+        "readingMessage": "<i class=\"pi pi-sun\" style=\"color: rgb(255, 196, 0);font-size: 1.5rem\"></i> Je leest momenteel het boek. Als je liever de video bekijkt, <a style=\"cursor: pointer; font-size: medium; font-weight: 500;\" (click)=\"navigateToVideo()\">klik hier</a> om de video te bekijken.",
+        "question": "Vraag ( {currentQuestionIndex}/{quizzes} )",
+        "correctAnswers": "Je hebt <strong>{ correctanswers }</strong> goede antwoorden",
+        "earnedPoints": "Je hebt <strong>{ points }</strong> punten verdiend met correcte antwoorden",
+        "videoPoints": "Je hebt <strong>{videoPointValue} punten</strong> verdiend door het bekijken van de video",
+        "bookPoints": "Je hebt <strong>{bookPointValue} punten</strong> verdiend door het lezen van het boek",
+        "watchOrRead": "Je kunt in deze stap de video bekijken, of als je liever leest, <a style='cursor: pointer; font-size: medium; font-weight: 500;' (click)='navigateToBook()'>klik hier</a> om het boek te lezen",
+        "congratulations": "🎉 Gefeliciteerd! 🎉"
+      },
+      "current-campaign": {
+        "dashboard": "Training Campagne Dashboard",
+        "currentCampaigns": "Lopende Campagnes",
+        "currentMessage": "Huidige Campagnes: Toegang tot de nieuwste lessen, inclusief video’s, boeken en quizzen, ontworpen om je kennis te vergroten. Voltooi activiteiten om je voortgang bij te houden!",
+        "completedCampaigns": "Voltooide Campagnes",
+        "completedCampaignsMessage": "Campagnegeschiedenis: Herbekijk voltooide lessen—video’s, boeken en quizzen—om extra punten te verdienen. Vergroot je kennis en score door opnieuw te verkennen!",
+        "name": "Campagnenaam",
+        "progress": "Campagnevoortgang",
+        "lessonName": "Lesnaam",
+        "lessonJoiningDate": "Datum Deelname Les",
+        "contentStatus": "Inhoudsstatus",
+        "status": "Status",
+        "score": "Score",
+        "totalLessons": "Totaal Aantal Lessen: {number}",
+        "lessonScore": "{number} %",
+        "compelationPercentage": "{number} % Voltooid",
+        "viewCertificate": "Bekijk Certificaat",
+        "clickviewdetails": "klik om campagnedetails te bekijken",
+        "noCampaignsAvailable": "Geen campagnes beschikbaar",
+        "clicktocontinue": "Klik om door te gaan",
+        "clicktostart": "Klik om te starten"
+      },
+      "training-campaign-statistics": {
+        "campaignContent": "Campagne-inhoud",
+        "viewUsersProgress": "Bekijk Voortgang Gebruikers",
+        "compelationPercentage": "{number} % Voltooid",
+        "userCompletionActivity": "Activiteit Gebruikersvoltooiing",
+        "campaignSummary": "Campagnesamenvatting",
+        "status": "Status:",
+        "name": "Naam:",
+        "startDate": "Startdatum:",
+        "endDate": "Einddatum:",
+        "duration": "Duur:",
+        "durationValue": "{valueString}",
+        "users": "Gebruikers:",
+        "CampaignLeaderboardHeader": "Campagne Klassement",
+        "CampaignLeaderboardMessage": "Welkom bij het Campagne Klassement! Hier kun je gebruikersranglijsten bekijken van alle campagnes of je focussen op een specifieke campagne. Volg wie bovenaan staat en wie de lessen als eerste heeft voltooid. Doe mee en motiveer anderen om hun training op tijd te voltooien!",
+        "ranking": "Rang",
+        "nameII": "Naam",
+        "points": "Punten",
+        "noData": "Er zijn nog geen gebruikers gestart. Punten worden toegekend zodra de deelname begint. Het klassement wordt dan automatisch bijgewerkt.",
+        "usersProgressDilogHeader": "Voortgang Gebruikers",
+        "userName": "Gebruikersnaam",
+        "userEmail": "Gebruikers-e-mail",
+        "percentage": "Voortgangspercentage",
+        "numberofUserswhohavenotcompletedtheirassignments": "Aantal gebruikers dat hun opdrachten niet heeft voltooid",
+        "remaining": "Resterend",
+        "completed": "Voltooid",
+        "completedUsers": "Gebruikers die hebben voltooid",
+        "remainingUsers": "Gebruikers die nog moeten afronden"
+      }
+    },
+    "phishingCampaignsDashboard": {
+      "currentCampaigns": "Lopende Campagnes",
+      "completedCampaigns": "Voltooide Campagnes",
+      "selectACampaign": "Selecteer een Campagne",
+      "reportedd": "Gerapporteerd:",
+      "noActionn": "Geen Actie:",
+      "failedd": "Mislukt:",
+      "trendAnalysis": "Trend Analyse",
+      "trendAnalysisMessage": "Welkom bij de Trend Analyse van Phishing Campagnes. Deze grafiek geeft een overzicht van gebruikers die naar verwachting phishingaanvallen zullen melden versus degenen die nog geen actie hebben ondernomen. Het volgen van deze trends helpt bij het verbeteren van het beveiligingsbewustzijn.",
+      "selectAMonth": "Selecteer een Maand",
+      "campaignLeaderboard": "Phishing Falen Klassement",
+      "campaignLeaderboardMessage": "Phishing Campagne Klassement: Volg gebruikers die getroffen zijn door phishingpogingen en hun bijbehorende negatieve punten. Stimuleer verbetering om phishingincidenten in de toekomst te verminderen.",
+      "campaignLeaderboardNoDataMessage": "Nog geen gegevens beschikbaar. Zodra gebruikers slachtoffer worden van phishing, wordt het klassement bijgewerkt met hun negatieve punten.",
+      "ranking": "Rang",
+      "name": "Naam",
+      "points": "Punten",
+      "userName": "Gebruikersnaam",
+      "campaign": "Campagne",
+      "template": "Template",
+      "delivered": "Afgeleverd",
+      "opened": "Geopend",
+      "qrCode": "QR-code gescand",
+      "clicked": "Geklikt",
+      "dataEntered": "Gegevens Ingevuld",
+      "reported": "Gerapporteerd",
+      "noAction": "Geen Actie",
+      "failed": "Mislukt",
+      "reportedUsers": "Gebruikers die gerapporteerd hebben",
+      "noActionUsers": "Gebruikers zonder actie",
+      "failedUsers": "Gebruikers die zijn mislukt"
+    },
+    "trainingCampaignsDashboard": {
+      "currentCampaigns": "Lopende Campagnes",
+      "completedCampaigns": "Voltooide Campagnes",
+      "selectACampaign": "Selecteer een Campagne",
+      "trendAnalysis": "Trend Analyse",
+      "trendAnalysisMessage": "Training Campagne Trendanalyse: Deze grafiek volgt de voortgang naar maandelijkse doelen en vergelijkt het verwachte aantal gebruikers dat hun campagnes moet voltooien met degenen die dat al hebben gedaan. Blijf gefocust om tijdige afronding voor alle gebruikers te waarborgen.",
+      "selectAMonth": "Selecteer een Maand",
+      "campaignLeaderboard": "Campagne Ranglijst",
+      "campaignLeaderboardMessage": "Campagne Ranglijsten: Bekijk gebruikersrangschikkingen over alle campagnes of filter op een specifieke campagne. Volg toppresteerders en degenen die hun lessen als eerste afronden, en moedig tijdige training en gezonde competitie aan.",
+      "campaignLeaderboardNoDataMessage": "Nog geen gebruikers begonnen. Punten worden toegekend zodra deelname begint. De ranglijst wordt bijgewerkt zodra gebruikers beginnen deel te nemen.",
+      "ranking": "Rangschikking",
+      "name": "Naam",
+      "points": "Punten",
+      "userName": "Gebruikersnaam",
+      "campaign": "Campagne",
+      "completed": "Voltooid",
+      "completedd": "Voltooid:",
+      "completedUsers": "Gebruikers Voltooid",
+      "notStarted": "Niet Gestart",
+      "notStartedd": "Niet Gestart:",
+      "notStartedUsers": "Gebruikers Niet Gestart",
+      "inProgress": "Bezig",
+      "inProgresss": "Bezig:",
+      "inProgressUsers": "Gebruikers Bezig",
+      "failedd": "Mislukt:",
+      "failed": "Mislukt",
+      "failedUsers": "Mislukte Gebruikers",
+      "lesson": "Les",
+      "score": "Quizscore",
+      "excepted": "Verwacht",
+      "actual": "Actueel"
+    },
+    "tag": {
+      "tagName": "Tag Naam",
+      "priorityNumber": "Prioriteitsnummer",
+      "tagNameValidation": "Tagnaam is verplicht.",
+      "priorityNumberValidation": "Prioriteitsnummer is verplicht.",
+      "add": "Nieuwe Tag Toevoegen",
+      "blogAllowed": "Blog Toegestaan",
+      "gameAllowed": "Spel Toegestaan",
+      "newsAllowed": "Nieuws Toegestaan",
+      "phishingAllowed": "Phishing Toegestaan",
+      "trainingAllowed": "Training Toegestaan",
+      "wallpaperAllowed": "Wallpaper Toegestaan",
+      "languages": "Taalversies",
+      "addLanguage": "Taal Toevoegen",
+      "permissions": "Rechten",
+      "duplicateLanguages": "Dubbele Talen Niet Toegestaan"
+    },
+    "shared": {
+      "actions": {
+        "save": "Opslaan",
+        "submit": "Verzenden",
+        "search": "Globale Zoekopdracht",
+        "searchWithParameter": "Zoek {term}",
+        "cancel": "Annuleren",
+        "close": "Sluiten",
+        "edit": "Bewerken",
+        "delete": "Verwijderen",
+        "view": "Bekijken",
+        "upload": "Uploaden",
+        "download": "Downloaden",
+        "export": "Exporteren",
+        "action": "Acties",
+        "confirm": "Bevestigen",
+        "saveChanges": "Wijzigingen Opslaan",
+        "new": "Nieuw",
+        "back": "Terug",
+        "next": "Volgende",
+        "add": "Toevoegen",
+        "defaultInSystem": "Standaard in Systeem",
+        "type": "Typ hier...",
+        "clone": "Klonen",
+        "preview": "Voorbeeld",
+        "hide": "Verbergen",
+        "csv": "CSV",
+        "pdf": "PDF",
+        "update": "Bijwerken",
+        "showMore": "Meer Weergeven",
+        "showLess": "Minder Weergeven",
+        "upgrade": "Upgraden",
+        "ok": "Oké"
+      },
+      "search": {
+        "activeUser": "Zoek Actieve Gebruikers",
+        "deletedUser": "Zoek Verwijderde Gebruikers",
+        "role": "Zoek Rollen",
+        "page": "Zoek Pagina's",
+        "group": "Zoek Groepen",
+        "tenantUnit": "Zoek Afdelingen",
+        "subscription": "Zoek Abonnementen",
+        "domain": "Zoek Domeinen",
+        "pgishingCategory": "Zoek Phishingcategorieën"
+      },
+      "headers": {
+        "delete": "Verwijdering Bevestigen",
+        "active": "Activering Bevestigen",
+        "defaultWallpapers": "Standaard Wallpapers",
+        "companyWallpapers": "Bedrijfswallpapers",
+        "defaultBackgrounds": "Standaard Achtergronden",
+        "companyBackgrounds": "Bedrijfsachtergronden",
+        "sessionExpired": "Sessie Verlopen",
+        "sessionExpiredMessage": "Iemand heeft je uitgelogd. Log opnieuw in.",
+        "logoutaccount": "Weet je zeker dat je wilt uitloggen?",
+        "confirmLogout": "Uitloggen Bevestigen"
+      },
+      "labels": {
+        "*": "* "
+      },
+      "messages": {
+        "filterMessages": "Gegevens filteren volgens tags voor de {componentName} pagina.",
+        "delete": "Weet je zeker dat je wilt verwijderen",
+        "active": "Weet je zeker dat je wilt activeren",
+        "deactive": "Weet je zeker dat je wilt deactiveren",
+        "success": "Succes",
+        "required": "Dit veld is verplicht.",
+        "noDataAvailable": "Geen gegevens beschikbaar",
+        "recommendedDimensions": "Aanbevolen afmetingen: ",
+        "1920x1080": "1920x1080",
+        "300x300": "300x300",
+        "1200x300": "1200x300",
+        "800x449": "800x449",
+        "600x600": "600x600",
+        "314x91": "314x91",
+        "pixels": "pixels.",
+        "editCampaignMessage": "Je hebt de optie 'Alle Gebruikers' geselecteerd voor deze campagne. Hierdoor wordt de gebruikerslijst automatisch gevuld met alle gebruikers in het systeem. Aangezien elke gebruiker is geselecteerd, kun je geen individuele gebruikers bewerken voor deze campagne. Als je de gebruikersselectie wilt aanpassen, kies dan een alternatieve bron, zoals specifieke afdelingen of groepen."
+      },
+      "loading": "Laden, even geduld..."
+    },
+    "system-emails": {
+      "system-emails-listing": {
+        "addHeader": "Systeem E-mail Toevoegen",
+        "editHeader": "Systeem E-mail Bewerken",
+        "senderName": "Naam Afzender",
+        "senderDisplayName": "Weergavenaam",
+        "senderEmail": "E-mailadres",
+        "senderEmailPassword": "Wachtwoord",
+        "outgoingServer": "Uitgaande Server",
+        "outgoingServerPort": "Uitgaande Serverpoort",
+        "enableSSL": "SSL Inschakelen",
+        "noEmails": "Geen systeem e-mails gevonden"
+      }
+    }
+  }

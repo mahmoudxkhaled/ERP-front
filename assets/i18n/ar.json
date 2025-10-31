@@ -1,0 +1,536 @@
+{
+    "validation": {
+        "requiredMessage": "هذا الحقل مطلوب",
+        "emailMessage": "يرجى إدخال بريد إلكتروني صحيح",
+        "minLengthMessage": "الحد الأدنى للطول هو {{min}}"
+    },
+    "menu": {
+        "summary": "الملخص",
+        "actions": "الإجراءات",
+        "notifications": "الإشعارات",
+        "profile": "الملف الشخصي",
+        "settings": "الإعدادات",
+        "logout": "تسجيل الخروج",
+        "companyAdministration": "إدارة الشركة",
+        "companyDetails": "تفاصيل الشركة",
+        "usersDetails": "تفاصيل المستخدمين",
+        "workflows": "سير العمل",
+        "documentControl": "التحكم في المستندات",
+        "sharedDocuments": "المستندات المشتركة",
+        "humanResources": "الموارد البشرية",
+        "timesheets": "جداول الأوقات",
+        "contract": "العقد",
+        "financials": "المالية",
+        "invoices": "الفواتير"
+    },
+    "dashboard": {
+        "summary": "الملخص",
+        "actions": "الإجراءات",
+        "notifications": "الإشعارات",
+        "profile": "الملف الشخصي",
+        "settings": "الإعدادات",
+        "logout": "تسجيل الخروج",
+        "companyAdministration": "إدارة الشركة",
+        "companyDetails": "تفاصيل الشركة",
+        "usersDetails": "تفاصيل المستخدمين",
+        "workflows": "سير العمل",
+        "documentControl": "التحكم في المستندات",
+        "sharedDocuments": "المستندات المشتركة",
+        "humanResources": "الموارد البشرية",
+        "timesheets": "جداول الأوقات",
+        "contract": "العقد",
+        "financials": "المالية",
+        "invoices": "الفواتير"
+    },
+    "companyAdministration": {
+        "usersDetails": {
+            "title": "إدارة المستخدمين",
+            "actions": {
+                "add": "إضافة مستخدم"
+            },
+            "fields": {
+                "name": "الاسم",
+                "email": "البريد الإلكتروني",
+                "role": "الدور",
+                "status": "الحالة"
+            },
+            "dialogs": {
+                "addDialog": {
+                    "header": "إضافة مستخدم جديد",
+                    "fields": {
+                        "name": "الاسم",
+                        "email": "البريد الإلكتروني",
+                        "role": "الدور",
+                        "isActive": "نشط"
+                    }
+                },
+                "editDialog": {
+                    "header": "تعديل المستخدم",
+                    "fields": {
+                        "name": "الاسم",
+                        "email": "البريد الإلكتروني",
+                        "role": "الدور"
+                    }
+                }
+            }
+        }
+    },
+    "profile": {
+        "title": "الملف الشخصي",
+        "description": "إدارة معلومات ملفك الشخصي",
+        "overview": "نظرة عامة على الملف الشخصي",
+        "personalInfo": "المعلومات الشخصية",
+        "fields": {
+            "firstName": "الاسم الأول",
+            "lastName": "الاسم الأخير",
+            "email": "البريد الإلكتروني",
+            "phone": "الهاتف",
+            "role": "الدور",
+            "department": "القسم"
+        },
+        "actions": {
+            "save": "حفظ التغييرات",
+            "reset": "إعادة تعيين",
+            "cancel": "إلغاء"
+        }
+    },
+    "layout": {
+        "app-breadcrumb": {
+            "iAwareDashboard": "لوحة تحكم ERP",
+            "uikit": "أدوات واجهة المستخدم",
+            "utilities": "الأدوات المساعدة",
+            "pages": "إدارة الصفحات",
+            "profile": "إدارة المستخدمين",
+            "users": "إدارة المستخدمين",
+            "roles": "إدارة الأدوار",
+            "pages-management": "إدارة الصفحات",
+            "account-setting": "إدارة الحساب",
+            "tenant-group": "إدارة مجموعات المستأجرين",
+            "language": "إدارة اللغة",
+            "badge": "إدارة الشارات",
+            "documentation": "التوثيق",
+            "blocks": "كتل Prime",
+            "ecommerce": "التجارة الإلكترونية",
+            "apps": "التطبيقات",
+            "subscription": "الاشتراك",
+            "security-training": "التدريب الأمني",
+            "campaign-management": "إدارة حملات التوعية",
+            "campaign": "حملة التدريب",
+            "phishing-campaigns": "حملات التصيد",
+            "phishing-email-domains": "نطاقات البريد الإلكتروني للتصيد",
+            "system-email-domains": "نطاقات البريد الإلكتروني للنظام",
+            "system-email-activity": "نشاط البريد الإلكتروني للنظام",
+            "phishing-category": "فئة التصيد",
+            "phishing-templates": "قالب البريد الإلكتروني للتصيد",
+            "notifications": "الإشعارات",
+            "wallpaper-libraries": "مكتبات الخلفيات",
+            "wallpaper-wizard": "معالج الخلفيات",
+            "support": "الدعم",
+            "auth": "المصادقة",
+            "simulation-phishing": "محاكاة التصيد",
+            "details": "التفاصيل",
+            "pointing-system": "نظام النقاط",
+            "multimedia": "الوسائط المتعددة",
+            "tenantUnit": "القسم",
+            "statistics": "الإحصائيات",
+            "leaderboard": "الترتيب",
+            "industry": "الصناعة",
+            "gamification": "التلعيب",
+            "tages": "العلامات",
+            "adminTimesheets": "جداول الأوقات الإدارية",
+            "supervisorTimesheets": "جداول الأوقات للمشرف",
+            "summary": "الملخص",
+            "documentControl": "التحكم في المستندات",
+            "humanResources": "الموارد البشرية",
+            "financials": "المالية",
+            "companyAdministration": "إدارة الشركة",
+            "actions": "الإجراءات",
+            "settings": "الإعدادات",
+            "logout": "تسجيل الخروج",
+            "timesheets": "جداول الأوقات",
+            "contract": "العقد",
+            "invoices": "الفواتير",
+            "sharedDocuments": "المستندات المشتركة",
+            "companyDetails": "تفاصيل الشركة",
+            "usersDetails": "تفاصيل المستخدمين",
+            "workflows": "سير العمل"
+        },
+        "app-layout": {
+            "actions": {
+                "hide": "إخفاء؟"
+            }
+        },
+        "app-menuProfile": {
+            "profile": "الملف الشخصي",
+            "logout": "تسجيل الخروج",
+            "settings": "الإعدادات"
+        },
+        "config": {
+            "layoutThemeScale": "مقياس التخطيط/السمة",
+            "scenes": "المشاهد",
+            "colorScheme": "مخطط الألوان",
+            "light": "فاتح",
+            "dark": "داكن",
+            "menuMode": "وضع القائمة",
+            "static": "ثابت",
+            "overlay": "تراكب",
+            "slim": "رفيع",
+            "slimPlus": "رفيع +",
+            "reveal": "كشف",
+            "drawer": "درج",
+            "horizontal": "أفقي",
+            "menuProfilePosition": "موضع ملف تعريف القائمة",
+            "start": "البداية",
+            "end": "النهاية",
+            "inputStyle": "نمط الإدخال",
+            "outlined": "محدد",
+            "filled": "مملوء",
+            "rippleEffect": "تأثير التموج",
+            "menuThemes": "سمات القائمة",
+            "menu_theme_selector": "سمات القائمة متاحة فقط في الوضع الفاتح بالتصميم حيث يمكن للأسطح الكبيرة أن تنبعث منها سطوع كبير في الوضع الداكن.",
+            "topbarThemes": "سمات الشريط العلوي",
+            "componentThemes": "سمات المكونات"
+        }
+    },
+
+    "auth": {
+        "login": {
+            "title": "تسجيل الدخول إلى ERP",
+            "fields": {
+                "username": "اسم المستخدم",
+                "password": "كلمة المرور"
+            },
+            "forgotPasswordLink": "نسيت كلمة المرور؟",
+            "rememberMe": "تذكرني",
+            "pleaseWait": "يرجى الانتظار...",
+            "submit": "تسجيل الدخول",
+            "notMemeberYet": "لست عضواً بعد؟",
+            "signUp": "اشتراك",
+            "invalidCredentials": "بيانات تسجيل الدخول غير صحيحة"
+        },
+        "register": {
+            "title": "التسجيل في ERP",
+            "fields": {
+                "firstName": "الاسم الأول",
+                "lastName": "الاسم الأخير",
+                "companyname": "اسم الشركة",
+                "email": "البريد الإلكتروني",
+                "phone": "الهاتف",
+                "currency": "العملة",
+                "country": "البلد",
+                "NoOfUsers": "حد المستخدمين",
+                "language": "اللغة",
+                "timezone": "المنطقة الزمنية",
+                "password": "كلمة المرور",
+                "cpassword": "تأكيد كلمة المرور"
+            },
+            "termsAndConditions": "أوافق على الشروط والأحكام",
+            "submit": "تسجيل",
+            "pleaseWait": "يرجى الانتظار...",
+            "placeholders": {
+                "language": "اختر اللغة",
+                "currency": "اختر العملة",
+                "country": "اختر البلد",
+                "timezone": "اختر المنطقة الزمنية"
+            },
+            "validations": {
+                "firstName": "الاسم الأول مطلوب",
+                "firstNameMinLength": "الاسم الأول يجب أن يحتوي على 3 رموز على الأقل",
+                "firstNameMaxLength": "الاسم الأول يجب أن يحتوي على 100 رمز كحد أقصى",
+                "lastName": "الاسم الأخير مطلوب",
+                "lastNameMinLength": "الاسم الأخير يجب أن يحتوي على 3 رموز على الأقل",
+                "lastNameMaxLength": "الاسم الأخير يجب أن يحتوي على 100 رمز كحد أقصى",
+                "companyname": "اسم الشركة مطلوب",
+                "companynameMinLength": "اسم الشركة يجب أن يحتوي على 3 رموز على الأقل",
+                "companynameMaxLength": "اسم الشركة يجب أن يحتوي على 100 رمز كحد أقصى",
+                "email": "البريد الإلكتروني مطلوب",
+                "emailTaken": "بريد إلكتروني صحيح مطلوب",
+                "companyEmail": "بريد الشركة الإلكتروني مطلوب (لا Gmail، Outlook، إلخ)",
+                "language": "اللغة مطلوبة",
+                "timezone": "المنطقة الزمنية مطلوبة",
+                "phone": "رقم الهاتف مطلوب",
+                "currency": "العملة مطلوبة",
+                "country": "البلد مطلوب",
+                "password": "كلمة المرور مطلوبة",
+                "passwordMinLength": "كلمة المرور يجب أن تحتوي على 8 رموز على الأقل",
+                "passwordMaxLength": "كلمة المرور يجب أن تحتوي على 100 رمز كحد أقصى",
+                "passwordMismatch": "كلمات المرور غير متطابقة",
+                "cpassword": "تأكيد كلمة المرور مطلوب"
+            }
+        },
+        "reset-password": {
+            "title": "إعادة تعيين كلمة المرور",
+            "messages": {
+                "messageI": "لضمان أمان حسابك، يرجى اختيار كلمة مرور جديدة",
+                "messageII": "يجب أن تكون 8 أحرف على الأقل وتتضمن مزيجاً من الحروف والأرقام"
+            },
+            "fields": {
+                "newPass": "كلمة المرور الجديدة",
+                "cpassword": "تأكيد كلمة المرور الجديدة",
+                "confirmPassword": "تأكيد كلمة المرور"
+            },
+            "actions": {
+                "submit": "إعادة تعيين الآن!"
+            },
+            "validations": {
+                "password": "كلمة المرور مطلوبة.",
+                "cpassword": "تأكيد كلمة المرور مطلوب",
+                "passwordsMismatch": "كلمات المرور غير متطابقة",
+                "passMaxLength": "كلمة المرور يجب ألا تتجاوز 100 حرف.",
+                "missingNumber": "كلمة المرور يجب أن تحتوي على رقم واحد على الأقل.",
+                "passMinLength": "كلمة المرور يجب أن تكون 12 حرف على الأقل.",
+                "missingUppercase": "كلمة المرور يجب أن تحتوي على حرف كبير واحد على الأقل.",
+                "missingLowercase": "كلمة المرور يجب أن تحتوي على حرف صغير واحد على الأقل.",
+                "missingSpecialChar": "كلمة المرور يجب أن تحتوي على رمز خاص واحد على الأقل."
+            }
+        },
+        "email-verified": {
+            "welcome": "مرحباً!",
+            "message": "أنت على بعد خطوة واحدة من تأكيد بريدك الإلكتروني. يرجى عدم إغلاق أو تحديث الصفحة.",
+            "waitMessage": "نحن نؤكد بريدك الإلكتروني. يرجى الانتظار لحظة....."
+        },
+        "verification-email": {
+            "title": "مرحباً بك في خدمتنا",
+            "message": "تم تسجيل عنوان بريدك الإلكتروني بنجاح في خدمتنا.",
+            "messageI": "لإكمال عملية التسجيل والتحقق من بريدك الإلكتروني،",
+            "messageII": "يرجى التحقق من صندوق الوارد"
+        }
+    },
+
+    "shared": {
+        "actions": {
+            "save": "حفظ",
+            "submit": "إرسال",
+            "search": "البحث العام",
+            "searchWithParameter": "البحث عن {term}",
+            "cancel": "إلغاء",
+            "close": "إغلاق",
+            "edit": "تعديل",
+            "delete": "حذف",
+            "view": "عرض",
+            "upload": "رفع",
+            "download": "تحميل",
+            "export": "تصدير",
+            "action": "الإجراءات",
+            "confirm": "تأكيد",
+            "saveChanges": "حفظ التغييرات",
+            "new": "جديد",
+            "back": "رجوع",
+            "next": "التالي",
+            "add": "إضافة",
+            "defaultInSystem": "افتراضي في النظام",
+            "type": "اكتب هنا...",
+            "clone": "استنساخ",
+            "preview": "معاينة",
+            "hide": "إخفاء",
+            "csv": "CSV",
+            "pdf": "PDF",
+            "update": "تحديث",
+            "showMore": "عرض المزيد",
+            "showLess": "عرض أقل",
+            "upgrade": "ترقية",
+            "ok": "موافق"
+        },
+        "search": {
+            "activeUser": "البحث عن المستخدمين النشطين",
+            "deletedUser": "البحث عن المستخدمين المحذوفين",
+            "role": "البحث عن الأدوار",
+            "page": "البحث عن الصفحات",
+            "group": "البحث عن المجموعات",
+            "tenantUnit": "البحث عن الأقسام",
+            "subscription": "البحث عن الاشتراكات",
+            "domain": "البحث عن النطاقات",
+            "phishingCategory": "البحث عن فئات التصيد"
+        },
+        "headers": {
+            "delete": "تأكيد الحذف",
+            "active": "تأكيد التفعيل",
+            "defaultWallpapers": "خلفيات افتراضية",
+            "companyWallpapers": "خلفيات الشركة",
+            "defaultBackgrounds": "خلفيات افتراضية",
+            "companyBackgrounds": "خلفيات الشركة",
+            "sessionExpired": "انتهت الجلسة",
+            "sessionExpiredMessage": "قام شخص بطردك. يرجى تسجيل الدخول مرة أخرى.",
+            "logoutaccount": "هل أنت متأكد من أنك تريد تسجيل الخروج من حسابك؟",
+            "confirmLogout": "تأكيد تسجيل الخروج"
+        },
+        "labels": {
+            "*": "* "
+        },
+        "messages": {
+            "filterMessages": "تصفية البيانات وفقاً للعلامات لصفحة {componentName}.",
+            "delete": "هل أنت متأكد من أنك تريد حذف",
+            "active": "هل أنت متأكد من أنك تريد تفعيل",
+            "deactive": "هل أنت متأكد من أنك تريد إلغاء تفعيل",
+            "success": "نجح",
+            "required": "هذا الحقل مطلوب.",
+            "noDataAvailable": "لا توجد بيانات متاحة",
+            "recommendedDimensions": "الأبعاد الموصى بها: ",
+            "1920x1080": "1920x1080",
+            "300x300": "300x300",
+            "1200x300": "1200x300",
+            "800x449": "800x449",
+            "600x600": "600x600",
+            "314x91": "314x91",
+            "pixels": "بكسل.",
+            "editCampaignMessage": "لقد اخترت خيار 'جميع المستخدمين' لهذه الحملة. نتيجة لذلك، يتم ملء قائمة المستخدمين تلقائياً بجميع المستخدمين في النظام. نظراً لأن الاختيار يشمل كل مستخدم، لا يمكنك إجراء تعديلات فردية على المستخدمين في هذه الحملة. إذا كنت ترغب في تخصيص اختيار المستخدمين، يرجى اختيار مصدر بديل، مثل أقسام أو مجموعات محددة."
+        },
+        "pagination": {
+            "showing": "عرض {first} إلى {last} من {totalRecords} إدخال"
+        },
+        "loading": "جاري التحميل، يرجى الانتظار..."
+    },
+    "timesheets": {
+        "title": "جداول الأوقات",
+        "description": "تتبع وإدارة ساعات عمل الموظفين",
+        "summary": {
+            "hoursThisWeek": "الساعات هذا الأسبوع",
+            "daysWorked": "أيام العمل",
+            "submitted": "المُرسلة"
+        },
+        "actions": {
+            "add": "إضافة إدخال",
+            "edit": "تعديل الإدخال",
+            "delete": "حذف الإدخال",
+            "changeStatus": "تغيير الحالة"
+        },
+        "fields": {
+            "date": "التاريخ",
+            "project": "المشروع",
+            "task": "المهمة",
+            "hours": "الساعات",
+            "remarks": "الملاحظات",
+            "status": "الحالة"
+        },
+        "dialogs": {
+            "addDialog": {
+                "header": "إضافة إدخال جدول الأوقات"
+            },
+            "editDialog": {
+                "header": "تعديل إدخال جدول الأوقات"
+            },
+            "deleteDialog": {
+                "header": "تأكيد الحذف",
+                "message": "هل أنت متأكد من أنك تريد حذف هذا الإدخال من جدول الأوقات؟"
+            },
+            "statusDialog": {
+                "header": "تغيير الحالة",
+                "newStatus": "الحالة الجديدة"
+            }
+        },
+        "status": {
+            "draft": "مسودة",
+            "pending": "معلق",
+            "approved": "موافق عليه",
+            "rejected": "مرفوض"
+        },
+        "projects": {
+            "erpSystem": "نظام ERP",
+            "hrPortal": "بوابة الموارد البشرية",
+            "invoicing": "الفواتير",
+            "documentControl": "التحكم في المستندات"
+        }
+    },
+    "adminTimesheets": {
+        "title": "جداول الأوقات الإدارية",
+        "description": "الإدارة النظامية - إدارة الشركات والمستخدمين",
+        "companies": {
+            "title": "الشركات",
+            "addCompany": "إضافة شركة",
+            "editCompany": "تعديل الشركة",
+            "deleteCompany": "حذف الشركة",
+            "fields": {
+                "name": "اسم الشركة",
+                "status": "الحالة",
+                "industry": "الصناعة",
+                "founded": "سنة التأسيس",
+                "employees": "عدد الموظفين",
+                "admins": "المديرين"
+            }
+        },
+        "users": {
+            "title": "المستخدمين",
+            "addUser": "إضافة مستخدم",
+            "editUser": "تعديل المستخدم",
+            "deleteUser": "حذف المستخدم",
+            "fields": {
+                "name": "الاسم الكامل",
+                "email": "البريد الإلكتروني",
+                "role": "الدور",
+                "company": "الشركة",
+                "status": "الحالة"
+            }
+        },
+        "roles": {
+            "systemAdmin": "مدير النظام",
+            "companyAdmin": "مدير الشركة",
+            "supervisor": "مشرف",
+            "employee": "موظف"
+        },
+        "status": {
+            "active": "نشط",
+            "inactive": "غير نشط"
+        }
+    },
+    "supervisorTimesheets": {
+        "title": "جداول الأوقات للمشرف",
+        "description": "إدارة موافقات جداول الأوقات للفريق ومراقبة ساعات العمل",
+        "summary": {
+            "pendingHours": "الساعات المعلقة",
+            "approvedHours": "الساعات الموافق عليها",
+            "teamHours": "ساعات الفريق"
+        },
+        "tabs": {
+            "pendingApprovals": "الموافقات المعلقة",
+            "recentlyApproved": "الموافقات الأخيرة"
+        },
+        "filters": {
+            "employee": "تصفية حسب الموظف",
+            "period": "تصفية حسب الفترة",
+            "allEmployees": "جميع الموظفين",
+            "thisWeek": "هذا الأسبوع",
+            "thisMonth": "هذا الشهر",
+            "last3Months": "آخر 3 أشهر",
+            "allTime": "جميع الأوقات"
+        },
+        "actions": {
+            "approve": "موافقة",
+            "reject": "رفض"
+        },
+        "fields": {
+            "employee": "الموظف",
+            "date": "التاريخ",
+            "project": "المشروع",
+            "task": "المهمة",
+            "hours": "الساعات",
+            "remarks": "الملاحظات",
+            "status": "الحالة",
+            "approvedDate": "تاريخ الموافقة",
+            "approvedBy": "موافق عليه من قبل"
+        },
+        "dialogs": {
+            "approveDialog": {
+                "header": "موافقة على إدخال جدول الأوقات",
+                "message": "الموافقة على هذا الإدخال من جدول الأوقات؟"
+            },
+            "rejectDialog": {
+                "header": "رفض إدخال جدول الأوقات",
+                "message": "رفض هذا الإدخال من جدول الأوقات؟"
+            }
+        }
+    },
+    "system-emails": {
+        "system-emails-listing": {
+            "addHeader": "إضافة بريد النظام",
+            "editHeader": "تعديل بريد النظام",
+            "senderName": "اسم المستخدم",
+            "senderDisplayName": "اسم العرض",
+            "senderEmail": "البريد الإلكتروني",
+            "senderEmailPassword": "كلمة المرور",
+            "outgoingServer": "خادم الصادر",
+            "outgoingServerPort": "منفذ خادم الصادر",
+            "enableSSL": "تفعيل SSL",
+            "noEmails": "لم يتم العثور على بريد النظام"
+        }
+    }
+}
