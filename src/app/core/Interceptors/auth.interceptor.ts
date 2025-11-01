@@ -5,11 +5,7 @@ import { environment } from 'src/environments/environment';
 export class authInterceptor implements HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // Skip adding Authorization header for mock mode
-    if (environment.useMockData) {
-      console.log('🔐 Mock Mode: Skipping Authorization header');
-      return next.handle(req);
-    }
+
 
     // Real API mode - add Authorization header
     let date: any = localStorage.getItem('userData');

@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { Observable, Subscription } from 'rxjs';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
-import { EcncryptionService } from 'src/app/core/Services/ecncryption.service';
+import { ApiResult } from 'src/app/core/API_Interface/ApiResult';
 
 @Component({
   selector: 'app-forget-password',
@@ -22,10 +22,11 @@ export class ForgetPasswordComponent implements OnInit, OnDestroy {
     return this.loginCreditials.get('email');
   }
 
-  constructor(private router: Router,
+  constructor(
+    private router: Router,
     private apiService: AuthService,
-    private localStorageService: LocalStorageService,
-    private ecncrypServ: EcncryptionService) {
+    private localStorageService: LocalStorageService
+  ) {
     this.isLoading$ = this.apiService.isLoadingSubject;
   }
 
@@ -40,9 +41,46 @@ export class ForgetPasswordComponent implements OnInit, OnDestroy {
   }
 
   sendCode() {
-    // Static flow: navigate directly to reset password without API/validation
-    const emailValue = (this.email?.value as string) || 'user@example.com';
-    this.router.navigate(['/auth/resetPassword', emailValue]);
+    if (this.loginCreditials.invalid) {
+      this.validationMessage = 'Please enter a valid email address';
+      return;
+    }
+
+    this.validationMessage = '';
+    const emailValue = (this.email?.value as string).trim();
+
+    if (!emailValue) {
+      this.validationMessage = 'Please enter your email address';
+      return;
+    }
+
+    const requestSub = this.apiService.resetPasswordRequest(emailValue).subscribe({
+      next: (apiResult) => {
+        try {
+          const response = JSON.parse(apiResult.Body);
+          if (response.success === true) {
+            // Show success message (component template should handle this)
+            this.validationMessage = 'success';
+            // Optionally navigate or show success message
+          } else {
+            this.validationMessage = response.message || 'Failed to send reset link';
+          }
+        } catch (error) {
+          console.error('Error parsing reset password request response:', error);
+          this.validationMessage = 'An error occurred. Please try again.';
+        }
+      },
+      error: (error) => {
+        try {
+          const response = JSON.parse(error.Body);
+          this.validationMessage = response.message || 'Failed to send reset link';
+        } catch (e) {
+          this.validationMessage = 'Failed to send reset link. Please try again.';
+        }
+      }
+    });
+
+    this.unsubscribe.push(requestSub);
   }
 
   ngOnDestroy(): void {

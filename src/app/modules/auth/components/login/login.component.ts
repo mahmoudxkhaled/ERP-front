@@ -1,33 +1,24 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MessageService } from 'primeng/api';
 import { Observable, Subscription } from 'rxjs';
 import { LayoutService } from 'src/app/layout/app-services/app.layout.service';
 import { AuthService } from '../../services/auth.service';
 import { LanguageDIRService } from 'src/app/core/Services/LanguageDIR.service';
-import { IForceLogoutModel } from '../../models/IForceLogoutModel';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
-import { environment } from 'src/environments/environment';
 
 @Component({
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.scss'],
-    providers: [MessageService],
 })
 export class LoginComponent implements OnInit, OnDestroy {
-    rememberMe: boolean = false;
     hasError: boolean = false;
     loginCreditials!: FormGroup;
     unsubscribe: Subscription[] = [];
     isLoading$: Observable<boolean>;
     isRtl: boolean = false;
-    userId: string = '';
-    showDialog: boolean = false;
     showPassword: boolean = false;
-    production = environment.production;
 
-    dialogMessage: string = 'We noticed that your account is currently active in another session. Would you like to log out from the previous session and continue here?';
 
     messages = [
         "1 # Revolutionizing Ideas",
@@ -78,74 +69,73 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     initForm() {
         this.loginCreditials = new FormGroup({
-            email: new FormControl<string>('system.admin@erp.com', [Validators.required, Validators.email]),
-            password: new FormControl<string>('SystemAdmin@123', [Validators.required]),
+            email: new FormControl<string>('mahmoudxkhaled@gmail.com', [Validators.required, Validators.email]),
+            password: new FormControl<string>('abc.123', [Validators.required]),
         });
     }
 
     submit() {
-        console.log('submit');
-        this.router.navigate(['/']);
-
-    }
-
-    forceLogout(userId: string) {
-        this.showDialog = false;
-        const userData: IForceLogoutModel = {
-            userId: userId,
-            userEmail: this.loginCreditials.value.email,
-            userPassword: this.loginCreditials.value.password
+        if (this.loginCreditials.invalid) {
+            this.hasError = true;
+            return;
         }
-        const forceLogoutSubscription = this.apiService
-            .forceLogout(userData)
-            .subscribe({
-                next: (res) => {
-                    console.log('Active sessions logged out. Retrying login...');
-                    // this.submit();
-                    if (res.isSuccess === false) {
-                        this.hasError = true;
-                    } else if (res.code === 800) {
-                        // Active sessions detected
-                        this.showDialog = true;
-                        this.userId = res.data.userId;
-                        this.dialogMessage = res.message;
-                    } else if (res.message === "Email Not Confirmed") {
-                        // Email not confirmed
-                        this.hasError = true;
+
+        this.hasError = false;
+        const email = this.email?.value as string;
+        const password = this.password?.value as string;
+
+        const loginSubscription = this.apiService.login(email, password).subscribe({
+            next: (response: any) => {
+                // Response is already parsed by AuthService
+                if (response?.success === true) {
+                    // Successful login - token and userId should already be saved by AuthService
+                    console.log('response', response);
+                    this.router.navigate(['/auth/verify-email']);
+
+                    // this.handleSuccessfulLogin();
+                } else {
+                    // Handle different error cases
+                    const message = response?.message || '';
+
+                    if (message === 'Inactive') {
+                        // Account is inactive
+                        this.router.navigate(['/auth/account-locked']);
+                    } else if (message === 'Verify') {
+                        // Email verification required
+                        this.router.navigate(['/auth/verification-email']);
+                    } else if (message === 'Locked') {
+                        // Account locked after failed attempts
+                        this.router.navigate(['/auth/account-locked']);
+                    } else if (message === '2FA') {
+                        // 2FA required - save userId for verification
+                        const userId = response?.userId || '';
+                        if (userId) {
+                            this.localStorageService.setItem('userId', userId);
+                        }
+                        this.router.navigate(['/auth/verify-code']);
                     } else {
-                        // Successful login
-                        this.handleSuccessfulLogin();
+                        // Generic error
+                        this.hasError = true;
+                        console.error('Login failed:', message || 'Unknown error');
                     }
-                },
-                error: (error) => {
-                    console.error('Force logout error:', error);
-                },
-            });
-        this.unsubscribe.push(forceLogoutSubscription);
+                }
+            },
+            error: (error: any) => {
+                // Error is already parsed by AuthService
+                this.hasError = true;
+                console.error('Login error:', error?.message || 'Unknown error');
+            }
+        });
+
+        this.unsubscribe.push(loginSubscription);
     }
 
-    cancelLogin() {
-        this.showDialog = false;
-        console.log('User chose not to login.');
-    }
 
     handleSuccessfulLogin() {
         const userLang = this.rtlService.getLanguageFromStorage();
         this.rtlService.setUserLanguageCode(userLang);
         this.rtlService.setRtl(userLang === 'ar');
         this.router.navigate(['/']);
-    }
-
-    onYesClick(): void {
-        this.forceLogout(this.userId);
-    }
-
-    onNoClick(): void {
-        this.cancelLogin();
-    }
-
-    onDialogClose(): void {
-        this.showDialog = false;
     }
 
     typeMessage() {

@@ -434,7 +434,7 @@
             "waitMessage": "We are confirming your email . Please wait a moment....."
         },
         "verification-email": {
-            "title": "Welcome to Our Service",
+            "title": "Welcome to ERP",
             "message": "Your email address has been successfully registered with our service.",
             "messageI": "To complete the registration process and verify your email,",
             "messageII": "please check your inbox"

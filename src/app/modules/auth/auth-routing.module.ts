@@ -10,9 +10,13 @@ import { AccountLockedComponent } from './components/account-locked/account-lock
 
 const routes: Routes = [
     { path: '', component: LoginComponent },
-    { path: 'emailVerified/:email', component: EmailVerifiedComponent },
-    { path: 'resetPassword/:email', component: ResetPasswordComponent },
-    { path: 'verificationEmail', component: VerificationEmailComponent },
+    // Email verification routes - supports both query params and route params for backward compatibility
+    { path: 'emailVerified/:email', component: EmailVerifiedComponent }, // Backward compatibility
+    { path: 'verify-email', component: VerificationEmailComponent }, // Primary route with query param: ?token=XYZ
+    { path: 'verificationEmail', component: VerificationEmailComponent }, // Alternative route
+    // Reset password routes - supports both query params and route params for backward compatibility
+    { path: 'resetPassword/:email', component: ResetPasswordComponent }, // Backward compatibility
+    { path: 'reset-password', component: ResetPasswordComponent }, // Primary route with query param: ?resetToken=ABC
     { path: 'forget-password', component: ForgetPasswordComponent },
     { path: 'verify-code', component: VerifyCodeComponent },
     { path: 'account-locked', component: AccountLockedComponent },

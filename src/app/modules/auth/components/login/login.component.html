@@ -1,7 +1,4 @@
 <div class="body">
-    <!-- Mock Credentials Component (only in development) -->
-    <!-- <app-mock-credentials *ngIf="!production"></app-mock-credentials> -->
-
     <div class="wave"></div>
     <div class="wave"></div>
     <div class="wave"></div>
@@ -59,29 +56,7 @@
             <a routerLink="/auth/forget-password">Forgot Password?</a>
         </div>
         <div class="footer">
-            © 2025 ERP. All rights reserved.
+            © 2025 Quantum PMC LLC. All rights reserved.
         </div>
     </div>
 </div>
-
-<p-dialog [(visible)]="showDialog" [modal]="true" [closable]="false" [style]="{
-        background: 'linear-gradient(90deg, #001f3f, #0059b3)',
-        borderRadius: '15px',
-        width: '40vw',
-        padding: '10px',
-        textAlign: 'center',
-        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.5)',
-        color: 'white'
-     }" (onHide)="onDialogClose()" [showHeader]="false">
-    <div class="kikoff-container text-center">
-        <h2>Active Session Detected</h2>
-        <p>We noticed that your account is currently active in another session. Would you like to log out from the
-            previous session and continue here?</p>
-        <div style="display: flex; justify-content: center; gap: 10px;">
-            <button pButton type="button" label="No" (click)="onNoClick()"
-                class="p-button-secondary w-12rem p-2"></button>
-            <button pButton type="button" label="Yes" (click)="onYesClick()"
-                class="p-button-ripple w-12rem p-2"></button>
-        </div>
-    </div>
-</p-dialog>

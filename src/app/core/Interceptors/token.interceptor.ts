@@ -10,11 +10,7 @@ export class tokenInterceptor implements HttpInterceptor {
     constructor(private router: Router, private iawareSharedService: IawareSharedService) { }
 
     intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-        // Skip token expiration check for mock mode
-        if (environment.useMockData) {
-            console.log('🔐 Mock Mode: Skipping token expiration check');
-            return next.handle(request);
-        }
+
 
         // Real API mode - check token expiration
         let date: any = localStorage.getItem('userData');
@@ -29,19 +25,14 @@ export class tokenInterceptor implements HttpInterceptor {
     }
 
     logOut() {
-        if (environment.useMockData) {
-            console.log('🔐 Mock Mode: Clearing userData');
-            localStorage.removeItem('userData');
-            document.location.reload();
-            return;
-        }
+
 
         // Real API logout
-        this.iawareSharedService.logout().subscribe({
-            next: () => {
-                localStorage.removeItem('userData');
-                document.location.reload();
-            },
-        });
+        // this.iawareSharedService.logout().subscribe({
+        //     next: () => {
+        //         localStorage.removeItem('userData');
+        //         document.location.reload();
+        //     },
+        // });
     }
 }

@@ -5,8 +5,7 @@ import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import { passwordMatchValidator } from '../../../../core/Services/passwordMatchValidator';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { IResetPasswordModel } from '../../models/IResetPasswordModel';
-import { EcncryptionService } from 'src/app/core/Services/ecncryption.service';
+import { ApiResult } from 'src/app/core/API_Interface/ApiResult';
 
 export function passwordComplexityValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -44,42 +43,100 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
         private route: ActivatedRoute,
         private router: Router,
         private messageService: MessageService,
-        private fb: FormBuilder,
-        private EcncrypServ: EcncryptionService
+        private fb: FormBuilder
     ) {
         this.initForm();
     }
 
     ngOnInit(): void {
-        const x = this.route.params.subscribe((params) => {
-            this.email = params['email'];
-            this.confirmUserEmail();
+        // Read resetToken from query parameters (primary method)
+        const queryParamsSub = this.route.queryParams.subscribe((queryParams) => {
+            const resetToken = queryParams['resetToken'] || queryParams['token'] || '';
+            
+            if (resetToken) {
+                // Store resetToken for use in submit()
+                (this as any).resetToken = resetToken;
+            } else {
+                // Backward compatibility: try route params
+                const paramsSub = this.route.params.subscribe((params) => {
+                    this.email = params['email'];
+                    // If email provided, we might need to handle it differently
+                    // For now, just log that token is missing
+                    if (!resetToken) {
+                        console.warn('No resetToken found in query parameters');
+                    }
+                });
+                this.unsubscribe.push(paramsSub);
+            }
         });
-        this.unsubscribe.push(x);
-    }
-
-    confirmUserEmail() {
-        const x = this.authService.confirmEmail(this.email).subscribe({});
-        this.unsubscribe.push(x);
-    }
-
-    fetchCampanyLogo() {
-        const x = this.authService.getCompanyLogo().subscribe({
-            next: (r) => {
-                this.tenantLogoUrl = r.data;
-            },
-            error: (e) => { },
-        });
+        this.unsubscribe.push(queryParamsSub);
     }
 
     submit() {
-        // Static flow: skip API call and navigate back to login directly
-        this.messageService.add({
-            severity: 'success',
-            summary: 'Success',
-            detail: 'Password reset successful!',
+        if (this.resetPassForm.invalid) {
+            return;
+        }
+
+        const resetToken = (this as any).resetToken || '';
+        const newPassword = this.resetPassForm.get('password')?.value;
+
+        if (!resetToken) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Reset token is missing. Please use the link from your email.',
+            });
+            return;
+        }
+
+        const resetSub = this.authService.resetPasswordConfirm(resetToken, newPassword).subscribe({
+            next: (apiResult) => {
+                try {
+                    const response = JSON.parse(apiResult.Body);
+                    if (response.success === true) {
+                        this.messageService.add({
+                            severity: 'success',
+                            summary: 'Success',
+                            detail: 'Password reset successful!',
+                        });
+                        setTimeout(() => {
+                            this.router.navigate(['/auth']);
+                        }, 2000);
+                    } else {
+                        this.messageService.add({
+                            severity: 'error',
+                            summary: 'Error',
+                            detail: response.message || 'Password reset failed.',
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error parsing reset password response:', error);
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Error',
+                        detail: 'An error occurred. Please try again.',
+                    });
+                }
+            },
+            error: (error) => {
+                try {
+                    const response = JSON.parse(error.Body);
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Error',
+                        detail: response.message || 'Password reset failed.',
+                    });
+                } catch (e) {
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Error',
+                        detail: 'Password reset failed. Please try again.',
+                    });
+                }
+            }
         });
-        this.router.navigate(['/auth']);
+
+        this.unsubscribe.push(resetSub);
     }
 
     initForm() {

@@ -1,14 +1,60 @@
-<div class="surface-section px-4 py-8 md:px-6 lg:px-8">
-    <div class="text-center">
-        <div class="text-900 font-bold text-5xl mb-3"> {{ 'auth.verification-email.title' | translate}}</div>
-        <div class="text-700 text-2xl mb-3">
-            {{ 'auth.verification-email.message' | translate}}
+<div class="body">
+    <div class="reset-container">
+        <h2>{{ 'auth.verification-email.title' | translate }}</h2>
+
+        <!-- Loading State -->
+        <div *ngIf="isVerifying">
+            <p>
+                <i class="pi pi-spin pi-spinner" style="font-size: 1.5rem; margin-right: 10px;"></i>
+                Verifying email...
+            </p>
         </div>
-        <div class="text-700 text-2xl mb-3">
-            {{ 'auth.verification-email.messageI' | translate}} <strong>{{ 'auth.verification-email.messageII' | translate}}</strong>.
+
+        <!-- Success State -->
+        <div *ngIf="verificationSuccess && !isVerifying">
+            <p style="color: #90EE90; font-weight: bold;">
+                <i class="pi pi-check-circle" style="font-size: 1.5rem; margin-right: 10px;"></i>
+                Email verified successfully. You can now log in.
+            </p>
+            <p style="font-size: 14px; margin-top: 10px;">
+                You will be redirected to the login page in {{ redirectCountdown }} seconds...
+            </p>
         </div>
-        <div>
-            <img src="assets/images/email_verification.jpg" alt="Email Verification" style="max-width: 100%; height: auto;">
+
+        <!-- Error State -->
+        <div *ngIf="errorMessage && !isVerifying">
+            <p style="color: #ffb6b6; font-weight: bold;">
+                <i class="pi pi-exclamation-triangle" style="font-size: 1.5rem; margin-right: 10px;"></i>
+                {{ errorMessage }}
+                <!-- ⚠️ {{ errorMessage }} -->
+
+            </p>
+            <button *ngIf="verificationToken" class="reset-btn" (click)="verifyEmail()" [disabled]="isVerifying"
+                style="margin-top: 15px;">
+                Retry
+            </button>
+        </div>
+
+        <!-- Default/Info State (when no token or not verified yet) -->
+        <div *ngIf="!isVerifying && !verificationSuccess && !errorMessage">
+            <p>{{ 'auth.verification-email.message' | translate }}</p>
+            <p style="font-size: 14px; margin-bottom: 20px;">
+                {{ 'auth.verification-email.messageI' | translate }}
+                <strong>{{ 'auth.verification-email.messageII' | translate }}</strong>.
+            </p>
+
+            <!-- Manual Verification Button (if token exists) -->
+            <button *ngIf="verificationToken && !errorMessage" class="reset-btn" (click)="verifyEmail()"
+                [disabled]="isVerifying">
+                Complete Email Verification
+            </button>
+        </div>
+
+        <div class="links">
+            <a routerLink="/auth">Back to Login</a>
+        </div>
+        <div class="footer">
+            © 2025 Quantum PMC LLC. All rights reserved.
         </div>
     </div>
 </div>
