@@ -95,20 +95,22 @@ export class LoginComponent implements OnInit, OnDestroy {
                     // this.handleSuccessfulLogin();
                 } else {
                     // Handle different error cases
-                    const message = response?.message || '';
+                    // Check if message is an object (with Access_Token) or a string
+                    const messageObj = response?.message || {};
+                    const accessToken = typeof messageObj === 'object' ? messageObj?.Access_Token : messageObj;
+                    const userId = typeof messageObj === 'object' ? messageObj?.User_ID : (response?.userId || response?.User_ID || '');
 
-                    if (message === 'Inactive') {
+                    if (accessToken === 'Inactive' || (typeof messageObj === 'string' && messageObj === 'Inactive')) {
                         // Account is inactive
-                        this.router.navigate(['/auth/account-locked']);
-                    } else if (message === 'Verify') {
-                        // Email verification required
+                        this.router.navigate(['/auth/account-locked'], { queryParams: { status: 'Inactive' } });
+                    } else if (accessToken === 'Verify' || (typeof messageObj === 'string' && messageObj === 'Verify')) {
+                        // Email verification required - navigate without token to show notification
                         this.router.navigate(['/auth/verification-email']);
-                    } else if (message === 'Locked') {
+                    } else if (accessToken === 'Locked' || (typeof messageObj === 'string' && messageObj === 'Locked')) {
                         // Account locked after failed attempts
-                        this.router.navigate(['/auth/account-locked']);
-                    } else if (message === '2FA') {
+                        this.router.navigate(['/auth/account-locked'], { queryParams: { status: 'Locked' } });
+                    } else if (accessToken === '2FA' || (typeof messageObj === 'string' && messageObj === '2FA')) {
                         // 2FA required - save userId for verification
-                        const userId = response?.userId || '';
                         if (userId) {
                             this.localStorageService.setItem('userId', userId);
                         }
@@ -116,7 +118,7 @@ export class LoginComponent implements OnInit, OnDestroy {
                     } else {
                         // Generic error
                         this.hasError = true;
-                        console.error('Login failed:', message || 'Unknown error');
+                        console.error('Login failed:', accessToken || messageObj || 'Unknown error');
                     }
                 }
             },

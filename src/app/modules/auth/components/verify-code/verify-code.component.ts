@@ -15,10 +15,10 @@ export class VerifyCodeComponent implements OnInit, OnDestroy {
 
   userId: string = '';
   validationMessage: string = '';
-  form : FormGroup;
+  form: FormGroup;
   isLoading$: Observable<boolean>;
   unsubscribe: Subscription[] = [];
-  
+
   constructor(
     private apiService: AuthService,
     private router: Router,
@@ -30,7 +30,7 @@ export class VerifyCodeComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Get userId from localStorage (saved during Login)
     this.userId = this.localStorageService.getItem('userId') || '';
-    
+
     // If userId not found, try to get it from userData
     if (!this.userId) {
       const userData = this.localStorageService.getItem('userData');
@@ -45,10 +45,10 @@ export class VerifyCodeComponent implements OnInit, OnDestroy {
     }
 
     // If still no userId, redirect to login
-    if (!this.userId) {
-      this.router.navigate(['/auth']);
-      return;
-    }
+    // if (!this.userId) {
+    //   this.router.navigate(['/auth']);
+    //   return;
+    // }
 
     this.form = new FormGroup({
       code1: new FormControl<string>('', Validators.required),
@@ -61,7 +61,7 @@ export class VerifyCodeComponent implements OnInit, OnDestroy {
 
   verifyCode() {
     this.validationMessage = '';
-    
+
     if (this.form.invalid) {
       this.validationMessage = 'Please enter all digits';
       return;
@@ -116,7 +116,7 @@ export class VerifyCodeComponent implements OnInit, OnDestroy {
       nextInput?.focus();
     }
   }
-  
+
   moveToPrev(event: any, prevInputId: string): void {
     this.validationMessage = ''
     const input = event.target as HTMLInputElement;

@@ -28,9 +28,9 @@ export class VerificationEmailComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Read verification token from query parameters
     const queryParamsSub = this.route.queryParams.subscribe(params => {
-      this.verificationToken = params['token'] || params['verificationToken'] || '';
+      this.verificationToken = params['token'] || params['verification-token'] || '';
 
-      console.log('verificationToken', this.verificationToken);
+      console.log('verification-token', this.verificationToken);
       if (this.verificationToken) {
         // Auto-verify on page load if token exists
         this.verifyEmail();
