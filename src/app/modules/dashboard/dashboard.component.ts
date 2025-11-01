@@ -16,7 +16,7 @@ export class DashboardComponent implements OnInit {
     constructor(
         private localStorageService: LocalStorageService,
         private router: Router,
-        private translate: TranslationService
+        public translate: TranslationService
     ) { }
 
     ngOnInit(): void {

@@ -7,6 +7,7 @@ import { LocalStorageService } from './core/Services/local-storage.service';
 import { TranslationService } from './core/Services/translation.service';
 import { LayoutService } from './layout/app-services/app.layout.service';
 import { NetworkStatusService } from './core/Services/network-status.service';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-root',
@@ -21,7 +22,8 @@ export class AppComponent implements OnInit, OnDestroy {
         private layoutService: LayoutService,
         private ref: ChangeDetectorRef,
         private networkStatusService: NetworkStatusService,
-        private translate: TranslationService
+        private translate: TranslationService,
+        private router: Router
     ) {
         this.translationService.setDefaultLang('en');
         const documentStyle = getComputedStyle(document.documentElement);
@@ -55,6 +57,7 @@ export class AppComponent implements OnInit, OnDestroy {
     userLanguageCode: string | null = null;
 
     ngOnInit(): void {
+        this.router.navigate(['/auth']);
         this.primengConfig.ripple = true;
 
         const userLangCode = this.rtlService.getLanguageFromStorage();

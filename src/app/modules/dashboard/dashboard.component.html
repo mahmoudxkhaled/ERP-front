@@ -1,12 +1,117 @@
 <div class="grid">
-    <div class="col-12" *ngFor="let category of getDashboardCategories()">
-        <p-card [header]="category.title" styleClass="mb-3">
+    <div class="col-12">
+        <p-card [header]="translate.getInstant('dashboard.summary')" styleClass="mb-3">
             <div class="flex flex-wrap gap-3">
                 <div class="surface-100 border-1 border-300 border-round p-3 flex flex-column align-items-center justify-content-center gap-2 cursor-pointer  "
-                    style="width:10rem;height:10rem" *ngFor="let item of category.items"
-                    (click)="navigateToRoute(item.route)">
-                    <span class="text-2xl">{{ item.icon }}</span>
-                    <span class="text-sm font-medium text-700 text-center">{{ item.label }}</span>
+                    style="width:10rem;height:10rem" (click)="navigateToRoute('/summary/actions')">
+                    <span class="text-2xl">⚡</span>
+                    <span class="text-sm font-medium text-700 text-center">{{ translate.getInstant('dashboard.actions')
+                        }}</span>
+                </div>
+                <div class="surface-100 border-1 border-300 border-round p-3 flex flex-column align-items-center justify-content-center gap-2 cursor-pointer  "
+                    style="width:10rem;height:10rem" (click)="navigateToRoute('/summary/notifications')">
+                    <span class="text-2xl">🔔</span>
+                    <span class="text-sm font-medium text-700 text-center">{{
+                        translate.getInstant('dashboard.notifications') }}</span>
+                </div>
+                <div class="surface-100 border-1 border-300 border-round p-3 flex flex-column align-items-center justify-content-center gap-2 cursor-pointer  "
+                    style="width:10rem;height:10rem" (click)="navigateToRoute('/summary/profile')">
+                    <span class="text-2xl">👤</span>
+                    <span class="text-sm font-medium text-700 text-center">{{ translate.getInstant('dashboard.profile')
+                        }}</span>
+                </div>
+                <div class="surface-100 border-1 border-300 border-round p-3 flex flex-column align-items-center justify-content-center gap-2 cursor-pointer  "
+                    style="width:10rem;height:10rem" (click)="navigateToRoute('/summary/settings')">
+                    <span class="text-2xl">⚙️</span>
+                    <span class="text-sm font-medium text-700 text-center">{{ translate.getInstant('dashboard.settings')
+                        }}</span>
+                </div>
+                <div class="surface-100 border-1 border-300 border-round p-3 flex flex-column align-items-center justify-content-center gap-2 cursor-pointer  "
+                    style="width:10rem;height:10rem" (click)="navigateToRoute('/summary/logout')">
+                    <span class="text-2xl">🚪</span>
+                    <span class="text-sm font-medium text-700 text-center">{{ translate.getInstant('dashboard.logout')
+                        }}</span>
+                </div>
+            </div>
+        </p-card>
+    </div>
+
+    <div class="col-12">
+        <p-card [header]="translate.getInstant('dashboard.companyAdministration')" styleClass="mb-3">
+            <div class="flex flex-wrap gap-3">
+                <div class="surface-100 border-1 border-300 border-round p-3 flex flex-column align-items-center justify-content-center gap-2 cursor-pointer  "
+                    style="width:10rem;height:10rem"
+                    (click)="navigateToRoute('/company-administration/company-details')">
+                    <span class="text-2xl">🏢</span>
+                    <span class="text-sm font-medium text-700 text-center">{{
+                        translate.getInstant('dashboard.companyDetails') }}</span>
+                </div>
+                <div class="surface-100 border-1 border-300 border-round p-3 flex flex-column align-items-center justify-content-center gap-2 cursor-pointer  "
+                    style="width:10rem;height:10rem" (click)="navigateToRoute('/company-administration/users-details')">
+                    <span class="text-2xl">👥</span>
+                    <span class="text-sm font-medium text-700 text-center">{{
+                        translate.getInstant('dashboard.usersDetails') }}</span>
+                </div>
+                <div class="surface-100 border-1 border-300 border-round p-3 flex flex-column align-items-center justify-content-center gap-2 cursor-pointer  "
+                    style="width:10rem;height:10rem" (click)="navigateToRoute('/company-administration/workflows')">
+                    <span class="text-2xl">🔄</span>
+                    <span class="text-sm font-medium text-700 text-center">{{
+                        translate.getInstant('dashboard.workflows') }}</span>
+                </div>
+            </div>
+        </p-card>
+    </div>
+
+    <div class="col-12">
+        <p-card [header]="translate.getInstant('dashboard.documentControl')" styleClass="mb-3">
+            <div class="flex flex-wrap gap-3">
+                <div class="surface-100 border-1 border-300 border-round p-3 flex flex-column align-items-center justify-content-center gap-2 cursor-pointer  "
+                    style="width:10rem;height:10rem" (click)="navigateToRoute('/document-control')">
+                    <span class="text-2xl">📄</span>
+                    <span class="text-sm font-medium text-700 text-center">{{
+                        translate.getInstant('dashboard.sharedDocuments') }}</span>
+                </div>
+            </div>
+        </p-card>
+    </div>
+
+    <div class="col-12">
+        <p-card [header]="translate.getInstant('dashboard.humanResources')" styleClass="mb-3">
+            <div class="flex flex-wrap gap-3">
+                <div class="surface-100 border-1 border-300 border-round p-3 flex flex-column align-items-center justify-content-center gap-2 cursor-pointer  "
+                    style="width:10rem;height:10rem" (click)="navigateToRoute('/human-resources/timesheets')">
+                    <span class="text-2xl">🧑‍💼</span>
+                    <span class="text-sm font-medium text-700 text-center">My Timesheets</span>
+                </div>
+                <div class="surface-100 border-1 border-300 border-round p-3 flex flex-column align-items-center justify-content-center gap-2 cursor-pointer  "
+                    style="width:10rem;height:10rem"
+                    (click)="navigateToRoute('/human-resources/supervisor-timesheets')">
+                    <span class="text-2xl">🧾</span>
+                    <span class="text-sm font-medium text-700 text-center">Approvals</span>
+                </div>
+                <div class="surface-100 border-1 border-300 border-round p-3 flex flex-column align-items-center justify-content-center gap-2 cursor-pointer  "
+                    style="width:10rem;height:10rem" (click)="navigateToRoute('/human-resources/admin-timesheets')">
+                    <span class="text-2xl">📈</span>
+                    <span class="text-sm font-medium text-700 text-center">Reports</span>
+                </div>
+                <div class="surface-100 border-1 border-300 border-round p-3 flex flex-column align-items-center justify-content-center gap-2 cursor-pointer  "
+                    style="width:10rem;height:10rem" (click)="navigateToRoute('/human-resources/contract')">
+                    <span class="text-2xl">📝</span>
+                    <span class="text-sm font-medium text-700 text-center">{{ translate.getInstant('dashboard.contract')
+                        }}</span>
+                </div>
+            </div>
+        </p-card>
+    </div>
+
+    <div class="col-12">
+        <p-card [header]="translate.getInstant('dashboard.financials')" styleClass="mb-3">
+            <div class="flex flex-wrap gap-3">
+                <div class="surface-100 border-1 border-300 border-round p-3 flex flex-column align-items-center justify-content-center gap-2 cursor-pointer  "
+                    style="width:10rem;height:10rem" (click)="navigateToRoute('/financials')">
+                    <span class="text-2xl">🧾</span>
+                    <span class="text-sm font-medium text-700 text-center">{{ translate.getInstant('dashboard.invoices')
+                        }}</span>
                 </div>
             </div>
         </p-card>

@@ -1,6 +1,6 @@
 ng build --configuration production --base-href "https://mahmoudxkhaled.github.io/ERP-front/"
 
-npx angular-cli-ghpages --dir=dist/ERP-front/browser --no-silent
+npx angular-cli-ghpages --dir=dist/ERP-front --no-silent
 
 ng build --configuration=production
 
