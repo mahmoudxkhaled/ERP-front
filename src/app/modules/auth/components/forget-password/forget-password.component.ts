@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { Observable, Subscription } from 'rxjs';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
-import { ApiResult } from 'src/app/core/API_Interface/ApiResult';
 
 @Component({
   selector: 'app-forget-password',
@@ -15,6 +14,7 @@ export class ForgetPasswordComponent implements OnInit, OnDestroy {
 
   loginCreditials: FormGroup;
   validationMessage: string = '';
+  successMessage: string = '';
   isLoading$: Observable<boolean>;
   unsubscribe: Subscription[] = [];
 
@@ -36,17 +36,19 @@ export class ForgetPasswordComponent implements OnInit, OnDestroy {
 
   initForm() {
     this.loginCreditials = new FormGroup({
-      email: new FormControl<String>('', [Validators.required, Validators.email]),
+      email: new FormControl<String>('mahmoudxkhaled@gmail.com', [Validators.required, Validators.email]),
     });
   }
 
   sendCode() {
     if (this.loginCreditials.invalid) {
       this.validationMessage = 'Please enter a valid email address';
+      this.successMessage = '';
       return;
     }
 
     this.validationMessage = '';
+    this.successMessage = '';
     const emailValue = (this.email?.value as string).trim();
 
     if (!emailValue) {
@@ -55,28 +57,21 @@ export class ForgetPasswordComponent implements OnInit, OnDestroy {
     }
 
     const requestSub = this.apiService.resetPasswordRequest(emailValue).subscribe({
-      next: (apiResult) => {
-        try {
-          const response = JSON.parse(apiResult.Body);
-          if (response.success === true) {
-            // Show success message (component template should handle this)
-            this.validationMessage = 'success';
-            // Optionally navigate or show success message
-          } else {
-            this.validationMessage = response.message || 'Failed to send reset link';
-          }
-        } catch (error) {
-          console.error('Error parsing reset password request response:', error);
-          this.validationMessage = 'An error occurred. Please try again.';
+      next: (response: any) => {
+        // Response is already parsed by AuthService
+        const isSuccess = this.apiService.isSuccessResponse(response);
+        if (isSuccess) {
+          this.successMessage = 'Please check your email for the reset link.';
+          this.validationMessage = '';
+        } else {
+          this.validationMessage = response?.message || 'Failed to send reset link';
+          this.successMessage = '';
         }
       },
-      error: (error) => {
-        try {
-          const response = JSON.parse(error.Body);
-          this.validationMessage = response.message || 'Failed to send reset link';
-        } catch (e) {
-          this.validationMessage = 'Failed to send reset link. Please try again.';
-        }
+      error: (error: any) => {
+        // Error is already parsed by AuthService
+        this.validationMessage = error?.message || 'Failed to send reset link. Please try again.';
+        this.successMessage = '';
       }
     });
 

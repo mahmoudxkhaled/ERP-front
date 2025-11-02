@@ -27,27 +27,7 @@
                 <i class="pi pi-exclamation-triangle" style="font-size: 1.5rem; margin-right: 10px;"></i>
                 {{ errorMessage }}
                 <!-- ⚠️ {{ errorMessage }} -->
-
             </p>
-            <button *ngIf="verificationToken" class="reset-btn" (click)="verifyEmail()" [disabled]="isVerifying"
-                style="margin-top: 15px;">
-                Retry
-            </button>
-        </div>
-
-        <!-- Default/Info State (when no token or not verified yet) -->
-        <div *ngIf="!isVerifying && !verificationSuccess && !errorMessage">
-            <p>{{ 'auth.verification-email.message' | translate }}</p>
-            <p style="font-size: 14px; margin-bottom: 20px;">
-                {{ 'auth.verification-email.messageI' | translate }}
-                <strong>{{ 'auth.verification-email.messageII' | translate }}</strong>.
-            </p>
-
-            <!-- Manual Verification Button (if token exists) -->
-            <button *ngIf="verificationToken && !errorMessage" class="reset-btn" (click)="verifyEmail()"
-                [disabled]="isVerifying">
-                Complete Email Verification
-            </button>
         </div>
 
         <div class="links">

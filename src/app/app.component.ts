@@ -57,7 +57,7 @@ export class AppComponent implements OnInit, OnDestroy {
     userLanguageCode: string | null = null;
 
     ngOnInit(): void {
-        this.router.navigate(['/auth']);
+        // this.router.navigate(['/auth']);
         this.primengConfig.ripple = true;
 
         const userLangCode = this.rtlService.getLanguageFromStorage();

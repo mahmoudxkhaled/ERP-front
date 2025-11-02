@@ -33,9 +33,9 @@ export class AuthService {
     /**
      * Helper method to parse ApiResult.Body (JSON string) to object
      */
-    private parseApiResponse(apiResult: ApiResult): any {
+    parseApiResponse(apiResult: ApiResult): any {
         try {
-            if (apiResult.Body) {
+            if (apiResult?.Body) {
                 return JSON.parse(apiResult.Body);
             }
             return null;
@@ -43,6 +43,32 @@ export class AuthService {
             console.error('Error parsing API response:', error);
             return null;
         }
+    }
+
+    /**
+     * Helper method to parse JSON string (from ApiResult.Body) to object
+     */
+    parseApiBody(body: string): any {
+        try {
+            if (body) {
+                return JSON.parse(body);
+            }
+            return null;
+        } catch (error) {
+            console.error('Error parsing API body:', error);
+            return null;
+        }
+    }
+
+    /**
+     * Helper method to check if API response is successful
+     * Handles both string 'True'/'False' and boolean true/false
+     */
+    isSuccessResponse(response: any): boolean {
+        if (!response) return false;
+        return response.success === true ||
+            response.success === 'True' ||
+            response.success === 'true';
     }
 
     login(email: string, password: string): Observable<any> {
@@ -115,29 +141,18 @@ export class AuthService {
     /**
      * Confirm password reset (Operation 106)
      */
-    resetPasswordConfirm(resetToken: string, newPassword: string): Observable<ApiResult> {
+    resetPasswordConfirm(resetToken: string, newPassword: string): Observable<any> {
         this.isLoadingSubject.next(true);
 
-        if (environment.isMockEnabled) {
-            return this.mockAuthService.resetPassword({ resetToken, newPassword }).pipe(
-                map((mockResult) => {
-                    const apiResult: ApiResult = {
-                        ReturnStatus: mockResult.isSuccess ? 200 : 400,
-                        Body: JSON.stringify(mockResult)
-                    };
-                    return apiResult;
-                }),
-                finalize(() => this.isLoadingSubject.next(false))
-            );
-        }
-
-        // Real API call using ApiServices
-        const payload = JSON.stringify({ resetToken, newPassword });
-
-        return this.apiServices.callAPI(ApiRequestTypes.Reset_Password_Confirm, '', [payload]).pipe(
-            catchError((error) => {
+        return this.apiServices.callAPI(ApiRequestTypes.Reset_Password_Confirm, '', [resetToken, newPassword]).pipe(
+            map((apiResult: ApiResult) => {
+                const parsed = this.parseApiResponse(apiResult);
+                return parsed || {};
+            }),
+            catchError((error: ApiResult) => {
                 console.error('Reset password confirm error:', error);
-                return throwError(() => error);
+                const parsedError = this.parseApiResponse(error);
+                return throwError(() => parsedError || { success: false, message: 'Password reset failed' });
             }),
             finalize(() => this.isLoadingSubject.next(false))
         );
@@ -194,29 +209,18 @@ export class AuthService {
     /**
      * Verify Email using verification token (Operation 107)
      */
-    verifyEmail(verificationToken: string): Observable<ApiResult> {
+    verifyEmail(verificationToken: string): Observable<any> {
         this.isLoadingSubject.next(true);
 
-        if (environment.isMockEnabled) {
-            return this.mockAuthService.confirmEmail(verificationToken).pipe(
-                map((mockResult) => {
-                    const apiResult: ApiResult = {
-                        ReturnStatus: mockResult ? 200 : 400,
-                        Body: JSON.stringify({ success: mockResult, message: 'Email verified' })
-                    };
-                    return apiResult;
-                }),
-                finalize(() => this.isLoadingSubject.next(false))
-            );
-        }
-
-        // Real API call using ApiServices
-        const payload = JSON.stringify({ verificationToken });
-
-        return this.apiServices.callAPI(ApiRequestTypes.Verify_Email, '', [payload]).pipe(
-            catchError((error) => {
+        return this.apiServices.callAPI(ApiRequestTypes.Verify_Email, '', [verificationToken]).pipe(
+            map((apiResult: ApiResult) => {
+                const parsed = this.parseApiResponse(apiResult);
+                return parsed || {};
+            }),
+            catchError((error: ApiResult) => {
                 console.error('Email verification error:', error);
-                return throwError(() => error);
+                const parsedError = this.parseApiResponse(error);
+                return throwError(() => parsedError || { success: false, message: 'Email verification failed' });
             }),
             finalize(() => this.isLoadingSubject.next(false))
         );
@@ -301,29 +305,18 @@ export class AuthService {
     /**
      * Request password reset (Operation 105)
      */
-    resetPasswordRequest(email: string): Observable<ApiResult> {
+    resetPasswordRequest(email: string): Observable<any> {
         this.isLoadingSubject.next(true);
 
-        if (environment.isMockEnabled) {
-            return this.mockAuthService.forgetPassword(email).pipe(
-                map((mockResult) => {
-                    const apiResult: ApiResult = {
-                        ReturnStatus: mockResult.isSuccess ? 200 : 400,
-                        Body: JSON.stringify(mockResult)
-                    };
-                    return apiResult;
-                }),
-                finalize(() => this.isLoadingSubject.next(false))
-            );
-        }
-
-        // Real API call using ApiServices
-        const payload = JSON.stringify({ email });
-
-        return this.apiServices.callAPI(ApiRequestTypes.Reset_Password_Request, '', [payload]).pipe(
-            catchError((error) => {
+        return this.apiServices.callAPI(ApiRequestTypes.Reset_Password_Request, '', [email]).pipe(
+            map((apiResult: ApiResult) => {
+                const parsed = this.parseApiResponse(apiResult);
+                return parsed || {};
+            }),
+            catchError((error: ApiResult) => {
                 console.error('Reset password request error:', error);
-                return throwError(() => error);
+                const parsedError = this.parseApiResponse(error);
+                return throwError(() => parsedError || { success: false, message: 'Failed to send reset link' });
             }),
             finalize(() => this.isLoadingSubject.next(false))
         );

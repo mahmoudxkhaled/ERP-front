@@ -70,7 +70,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     initForm() {
         this.loginCreditials = new FormGroup({
             email: new FormControl<string>('mahmoudxkhaled@gmail.com', [Validators.required, Validators.email]),
-            password: new FormControl<string>('abc.123', [Validators.required]),
+            password: new FormControl<string>('Kakuzu@123456', [Validators.required]),
         });
     }
 
@@ -104,8 +104,12 @@ export class LoginComponent implements OnInit, OnDestroy {
                         // Account is inactive
                         this.router.navigate(['/auth/account-locked'], { queryParams: { status: 'Inactive' } });
                     } else if (accessToken === 'Verify' || (typeof messageObj === 'string' && messageObj === 'Verify')) {
-                        // Email verification required - navigate without token to show notification
-                        this.router.navigate(['/auth/verification-email']);
+                        // Email verification required - navigate to email-verified page with email if available
+                        const queryParams: any = {};
+                        if (email) {
+                            queryParams['email'] = email;
+                        }
+                        this.router.navigate(['/auth/email-verified'], { queryParams });
                     } else if (accessToken === 'Locked' || (typeof messageObj === 'string' && messageObj === 'Locked')) {
                         // Account locked after failed attempts
                         this.router.navigate(['/auth/account-locked'], { queryParams: { status: 'Locked' } });

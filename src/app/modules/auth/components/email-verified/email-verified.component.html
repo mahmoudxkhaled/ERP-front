@@ -1,22 +1,23 @@
-<p-toast></p-toast>
-<div class="surface-ground px-4 py-8 md:px-6 lg:px-8">
-    <div class="text-primary-900 font-bold text-6xl mb-4 text-center">{{ 'auth.email-verified.welcome' | translate}}</div>
-    <div class="text-700 text-xl mb-6 text-center line-height-3">
-        {{ 'auth.email-verified.message' | translate}}
-    </div>
+<div class="body">
+    <div class="forgot-container">
+        <h2>Email Verification Required</h2>
+        <p>We have sent a verification email to your email address.</p>
 
-    <div class="grid">
-        <div class="col-12 lg:col-6 m-auto">
-            <div class="p-3 h-full">
-                <div class="shadow-2 p-4 h-full flex flex-column surface-card" style="border-radius: 6px; text-align: center;">
-                    <div class="text-900 font-bold text-2xl mb-4">
-                        <i class="pi pi-envelope pi-spin text-primary-600" style="font-size: 2.5rem;"></i>
-                    </div>
-                    <div class="text-700 text-lg mb-4">
-                        {{ 'auth.email-verified.waitMessage' | translate}}
-                    </div>
+        <div class="info-message">
+            <i class="pi pi-info-circle" style="margin-right: 10px; color: #90EE90;"></i>
+            <div class="info-content">
+                <div>Please check your email inbox and click on the verification link to activate your account.</div>
+                <div *ngIf="userEmail" style="margin-top: 8px; font-weight: bold;">
+                    Email: {{ userEmail }}
                 </div>
             </div>
-        </div>        
+        </div>
+
+        <div class="links">
+            <a routerLink="/auth" (click)="backToLogin()">Back to Login</a>
+        </div>
+        <div class="footer">
+            © 2025 Quantum PMC LLC. All rights reserved.
+        </div>
     </div>
 </div>

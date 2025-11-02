@@ -5,7 +5,6 @@ import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import { passwordMatchValidator } from '../../../../core/Services/passwordMatchValidator';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { ApiResult } from 'src/app/core/API_Interface/ApiResult';
 
 export function passwordComplexityValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -34,9 +33,12 @@ export function passwordComplexityValidator(): ValidatorFn {
 })
 export class ResetPasswordComponent implements OnInit, OnDestroy {
     private unsubscribe: Subscription[] = [];
+    private countdownInterval: any = null;
     private email: string;
     resetPassForm!: FormGroup;
     tenantLogoUrl: string;
+    resetSuccess: boolean = false;
+    redirectCountdown: number = 5;
 
     constructor(
         private authService: AuthService,
@@ -51,22 +53,19 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         // Read resetToken from query parameters (primary method)
         const queryParamsSub = this.route.queryParams.subscribe((queryParams) => {
-            const resetToken = queryParams['resetToken'] || queryParams['token'] || '';
-            
+            let resetToken = queryParams['reset-token'] || queryParams['token'] || '';
+
+            // Decode the token properly to handle special characters like +
+            // Angular Router sometimes converts + to space, so we need to handle both
             if (resetToken) {
+                // First decode URL encoding
+                resetToken = decodeURIComponent(resetToken);
+                // Replace spaces back to + (in case + was converted to space by URL parser)
+                // This handles cases where the original token contained +
+                resetToken = resetToken.replace(/ /g, '+');
+                console.log('resetToken', resetToken);
                 // Store resetToken for use in submit()
                 (this as any).resetToken = resetToken;
-            } else {
-                // Backward compatibility: try route params
-                const paramsSub = this.route.params.subscribe((params) => {
-                    this.email = params['email'];
-                    // If email provided, we might need to handle it differently
-                    // For now, just log that token is missing
-                    if (!resetToken) {
-                        console.warn('No resetToken found in query parameters');
-                    }
-                });
-                this.unsubscribe.push(paramsSub);
             }
         });
         this.unsubscribe.push(queryParamsSub);
@@ -90,49 +89,27 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
         }
 
         const resetSub = this.authService.resetPasswordConfirm(resetToken, newPassword).subscribe({
-            next: (apiResult) => {
-                try {
-                    const response = JSON.parse(apiResult.Body);
-                    if (response.success === true) {
-                        this.messageService.add({
-                            severity: 'success',
-                            summary: 'Success',
-                            detail: 'Password reset successful!',
-                        });
-                        setTimeout(() => {
-                            this.router.navigate(['/auth']);
-                        }, 2000);
-                    } else {
-                        this.messageService.add({
-                            severity: 'error',
-                            summary: 'Error',
-                            detail: response.message || 'Password reset failed.',
-                        });
-                    }
-                } catch (error) {
-                    console.error('Error parsing reset password response:', error);
+            next: (response: any) => {
+                // Response is already parsed by AuthService
+                const isSuccess = this.authService.isSuccessResponse(response);
+                if (isSuccess) {
+                    this.resetSuccess = true;
+                    this.startRedirectCountdown();
+                } else {
                     this.messageService.add({
                         severity: 'error',
                         summary: 'Error',
-                        detail: 'An error occurred. Please try again.',
+                        detail: response?.message || 'Password reset failed.',
                     });
                 }
             },
-            error: (error) => {
-                try {
-                    const response = JSON.parse(error.Body);
-                    this.messageService.add({
-                        severity: 'error',
-                        summary: 'Error',
-                        detail: response.message || 'Password reset failed.',
-                    });
-                } catch (e) {
-                    this.messageService.add({
-                        severity: 'error',
-                        summary: 'Error',
-                        detail: 'Password reset failed. Please try again.',
-                    });
-                }
+            error: (error: any) => {
+                // Error is already parsed by AuthService
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: error?.message || 'Password reset failed. Please try again.',
+                });
             }
         });
 
@@ -143,7 +120,7 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
         this.resetPassForm = this.fb.group(
             {
                 password: [
-                    '',
+                    'Kakuzu@123456',
                     Validators.compose([
                         Validators.required,
                         Validators.minLength(12),
@@ -151,7 +128,7 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
                         passwordComplexityValidator(),
                     ]),
                 ],
-                cPassword: ['', Validators.compose([Validators.required])],
+                cPassword: ['Kakuzu@123456', Validators.compose([Validators.required])],
             },
             {
                 validator: passwordMatchValidator.MatchPassword,
@@ -159,9 +136,35 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
         );
     }
 
+    private startRedirectCountdown(): void {
+        this.redirectCountdown = 5;
+
+        // Clear any existing interval
+        if (this.countdownInterval) {
+            clearInterval(this.countdownInterval);
+        }
+
+        this.countdownInterval = setInterval(() => {
+            this.redirectCountdown--;
+
+            if (this.redirectCountdown <= 0) {
+                clearInterval(this.countdownInterval);
+                this.countdownInterval = null;
+                this.router.navigate(['/auth']);
+            }
+        }, 1000);
+    }
+
     ngOnDestroy(): void {
+        // Unsubscribe from all subscriptions
         this.unsubscribe.forEach((c) => {
             c.unsubscribe();
         });
+
+        // Clear countdown interval if exists
+        if (this.countdownInterval) {
+            clearInterval(this.countdownInterval);
+            this.countdownInterval = null;
+        }
     }
 }

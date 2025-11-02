@@ -141,7 +141,7 @@ export class MockAuthService {
     verifyCode(email: string, code: string): Observable<ApiResult> {
         return new Observable<ApiResult>(subscriber => {
             setTimeout(() => {
-                console.log('🔐 Mock Auth: Verify code for', email, 'with code', code);
+                // console.log('🔐 Mock Auth: Verify code for', email, 'with code', code);
 
                 // Mock verification - accept any 6-digit code
                 if (code && code.length === 6) {
