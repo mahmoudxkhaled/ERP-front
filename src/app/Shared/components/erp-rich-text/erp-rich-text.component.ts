@@ -1,29 +1,28 @@
 import { Component, AfterViewInit, OnDestroy, Input, Output, EventEmitter, forwardRef, ChangeDetectorRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { DialogService } from 'primeng/dynamicdialog';
-import { IAwareVariablesComponent } from '../iaware-variables/iaware-variables.component';
-import { Guid } from 'guid-ts';
+import { ERPVariablesComponent } from '../erp-variables/erp-variables.component';
 declare var $: any;
 
 @Component({
-  selector: 'app-iAware-rich-text',
-  templateUrl: './iAware-rich-text.component.html',
-  styleUrls: ['./iAware-rich-text.component.scss'],
+  selector: 'app-erp-rich-text',
+  templateUrl: './erp-rich-text.component.html',
+  styleUrls: ['./erp-rich-text.component.scss'],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => IAwareRichTextComponent),
+      useExisting: forwardRef(() => ERPRichTextComponent),
       multi: true,
     },
   ],
 })
-export class IAwareRichTextComponent implements AfterViewInit, OnDestroy, ControlValueAccessor {
+export class ERPRichTextComponent implements AfterViewInit, OnDestroy, ControlValueAccessor {
   private _value: string = '';
   @Input() height: number = 250;
   @Input() id: string;
   @Input() placeholder: string = 'Enter your Content here.';
   @Output() Content: EventEmitter<string> = new EventEmitter<string>();
-  showIawareVariablesDialog: boolean = false;
+  showErpVariablesDialog: boolean = false;
 
   constructor(private cdRef: ChangeDetectorRef, private dialogService: DialogService) { }
 
@@ -71,14 +70,14 @@ export class IAwareRichTextComponent implements AfterViewInit, OnDestroy, Contro
           ['insert', ['link', 'picture', 'hr']],
           ['view', ['fullscreen', 'codeview']],
           ['help', ['help']],
-          ['custom', ['iAwareVariables']],
+          ['custom', ['erpVariables']],
         ],
         buttons: {
-          iAwareVariables: (context: any) => {
+          erpVariables: (context: any) => {
             return $.summernote.ui.button({
               contents: '<i class="fa fa-cogs"></i>',
               click: () => {
-                this.dialogService.open(IAwareVariablesComponent, {
+                this.dialogService.open(ERPVariablesComponent, {
                   showHeader: false,
                   dismissableMask: true,
                   width: '60%',

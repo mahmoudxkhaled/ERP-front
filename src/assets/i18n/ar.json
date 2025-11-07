@@ -96,7 +96,7 @@
     },
     "layout": {
         "app-breadcrumb": {
-            "iAwareDashboard": "لوحة تحكم ERP",
+            "dashboard": "لوحة تحكم ERP",
             "uikit": "أدوات واجهة المستخدم",
             "utilities": "الأدوات المساعدة",
             "pages": "إدارة الصفحات",

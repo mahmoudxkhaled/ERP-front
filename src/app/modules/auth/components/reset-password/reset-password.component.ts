@@ -53,20 +53,13 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         console.log('ngOnInit');
-        // Read resetToken from query parameters (primary method)
         const queryParamsSub = this.route.queryParams.subscribe((queryParams) => {
             let resetToken = queryParams['reset-token'] || queryParams['token'] || '';
             console.log('resetToken from queryParams', resetToken);
-            // Decode the token properly to handle special characters like +
-            // Angular Router sometimes converts + to space, so we need to handle both
             if (resetToken) {
-                // First decode URL encoding
                 resetToken = decodeURIComponent(resetToken);
-                // Replace spaces back to + (in case + was converted to space by URL parser)
-                // This handles cases where the original token contained +
                 resetToken = resetToken.replace(/ /g, '+');
                 console.log('resetToken', resetToken);
-                // Store resetToken for use in submit()
                 (this as any).resetToken = resetToken;
             }
         });
@@ -94,7 +87,6 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
 
         const resetSub = this.authService.resetPasswordConfirm(resetToken, newPassword).subscribe({
             next: (response: any) => {
-                // Response is already parsed by AuthService
                 if (response?.success === true) {
                     this.resetSuccess = true;
                     this.startRedirectCountdown();
@@ -109,7 +101,6 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
                 this.startRedirectCountdown();
             },
             error: (error: any) => {
-                // Error is already parsed by AuthService
                 this.hasError = true;
                 this.errorMessage = 'Password reset failed. Please try again.';
             }
@@ -141,7 +132,6 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
     private startRedirectCountdown(): void {
         this.redirectCountdown = 5;
 
-        // Clear any existing interval
         if (this.countdownInterval) {
             clearInterval(this.countdownInterval);
         }
@@ -158,12 +148,10 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
-        // Unsubscribe from all subscriptions
         this.unsubscribe.forEach((c) => {
             c.unsubscribe();
         });
 
-        // Clear countdown interval if exists
         if (this.countdownInterval) {
             clearInterval(this.countdownInterval);
             this.countdownInterval = null;

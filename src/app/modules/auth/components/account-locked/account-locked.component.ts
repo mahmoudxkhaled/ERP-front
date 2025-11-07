@@ -7,7 +7,7 @@ import { Router, ActivatedRoute } from '@angular/router';
     styleUrls: ['./account-locked.component.scss']
 })
 export class AccountLockedComponent implements OnInit {
-    status: string = 'Locked'; // Default to 'Locked'
+    status: string = 'Locked';
     isInactive: boolean = false;
 
     constructor(
@@ -16,7 +16,6 @@ export class AccountLockedComponent implements OnInit {
     ) { }
 
     ngOnInit(): void {
-        // Read status from query params
         this.route.queryParams.subscribe(params => {
             this.status = params['status'] || 'Locked';
             this.isInactive = this.status === 'Inactive';
@@ -28,7 +27,6 @@ export class AccountLockedComponent implements OnInit {
     }
 
     contactSupport(): void {
-        // Open mailto link for support
         window.location.href = 'mailto:support@company.com?subject=Account Deactivated - Support Request';
     }
 }

@@ -96,7 +96,7 @@
     },
     "layout": {
         "app-breadcrumb": {
-            "iAwareDashboard": "ERP Dashboard",
+            "dashboard": "ERP Dashboard",
             "uikit": "UI Kit",
             "utilities": "Utilities",
             "pages": "Pages Management",

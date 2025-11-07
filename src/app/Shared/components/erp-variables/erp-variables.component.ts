@@ -2,15 +2,15 @@ import { Component } from '@angular/core';
 import { MessageService } from 'primeng/api';
 
 @Component({
-  selector: 'app-iaware-variables',
-  templateUrl: './iaware-variables.component.html',
-  styleUrl: './iaware-variables.component.scss'
+  selector: 'app-erp-variables',
+  templateUrl: './erp-variables.component.html',
+  styleUrl: './erp-variables.component.scss'
 })
-export class IAwareVariablesComponent {
+export class ERPVariablesComponent {
 
   constructor(private messageService: MessageService) { }
 
-  iawareVariables = [
+  erpVariables = [
     { name: 'Full Name', value: '[User\'s Name]', description: 'The recipient\'s full name, used for personalization.' },
     { name: 'Delation User Full Name', value: '[Delation_User_Name]', description: 'The delation user name, commonly used in greetings.' },
     { name: 'Delation User Email', value: '[Delation_User_Email]', description: 'The delation user email, commonly used in greetings.' },
@@ -49,14 +49,12 @@ export class IAwareVariablesComponent {
 
   copyVariable(value: string) {
     navigator.clipboard.writeText(value).then(() => {
-      // Success message when the variable is copied to the clipboard
       this.messageService.add({
         severity: 'success',
         summary: 'Variable Copied',
         detail: 'The variable has been copied to your clipboard successfully.',
       });
     }).catch((err) => {
-      // Error handling if something goes wrong
       this.messageService.add({
         severity: 'error',
         summary: 'Failed to Copy',

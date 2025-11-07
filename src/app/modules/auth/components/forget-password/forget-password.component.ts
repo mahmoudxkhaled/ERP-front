@@ -56,7 +56,6 @@ export class ForgetPasswordComponent implements OnInit, OnDestroy {
 
     const requestSub = this.apiService.resetPasswordRequest(emailValue).subscribe({
       next: (response: any) => {
-        // Response is already parsed by AuthService
         if (response?.success === true) {
           this.successMessage = 'Please check your email for the reset link.';
           this.validationMessage = '';
@@ -66,7 +65,6 @@ export class ForgetPasswordComponent implements OnInit, OnDestroy {
         }
       },
       error: (error: any) => {
-        // Error is already parsed by AuthService
         this.validationMessage = error?.message || 'Failed to send reset link. Please try again.';
         this.successMessage = '';
       }

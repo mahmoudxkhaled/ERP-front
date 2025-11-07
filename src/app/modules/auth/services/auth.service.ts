@@ -1,13 +1,11 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, catchError, finalize, map, tap, throwError } from 'rxjs';
 import { ApiRequestTypes } from 'src/app/core/API_Interface/ApiRequestTypes';
 import { ApiResult } from 'src/app/core/API_Interface/ApiResult';
 import { ApiServices } from 'src/app/core/API_Interface/ApiServices';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
 import { environment } from 'src/environments/environment';
-import { IForceLogoutModel } from '../models/IForceLogoutModel';
-import { TenantModel } from '../models/TenantModel';
 
 const API_USERS_URL = environment.apiUrl;
 
@@ -17,68 +15,12 @@ const API_USERS_URL = environment.apiUrl;
 export class AuthService {
     isLoadingSubject = new BehaviorSubject<boolean>(false);
     constructor(
-        private httpClient: HttpClient,
         private apiServices: ApiServices,
-        private localStorageService: LocalStorageService
+        private localStorageService: LocalStorageService,
+        private router: Router
     ) {
         this.isLoadingSubject = new BehaviorSubject<boolean>(false);
     }
-
-    /**
-     * Helper method to parse ApiResult.Body (JSON string) to object
-     */
-    parseApiResponse(apiResult: ApiResult): any {
-        try {
-            if (apiResult?.Body) {
-                return JSON.parse(apiResult.Body);
-            }
-            return null;
-        } catch (error) {
-            console.error('Error parsing API response:', error);
-            return null;
-        }
-    }
-
-    /**
-     * Helper method to parse JSON string (from ApiResult.Body) to object
-     */
-    parseApiBody(body: string): any {
-        try {
-            if (body) {
-                return JSON.parse(body);
-            }
-            return null;
-        } catch (error) {
-            console.error('Error parsing API body:', error);
-            return null;
-        }
-    }
-
-    /**
-     * Helper method to check if API response is successful
-     * (Now backend returns strict boolean)
-     */
-
-
-
-
-    /**
-     * Centralized processing of parsed API responses
-     */
-    private processApiResponse(parsed: any): any {
-        if (!parsed) {
-            throw { success: false, message: 'Empty API response' };
-        }
-        if (parsed?.success === true) {
-            return parsed;
-        }
-        // Throw the parsed backend payload as-is (component will interpret)
-        throw parsed;
-    }
-
-    /**
-     * Extract best error message from any backend/front error shape
-     */
 
     login(email: string, password: string): Observable<any> {
         this.isLoadingSubject.next(true);
@@ -89,11 +31,6 @@ export class AuthService {
                 console.log('parsed from login', parsed);
                 const result: any = this.processApiResponse(parsed);
                 console.log('result from login', result);
-                // Save token and userId if login successful
-                if (result?.token && (result?.userId || result?.User_ID)) {
-                    const userId = result.userId ?? result.User_ID;
-                    this.setAuthFromLocalStorage({ token: result.token, userId, accessToken: result.token });
-                }
                 return result;
             }),
             catchError((error: any) => {
@@ -108,9 +45,6 @@ export class AuthService {
     }
 
 
-    /**
-     * Confirm password reset (Operation 106)
-     */
     resetPasswordConfirm(resetToken: string, newPassword: string): Observable<any> {
         this.isLoadingSubject.next(true);
 
@@ -131,15 +65,7 @@ export class AuthService {
         );
     }
 
-    /**
-     * Legacy method - kept for backward compatibility
-     * @deprecated Use resetPasswordConfirm instead
-     */
 
-
-    /**
-     * Verify Email using verification token (Operation 107)
-     */
     verifyEmail(verificationToken: string): Observable<any> {
         this.isLoadingSubject.next(true);
 
@@ -159,24 +85,10 @@ export class AuthService {
         );
     }
 
-    /**
-     * Legacy method - kept for backward compatibility
-     * @deprecated Use verifyEmail instead
-     */
-    confirmEmail(email: string): Observable<boolean> {
-        // For backward compatibility, treat email as token if format doesn't match
-        return this.verifyEmail(email).pipe(
-            map((response: any) => response?.success === true)
-        );
-    }
 
-    /**
-     * Verify 2FA code (Operation 101)
-     */
     verify2FA(userId: string, otp: string): Observable<any> {
         this.isLoadingSubject.next(true);
 
-        // Real API call using ApiServices
         const payload = JSON.stringify({ userId, otp });
 
         return this.apiServices.callAPI(ApiRequestTypes.Verify_2FA, '', [payload]).pipe(
@@ -199,12 +111,8 @@ export class AuthService {
         );
     }
 
-    /**
-     * Legacy method - kept for backward compatibility
-     * @deprecated Use verify2FA instead
-     */
+
     verifyCode(email: string, code: string): Observable<any> {
-        // For backward compatibility, try to get userId from localStorage
         const userData = this.localStorageService.getItem('userData');
         let userId = '';
         if (userData) {
@@ -218,9 +126,7 @@ export class AuthService {
         return this.verify2FA(userId || email, code);
     }
 
-    /**
-     * Request password reset (Operation 105)
-     */
+
     resetPasswordRequest(email: string): Observable<any> {
         this.isLoadingSubject.next(true);
 
@@ -240,17 +146,12 @@ export class AuthService {
         );
     }
 
-    /**
-     * Legacy method - kept for backward compatibility
-     * @deprecated Use resetPasswordRequest instead
-     */
+
     forgetPassword(email: string): Observable<ApiResult> {
         return this.resetPasswordRequest(email);
     }
 
-    /**
-     * Change password (Operation 104)
-     */
+
     changePassword(accessToken: string, oldPassword: string, newPassword: string): Observable<any> {
         this.isLoadingSubject.next(true);
 
@@ -272,28 +173,29 @@ export class AuthService {
         );
     }
 
-    /**
-     * Logout (Operation 102)
-     */
+
     logout(accessToken?: string): Observable<any> {
         this.isLoadingSubject.next(true);
 
-        // Get token from localStorage if not provided
         if (!accessToken) {
+            // this.localStorageService.removeItem('userData');
+            // this.router.navigate(['/auth']);
             const userData = this.localStorageService.getItem('userData');
+            console.log('userData from logout', userData);
             if (userData) {
                 try {
                     const parsed = typeof userData === 'string' ? JSON.parse(userData) : userData;
+                    console.log('parsed from logout', parsed);
                     accessToken = parsed.accessToken || parsed.token || '';
+                    console.log('accessToken from logout', accessToken);
                 } catch (e) {
                     console.error('Error parsing userData for logout:', e);
                 }
             }
         }
 
-        // Real API call using ApiServices
-        // Logout doesn't need payload, just access token
-        return this.apiServices.callAPI(ApiRequestTypes.Logout, accessToken || '', []).pipe(
+
+        return this.apiServices.callAPI(ApiRequestTypes.Logout, accessToken?.toString() || '', []).pipe(
             map((apiResult: ApiResult) => {
                 const parsed = this.parseApiResponse(apiResult);
                 return this.processApiResponse(parsed);
@@ -305,33 +207,29 @@ export class AuthService {
             catchError((error: any) => {
                 if (error && typeof error === 'object' && 'success' in error) {
                     // Clear storage even on error
-                    localStorage.removeItem('userData');
+                    this.localStorageService.removeItem('userData');
                     return throwError(() => error);
                 }
                 const parsed = this.parseApiResponse(error);
                 // Clear storage even on error
-                localStorage.removeItem('userData');
+                this.localStorageService.removeItem('userData');
                 return throwError(() => parsed || { success: false, message: 'Unexpected error occurred.' });
             }),
             finalize(() => this.isLoadingSubject.next(false))
         );
     }
 
-    /**
-     * Save authentication data to localStorage
-     */
+
     setAuthFromLocalStorage(data: any): boolean {
         if (data) {
             try {
-                // Ensure we save token, userId, and accessToken properly
                 const authData = {
-                    token: data.token || data.accessToken,
-                    accessToken: data.accessToken || data.token,
+                    accessToken: data.accessToken,
                     userId: data.userId,
-                    email: data.email,
-                    ...data // Include any other data
+                    ...data
                 };
-                localStorage.setItem('userData', JSON.stringify(authData));
+                this.localStorageService.setItem('userData', authData);
+
                 return true;
             } catch (error) {
                 console.error('Error saving auth data:', error);
@@ -341,50 +239,42 @@ export class AuthService {
         return false;
     }
 
-    getAllLanguages(): Observable<ApiResult> {
 
-        return this.httpClient.get<ApiResult>(`${API_USERS_URL}/Language/GetAllLanguages`);
+    private processApiResponse(parsed: any): any {
+        if (!parsed) {
+            throw { success: false, message: 'Empty API response' };
+        }
+        if (parsed?.success === true) {
+            return parsed;
+        }
+        // Throw the parsed backend payload as-is (component will interpret)
+        throw parsed;
     }
 
-    getFreeSubscriptionPlan(): Observable<ApiResult> {
 
-        return this.httpClient.get<ApiResult>(`${API_USERS_URL}/SubscriptionPlan/GetFreeSubscriptionPlan`);
+    private parseApiResponse(apiResult: ApiResult): any {
+        try {
+            if (apiResult?.Body) {
+                return JSON.parse(apiResult.Body);
+            }
+            return null;
+        } catch (error) {
+            console.error('Error parsing API response:', error);
+            return null;
+        }
     }
 
-    getAllsusbcriptions(): Observable<ApiResult> {
-        return this.httpClient.get<ApiResult>(`${API_USERS_URL}/SubscriptionPlan/GetAllSubscriptionPlans`);
+
+    private parseApiBody(body: string): any {
+        try {
+            if (body) {
+                return JSON.parse(body);
+            }
+            return null;
+        } catch (error) {
+            console.error('Error parsing API body:', error);
+            return null;
+        }
     }
-
-    getAllSubscriptionPlansForQuotes(): Observable<ApiResult> {
-
-        return this.httpClient.get<ApiResult>(`${API_USERS_URL}/SubscriptionPlan/getAllSubscriptionPlansForQuotes`, {
-        });
-    }
-
-    getAllTimeZones(): Observable<ApiResult> {
-
-        return this.httpClient.get<ApiResult>(`${API_USERS_URL}/Language/GetAllTimeZones`, {
-        });
-    }
-
-    createTenantSubscriptionInvoicePaymentRequest(request: FormData): Observable<ApiResult> {
-
-        return this.httpClient
-            .post<ApiResult>(
-                `${API_USERS_URL}/TenantSubscriptionInvoicePaymentRequest/CreateTenantSubscriptionInvoicePaymentRequest`,
-                request,
-
-            )
-            .pipe(finalize(() => this.isLoadingSubject.next(false)));
-    }
-
-    getRemainingAmountOfSubscriptionTenantInvoiceById(id: string): Observable<ApiResult> {
-        return this.httpClient
-            .get<ApiResult>(
-                `${API_USERS_URL}/SubscriptionTenantInvoices/GetRemainingAmountOfSubscriptionTenantInvoiceById/${id}`
-            )
-            .pipe(finalize(() => this.isLoadingSubject.next(false)));
-    }
-
 
 }

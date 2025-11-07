@@ -24,12 +24,6 @@ export class tokenInterceptor implements HttpInterceptor {
     logOut() {
 
 
-        // Real API logout
-        // this.iawareSharedService.logout().subscribe({
-        //     next: () => {
-        //         localStorage.removeItem('userData');
-        //         document.location.reload();
-        //     },
-        // });
+
     }
 }

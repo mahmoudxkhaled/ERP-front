@@ -9,6 +9,7 @@ import { DialogService } from 'primeng/dynamicdialog';
 import { LogoutComponent } from 'src/app/Shared/components/logout/logout.component';
 import { TranslationService } from 'src/app/core/Services/translation.service';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/modules/auth/services/auth.service';
 enum NotificationTypeEnum {
     SendCampaignNotification = 1,
     SendCampaignLessonNotification = 2,
@@ -81,6 +82,7 @@ export class AppTopbarComponent implements OnInit {
         private dialogService: DialogService,
         private translate: TranslationService,
         private router: Router,
+        private authService: AuthService,
     ) {
     }
 
@@ -191,17 +193,11 @@ export class AppTopbarComponent implements OnInit {
     }
 
     logOut() {
-        // this.dialogService.open(LogoutComponent, {
-        //     showHeader: true,
-        //     header: this.translate.getInstant('shared.headers.confirmLogout'),
-        //     styleClass: 'custom-dialog',
-        //     maskStyleClass: 'custom-backdrop',
-        //     dismissableMask: true,
-        //     width: '30vw',
-        //     closable: true,
-        // });
-        this.router.navigate(['/auth']);
-
+        this.authService.logout().subscribe((r) => {
+            if (r.success) {
+                this.router.navigate(['/auth']);
+            }
+        });
     }
 
     search(event: any) {

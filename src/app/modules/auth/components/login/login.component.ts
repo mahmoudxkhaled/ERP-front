@@ -55,9 +55,9 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        // check if User Loged In 
         const userData = this.localStorageService.getItem('userData');
         if (userData) {
+            console.log('userData from login component', userData);
             this.router.navigate(['/']);
         }
 
@@ -88,9 +88,12 @@ export class LoginComponent implements OnInit, OnDestroy {
 
         const loginSubscription = this.apiService.login(email, password).subscribe({
             next: (response: any) => {
-                // Success only; errors are thrown and handled in error block
                 if (response?.success === true) {
-                    this.router.navigate(['/']);
+                    const stored = this.setAuthFromResponseToLocalStorage(response);
+                    if (!stored) {
+                        console.warn('Login succeeded but auth payload was missing expected fields.');
+                    }
+                    this.handleSuccessfulLogin();
                     return;
                 }
                 this.hasError = true;
@@ -130,6 +133,30 @@ export class LoginComponent implements OnInit, OnDestroy {
         });
 
         this.unsubscribe.push(loginSubscription);
+    }
+
+    setAuthFromResponseToLocalStorage(response: any): boolean {
+        if (!response?.success || !response?.message) {
+            return false;
+        }
+
+        const payload = response.message;
+        const token = payload.Access_Token ?? payload.accessToken ?? payload.token;
+        const userId = payload.User_ID ?? payload.userId ?? payload.id;
+
+        if (!token || !userId) {
+            return false;
+        }
+
+        const authData = {
+            token,
+            userId,
+        };
+
+        console.log('authData from login component', authData);
+
+        this.localStorageService.setItem('userData', authData);
+        return true;
     }
 
 

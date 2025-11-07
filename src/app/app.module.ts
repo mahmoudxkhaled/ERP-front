@@ -17,10 +17,9 @@ import { TranslateModule } from '@ngx-translate/core';
 import { LoadingInterceptor } from './core/Interceptors/LoadingInterceptor';
 import { SafePipe } from './core/pipes/safe.pipe';
 import { DialogModule } from 'primeng/dialog';
-import { SessionExpiredDialogComponent } from './Shared/components/session-expired-dialog/session-expired-dialog.component';
 import { DialogService } from 'primeng/dynamicdialog';
 @NgModule({
-    declarations: [AppComponent, SafePipe, SessionExpiredDialogComponent],
+    declarations: [AppComponent, SafePipe],
     imports: [
         HttpClientModule,
         AppRoutingModule,

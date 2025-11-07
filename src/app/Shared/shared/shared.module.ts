@@ -70,23 +70,19 @@ import { TreeModule } from 'primeng/tree';
 import { TreeTableModule } from 'primeng/treetable';
 import { AppConfigModule } from 'src/app/layout/config/app.config.module';
 import { ColorScemaSettingsComponent } from '../components/color-scema-settings/color-scema-settings.component';
-import { EmptyDataComponent } from '../components/empty-data/empty-data.component';
-import { IAwareInfoComponent } from '../components/iAware-info/iAware-info.component';
-import { IAwareRichTextComponent } from '../components/iAware-rich-text/iAware-rich-text.component';
-import { IAwareVariablesComponent } from '../components/iaware-variables/iaware-variables.component';
+import { ERPInfoComponent } from '../components/erp-info/erp-info.component';
+import { ERPVariablesComponent } from '../components/erp-variables/erp-variables.component';
 import { LogoutComponent } from '../components/logout/logout.component';
 import { TableLoadingSpinnerComponent } from '../components/table-loading-spinner/table-loading-spinner/table-loading-spinner.component';
 import { ComingSoonComponent } from 'src/app/demo/components/pages/coming-soon/coming-soon.component';
 import { InputMaskModule } from 'primeng/inputmask';
 const components = [
     ComingSoonComponent,
-    EmptyDataComponent,
-    IAwareRichTextComponent,
     ColorScemaSettingsComponent,
     TableLoadingSpinnerComponent,
     LogoutComponent,
-    IAwareInfoComponent,
-    IAwareVariablesComponent,
+    ERPInfoComponent,
+    ERPVariablesComponent,
 ];
 
 const imports = [
