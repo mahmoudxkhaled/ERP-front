@@ -13,6 +13,7 @@ import { LocalStorageService } from 'src/app/core/Services/local-storage.service
 })
 export class LoginComponent implements OnInit, OnDestroy {
     hasError: boolean = false;
+    errorMessage: string = '';
     loginCreditials!: FormGroup;
     unsubscribe: Subscription[] = [];
     isLoading$: Observable<boolean>;
@@ -61,7 +62,6 @@ export class LoginComponent implements OnInit, OnDestroy {
         }
 
         this.initForm();
-        this.typeMessage();
         const userLang = this.rtlService.getLanguageFromStorage();
         this.rtlService.setRtl(userLang === 'ar');
         this.isRtl = userLang === 'ar';
@@ -77,59 +77,55 @@ export class LoginComponent implements OnInit, OnDestroy {
     submit() {
         if (this.loginCreditials.invalid) {
             this.hasError = true;
+            this.errorMessage = 'Please enter a valid email and password.';
             return;
         }
 
         this.hasError = false;
+        this.errorMessage = '';
         const email = this.email?.value as string;
         const password = this.password?.value as string;
 
         const loginSubscription = this.apiService.login(email, password).subscribe({
             next: (response: any) => {
-                // Response is already parsed by AuthService
+                // Success only; errors are thrown and handled in error block
                 if (response?.success === true) {
-                    // Successful login - token and userId should already be saved by AuthService
-                    console.log('response', response);
-                    this.router.navigate(['/auth/verify-email']);
-
-                    // this.handleSuccessfulLogin();
-                } else {
-                    // Handle different error cases
-                    // Check if message is an object (with Access_Token) or a string
-                    const messageObj = response?.message || {};
-                    const accessToken = typeof messageObj === 'object' ? messageObj?.Access_Token : messageObj;
-                    const userId = typeof messageObj === 'object' ? messageObj?.User_ID : (response?.userId || response?.User_ID || '');
-
-                    if (accessToken === 'Inactive' || (typeof messageObj === 'string' && messageObj === 'Inactive')) {
-                        // Account is inactive
-                        this.router.navigate(['/auth/account-locked'], { queryParams: { status: 'Inactive' } });
-                    } else if (accessToken === 'Verify' || (typeof messageObj === 'string' && messageObj === 'Verify')) {
-                        // Email verification required - navigate to email-verified page with email if available
-                        const queryParams: any = {};
-                        if (email) {
-                            queryParams['email'] = email;
-                        }
-                        this.router.navigate(['/auth/email-verified'], { queryParams });
-                    } else if (accessToken === 'Locked' || (typeof messageObj === 'string' && messageObj === 'Locked')) {
-                        // Account locked after failed attempts
-                        this.router.navigate(['/auth/account-locked'], { queryParams: { status: 'Locked' } });
-                    } else if (accessToken === '2FA' || (typeof messageObj === 'string' && messageObj === '2FA')) {
-                        // 2FA required - save userId for verification
-                        if (userId) {
-                            this.localStorageService.setItem('userId', userId);
-                        }
-                        this.router.navigate(['/auth/verify-code']);
-                    } else {
-                        // Generic error
-                        this.hasError = true;
-                        console.error('Login failed:', accessToken || messageObj || 'Unknown error');
-                    }
+                    this.router.navigate(['/']);
+                    return;
                 }
+                this.hasError = true;
             },
             error: (error: any) => {
-                // Error is already parsed by AuthService
                 this.hasError = true;
-                console.error('Login error:', error?.message || 'Unknown error');
+                const code = (error?.message || '').toString();
+                console.log('code from error', code);
+                switch (code) {
+                    case 'ERP11104':
+                        this.errorMessage = 'Invalid login credentials. Please check your email or password.';
+                        return;
+                    case 'ERP11100':
+                        this.router.navigate(['/auth/account-locked'], { queryParams: { status: 'Inactive' } });
+                        return;
+                    case 'ERP11101':
+                        this.router.navigate(['/auth/email-verified'], { queryParams: { email: email } });
+                        return;
+                    case 'ERP11102':
+                        this.router.navigate(['/auth/account-locked'], { queryParams: { status: 'Locked' } });
+                        return;
+                    case 'ERP11140': {
+                        const queryParams: any = {};
+                        if (email) { queryParams['email'] = email; }
+                        this.router.navigate(['/auth/email-verified'], { queryParams });
+                        return;
+                    }
+                    case 'ERP11103':
+                        this.router.navigate(['/auth/verify-code']);
+                        return;
+                    default:
+                        this.errorMessage = code || 'Unexpected error occurred.';
+                        console.error('Login error:', this.errorMessage);
+                        return;
+                }
             }
         });
 
@@ -142,29 +138,6 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.rtlService.setUserLanguageCode(userLang);
         this.rtlService.setRtl(userLang === 'ar');
         this.router.navigate(['/']);
-    }
-
-    typeMessage() {
-        const messageElement = document.querySelector('.message');
-        let fullMessage = this.messages[this.currentIndex];
-        let displayMessage = "";
-        let charIndex = 0;
-
-        const typeInterval = setInterval(() => {
-            if (charIndex < fullMessage.length) {
-                displayMessage += fullMessage[charIndex];
-                if (messageElement) {
-                    messageElement.textContent = displayMessage;
-                }
-                charIndex++;
-            } else {
-                clearInterval(typeInterval);
-                setTimeout(() => {
-                    this.currentIndex = (this.currentIndex + 1) % this.messages.length;
-                    this.typeMessage();
-                }, this.pauseTime);
-            }
-        }, this.typingSpeed);
     }
 
     togglePasswordVisibility(): void {

@@ -1,17 +1,15 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, catchError, finalize, map, tap, throwError } from 'rxjs';
-import { ApiResult as ApiResultDto } from 'src/app/core/Dtos/ApiResult';
+import { ApiRequestTypes } from 'src/app/core/API_Interface/ApiRequestTypes';
 import { ApiResult } from 'src/app/core/API_Interface/ApiResult';
 import { ApiServices } from 'src/app/core/API_Interface/ApiServices';
-import { ApiRequestTypes } from 'src/app/core/API_Interface/ApiRequestTypes';
+import { ApiResult as ApiResultDto } from 'src/app/core/Dtos/ApiResult';
 import { DataService } from 'src/app/core/Services/data-service.service';
-import { MockAuthService } from 'src/app/core/Services/mock-auth.service';
-import { environment } from 'src/environments/environment';
-import { TenantModel } from '../models/TenantModel';
-import { ISendEmailRequest } from '../models/ISendEmailRequest';
-import { IForceLogoutModel } from '../models/IForceLogoutModel';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
+import { environment } from 'src/environments/environment';
+import { IForceLogoutModel } from '../models/IForceLogoutModel';
+import { TenantModel } from '../models/TenantModel';
 
 const API_USERS_URL = environment.apiUrl;
 
@@ -23,7 +21,6 @@ export class AuthService {
     constructor(
         private httpClient: HttpClient,
         private dataService: DataService,
-        private mockAuthService: MockAuthService,
         private apiServices: ApiServices,
         private localStorageService: LocalStorageService
     ) {
@@ -62,43 +59,52 @@ export class AuthService {
 
     /**
      * Helper method to check if API response is successful
-     * Handles both string 'True'/'False' and boolean true/false
+     * (Now backend returns strict boolean)
      */
-    isSuccessResponse(response: any): boolean {
-        if (!response) return false;
-        return response.success === true ||
-            response.success === 'True' ||
-            response.success === 'true';
+
+
+
+
+    /**
+     * Centralized processing of parsed API responses
+     */
+    private processApiResponse(parsed: any): any {
+        if (!parsed) {
+            throw { success: false, message: 'Empty API response' };
+        }
+        if (parsed?.success === true) {
+            return parsed;
+        }
+        // Throw the parsed backend payload as-is (component will interpret)
+        throw parsed;
     }
+
+    /**
+     * Extract best error message from any backend/front error shape
+     */
 
     login(email: string, password: string): Observable<any> {
         this.isLoadingSubject.next(true);
         return this.apiServices.callAPI(ApiRequestTypes.Login, '', [email, password]).pipe(
             map((apiResult: ApiResult) => {
-                console.log('apiResult', apiResult);
+                console.log('apiResult from login', apiResult);
                 const parsed = this.parseApiResponse(apiResult);
-                console.log('parsed', parsed);
+                console.log('parsed from login', parsed);
+                const result: any = this.processApiResponse(parsed);
+                console.log('result from login', result);
                 // Save token and userId if login successful
-                if (parsed && parsed.success && parsed.token && parsed.userId) {
-                    console.log('parsed.token', parsed.token);
-                    console.log('parsed.userId', parsed.userId);
-                    console.log('parsed.accessToken', parsed.accessToken);
-                    this.setAuthFromLocalStorage({
-                        token: parsed.token,
-                        userId: parsed.userId,
-                        accessToken: parsed.token
-                    });
-                    console.log('setAuthFromLocalStorage', this.localStorageService.getItem('userData'));
+                if (result?.token && (result?.userId || result?.User_ID)) {
+                    const userId = result.userId ?? result.User_ID;
+                    this.setAuthFromLocalStorage({ token: result.token, userId, accessToken: result.token });
                 }
-
-                // Return parsed object instead of ApiResult
-                return parsed || {};
+                return result;
             }),
-            catchError((error: ApiResult) => {
-                console.error('Login error:', error);
-                // Parse error response and return as error object
-                const parsedError = this.parseApiResponse(error);
-                return throwError(() => parsedError || { success: false, message: 'Login failed' });
+            catchError((error: any) => {
+                if (error && typeof error === 'object' && 'success' in error) {
+                    return throwError(() => error);
+                }
+                const parsed = this.parseApiResponse(error);
+                return throwError(() => parsed || { success: false, message: 'Unexpected error occurred.' });
             }),
             finalize(() => this.isLoadingSubject.next(false))
         );
@@ -108,24 +114,9 @@ export class AuthService {
     register(tenantModel: TenantModel): Observable<ApiResult> {
         this.isLoadingSubject.next(true);
 
-        if (environment.isMockEnabled) {
-            return this.mockAuthService.register(tenantModel).pipe(
-                map((mockResult: ApiResultDto) => {
-                    const apiResult: ApiResult = {
-                        ReturnStatus: mockResult.isSuccess ? 200 : 400,
-                        Body: JSON.stringify(mockResult)
-                    };
-                    return apiResult;
-                }),
-                finalize(() => this.isLoadingSubject.next(false))
-            );
-        }
 
-        const httpHeaders = new HttpHeaders({
-            tenant: environment.defaultTenantId,
-        });
         return this.httpClient
-            .post<ApiResultDto>(`${API_USERS_URL}/Tenant/RegisterTenant`, tenantModel, { headers: httpHeaders })
+            .post<ApiResultDto>(`${API_USERS_URL}/Tenant/RegisterTenant`, tenantModel)
             .pipe(
                 map((result: ApiResultDto) => {
                     const apiResult: ApiResult = {
@@ -146,13 +137,16 @@ export class AuthService {
 
         return this.apiServices.callAPI(ApiRequestTypes.Reset_Password_Confirm, '', [resetToken, newPassword]).pipe(
             map((apiResult: ApiResult) => {
+                console.log('apiResult from resetPasswordConfirm', apiResult);
                 const parsed = this.parseApiResponse(apiResult);
-                return parsed || {};
+                return this.processApiResponse(parsed);
             }),
-            catchError((error: ApiResult) => {
-                console.error('Reset password confirm error:', error);
-                const parsedError = this.parseApiResponse(error);
-                return throwError(() => parsedError || { success: false, message: 'Password reset failed' });
+            catchError((error: any) => {
+                if (error && typeof error === 'object' && 'success' in error) {
+                    return throwError(() => error);
+                }
+                const parsed = this.parseApiResponse(error);
+                return throwError(() => parsed || { success: false, message: 'Unexpected error occurred.' });
             }),
             finalize(() => this.isLoadingSubject.next(false))
         );
@@ -166,23 +160,9 @@ export class AuthService {
         if (data.resetToken && data.newPassword) {
             return this.resetPasswordConfirm(data.resetToken, data.newPassword);
         }
-        // Fallback to old behavior if format doesn't match
-        if (environment.isMockEnabled) {
-            return this.mockAuthService.resetPassword(data).pipe(
-                map((mockResult: ApiResultDto) => {
-                    const apiResult: ApiResult = {
-                        ReturnStatus: mockResult.isSuccess ? 200 : 400,
-                        Body: JSON.stringify(mockResult)
-                    };
-                    return apiResult;
-                })
-            );
-        }
-        const httpHeaders = new HttpHeaders({
-            tenant: environment.defaultTenantId,
-        });
+        // Fallback to old behavior if format doesn't match (real API only)
+
         return this.httpClient.post<ApiResultDto>(`${API_USERS_URL}/AppUser/ResetPassword`, data, {
-            headers: httpHeaders,
         }).pipe(
             map((result: ApiResultDto) => {
                 const apiResult: ApiResult = {
@@ -215,12 +195,14 @@ export class AuthService {
         return this.apiServices.callAPI(ApiRequestTypes.Verify_Email, '', [verificationToken]).pipe(
             map((apiResult: ApiResult) => {
                 const parsed = this.parseApiResponse(apiResult);
-                return parsed || {};
+                return this.processApiResponse(parsed);
             }),
-            catchError((error: ApiResult) => {
-                console.error('Email verification error:', error);
-                const parsedError = this.parseApiResponse(error);
-                return throwError(() => parsedError || { success: false, message: 'Email verification failed' });
+            catchError((error: any) => {
+                if (error && typeof error === 'object' && 'success' in error) {
+                    return throwError(() => error);
+                }
+                const parsed = this.parseApiResponse(error);
+                return throwError(() => parsed || { success: false, message: 'Unexpected error occurred.' });
             }),
             finalize(() => this.isLoadingSubject.next(false))
         );
@@ -233,31 +215,15 @@ export class AuthService {
     confirmEmail(email: string): Observable<boolean> {
         // For backward compatibility, treat email as token if format doesn't match
         return this.verifyEmail(email).pipe(
-            map((apiResult: ApiResult) => {
-                const parsed = this.parseApiResponse(apiResult);
-                return parsed && parsed.success === true;
-            })
+            map((response: any) => response?.success === true)
         );
     }
 
     /**
      * Verify 2FA code (Operation 101)
      */
-    verify2FA(userId: string, otp: string): Observable<ApiResult> {
+    verify2FA(userId: string, otp: string): Observable<any> {
         this.isLoadingSubject.next(true);
-
-        if (environment.isMockEnabled) {
-            return this.mockAuthService.verifyCode('', otp).pipe(
-                map((mockResult) => {
-                    const apiResult: ApiResult = {
-                        ReturnStatus: mockResult.isSuccess ? 200 : 400,
-                        Body: JSON.stringify(mockResult)
-                    };
-                    return apiResult;
-                }),
-                finalize(() => this.isLoadingSubject.next(false))
-            );
-        }
 
         // Real API call using ApiServices
         const payload = JSON.stringify({ userId, otp });
@@ -265,19 +231,18 @@ export class AuthService {
         return this.apiServices.callAPI(ApiRequestTypes.Verify_2FA, '', [payload]).pipe(
             map((apiResult: ApiResult) => {
                 const parsed = this.parseApiResponse(apiResult);
-                if (parsed && parsed.success && parsed.token && parsed.userId) {
-                    // Save token and userId after successful 2FA verification
-                    this.setAuthFromLocalStorage({
-                        token: parsed.token,
-                        userId: parsed.userId,
-                        accessToken: parsed.token
-                    });
+                const result: any = this.processApiResponse(parsed);
+                if (result?.token && result?.userId) {
+                    this.setAuthFromLocalStorage({ token: result.token, userId: result.userId, accessToken: result.token });
                 }
-                return apiResult;
+                return result;
             }),
-            catchError((error) => {
-                console.error('2FA verification error:', error);
-                return throwError(() => error);
+            catchError((error: any) => {
+                if (error && typeof error === 'object' && 'success' in error) {
+                    return throwError(() => error);
+                }
+                const parsed = this.parseApiResponse(error);
+                return throwError(() => parsed || { success: false, message: 'Unexpected error occurred.' });
             }),
             finalize(() => this.isLoadingSubject.next(false))
         );
@@ -287,7 +252,7 @@ export class AuthService {
      * Legacy method - kept for backward compatibility
      * @deprecated Use verify2FA instead
      */
-    verifyCode(email: string, code: string): Observable<ApiResult> {
+    verifyCode(email: string, code: string): Observable<any> {
         // For backward compatibility, try to get userId from localStorage
         const userData = this.localStorageService.getItem('userData');
         let userId = '';
@@ -311,12 +276,14 @@ export class AuthService {
         return this.apiServices.callAPI(ApiRequestTypes.Reset_Password_Request, '', [email]).pipe(
             map((apiResult: ApiResult) => {
                 const parsed = this.parseApiResponse(apiResult);
-                return parsed || {};
+                return this.processApiResponse(parsed);
             }),
-            catchError((error: ApiResult) => {
-                console.error('Reset password request error:', error);
-                const parsedError = this.parseApiResponse(error);
-                return throwError(() => parsedError || { success: false, message: 'Failed to send reset link' });
+            catchError((error: any) => {
+                if (error && typeof error === 'object' && 'success' in error) {
+                    return throwError(() => error);
+                }
+                const parsed = this.parseApiResponse(error);
+                return throwError(() => parsed || { success: false, message: 'Unexpected error occurred.' });
             }),
             finalize(() => this.isLoadingSubject.next(false))
         );
@@ -333,30 +300,22 @@ export class AuthService {
     /**
      * Change password (Operation 104)
      */
-    changePassword(accessToken: string, oldPassword: string, newPassword: string): Observable<ApiResult> {
+    changePassword(accessToken: string, oldPassword: string, newPassword: string): Observable<any> {
         this.isLoadingSubject.next(true);
-
-        if (environment.isMockEnabled) {
-            return new Observable<ApiResult>(observer => {
-                setTimeout(() => {
-                    const mockResult = { isSuccess: true, message: 'Password changed successfully' };
-                    const apiResult: ApiResult = {
-                        ReturnStatus: 200,
-                        Body: JSON.stringify(mockResult)
-                    };
-                    observer.next(apiResult);
-                    observer.complete();
-                }, 500);
-            }).pipe(finalize(() => this.isLoadingSubject.next(false)));
-        }
 
         // Real API call using ApiServices
         const payload = JSON.stringify({ oldPassword, newPassword });
 
         return this.apiServices.callAPI(ApiRequestTypes.Change_Password, accessToken, [payload]).pipe(
-            catchError((error) => {
-                console.error('Change password error:', error);
-                return throwError(() => error);
+            map((apiResult: ApiResult) => {
+                const parsed = this.parseApiResponse(apiResult);
+                return this.processApiResponse(parsed);
+            }),
+            catchError((error: any) => {
+                if (error && typeof error === 'object' && 'success' in error) {
+                    return throwError(() => error);
+                }
+                return throwError(() => error || { success: false, message: 'Unexpected error occurred.' });
             }),
             finalize(() => this.isLoadingSubject.next(false))
         );
@@ -365,7 +324,7 @@ export class AuthService {
     /**
      * Logout (Operation 102)
      */
-    logout(accessToken?: string): Observable<ApiResult> {
+    logout(accessToken?: string): Observable<any> {
         this.isLoadingSubject.next(true);
 
         // Get token from localStorage if not provided
@@ -381,38 +340,27 @@ export class AuthService {
             }
         }
 
-        if (environment.isMockEnabled) {
-            return new Observable<ApiResult>(observer => {
-                setTimeout(() => {
-                    const mockResult = { success: true, message: 'Logout successful' };
-                    const apiResult: ApiResult = {
-                        ReturnStatus: 200,
-                        Body: JSON.stringify(mockResult)
-                    };
-                    observer.next(apiResult);
-                    observer.complete();
-                }, 500);
-            }).pipe(
-                tap(() => {
-                    // Clear storage on logout
-                    localStorage.removeItem('userData');
-                }),
-                finalize(() => this.isLoadingSubject.next(false))
-            );
-        }
-
         // Real API call using ApiServices
         // Logout doesn't need payload, just access token
         return this.apiServices.callAPI(ApiRequestTypes.Logout, accessToken || '', []).pipe(
+            map((apiResult: ApiResult) => {
+                const parsed = this.parseApiResponse(apiResult);
+                return this.processApiResponse(parsed);
+            }),
             tap(() => {
                 // Clear storage on logout
                 localStorage.removeItem('userData');
             }),
-            catchError((error) => {
-                console.error('Logout error:', error);
+            catchError((error: any) => {
+                if (error && typeof error === 'object' && 'success' in error) {
+                    // Clear storage even on error
+                    localStorage.removeItem('userData');
+                    return throwError(() => error);
+                }
+                const parsed = this.parseApiResponse(error);
                 // Clear storage even on error
                 localStorage.removeItem('userData');
-                return throwError(() => error);
+                return throwError(() => parsed || { success: false, message: 'Unexpected error occurred.' });
             }),
             finalize(() => this.isLoadingSubject.next(false))
         );
@@ -443,19 +391,13 @@ export class AuthService {
     }
 
     getAllLanguages(): Observable<ApiResult> {
-        const httpHeaders = new HttpHeaders({
-            tenant: environment.defaultTenantId,
-        });
-        return this.httpClient.get<ApiResult>(`${API_USERS_URL}/Language/GetAllLanguages`, { headers: httpHeaders });
+
+        return this.httpClient.get<ApiResult>(`${API_USERS_URL}/Language/GetAllLanguages`);
     }
 
     getFreeSubscriptionPlan(): Observable<ApiResult> {
-        const httpHeaders = new HttpHeaders({
-            tenant: environment.defaultTenantId,
-        });
-        return this.httpClient.get<ApiResult>(`${API_USERS_URL}/SubscriptionPlan/GetFreeSubscriptionPlan`, {
-            headers: httpHeaders,
-        });
+
+        return this.httpClient.get<ApiResult>(`${API_USERS_URL}/SubscriptionPlan/GetFreeSubscriptionPlan`);
     }
 
     getAllsusbcriptions(): Observable<ApiResult> {
@@ -463,44 +405,32 @@ export class AuthService {
     }
 
     getAllSubscriptionPlansForQuotes(): Observable<ApiResult> {
-        const httpHeaders = new HttpHeaders({
-            tenant: environment.defaultTenantId,
-        });
+
         return this.httpClient.get<ApiResult>(`${API_USERS_URL}/SubscriptionPlan/getAllSubscriptionPlansForQuotes`, {
-            headers: httpHeaders,
         });
     }
 
     getAllTimeZones(): Observable<ApiResult> {
-        const httpHeaders = new HttpHeaders({
-            tenant: environment.defaultTenantId,
-        });
+
         return this.httpClient.get<ApiResult>(`${API_USERS_URL}/Language/GetAllTimeZones`, {
-            headers: httpHeaders,
         });
     }
 
     createTenantSubscriptionInvoicePaymentRequest(request: FormData): Observable<ApiResult> {
-        const httpHeaders = new HttpHeaders({
-            tenant: environment.defaultTenantId,
-        });
+
         return this.httpClient
             .post<ApiResult>(
                 `${API_USERS_URL}/TenantSubscriptionInvoicePaymentRequest/CreateTenantSubscriptionInvoicePaymentRequest`,
                 request,
-                { headers: httpHeaders }
+
             )
             .pipe(finalize(() => this.isLoadingSubject.next(false)));
     }
 
     getRemainingAmountOfSubscriptionTenantInvoiceById(id: string): Observable<ApiResult> {
-        const httpHeaders = new HttpHeaders({
-            tenant: environment.defaultTenantId,
-        });
         return this.httpClient
             .get<ApiResult>(
-                `${API_USERS_URL}/SubscriptionTenantInvoices/GetRemainingAmountOfSubscriptionTenantInvoiceById/${id}`,
-                { headers: httpHeaders }
+                `${API_USERS_URL}/SubscriptionTenantInvoices/GetRemainingAmountOfSubscriptionTenantInvoiceById/${id}`
             )
             .pipe(finalize(() => this.isLoadingSubject.next(false)));
     }
@@ -508,34 +438,8 @@ export class AuthService {
     forceLogout(userData: IForceLogoutModel): Observable<ApiResult> {
         this.isLoadingSubject.next(true);
 
-        // Use mock service if enabled, otherwise use real API
-        if (environment.isMockEnabled) {
-            console.log('🔐 Using Mock Force Logout');
-            return this.mockAuthService.forceLogout(userData).pipe(
-                map((mockResult: ApiResultDto) => {
-                    const apiResult: ApiResult = {
-                        ReturnStatus: mockResult.isSuccess ? 200 : 400,
-                        Body: JSON.stringify(mockResult)
-                    };
-                    return apiResult;
-                }),
-                tap((apiResult) => {
-                    const parsed = this.parseApiResponse(apiResult);
-                    if (parsed && parsed.isSuccess && parsed.data) {
-                        this.setAuthFromLocalStorage(parsed.data);
-                    }
-                }),
-                finalize(() => this.isLoadingSubject.next(false))
-            );
-        }
-
         // Real API call
-        console.log('🔐 Using Real API Force Logout');
-        const httpHeaders = new HttpHeaders({
-            tenant: environment.defaultTenantId,
-        });
-
-        return this.httpClient.post<ApiResultDto>(`${API_USERS_URL}/AppUser/ForceLogout`, userData, { headers: httpHeaders })
+        return this.httpClient.post<ApiResultDto>(`${API_USERS_URL}/AppUser/ForceLogout`, userData)
             .pipe(
                 map((result: ApiResultDto) => {
                     const apiResult: ApiResult = {

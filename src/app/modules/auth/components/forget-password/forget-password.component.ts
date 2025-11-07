@@ -1,9 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
 import { Observable, Subscription } from 'rxjs';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-forget-password',
@@ -23,9 +23,7 @@ export class ForgetPasswordComponent implements OnInit, OnDestroy {
   }
 
   constructor(
-    private router: Router,
     private apiService: AuthService,
-    private localStorageService: LocalStorageService
   ) {
     this.isLoading$ = this.apiService.isLoadingSubject;
   }
@@ -59,8 +57,7 @@ export class ForgetPasswordComponent implements OnInit, OnDestroy {
     const requestSub = this.apiService.resetPasswordRequest(emailValue).subscribe({
       next: (response: any) => {
         // Response is already parsed by AuthService
-        const isSuccess = this.apiService.isSuccessResponse(response);
-        if (isSuccess) {
+        if (response?.success === true) {
           this.successMessage = 'Please check your email for the reset link.';
           this.validationMessage = '';
         } else {

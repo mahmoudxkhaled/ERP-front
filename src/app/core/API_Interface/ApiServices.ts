@@ -68,6 +68,7 @@ export class ApiServices {
           ReturnStatus: 200,
           Body: response
         };
+        console.log('result from callAPI', result);
         return result;
       }),
 

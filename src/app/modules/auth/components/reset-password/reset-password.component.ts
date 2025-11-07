@@ -39,7 +39,8 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
     tenantLogoUrl: string;
     resetSuccess: boolean = false;
     redirectCountdown: number = 5;
-
+    hasError: boolean = false;
+    errorMessage: string = '';
     constructor(
         private authService: AuthService,
         private route: ActivatedRoute,
@@ -51,10 +52,11 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        console.log('ngOnInit');
         // Read resetToken from query parameters (primary method)
         const queryParamsSub = this.route.queryParams.subscribe((queryParams) => {
             let resetToken = queryParams['reset-token'] || queryParams['token'] || '';
-
+            console.log('resetToken from queryParams', resetToken);
             // Decode the token properly to handle special characters like +
             // Angular Router sometimes converts + to space, so we need to handle both
             if (resetToken) {
@@ -87,12 +89,13 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
             });
             return;
         }
+        console.log('resetToken from submit', resetToken);
+        console.log('newPassword from submit', newPassword);
 
         const resetSub = this.authService.resetPasswordConfirm(resetToken, newPassword).subscribe({
             next: (response: any) => {
                 // Response is already parsed by AuthService
-                const isSuccess = this.authService.isSuccessResponse(response);
-                if (isSuccess) {
+                if (response?.success === true) {
                     this.resetSuccess = true;
                     this.startRedirectCountdown();
                 } else {
@@ -102,14 +105,13 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
                         detail: response?.message || 'Password reset failed.',
                     });
                 }
+                this.resetSuccess = true;
+                this.startRedirectCountdown();
             },
             error: (error: any) => {
                 // Error is already parsed by AuthService
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: error?.message || 'Password reset failed. Please try again.',
-                });
+                this.hasError = true;
+                this.errorMessage = 'Password reset failed. Please try again.';
             }
         });
 

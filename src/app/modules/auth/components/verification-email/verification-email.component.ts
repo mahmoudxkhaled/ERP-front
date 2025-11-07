@@ -50,8 +50,7 @@ export class VerificationEmailComponent implements OnInit, OnDestroy {
 
     const verifySub = this.authService.verifyEmail(this.verificationToken).subscribe({
       next: (response: any) => {
-        const isSuccess = this.authService.isSuccessResponse(response);
-        if (isSuccess) {
+        if (response?.success === true) {
           this.verificationSuccess = true;
           this.startRedirectCountdown();
         } else {

@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+import { } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -51,7 +51,6 @@ import { DialogService } from 'primeng/dynamicdialog';
         }),
     ],
     providers: [
-        { provide: LocationStrategy, useClass: HashLocationStrategy },
         DialogService,
         // {
         //     provide: HTTP_INTERCEPTORS,
