@@ -5,8 +5,6 @@ import { MenuService } from '../app-menu/app.menu.service';
 import { AppSidebarComponent } from '../app-sidebar/app.sidebar.component';
 import { AppTopbarComponent } from '../top-bar/app.topbar.component';
 import { LayoutService } from '../app-services/app.layout.service';
-import { constants } from 'src/app/core/constatnts/constatnts';
-import { AwarenessCampaignScheduleUserQuoteService } from '../app-services/awareness-campaign-schedule-user-quote.service';
 import { MessageService } from 'primeng/api';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
 import { NetworkStatusService } from 'src/app/core/Services/network-status.service';
@@ -24,7 +22,6 @@ export class AppLayoutComponent implements OnInit, OnDestroy {
     currentQuoteIndex = 0;
 
     responsiveOptions: any[] | undefined;
-    actions = constants.pageActions;
     overlayMenuOpenSubscription: Subscription;
 
     topbarMenuOpenSubscription: Subscription;
@@ -48,7 +45,6 @@ export class AppLayoutComponent implements OnInit, OnDestroy {
         public layoutService: LayoutService,
         public renderer: Renderer2,
         public router: Router,
-        private userQuoteService: AwarenessCampaignScheduleUserQuoteService,
         private messageService: MessageService,
         private localStorage: LocalStorageService,
         private ref: ChangeDetectorRef,
@@ -148,7 +144,6 @@ export class AppLayoutComponent implements OnInit, OnDestroy {
     sessionWarningMessage = '';
 
     ngOnInit(): void {
-        this.fetchCompanyLogo();
         this.responsiveOptions = [
             {
                 breakpoint: '1199px',
@@ -268,31 +263,6 @@ export class AppLayoutComponent implements OnInit, OnDestroy {
 
 
 
-    updateShowingTimeForQuote(awarenessCampaignScheduleUserQuoteId: string) {
-        this.userQuoteService.updateShowingTimeForQuote(awarenessCampaignScheduleUserQuoteId).subscribe({
-            next: () => { },
-            error: (error) => {
-
-            },
-        });
-    }
-
-    updateHideTimeForQuote(awarenessCampaignScheduleUserQuoteId: string) {
-        this.userQuoteService.updateHideTimeForQuote(awarenessCampaignScheduleUserQuoteId).subscribe({
-            next: () => { },
-            error: (error) => {
-
-            },
-        });
-    }
-
-    fetchCompanyLogo() {
-        // this.layoutService.getCompanyLogo().subscribe({
-        //     next: (logo) => {
-        //         this.companyLogo = logo.data ?? this.companyLogo;
-        //     },
-        // });
-    }
 
     ngOnDestroy() {
         if (this.overlayMenuOpenSubscription) {

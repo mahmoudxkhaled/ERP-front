@@ -2,9 +2,7 @@ import { Component, ElementRef, OnInit } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { LayoutService } from '../app-services/app.layout.service';
 import { Subscription } from 'rxjs';
-import { constants } from '../../core/constatnts/constatnts';
 import { LocalStorageService } from '../../core/Services/local-storage.service';
-import { IawareSharedService } from 'src/app/core/Services/iaware-shared.service';
 import { DialogService } from 'primeng/dynamicdialog';
 import { LogoutComponent } from 'src/app/Shared/components/logout/logout.component';
 import { TranslationService } from 'src/app/core/Services/translation.service';
@@ -47,14 +45,11 @@ export class AppMenuProfileComponent implements OnInit {
     subs: Subscription = new Subscription();
     user: GetUser;
     currentPages: any;
-    iAwarePages = constants.pages;
-    iAwareActions = constants.pageActions;
 
     constructor(
         public layoutService: LayoutService,
         public el: ElementRef,
         private localStorage: LocalStorageService,
-        private iawareSharedService: IawareSharedService,
         private dialogService: DialogService,
         private translate: TranslationService
     ) {

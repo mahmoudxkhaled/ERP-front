@@ -6,8 +6,6 @@ export class authInterceptor implements HttpInterceptor {
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
-
-    // Real API mode - add Authorization header
     let date: any = localStorage.getItem('userData');
     let tokenFromLocalStorage: any = JSON.parse(date);
     const authReq = req.clone({

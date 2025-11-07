@@ -1,11 +1,9 @@
+import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable, Injector } from '@angular/core';
-import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { DialogService } from 'primeng/dynamicdialog';
-import { ConfirmationService } from 'primeng/api';
-import { SessionExpiredDialogComponent } from 'src/app/Shared/components/session-expired-dialog/session-expired-dialog.component';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Injectable()
 export class ErrorHandlingInterceptor implements HttpInterceptor {
@@ -17,13 +15,7 @@ export class ErrorHandlingInterceptor implements HttpInterceptor {
 
         return next.handle(req).pipe(
             catchError((error: HttpErrorResponse) => {
-                if (error.status === 900) {
-                    this.showKickOutDialog();
-                    localStorage.removeItem('userData');
-                } else {
-                    this.handleError(error);
-                }
-
+                this.handleError(error);
                 return throwError(() => new Error(error.message || 'An unknown error occurred'));
             })
         );
@@ -40,15 +32,4 @@ export class ErrorHandlingInterceptor implements HttpInterceptor {
 
     }
 
-    private showKickOutDialog(): void {
-        this.dialogService.open(SessionExpiredDialogComponent, {
-            showHeader:false,
-            styleClass: 'custom-dialog',
-            maskStyleClass: 'custom-backdrop',
-            dismissableMask: false,
-            width: '20vw',
-            closable: false
-        });
-
-    }
 }

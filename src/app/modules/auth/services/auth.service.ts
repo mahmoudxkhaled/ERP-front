@@ -4,8 +4,6 @@ import { BehaviorSubject, Observable, catchError, finalize, map, tap, throwError
 import { ApiRequestTypes } from 'src/app/core/API_Interface/ApiRequestTypes';
 import { ApiResult } from 'src/app/core/API_Interface/ApiResult';
 import { ApiServices } from 'src/app/core/API_Interface/ApiServices';
-import { ApiResult as ApiResultDto } from 'src/app/core/Dtos/ApiResult';
-import { DataService } from 'src/app/core/Services/data-service.service';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
 import { environment } from 'src/environments/environment';
 import { IForceLogoutModel } from '../models/IForceLogoutModel';
@@ -20,7 +18,6 @@ export class AuthService {
     isLoadingSubject = new BehaviorSubject<boolean>(false);
     constructor(
         private httpClient: HttpClient,
-        private dataService: DataService,
         private apiServices: ApiServices,
         private localStorageService: LocalStorageService
     ) {
@@ -111,24 +108,6 @@ export class AuthService {
     }
 
 
-    register(tenantModel: TenantModel): Observable<ApiResult> {
-        this.isLoadingSubject.next(true);
-
-
-        return this.httpClient
-            .post<ApiResultDto>(`${API_USERS_URL}/Tenant/RegisterTenant`, tenantModel)
-            .pipe(
-                map((result: ApiResultDto) => {
-                    const apiResult: ApiResult = {
-                        ReturnStatus: result.isSuccess ? 200 : 400,
-                        Body: JSON.stringify(result)
-                    };
-                    return apiResult;
-                }),
-                finalize(() => this.isLoadingSubject.next(false))
-            );
-    }
-
     /**
      * Confirm password reset (Operation 106)
      */
@@ -156,35 +135,7 @@ export class AuthService {
      * Legacy method - kept for backward compatibility
      * @deprecated Use resetPasswordConfirm instead
      */
-    resetPassword(data: any): Observable<ApiResult> {
-        if (data.resetToken && data.newPassword) {
-            return this.resetPasswordConfirm(data.resetToken, data.newPassword);
-        }
-        // Fallback to old behavior if format doesn't match (real API only)
 
-        return this.httpClient.post<ApiResultDto>(`${API_USERS_URL}/AppUser/ResetPassword`, data, {
-        }).pipe(
-            map((result: ApiResultDto) => {
-                const apiResult: ApiResult = {
-                    ReturnStatus: result.isSuccess ? 200 : 400,
-                    Body: JSON.stringify(result)
-                };
-                return apiResult;
-            })
-        );
-    }
-
-    getAllRolesForThisSubscriptionPlanTenant(): Observable<ApiResult> {
-        return this.dataService.getAllReguest<ApiResult>('/RoleManagement/GetAllWithSubscriptionTenantId');
-    }
-
-    getCompanyLogo(): Observable<ApiResult> {
-        return this.dataService.getAllReguest<ApiResult>('/Tenant/GetTenantLogo');
-    }
-
-    addNewUser(userData: any): Observable<ApiResult> {
-        return this.dataService.postReguest<ApiResult>('/AppUser/AddUserManually', userData);
-    }
 
     /**
      * Verify Email using verification token (Operation 107)
@@ -435,30 +386,5 @@ export class AuthService {
             .pipe(finalize(() => this.isLoadingSubject.next(false)));
     }
 
-    forceLogout(userData: IForceLogoutModel): Observable<ApiResult> {
-        this.isLoadingSubject.next(true);
 
-        // Real API call
-        return this.httpClient.post<ApiResultDto>(`${API_USERS_URL}/AppUser/ForceLogout`, userData)
-            .pipe(
-                map((result: ApiResultDto) => {
-                    const apiResult: ApiResult = {
-                        ReturnStatus: result.isSuccess ? 200 : 400,
-                        Body: JSON.stringify(result)
-                    };
-                    return apiResult;
-                }),
-                tap((apiResult) => {
-                    const parsed = this.parseApiResponse(apiResult);
-                    if (parsed && parsed.isSuccess && parsed.data) {
-                        this.setAuthFromLocalStorage(parsed.data);
-                    }
-                }),
-                catchError((error) => {
-                    console.error('Force logout error:', error);
-                    return throwError(() => error);
-                }),
-                finalize(() => this.isLoadingSubject.next(false))
-            );
-    }
 }

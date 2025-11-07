@@ -1,7 +1,5 @@
 import { Injectable, effect, signal } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { ApiResult } from 'src/app/core/Dtos/ApiResult';
-import { DataService } from 'src/app/core/Services/data-service.service';
 
 export type MenuMode = 'static' | 'overlay' | 'horizontal' | 'slim' | 'slim-plus' | 'reveal' | 'drawer';
 
@@ -72,7 +70,7 @@ export class LayoutService {
     topbarMenuOpen$ = this.topbarMenuOpen.asObservable();
     menuProfileOpen$ = this.menuProfileOpen.asObservable();
 
-    constructor(private dataService: DataService) {
+    constructor() {
         effect(() => {
             const config = this.config();
             if (this.updateStyle(config)) {
@@ -257,15 +255,6 @@ export class LayoutService {
         document.documentElement.style.fontSize = `${value}px`;
     }
 
-    // getCompanyLogo(): Observable<ApiResult> {
-    //     return this.dataService.getAllReguest<ApiResult>('/Tenant/GetTenantLogo');
-    // }
 
-    // getCompanyLogoVI(): Observable<ApiResult> {
-    //     return this.dataService.getAllReguest<ApiResult>('/Tenant/GetTenantLogoVI');
-    // }
 
-    getUserPoints() {
-        this.dataService.getAllReguest<ApiResult>('/PointingType/GetUserPoints');
-    }
 }

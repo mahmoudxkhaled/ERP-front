@@ -7,8 +7,8 @@ import { VerificationEmailComponent } from './components/verification-email/veri
 import { SharedModule } from 'src/app/Shared/shared/shared.module';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { ForgetPasswordComponent } from './components/forget-password/forget-password.component';
-import { VerifyCodeComponent } from './components/verify-code/verify-code.component';
 import { AccountLockedComponent } from './components/account-locked/account-locked.component';
+import { VerifyCodeComponent } from './components/verify-code/verify-code.component';
 
 @NgModule({
     declarations: [

@@ -4,7 +4,6 @@ import { BehaviorSubject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { ChangeDetectorRef } from '@angular/core';
 import { TranslationService } from 'src/app/core/Services/translation.service';
-import { IawareSharedService } from 'src/app/core/Services/iaware-shared.service';
 
 interface Breadcrumb {
     label: string;
@@ -21,7 +20,7 @@ export class AppBreadcrumbComponent {
 
     readonly breadcrumbs$ = this._breadcrumbs$.asObservable();
 
-    constructor(private router: Router, private translate: TranslationService, private iawareSharedService : IawareSharedService) {
+    constructor(private router: Router, private translate: TranslationService) {
         this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(event => {
             const root = this.router.routerState.snapshot.root;
             const breadcrumbs: Breadcrumb[] = [];
@@ -48,16 +47,7 @@ export class AppBreadcrumbComponent {
         }
     }
 
-    getTranslationItem(item: any) : string{
+    getTranslationItem(item: any): string {
         return this.translate.getInstant(`layout.app-breadcrumb.${item}`);
-    }
-
-    logOut(){
-        this.iawareSharedService.logout().subscribe({
-            next: () => {
-                localStorage.removeItem('userData');
-                document.location.reload();
-            }
-        })
     }
 }

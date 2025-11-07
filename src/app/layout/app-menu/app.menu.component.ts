@@ -2,7 +2,6 @@ import { OnInit } from '@angular/core';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslationService } from '../../core/Services/translation.service';
-import { constants } from '../../core/constatnts/constatnts';
 
 @Component({
     selector: 'app-menu',
@@ -11,8 +10,6 @@ import { constants } from '../../core/constatnts/constatnts';
 export class AppMenuComponent implements OnInit {
     model: any[] = [];
     currentPages: any;
-    iAwarePages = constants.pages;
-    iAwareActions = constants.pageActions;
 
     constructor(
         private translate: TranslationService,

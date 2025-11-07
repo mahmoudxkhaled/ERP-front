@@ -76,9 +76,8 @@ import { IAwareRichTextComponent } from '../components/iAware-rich-text/iAware-r
 import { IAwareVariablesComponent } from '../components/iaware-variables/iaware-variables.component';
 import { LogoutComponent } from '../components/logout/logout.component';
 import { TableLoadingSpinnerComponent } from '../components/table-loading-spinner/table-loading-spinner/table-loading-spinner.component';
-import { MockCredentialsComponent } from '../components/mock-credentials/mock-credentials.component';
-import { InputMaskModule } from 'primeng/inputmask';
 import { ComingSoonComponent } from 'src/app/demo/components/pages/coming-soon/coming-soon.component';
+import { InputMaskModule } from 'primeng/inputmask';
 const components = [
     ComingSoonComponent,
     EmptyDataComponent,
@@ -88,7 +87,6 @@ const components = [
     LogoutComponent,
     IAwareInfoComponent,
     IAwareVariablesComponent,
-    MockCredentialsComponent,
 ];
 
 const imports = [
