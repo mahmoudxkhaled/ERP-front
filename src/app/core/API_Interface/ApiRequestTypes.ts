@@ -22,6 +22,14 @@ export enum ApiRequestTypes {
   // (1B) Users and Profiles Management (codes 200 - 399)
 
   // (1C) Entity and Organization Management (codes 400 - 599)
+  // Entity Management (codes 201 - 207)
+  Create_Entity = 201,
+  Update_Entity = 202,
+  Get_Entity = 203,
+  List_Entities = 204,
+  Deactivate_Entity = 205,
+  Activate_Entity = 206,
+  Assign_Entity_Admin = 207
 
   // (1D) Roles and Access Control (codes 600 - 699)
 

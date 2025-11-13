@@ -1,0 +1,69 @@
+<div class="card">
+    <div class="flex justify-content-between align-items-center mb-4">
+        <h2>Manage Entities (إدارة الشركات)</h2>
+        <p-button label="Add New (إضافة شركة جديدة)" icon="pi pi-plus" (onClick)="navigateToNew()" [loading]="loading">
+        </p-button>
+    </div>
+
+    <div class="iAware-loading-table-container" style="position: relative;">
+        <app-table-loading-spinner *ngIf="tableLoadingSpinner"></app-table-loading-spinner>
+        <p-table #entitiesTable [value]="entities" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
+            responsiveLayout="scroll" [rowsPerPageOptions]="[10, 25, 50]"
+            [globalFilterFields]="['name', 'countryCode', 'active']" [loading]="loading">
+
+            <ng-template pTemplate="caption">
+                <div class="flex justify-content-between align-items-center">
+                    <span class="p-input-icon-left">
+                        <i class="pi pi-search"></i>
+                        <input pInputText type="text" placeholder="Search" #searchInput
+                            (input)="$event.target && $any($event.target).value && ($any($event.target).value.length > 0 || $any($event.target).value.length === 0) && searchInput.value && entitiesTable.filterGlobal(searchInput.value, 'contains')" />
+                    </span>
+                </div>
+            </ng-template>
+
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Name (اسم الشركة)</th>
+                    <th>Country (الدولة)</th>
+                    <th>Status (الحالة)</th>
+                    <th>Actions (الإجراءات)</th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-entity>
+                <tr>
+                    <td class="font-semibold">{{ entity.name }}</td>
+                    <td>{{ entity.countryCode }}</td>
+                    <td>
+                        <p-tag [value]="getStatusLabel(entity.active)" [severity]="getStatusSeverity(entity.active)">
+                        </p-tag>
+                    </td>
+                    <td>
+                        <p-button label="Edit (تعديل)" icon="pi pi-pencil"
+                            class="p-button-sm p-button-outlined p-button-primary mr-2" (onClick)="edit(entity)"
+                            [disabled]="loading">
+                        </p-button>
+                        <p-button
+                            [label]="(entity.active ? 'Deactivate' : 'Activate') + ' (' + (entity.active ? 'تعطيل' : 'تفعيل') + ')'"
+                            [icon]="entity.active ? 'pi pi-ban' : 'pi pi-check'"
+                            class="p-button-sm p-button-outlined p-button-warning mr-2" (onClick)="toggle(entity)"
+                            [disabled]="loading">
+                        </p-button>
+                        <p-button label="Assign Admin (تعيين مدير)" icon="pi pi-user-plus"
+                            class="p-button-sm p-button-outlined p-button-secondary" (onClick)="assignAdmin(entity)"
+                            [disabled]="loading">
+                        </p-button>
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="4" class="text-center">No entities found</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+<p-toast></p-toast>

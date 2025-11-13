@@ -75,7 +75,7 @@ export class AppMenuComponent implements OnInit {
                         label: this.translate.getInstant('menu.companyDetails'),
                         hasPermession: true,
                         icon: 'fa fa-building',
-                        routerLink: ['/company-administration/company-details']
+                        routerLink: ['/company-administration/entities/list']
                     },
                     {
                         label: this.translate.getInstant('menu.usersDetails'),

@@ -676,5 +676,50 @@
             "enableSSL": "Enable SSL",
             "noEmails": "No system emails found"
         }
+    },
+    "entities": {
+        "title": "Manage Entities",
+        "description": "System administration - Manage entities (companies)",
+        "list": {
+            "title": "Entities List",
+            "addNew": "Add New",
+            "name": "Name",
+            "country": "Country",
+            "status": "Status",
+            "actions": "Actions",
+            "edit": "Edit",
+            "activate": "Activate",
+            "deactivate": "Deactivate",
+            "assignAdmin": "Assign Admin",
+            "noEntities": "No entities found"
+        },
+        "form": {
+            "create": "Create Entity",
+            "edit": "Edit Entity",
+            "companyName": "Company Name",
+            "country": "Country",
+            "timezone": "Timezone",
+            "taxId": "Tax ID",
+            "save": "Save",
+            "cancel": "Cancel",
+            "update": "Update",
+            "required": "This field is required"
+        },
+        "assignAdmin": {
+            "title": "Assign Admin",
+            "selectUser": "Select User",
+            "assign": "Assign",
+            "cancel": "Cancel"
+        },
+        "messages": {
+            "entityCreated": "Entity created successfully",
+            "entityUpdated": "Entity updated successfully",
+            "entityActivated": "Entity activated",
+            "entityDeactivated": "Entity deactivated",
+            "adminAssigned": "Admin assigned successfully",
+            "loadError": "Failed to load entities",
+            "saveError": "Failed to save entity",
+            "updateError": "Failed to update entity status"
+        }
     }
 }

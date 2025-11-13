@@ -1,0 +1,83 @@
+<div class="card">
+    <h2>{{ isEdit ? 'Edit Entity (تعديل شركة)' : 'Create Entity (إضافة شركة جديدة)' }}</h2>
+    
+    <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="grid">
+            <div class="col-12 md:col-6">
+                <div class="field">
+                    <label for="name">Company Name (اسم الشركة) <span class="text-red-500">*</span></label>
+                    <input 
+                        id="name"
+                        type="text" 
+                        pInputText 
+                        formControlName="name"
+                        [class.ng-invalid]="submitted && f['name'].invalid"
+                        placeholder="Enter company name" />
+                    <small class="p-error" *ngIf="submitted && f['name'].invalid">
+                        Company name is required
+                    </small>
+                </div>
+            </div>
+
+            <div class="col-12 md:col-6">
+                <div class="field">
+                    <label for="countryCode">Country (الدولة) <span class="text-red-500">*</span></label>
+                    <input 
+                        id="countryCode"
+                        type="text" 
+                        pInputText 
+                        formControlName="countryCode"
+                        [class.ng-invalid]="submitted && f['countryCode'].invalid"
+                        placeholder="Enter country code" />
+                    <small class="p-error" *ngIf="submitted && f['countryCode'].invalid">
+                        Country code is required
+                    </small>
+                </div>
+            </div>
+
+            <div class="col-12 md:col-6">
+                <div class="field">
+                    <label for="timezone">Timezone (المنطقة الزمنية)</label>
+                    <input 
+                        id="timezone"
+                        type="text" 
+                        pInputText 
+                        formControlName="timezone"
+                        placeholder="Enter timezone" />
+                </div>
+            </div>
+
+            <div class="col-12 md:col-6">
+                <div class="field">
+                    <label for="taxId">Tax ID (الرقم الضريبي)</label>
+                    <input 
+                        id="taxId"
+                        type="text" 
+                        pInputText 
+                        formControlName="taxId"
+                        placeholder="Enter tax ID" />
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-content-end gap-2 mt-4">
+            <p-button 
+                label="Cancel (إلغاء)" 
+                icon="pi pi-times" 
+                class="p-button-secondary"
+                (onClick)="cancel()"
+                [disabled]="loading">
+            </p-button>
+            <p-button 
+                [label]="(isEdit ? 'Update' : 'Save') + ' (' + (isEdit ? 'تحديث' : 'حفظ') + ')'" 
+                icon="pi pi-check" 
+                type="submit"
+                [loading]="loading"
+                [disabled]="loading">
+            </p-button>
+        </div>
+    </form>
+</div>
+
+<p-toast></p-toast>
+

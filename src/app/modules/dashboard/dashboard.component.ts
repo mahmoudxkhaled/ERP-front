@@ -51,7 +51,7 @@ export class DashboardComponent implements OnInit {
             {
                 title: this.translate.getInstant('dashboard.companyAdministration'),
                 items: [
-                    { icon: '🏢', label: this.translate.getInstant('dashboard.companyDetails'), route: '/company-administration/company-details' },
+                    { icon: '🏢', label: this.translate.getInstant('dashboard.companyDetails'), route: '/company-administration/entities/list' },
                     { icon: '👥', label: this.translate.getInstant('dashboard.usersDetails'), route: '/company-administration/users-details' },
                     { icon: '🔄', label: this.translate.getInstant('dashboard.workflows'), route: '/company-administration/workflows' }
                 ]

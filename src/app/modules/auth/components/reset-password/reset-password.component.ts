@@ -41,6 +41,8 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
     redirectCountdown: number = 5;
     hasError: boolean = false;
     errorMessage: string = '';
+    type: string = '';
+    pageLabel: string = '';
     constructor(
         private authService: AuthService,
         private route: ActivatedRoute,
@@ -53,6 +55,20 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         console.log('ngOnInit');
+
+        // Read type from route params or route data
+        const routeData = this.route.snapshot.data;
+        if (routeData['type']) {
+            // Override with route data type (for change-password route)
+            this.type = routeData['type'];
+        } else {
+            // Read from route params (for :type/reset-password route)
+            this.type = this.route.snapshot.params['type'] || '';
+        }
+
+        // Set pageLabel based on type
+        this.setPageLabel();
+
         const queryParamsSub = this.route.queryParams.subscribe((queryParams) => {
             let resetToken = queryParams['reset-token'] || queryParams['token'] || '';
             console.log('resetToken from queryParams', resetToken);
@@ -64,6 +80,17 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
             }
         });
         this.unsubscribe.push(queryParamsSub);
+    }
+
+    private setPageLabel(): void {
+        const labelMap: { [key: string]: string } = {
+            'forgot-password': 'Reset your forgotten password',
+            'unlock-account': 'Unlock your account',
+            'new-account': 'Create your new account password',
+            'change-password': 'Change your password'
+        };
+
+        this.pageLabel = labelMap[this.type] || 'Reset Your Password';
     }
 
     submit() {

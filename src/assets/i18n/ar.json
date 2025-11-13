@@ -532,5 +532,50 @@
             "enableSSL": "تفعيل SSL",
             "noEmails": "لم يتم العثور على بريد النظام"
         }
+    },
+    "entities": {
+        "title": "إدارة الشركات",
+        "description": "إدارة النظام - إدارة الشركات",
+        "list": {
+            "title": "قائمة الشركات",
+            "addNew": "إضافة شركة جديدة",
+            "name": "الاسم",
+            "country": "الدولة",
+            "status": "الحالة",
+            "actions": "الإجراءات",
+            "edit": "تعديل",
+            "activate": "تفعيل",
+            "deactivate": "تعطيل",
+            "assignAdmin": "تعيين مدير",
+            "noEntities": "لم يتم العثور على شركات"
+        },
+        "form": {
+            "create": "إضافة شركة جديدة",
+            "edit": "تعديل شركة",
+            "companyName": "اسم الشركة",
+            "country": "الدولة",
+            "timezone": "المنطقة الزمنية",
+            "taxId": "الرقم الضريبي",
+            "save": "حفظ",
+            "cancel": "إلغاء",
+            "update": "تحديث",
+            "required": "هذا الحقل مطلوب"
+        },
+        "assignAdmin": {
+            "title": "تعيين مدير",
+            "selectUser": "اختر المستخدم",
+            "assign": "تعيين",
+            "cancel": "إلغاء"
+        },
+        "messages": {
+            "entityCreated": "تم إنشاء الشركة بنجاح",
+            "entityUpdated": "تم تحديث الشركة بنجاح",
+            "entityActivated": "تم تفعيل الشركة",
+            "entityDeactivated": "تم تعطيل الشركة",
+            "adminAssigned": "تم تعيين المدير بنجاح",
+            "loadError": "فشل تحميل الشركات",
+            "saveError": "فشل حفظ الشركة",
+            "updateError": "فشل تحديث حالة الشركة"
+        }
     }
 }

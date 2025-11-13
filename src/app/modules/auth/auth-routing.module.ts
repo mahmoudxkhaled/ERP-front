@@ -13,6 +13,16 @@ const routes: Routes = [
     { path: 'email-verified', component: EmailVerifiedComponent },
     { path: 'emailVerified/:email', component: EmailVerifiedComponent },
     { path: 'verify-email', component: VerificationEmailComponent },
+    {
+        path: ':type/reset-password',
+        component: ResetPasswordComponent,
+        data: { allowed: ['forgot-password', 'unlock-account', 'new-account'] }
+    },
+    {
+        path: 'change-password',
+        component: ResetPasswordComponent,
+        data: { type: 'change-password' }
+    },
     { path: 'reset-password', component: ResetPasswordComponent },
     { path: 'forget-password', component: ForgetPasswordComponent },
     { path: 'verify-code', component: VerifyCodeComponent },
