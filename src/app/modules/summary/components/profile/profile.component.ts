@@ -203,7 +203,7 @@ export class ProfileComponent implements OnInit {
 
         if (!this.twoFactorEnabled) {
             // Enabling 2FA
-            this.authService.set2FA(accessToken, false).subscribe({
+            this.authService.set2FA(accessToken, true).subscribe({
                 next: (response: any) => {
                     if (response?.success === true) {
                         this.twoFactorEnabled = true;
