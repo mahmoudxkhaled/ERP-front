@@ -85,20 +85,32 @@ export class AuthService {
         );
     }
 
-
-    verify2FA(userId: string, otp: string): Observable<any> {
+    set2FA(accessToken: string, status: boolean): Observable<any> {
         this.isLoadingSubject.next(true);
 
-        const payload = JSON.stringify({ userId, otp });
-
-        return this.apiServices.callAPI(ApiRequestTypes.Verify_2FA, '', [payload]).pipe(
+        return this.apiServices.callAPI(ApiRequestTypes.Set_2FA, accessToken, [status.toString()]).pipe(
             map((apiResult: ApiResult) => {
                 const parsed = this.parseApiResponse(apiResult);
-                const result: any = this.processApiResponse(parsed);
-                if (result?.token && result?.userId) {
-                    this.setAuthFromLocalStorage({ token: result.token, userId: result.userId, accessToken: result.token });
+                return this.processApiResponse(parsed);
+            }),
+            catchError((error: any) => {
+                if (error && typeof error === 'object' && 'success' in error) {
+                    return throwError(() => error);
                 }
-                return result;
+                const parsed = this.parseApiResponse(error);
+                return throwError(() => parsed || { success: false, message: 'Unexpected error occurred.' });
+            }),
+            finalize(() => this.isLoadingSubject.next(false))
+        );
+    }
+
+    verify2FA(email: string, otp: string): Observable<any> {
+        this.isLoadingSubject.next(true);
+
+        return this.apiServices.callAPI(ApiRequestTypes.Verify_2FA, '', [email, otp]).pipe(
+            map((apiResult: ApiResult) => {
+                const parsed = this.parseApiResponse(apiResult);
+                return this.processApiResponse(parsed);
             }),
             catchError((error: any) => {
                 if (error && typeof error === 'object' && 'success' in error) {

@@ -1,10 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
 import { Observable, Subscription } from 'rxjs';
-import { ApiResult } from 'src/app/core/API_Interface/ApiResult';
 
 @Component({
   selector: 'app-verify-code',
@@ -13,7 +12,7 @@ import { ApiResult } from 'src/app/core/API_Interface/ApiResult';
 })
 export class VerifyCodeComponent implements OnInit, OnDestroy {
 
-  userId: string = '';
+  email: string = '';
   validationMessage: string = '';
   form: FormGroup;
   isLoading$: Observable<boolean>;
@@ -22,33 +21,14 @@ export class VerifyCodeComponent implements OnInit, OnDestroy {
   constructor(
     private apiService: AuthService,
     private router: Router,
-    private localStorageService: LocalStorageService
+    private localStorageService: LocalStorageService,
+    private route: ActivatedRoute
   ) {
     this.isLoading$ = this.apiService.isLoadingSubject;
   }
 
   ngOnInit(): void {
-    // Get userId from localStorage (saved during Login)
-    this.userId = this.localStorageService.getItem('userId') || '';
-
-    // If userId not found, try to get it from userData
-    if (!this.userId) {
-      const userData = this.localStorageService.getItem('userData');
-      if (userData) {
-        try {
-          const parsed = typeof userData === 'string' ? JSON.parse(userData) : userData;
-          this.userId = parsed.userId || '';
-        } catch (e) {
-          console.error('Error parsing userData:', e);
-        }
-      }
-    }
-
-    // If still no userId, redirect to login
-    // if (!this.userId) {
-    //   this.router.navigate(['/auth']);
-    //   return;
-    // }
+    this.email = this.route.snapshot.params['email'];
 
     this.form = new FormGroup({
       code1: new FormControl<string>('', Validators.required),
@@ -56,6 +36,7 @@ export class VerifyCodeComponent implements OnInit, OnDestroy {
       code3: new FormControl<string>('', Validators.required),
       code4: new FormControl<string>('', Validators.required),
       code5: new FormControl<string>('', Validators.required),
+      code6: new FormControl<string>('', Validators.required),
     });
   }
 
@@ -73,32 +54,28 @@ export class VerifyCodeComponent implements OnInit, OnDestroy {
       this.form.controls?.['code3'].value,
       this.form.controls?.['code4'].value,
       this.form.controls?.['code5'].value,
+      this.form.controls?.['code6'].value,
     ].join('');
 
-    if (otp && this.userId) {
-      const verifySubscription = this.apiService.verify2FA(this.userId, otp).subscribe({
-        next: (apiResult: ApiResult) => {
-          try {
-            const response = JSON.parse(apiResult.Body);
-            if (response.success === true) {
-              // Token and userId should already be saved by AuthService
-              // Navigate to home page
-              this.router.navigate(['/']);
-            } else {
-              this.validationMessage = response.message || 'Invalid verification code';
+    if (otp && this.email) {
+      console.log('otp', otp);
+      console.log('email', this.email);
+      const verifySubscription = this.apiService.verify2FA(this.email, otp).subscribe({
+        next: (response: any) => {
+          if (response?.success === true) {
+            // AuthService already saves auth data if token and userId are present
+            // But we can also save it here as a fallback
+            if (response?.message) {
+              this.setAuthFromResponseToLocalStorage(response);
             }
-          } catch (error) {
-            console.error('Error parsing 2FA response:', error);
-            this.validationMessage = 'An error occurred. Please try again.';
+            this.router.navigate(['/']);
+          } else {
+            this.validationMessage = response?.message || 'Invalid verification code. Please try again.';
           }
         },
-        error: (error: ApiResult) => {
-          try {
-            const response = JSON.parse(error.Body);
-            this.validationMessage = response.message || 'Verification failed';
-          } catch (e) {
-            this.validationMessage = 'Verification failed. Please try again.';
-          }
+        error: (error: any) => {
+          const errorMessage = error?.message || 'Invalid verification code. Please try again.';
+          this.validationMessage = errorMessage;
         }
       });
       this.unsubscribe.push(verifySubscription);
@@ -124,5 +101,29 @@ export class VerifyCodeComponent implements OnInit, OnDestroy {
       const prevInput = document.getElementById(prevInputId) as HTMLInputElement;
       prevInput?.focus();
     }
+  }
+
+  setAuthFromResponseToLocalStorage(response: any): boolean {
+    if (!response?.success || !response?.message) {
+      return false;
+    }
+
+    const payload = response.message;
+    const token = payload.Access_Token ?? payload.accessToken ?? payload.token;
+    const userId = payload.User_ID ?? payload.userId ?? payload.id;
+
+    if (!token || !userId) {
+      return false;
+    }
+
+    const authData = {
+      token,
+      userId,
+    };
+
+    console.log('authData from login component', authData);
+
+    this.localStorageService.setItem('userData', authData);
+    return true;
   }
 }

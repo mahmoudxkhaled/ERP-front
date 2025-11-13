@@ -1,7 +1,7 @@
 <div class="body">
   <div class="forgot-container">
     <h2>Verify Code</h2>
-    <p>Enter the 5-digit code sent to your email.</p>
+    <p>Enter the 6-digit code sent to your email.</p>
     <p style="font-size: 13px; color: rgba(255, 255, 255, 0.7); margin-bottom: 20px;">
       <i class="pi pi-info-circle" style="margin-right: 5px;"></i>
       OTP was sent via email.
@@ -18,7 +18,9 @@
           <input type="text" class="custom-input" id="code4" maxlength="1" formControlName="code4"
             (keyup)="moveToNext($event, 'code5')" (keydown.backspace)="moveToPrev($event, 'code3')" />
           <input type="text" class="custom-input" id="code5" maxlength="1" formControlName="code5"
-            (keydown.backspace)="moveToPrev($event, 'code4')" />
+            (keyup)="moveToNext($event, 'code6')" (keydown.backspace)="moveToPrev($event, 'code4')" />
+          <input type="text" class="custom-input" id="code6" maxlength="1" formControlName="code6"
+            (keydown.backspace)="moveToPrev($event, 'code5')" />
         </div>
       </div>
       <div *ngIf="validationMessage" class="backend-error-message">

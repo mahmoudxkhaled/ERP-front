@@ -35,10 +35,8 @@ export class ProfileComponent implements OnInit {
 
     profileForm!: FormGroup;
     changePasswordForm!: FormGroup;
-    otpForm!: FormGroup;
 
     twoFactorEnabled: boolean = false;
-    showOtpInput: boolean = false;
 
     showOldPassword: boolean = false;
     showNewPassword: boolean = false;
@@ -74,9 +72,9 @@ export class ProfileComponent implements OnInit {
         });
 
         this.changePasswordForm = this.fb.group({
-            oldPassword: ['Kakuzu@123456', [Validators.required]],
+            oldPassword: ['', [Validators.required]],
             newPassword: [
-                'Kakuzu@1234567',
+                '',
                 Validators.compose([
                     Validators.required,
                     Validators.minLength(12),
@@ -84,13 +82,9 @@ export class ProfileComponent implements OnInit {
                     passwordComplexityValidator(),
                 ])
             ],
-            confirmPassword: ['Kakuzu@1234567', [Validators.required]]
+            confirmPassword: ['', [Validators.required]]
         }, {
             validator: this.passwordMatchValidator
-        });
-
-        this.otpForm = this.fb.group({
-            otpCode: ['', [Validators.required, Validators.minLength(4)]]
         });
     }
 
@@ -197,76 +191,73 @@ export class ProfileComponent implements OnInit {
     }
 
     toggle2FA(): void {
-        if (!this.twoFactorEnabled) {
-            // Enabling 2FA - show OTP input
-            this.showOtpInput = true;
-            this.twoFactorEnabled = true;
-            this.messageService.add({
-                severity: 'info',
-                summary: '2FA Setup',
-                detail: 'Please enter the OTP code to enable 2FA.'
-            });
-        } else {
-            // Disabling 2FA
-            this.twoFactorEnabled = false;
-            this.showOtpInput = false;
-            this.otpForm.reset();
-            this.messageService.add({
-                severity: 'success',
-                summary: '2FA Disabled',
-                detail: 'Two-factor authentication has been disabled.'
-            });
-        }
-    }
-
-    verify2FA(): void {
-        if (this.otpForm.invalid) {
-            this.messageService.add({
-                severity: 'error',
-                summary: 'Validation Error',
-                detail: 'Please enter a valid OTP code.'
-            });
-            return;
-        }
-
-        const otpCode = this.otpForm.get('otpCode')?.value;
-        const userId = this.getUserId();
-        if (!userId) {
+        const accessToken = this.getAccessToken();
+        if (!accessToken) {
             this.messageService.add({
                 severity: 'error',
                 summary: 'Error',
-                detail: 'User ID not found. Please login again.'
+                detail: 'Access token not found. Please login again.'
             });
             return;
         }
 
-        this.authService.verify2FA(userId, otpCode).subscribe({
-            next: (response: any) => {
-                if (response?.success === true) {
-                    this.messageService.add({
-                        severity: 'success',
-                        summary: 'Success',
-                        detail: '2FA enabled successfully!'
-                    });
-                    this.showOtpInput = false;
-                    this.otpForm.reset();
-                } else {
+        if (!this.twoFactorEnabled) {
+            // Enabling 2FA
+            this.authService.set2FA(accessToken, false).subscribe({
+                next: (response: any) => {
+                    if (response?.success === true) {
+                        this.twoFactorEnabled = true;
+                        this.messageService.add({
+                            severity: 'success',
+                            summary: '2FA Enabled',
+                            detail: 'Two-factor authentication has been enabled successfully. You will be required to verify with a code on your next login.'
+                        });
+                    } else {
+                        this.messageService.add({
+                            severity: 'error',
+                            summary: 'Error',
+                            detail: response?.message || 'Failed to enable 2FA.'
+                        });
+                    }
+                },
+                error: (error: any) => {
+                    const errorMessage = error?.message || 'Failed to enable 2FA. Please try again.';
                     this.messageService.add({
                         severity: 'error',
                         summary: 'Error',
-                        detail: response?.message || '2FA verification failed.'
+                        detail: errorMessage
                     });
                 }
-            },
-            error: (error: any) => {
-                const errorMessage = error?.message || '2FA verification failed. Please try again.';
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: errorMessage
-                });
-            }
-        });
+            });
+        } else {
+            // Disabling 2FA
+            this.authService.set2FA(accessToken, false).subscribe({
+                next: (response: any) => {
+                    if (response?.success === true) {
+                        this.twoFactorEnabled = false;
+                        this.messageService.add({
+                            severity: 'success',
+                            summary: '2FA Disabled',
+                            detail: 'Two-factor authentication has been disabled successfully.'
+                        });
+                    } else {
+                        this.messageService.add({
+                            severity: 'error',
+                            summary: 'Error',
+                            detail: response?.message || 'Failed to disable 2FA.'
+                        });
+                    }
+                },
+                error: (error: any) => {
+                    const errorMessage = error?.message || 'Failed to disable 2FA. Please try again.';
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Error',
+                        detail: errorMessage
+                    });
+                }
+            });
+        }
     }
 
     togglePasswordVisibility(field: 'old' | 'new' | 'confirm'): void {

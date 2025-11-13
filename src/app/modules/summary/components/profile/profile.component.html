@@ -250,31 +250,6 @@
                 [severity]="twoFactorEnabled ? 'danger' : 'success'" (onClick)="toggle2FA()">
             </p-button>
         </div>
-
-        <!-- OTP Input (shown when enabling 2FA) -->
-        <div *ngIf="showOtpInput" class="mt-4">
-            <form [formGroup]="otpForm" (ngSubmit)="verify2FA()">
-                <div class="grid">
-                    <div class="col-12 md:col-6">
-                        <label class="block text-sm font-medium mb-2">
-                            <i class="pi pi-mobile mr-2 text-blue-500"></i>
-                            Enter OTP Code
-                        </label>
-                        <input pInputText type="text" formControlName="otpCode" placeholder="Enter OTP code"
-                            class="w-full" maxlength="6">
-                        <small class="text-gray-500">Please enter the OTP code sent to your device.</small>
-                        <small class="p-error"
-                            *ngIf="otpForm.get('otpCode')?.invalid && otpForm.get('otpCode')?.touched">
-                            Please enter a valid OTP code (minimum 4 characters).
-                        </small>
-                    </div>
-                </div>
-                <div class="flex justify-content-end mt-3">
-                    <p-button label="Verify OTP" icon="pi pi-check" severity="success" type="submit"
-                        [disabled]="otpForm.invalid"></p-button>
-                </div>
-            </form>
-        </div>
     </p-panel>
 
     <!-- Action Buttons -->

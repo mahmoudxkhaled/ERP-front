@@ -122,7 +122,7 @@ export class LoginComponent implements OnInit, OnDestroy {
                         return;
                     }
                     case 'ERP11103':
-                        this.router.navigate(['/auth/verify-code']);
+                        this.router.navigate(['/auth/verify-code', email]);
                         return;
                     default:
                         this.errorMessage = code || 'Unexpected error occurred.';

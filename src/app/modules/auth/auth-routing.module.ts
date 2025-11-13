@@ -25,7 +25,7 @@ const routes: Routes = [
     },
     { path: 'reset-password', component: ResetPasswordComponent },
     { path: 'forget-password', component: ForgetPasswordComponent },
-    { path: 'verify-code', component: VerifyCodeComponent },
+    { path: 'verify-code/:email', component: VerifyCodeComponent },
     { path: 'account-locked', component: AccountLockedComponent },
 ];
 
