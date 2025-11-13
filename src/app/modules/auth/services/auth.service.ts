@@ -156,9 +156,8 @@ export class AuthService {
         this.isLoadingSubject.next(true);
 
         // Real API call using ApiServices
-        const payload = JSON.stringify({ oldPassword, newPassword });
 
-        return this.apiServices.callAPI(ApiRequestTypes.Change_Password, accessToken, [payload]).pipe(
+        return this.apiServices.callAPI(ApiRequestTypes.Change_Password, accessToken, [oldPassword, newPassword]).pipe(
             map((apiResult: ApiResult) => {
                 const parsed = this.parseApiResponse(apiResult);
                 return this.processApiResponse(parsed);
