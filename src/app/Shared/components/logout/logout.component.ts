@@ -1,6 +1,4 @@
-import { Component } from '@angular/core';
-import { Observable } from 'rxjs';
-import { Router } from '@angular/router';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-logout',
@@ -8,15 +6,20 @@ import { Router } from '@angular/router';
   styleUrl: './logout.component.scss'
 })
 export class LogoutComponent {
-
-  isLoading$: Observable<boolean>;
-
-  constructor(private router: Router) {
-  }
+  @Input() visible: boolean = false;
+  @Output() visibleChange = new EventEmitter<boolean>();
+  @Output() onConfirm = new EventEmitter<void>();
+  @Output() onCancel = new EventEmitter<void>();
 
   onConfirmLogout() {
+    this.visible = false;
+    this.visibleChange.emit(false);
+    this.onConfirm.emit();
+  }
 
-    this.router.navigate(['/auth']);
-    console.log('confirmLogout');
+  onCancelLogout() {
+    this.visible = false;
+    this.visibleChange.emit(false);
+    this.onCancel.emit();
   }
 }

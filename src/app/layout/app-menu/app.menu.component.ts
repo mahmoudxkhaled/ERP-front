@@ -2,6 +2,7 @@ import { OnInit } from '@angular/core';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslationService } from '../../core/Services/translation.service';
+import { AuthService } from '../../modules/auth/services/auth.service';
 
 @Component({
     selector: 'app-menu',
@@ -10,10 +11,12 @@ import { TranslationService } from '../../core/Services/translation.service';
 export class AppMenuComponent implements OnInit {
     model: any[] = [];
     currentPages: any;
+    showLogoutDialog: boolean = false; // Track logout dialog visibility
 
     constructor(
         private translate: TranslationService,
-        private router: Router
+        private router: Router,
+        private authService: AuthService
     ) {
     }
 
@@ -157,9 +160,20 @@ export class AppMenuComponent implements OnInit {
     }
 
     handleLogout(): void {
-        // Handle logout logic here
-        // For example: clear localStorage, navigate to auth page
-        localStorage.removeItem('userData');
-        this.router.navigate(['/auth']);
+        // Show logout confirmation dialog
+        this.showLogoutDialog = true;
+    }
+
+    onLogoutConfirm() {
+        // User confirmed logout, proceed with logout
+        this.authService.logout().subscribe((r) => {
+            if (r.success) {
+                this.router.navigate(['/auth']);
+            }
+        });
+    }
+
+    onLogoutCancel() {
+        // User cancelled logout, dialog will close automatically
     }
 }

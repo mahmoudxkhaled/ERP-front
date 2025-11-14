@@ -4,3 +4,6 @@
         <li *ngIf="item.separator" class="menu-separator"></li>
     </ng-container>
 </ul>
+
+<!-- Logout Confirmation Dialog -->
+<app-logout [(visible)]="showLogoutDialog" (onConfirm)="onLogoutConfirm()" (onCancel)="onLogoutCancel()"></app-logout>

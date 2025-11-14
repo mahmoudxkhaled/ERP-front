@@ -1,10 +1,10 @@
 import { Component, ElementRef, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { LayoutService } from '../app-services/app.layout.service';
 import { Subscription } from 'rxjs';
 import { LocalStorageService } from '../../core/Services/local-storage.service';
-import { DialogService } from 'primeng/dynamicdialog';
-import { LogoutComponent } from 'src/app/Shared/components/logout/logout.component';
+import { AuthService } from '../../modules/auth/services/auth.service';
 import { TranslationService } from 'src/app/core/Services/translation.service';
 
 export interface GetUser {
@@ -45,13 +45,15 @@ export class AppMenuProfileComponent implements OnInit {
     subs: Subscription = new Subscription();
     user: GetUser;
     currentPages: any;
+    showLogoutDialog: boolean = false; // Track logout dialog visibility
 
     constructor(
         public layoutService: LayoutService,
         public el: ElementRef,
         private localStorage: LocalStorageService,
-        private dialogService: DialogService,
-        private translate: TranslationService
+        private translate: TranslationService,
+        private authService: AuthService,
+        private router: Router
     ) {
         const userData = this.localStorage.getItem('userData');
         if (userData && userData.userImageUrl) {
@@ -108,14 +110,20 @@ export class AppMenuProfileComponent implements OnInit {
     }
 
     logOut() {
-        this.dialogService.open(LogoutComponent, {
-            showHeader: true,
-            header: this.translate.getInstant('shared.headers.confirmLogout'),
-            styleClass: 'custom-dialog',
-            maskStyleClass: 'custom-backdrop',
-            dismissableMask: true,
-            width: '30vw',
-            closable: true,
+        // Show logout confirmation dialog
+        this.showLogoutDialog = true;
+    }
+
+    onLogoutConfirm() {
+        // User confirmed logout, proceed with logout
+        this.authService.logout().subscribe((r) => {
+            if (r.success) {
+                this.router.navigate(['/auth']);
+            }
         });
+    }
+
+    onLogoutCancel() {
+        // User cancelled logout, dialog will close automatically
     }
 }

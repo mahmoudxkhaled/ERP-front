@@ -5,8 +5,6 @@ import { LocalStorageService } from '../../core/Services/local-storage.service';
 import { ILanguageModel } from 'src/app/modules/language/models/ILanguageModel';
 import { ListboxChangeEvent } from 'primeng/listbox';
 import { LanguageDIRService } from 'src/app/core/Services/LanguageDIR.service';
-import { DialogService } from 'primeng/dynamicdialog';
-import { LogoutComponent } from 'src/app/Shared/components/logout/logout.component';
 import { TranslationService } from 'src/app/core/Services/translation.service';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/modules/auth/services/auth.service';
@@ -64,6 +62,7 @@ export class AppTopbarComponent implements OnInit {
     themeLoading: boolean = false;
     langLoading: boolean = false; // Track the loading state
     isListboxVisible: boolean = true; // Track visibility of the listbox
+    showLogoutDialog: boolean = false; // Track logout dialog visibility
 
     mockSearchData = {
         lessons: ['Lesson 1', 'Lesson 2', 'Lesson 3'],
@@ -79,7 +78,6 @@ export class AppTopbarComponent implements OnInit {
         private ref: ChangeDetectorRef,
         private localStorage: LocalStorageService,
         private rtlService: LanguageDIRService,
-        private dialogService: DialogService,
         private translate: TranslationService,
         private router: Router,
         private authService: AuthService,
@@ -193,11 +191,21 @@ export class AppTopbarComponent implements OnInit {
     }
 
     logOut() {
+        // Show logout confirmation dialog
+        this.showLogoutDialog = true;
+    }
+
+    onLogoutConfirm() {
+        // User confirmed logout, proceed with logout
         this.authService.logout().subscribe((r) => {
             if (r.success) {
                 this.router.navigate(['/auth']);
             }
         });
+    }
+
+    onLogoutCancel() {
+        // User cancelled logout, dialog will close automatically
     }
 
     search(event: any) {
