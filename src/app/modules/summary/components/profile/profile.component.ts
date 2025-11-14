@@ -37,6 +37,8 @@ export class ProfileComponent implements OnInit {
     changePasswordForm!: FormGroup;
 
     twoFactorEnabled: boolean = false;
+    show2FADialog: boolean = false;
+    showChangePasswordDialog: boolean = false;
 
     showOldPassword: boolean = false;
     showNewPassword: boolean = false;
@@ -158,6 +160,13 @@ export class ProfileComponent implements OnInit {
             return;
         }
 
+        // Show confirmation dialog before proceeding
+        this.showChangePasswordDialog = true;
+    }
+
+    confirmChangePassword(): void {
+        this.showChangePasswordDialog = false;
+
         const oldPassword = this.changePasswordForm.get('oldPassword')?.value;
         const newPassword = this.changePasswordForm.get('newPassword')?.value;
         const accessToken = this.getAccessToken();
@@ -177,7 +186,7 @@ export class ProfileComponent implements OnInit {
                     this.messageService.add({
                         severity: 'success',
                         summary: 'Success',
-                        detail: 'Password changed successfully!'
+                        detail: 'Password changed successfully! This change will take effect on your next login.'
                     });
                     this.changePasswordForm.reset();
                 } else {
@@ -190,7 +199,18 @@ export class ProfileComponent implements OnInit {
         });
     }
 
+    cancelChangePassword(): void {
+        this.showChangePasswordDialog = false;
+    }
+
     toggle2FA(): void {
+        // Show confirmation dialog before proceeding
+        this.show2FADialog = true;
+    }
+
+    confirmToggle2FA(): void {
+        this.show2FADialog = false;
+
         const accessToken = this.getAccessToken();
         if (!accessToken) {
             this.messageService.add({
@@ -258,6 +278,10 @@ export class ProfileComponent implements OnInit {
                 }
             });
         }
+    }
+
+    cancelToggle2FA(): void {
+        this.show2FADialog = false;
     }
 
     togglePasswordVisibility(field: 'old' | 'new' | 'confirm'): void {
