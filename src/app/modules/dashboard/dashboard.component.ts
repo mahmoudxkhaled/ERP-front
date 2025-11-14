@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
 import { TranslationService } from 'src/app/core/Services/translation.service';
+import { AuthService } from '../auth/services/auth.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -12,11 +13,13 @@ export class DashboardComponent implements OnInit {
     currentUser: any = null;
     userRole: string = '';
     userName: string = '';
+    showLogoutDialog: boolean = false; // Track logout dialog visibility
 
     constructor(
         private localStorageService: LocalStorageService,
         private router: Router,
-        public translate: TranslationService
+        public translate: TranslationService,
+        private authService: AuthService
     ) { }
 
     ngOnInit(): void {
@@ -82,11 +85,23 @@ export class DashboardComponent implements OnInit {
 
     navigateToRoute(route: string): void {
         if (route === '/summary/logout') {
-            // Handle logout
-            this.localStorageService.removeItem('userData');
-            this.router.navigate(['/auth']);
+            // Show logout confirmation dialog
+            this.showLogoutDialog = true;
         } else {
             this.router.navigate([route]);
         }
+    }
+
+    onLogoutConfirm() {
+        // User confirmed logout, proceed with logout
+        this.authService.logout().subscribe((r) => {
+            if (r.success) {
+                this.router.navigate(['/auth']);
+            }
+        });
+    }
+
+    onLogoutCancel() {
+        // User cancelled logout, dialog will close automatically
     }
 }
