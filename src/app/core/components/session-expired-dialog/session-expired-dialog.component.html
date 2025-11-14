@@ -1,0 +1,18 @@
+<div class="session-expired-dialog">
+    <div class="dialog-content">
+        <div class="icon-container">
+            <i class="pi pi-exclamation-triangle" style="font-size: 4rem; color: #f59e0b;"></i>
+        </div>
+        <h2 class="dialog-title">Session Expired</h2>
+        <p class="dialog-message">
+            Your session has expired. You will be automatically logged out in
+        </p>
+        <div class="countdown-container">
+            <span class="countdown-number">{{ countdown }}</span>
+            <span class="countdown-label">{{ countdown === 1 ? 'second' : 'seconds' }}</span>
+        </div>
+        <p class="dialog-info">
+            Please log in again to continue.
+        </p>
+    </div>
+</div>

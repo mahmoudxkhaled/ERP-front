@@ -1,0 +1,59 @@
+.session-expired-dialog {
+    padding: 2rem;
+    text-align: center;
+    min-width: 400px;
+}
+
+.dialog-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.icon-container {
+    margin-bottom: 0.5rem;
+}
+
+.dialog-title {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.dialog-message {
+    margin: 0;
+    font-size: 1rem;
+    color: #6b7280;
+    line-height: 1.5;
+}
+
+.countdown-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.countdown-number {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #dc2626;
+    line-height: 1;
+}
+
+.countdown-label {
+    font-size: 1rem;
+    color: #6b7280;
+    text-transform: lowercase;
+}
+
+.dialog-info {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #9ca3af;
+    margin-top: 0.5rem;
+}
+

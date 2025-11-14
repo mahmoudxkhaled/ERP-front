@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -17,14 +17,16 @@ import { TranslateModule } from '@ngx-translate/core';
 import { LoadingInterceptor } from './core/Interceptors/LoadingInterceptor';
 import { SafePipe } from './core/pipes/safe.pipe';
 import { DialogModule } from 'primeng/dialog';
-import { DialogService } from 'primeng/dynamicdialog';
+import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog';
 @NgModule({
     declarations: [AppComponent, SafePipe],
     imports: [
+        CommonModule,
         HttpClientModule,
         AppRoutingModule,
         AppLayoutModule,
         DialogModule,
+        DynamicDialogModule,
         TranslateModule,
         AppTranslateModule.forRoot(),
         SharedModule,

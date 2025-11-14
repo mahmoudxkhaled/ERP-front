@@ -11,14 +11,21 @@ export function passwordComplexityValidator(): ValidatorFn {
         const value = control.value;
         if (!value) return null;
 
-        const hasUppercase = /[A-Z]/.test(value);
+        // Check if password starts with a letter (uppercase or lowercase)
+        const startsWithLetter = /^[A-Za-z]/.test(value);
+        // Check for at least one lowercase letter
         const hasLowercase = /[a-z]/.test(value);
+        // Check for at least one uppercase letter
+        const hasUppercase = /[A-Z]/.test(value);
+        // Check for at least one digit
         const hasNumber = /[0-9]/.test(value);
-        const hasSpecialChar = /[@#$%^&*()_+!~\-=<>?/|]/.test(value);
+        // Check for at least one special character (non-alphanumeric)
+        const hasSpecialChar = /[^A-Za-z0-9]/.test(value);
 
         const errors: ValidationErrors = {};
-        if (!hasUppercase) errors['missingUppercase'] = true;
+        if (!startsWithLetter) errors['doesNotStartWithLetter'] = true;
         if (!hasLowercase) errors['missingLowercase'] = true;
+        if (!hasUppercase) errors['missingUppercase'] = true;
         if (!hasNumber) errors['missingNumber'] = true;
         if (!hasSpecialChar) errors['missingSpecialChar'] = true;
 
@@ -143,7 +150,7 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
                     'Kakuzu@123456',
                     Validators.compose([
                         Validators.required,
-                        Validators.minLength(12),
+                        Validators.minLength(8),
                         Validators.maxLength(100),
                         passwordComplexityValidator(),
                     ]),

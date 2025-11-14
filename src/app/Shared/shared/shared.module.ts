@@ -76,6 +76,7 @@ import { LogoutComponent } from '../components/logout/logout.component';
 import { TableLoadingSpinnerComponent } from '../components/table-loading-spinner/table-loading-spinner/table-loading-spinner.component';
 import { ComingSoonComponent } from 'src/app/demo/components/pages/coming-soon/coming-soon.component';
 import { InputMaskModule } from 'primeng/inputmask';
+import { SessionExpiredDialogComponent } from 'src/app/core/components/session-expired-dialog/session-expired-dialog.component';
 const components = [
     ComingSoonComponent,
     ColorScemaSettingsComponent,
@@ -83,6 +84,7 @@ const components = [
     LogoutComponent,
     ERPInfoComponent,
     ERPVariablesComponent,
+    SessionExpiredDialogComponent,
 ];
 
 const imports = [
