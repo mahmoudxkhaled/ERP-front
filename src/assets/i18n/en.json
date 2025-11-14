@@ -97,6 +97,7 @@
     "layout": {
         "app-breadcrumb": {
             "dashboard": "ERP Dashboard",
+            "entitiesList": "Company Details",
             "uikit": "UI Kit",
             "utilities": "Utilities",
             "pages": "Pages Management",

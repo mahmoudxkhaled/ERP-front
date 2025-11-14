@@ -22,26 +22,31 @@ const routes: Routes = [
             {
                 path: 'summary',
                 canActivate: [AuthGuard],
+                data: { breadcrumb: 'summary' },
                 loadChildren: () => import('./modules/summary/summary.module').then((m) => m.SummaryModule),
             },
             {
                 path: 'company-administration',
                 canActivate: [AuthGuard],
+                data: { breadcrumb: 'companyAdministration' },
                 loadChildren: () => import('./modules/company-administration/company-administration.module').then((m) => m.CompanyAdministrationModule),
             },
             {
                 path: 'document-control',
                 canActivate: [AuthGuard],
+                data: { breadcrumb: 'documentControl' },
                 loadChildren: () => import('./modules/document-control/document-control.module').then((m) => m.DocumentControlModule),
             },
             {
                 path: 'human-resources',
                 canActivate: [AuthGuard],
+                data: { breadcrumb: 'humanResources' },
                 loadChildren: () => import('./modules/human-resources/human-resources.module').then((m) => m.HumanResourcesModule),
             },
             {
                 path: 'financials',
                 canActivate: [AuthGuard],
+                data: { breadcrumb: 'financials' },
                 loadChildren: () => import('./modules/financials/financials.module').then((m) => m.FinancialsModule),
             },
 

@@ -97,6 +97,8 @@
     "layout": {
         "app-breadcrumb": {
             "dashboard": "لوحة تحكم ERP",
+            "entitiesList": "تفاصيل الشركة",
+
             "uikit": "أدوات واجهة المستخدم",
             "utilities": "الأدوات المساعدة",
             "pages": "إدارة الصفحات",

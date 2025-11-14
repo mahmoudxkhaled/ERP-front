@@ -2,7 +2,7 @@
     .layout-footer {
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: center;
         padding: 1.5rem;
         background-color: var(--surface-card);
     }
@@ -14,7 +14,7 @@
         text-align: right; // Align text to the right
         display: flex;
         align-items: center;
-        justify-content: space-between;
+        justify-content: center;
         padding: 1.5rem;
         background-color: var(--surface-card);
     }
