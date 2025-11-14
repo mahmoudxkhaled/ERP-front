@@ -16,10 +16,17 @@
 
     <ul *ngIf="menuProfileActive" [@menu]="isHorizontal ? 'overlay' : 'inline'">
         <li pTooltip="Settings" [tooltipDisabled]="isTooltipDisabled">
-            <button class="p-link" [routerLink]="['/users/profile']">
-                <i class="pi pi-cog pi-fw"></i>
+            <button class="p-link" [routerLink]="['/summary/profile']">
+                <i class="pi pi-user pi-fw"></i>
                 <span>{{
                     ('layout.app-menuProfile.profile' | translate) }}</span>
+            </button>
+        </li>
+        <li pTooltip="Settings" [tooltipDisabled]="isTooltipDisabled">
+            <button class="p-link" [routerLink]="['/summary/settings']">
+                <i class="pi pi-cog pi-fw"></i>
+                <span>{{
+                    ('layout.app-menuProfile.settings' | translate) }}</span>
             </button>
         </li>
         <li pTooltip="Logout" [tooltipDisabled]="isTooltipDisabled" (click)="logOut()">

@@ -88,14 +88,15 @@ export class AppTopbarComponent implements OnInit {
         // const data = this.localStorage.getCurrentUserData();
         // this.userLanguageId = data.language;
 
-        // this.fetchUserTheme();
+        this.fetchUserTheme();
         // this.fetchNotifications();
         this.initializeStaticLanguages();
     }
 
     fetchUserTheme() {
         const data = this.localStorageServ.getCurrentUserData();
-        this.userTheme = data?.theme;
+        // Get theme from localStorage, or fallback to layout service config, or default to 'light'
+        this.userTheme = data?.theme || this.layoutService.config().colorScheme || 'light';
     }
 
     fetchNotifications() {
@@ -135,7 +136,14 @@ export class AppTopbarComponent implements OnInit {
             return; // Prevent multiple clicks while loading
         }
 
+        // Get current theme from layout service config if userTheme is not set
+        if (!this.userTheme) {
+            const currentConfig = this.layoutService.config();
+            this.userTheme = currentConfig.colorScheme || 'light';
+        }
+
         this.themeLoading = true; // Set loading to true
+        // Toggle theme: if current is 'light', switch to 'dark', otherwise switch to 'light'
         this.userTheme = this.userTheme === 'light' ? 'dark' : 'light';
         this.applyUserTheme(this.userTheme as 'light' | 'dark');
     }

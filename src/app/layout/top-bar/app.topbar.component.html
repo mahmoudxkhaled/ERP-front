@@ -38,10 +38,10 @@
                 <li>
                     <i [class]="
                             themeLoading
-                                ? 'pi pi-spin pi-spinner text-2xl'
+                                ? 'pi pi-spin pi-spinner text-xl'
                                 : userTheme === 'dark'
-                                ? 'pi pi-sun text-2xl cursor-pointer'
-                                : 'pi pi-moon text-2xl cursor-pointer'
+                                ? 'pi pi-sun text-xl cursor-pointer'
+                                : 'pi pi-moon text-xl cursor-pointer'
                         " [style.cursor]="themeLoading ? 'default' : 'pointer'" (click)="changeUserTheme()"></i>
                 </li>
 
@@ -51,8 +51,8 @@
                         [style.cursor]="langLoading ? 'default' : 'pointer'">
                         <i [class]="
                                 langLoading 
-                                    ? 'pi pi-spin pi-spinner text-2xl' 
-                                    : 'pi pi-globe text-2xl'
+                                    ? 'pi pi-spin pi-spinner text-xl' 
+                                    : 'pi pi-globe text-xl'
                             "></i>
                     </a>
                     <div class="ng-hidden-temp hidden-temp" id="hidden-temp" *ngIf="isListboxVisible">
@@ -63,9 +63,9 @@
 
 
 
-                <li>
-                    <i class="pi pi-power-off text-2xl cursor-pointer" (click)="logOut()"></i>
-                </li>
+                <!-- <li>
+                    <i class="pi pi-power-off text-xl cursor-pointer" (click)="logOut()"></i>
+                </li> -->
             </ul>
         </div>
     </div>
