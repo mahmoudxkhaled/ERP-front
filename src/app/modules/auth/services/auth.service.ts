@@ -35,7 +35,14 @@ export class AuthService {
     verify2FA(email: string, otp: string): Observable<any> {
         this.isLoadingSubject.next(true);
         return this.apiServices.callAPI(101, '', [email, otp]).pipe(
-            finalize(() => this.isLoadingSubject.next(false))
+            tap((response: any) => {
+                this.setAuthFromResponseToLocalStorage(response);
+            }),
+            finalize(() => {
+                this.isLoadingSubject.next(false),
+                    this.getLoginDataPackage(email).subscribe();
+            }
+            )
         );
     }
 

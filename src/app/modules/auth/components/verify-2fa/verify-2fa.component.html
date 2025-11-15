@@ -1,12 +1,12 @@
 <div class="body">
   <div class="forgot-container">
-    <h2>2 Factor Authentication</h2>
+    <h2>Two Factor Authentication</h2>
     <p>Your account has a 2 factor authentication login</p>
     <p style="font-size: 13px; color: rgba(255, 255, 255, 0.7); margin-bottom: 20px;">
       <i class="pi pi-info-circle" style="margin-right: 5px;"></i>
       Please enter the 6-digit code sent to your email
     </p>
-    <form [formGroup]="form" (ngSubmit)="verifyCode()">
+    <form [formGroup]="form" (ngSubmit)="verify2FA()">
       <div class="form-group">
         <div class="input-group justify-content-center" style="display: flex; gap: 10px; justify-content: center;">
           <input type="text" class="custom-input" id="code1" maxlength="1" formControlName="code1"

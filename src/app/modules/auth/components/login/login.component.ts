@@ -46,7 +46,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         const userData = this.localStorageService.getItem('userData');
         if (userData) {
-            console.log('userData from login component', userData);
             this.router.navigate(['/']);
         }
 
@@ -106,7 +105,7 @@ export class LoginComponent implements OnInit, OnDestroy {
                 this.router.navigate(['/auth/account-status'], { queryParams: { status: 'Locked' } });
                 return;
             case 'ERP11103':
-                this.router.navigate(['/auth/verify-code', email]);
+                this.router.navigate(['/auth/verify-2fa', email]);
                 return;
             case 'ERP11104':
                 this.errorMessage = 'Invalid login credentials. Please check your email or password.';

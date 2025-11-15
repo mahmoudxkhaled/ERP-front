@@ -8,7 +8,7 @@ import { SharedModule } from 'src/app/Shared/shared/shared.module';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { ForgetPasswordComponent } from './components/forget-password/forget-password.component';
 import { AccountStatusComponent } from './components/account-status/account-status.component';
-import { VerifyCodeComponent } from './components/verify-code/verify-code.component';
+import { Verify2FAComponent } from './components/verify-2fa/verify-2fa.component';
 
 @NgModule({
     declarations: [
@@ -17,7 +17,7 @@ import { VerifyCodeComponent } from './components/verify-code/verify-code.compon
         VerificationEmailComponent,
         ResetPasswordComponent,
         ForgetPasswordComponent,
-        VerifyCodeComponent,
+        Verify2FAComponent,
         AccountStatusComponent
     ],
     imports: [AuthRoutingModule, SharedModule],

@@ -6,7 +6,7 @@ import { EmailVerifiedComponent } from './components/email-verified/email-verifi
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { ForgetPasswordComponent } from './components/forget-password/forget-password.component';
 import { AccountStatusComponent } from './components/account-status/account-status.component';
-import { VerifyCodeComponent } from './components/verify-code/verify-code.component';
+import { Verify2FAComponent } from './components/verify-2fa/verify-2fa.component';
 
 const routes: Routes = [
     { path: '', component: LoginComponent },
@@ -25,7 +25,7 @@ const routes: Routes = [
     },
     { path: 'reset-password', component: ResetPasswordComponent },
     { path: 'forget-password', component: ForgetPasswordComponent },
-    { path: 'verify-code/:email', component: VerifyCodeComponent },
+    { path: 'verify-2fa/:email', component: Verify2FAComponent },
     { path: 'account-status', component: AccountStatusComponent },
 ];
 

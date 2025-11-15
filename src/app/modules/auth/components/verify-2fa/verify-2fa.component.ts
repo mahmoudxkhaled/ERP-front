@@ -4,13 +4,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
 import { Observable, Subscription } from 'rxjs';
+import { LanguageDIRService } from 'src/app/core/Services/LanguageDIR.service';
 
 @Component({
-  selector: 'app-verify-code',
-  templateUrl: './verify-code.component.html',
-  styleUrl: './verify-code.component.scss'
+  selector: 'app-verify-2fa',
+  templateUrl: './verify-2fa.component.html',
+  styleUrl: './verify-2fa.component.scss'
 })
-export class VerifyCodeComponent implements OnInit, OnDestroy {
+export class Verify2FAComponent implements OnInit, OnDestroy {
 
   email: string = '';
   validationMessage: string = '';
@@ -22,12 +23,19 @@ export class VerifyCodeComponent implements OnInit, OnDestroy {
     private apiService: AuthService,
     private router: Router,
     private localStorageService: LocalStorageService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private rtlService: LanguageDIRService
   ) {
     this.isLoading$ = this.apiService.isLoadingSubject;
   }
 
   ngOnInit(): void {
+
+    const userData = this.localStorageService.getItem('userData');
+    if (userData) {
+      this.router.navigate(['/']);
+    }
+
     this.email = this.route.snapshot.params['email'];
 
     this.form = new FormGroup({
@@ -40,7 +48,7 @@ export class VerifyCodeComponent implements OnInit, OnDestroy {
     });
   }
 
-  verifyCode() {
+  verify2FA() {
     this.validationMessage = '';
 
     if (this.form.invalid) {
@@ -58,32 +66,24 @@ export class VerifyCodeComponent implements OnInit, OnDestroy {
     ].join('');
 
     if (otp && this.email) {
-      console.log('otp', otp);
-      console.log('email', this.email);
       const verifySubscription = this.apiService.verify2FA(this.email, otp).subscribe({
         next: (response: any) => {
           if (response?.success === true) {
-            // AuthService already saves auth data if token and userId are present
-            // But we can also save it here as a fallback
-            if (response?.message) {
-              this.setAuthFromResponseToLocalStorage(response);
-            }
-            this.router.navigate(['/']);
+            this.handleSuccessfulLogin();
           } else {
-            this.validationMessage = response?.message || 'Invalid verification code. Please try again.';
+            this.validationMessage = 'Invalid verification code. Please try again.';
           }
         },
-        error: (error: any) => {
-          const errorMessage = error?.message || 'Invalid verification code. Please try again.';
-          this.validationMessage = errorMessage;
-        }
       });
       this.unsubscribe.push(verifySubscription);
     }
   }
 
-  ngOnDestroy(): void {
-    this.unsubscribe.forEach((u) => u.unsubscribe());
+  handleSuccessfulLogin() {
+    const userLang = this.rtlService.getLanguageFromStorage();
+    this.rtlService.setUserLanguageCode(userLang);
+    this.rtlService.setRtl(userLang === 'ar');
+    this.router.navigate(['/']);
   }
 
   moveToNext(event: any, nextInputId: string): void {
@@ -103,27 +103,7 @@ export class VerifyCodeComponent implements OnInit, OnDestroy {
     }
   }
 
-  setAuthFromResponseToLocalStorage(response: any): boolean {
-    if (!response?.success || !response?.message) {
-      return false;
-    }
-
-    const payload = response.message;
-    const token = payload.Access_Token ?? payload.accessToken ?? payload.token;
-    const userId = payload.User_ID ?? payload.userId ?? payload.id;
-
-    if (!token || !userId) {
-      return false;
-    }
-
-    const authData = {
-      token,
-      userId,
-    };
-
-    console.log('authData from login component', authData);
-
-    this.localStorageService.setItem('userData', authData);
-    return true;
+  ngOnDestroy(): void {
+    this.unsubscribe.forEach((u) => u.unsubscribe());
   }
 }
