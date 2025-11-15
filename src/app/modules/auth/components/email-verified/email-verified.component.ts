@@ -21,13 +21,6 @@ export class EmailVerifiedComponent implements OnInit, OnDestroy {
             this.userEmail = queryParams['email'] || '';
         });
         this.unsubscribe.push(queryParamsSub);
-
-        const paramsSub = this.route.params.subscribe((params) => {
-            if (params['email'] && !this.userEmail) {
-                this.userEmail = params['email'];
-            }
-        });
-        this.unsubscribe.push(paramsSub);
     }
 
     backToLogin(): void {

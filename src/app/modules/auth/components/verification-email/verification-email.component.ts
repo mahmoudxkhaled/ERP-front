@@ -27,7 +27,7 @@ export class VerificationEmailComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const queryParamsSub = this.route.queryParams.subscribe(params => {
-      this.verificationToken = params['token'] || params['verification-token'] || '';
+      this.verificationToken = params['verification-token'] || '';
 
       if (this.verificationToken) {
         this.verifyEmail();
@@ -50,16 +50,13 @@ export class VerificationEmailComponent implements OnInit, OnDestroy {
 
     const verifySub = this.authService.verifyEmail(this.verificationToken).subscribe({
       next: (response: any) => {
-        if (response?.success === true) {
-          this.verificationSuccess = true;
-          this.startRedirectCountdown();
-        } else {
+        if (!response?.success) {
           this.handleError(this.INVALID_LINK_MESSAGE);
+          return;
         }
+        this.verificationSuccess = true;
+        this.startRedirectCountdown();
       },
-      error: (error: any) => {
-        this.handleError(this.INVALID_LINK_MESSAGE);
-      }
     });
 
     this.unsubscribe.push(verifySub);

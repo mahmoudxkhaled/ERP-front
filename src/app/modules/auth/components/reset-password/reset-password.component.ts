@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { passwordMatchValidator } from '../../../../core/Services/passwordMatchValidator';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 
@@ -41,8 +41,8 @@ export function passwordComplexityValidator(): ValidatorFn {
 export class ResetPasswordComponent implements OnInit, OnDestroy {
     private unsubscribe: Subscription[] = [];
     private countdownInterval: any = null;
-    private email: string;
-    resetPassForm!: FormGroup;
+    resetPassForm: FormGroup;
+    resetToken: string = '';
     tenantLogoUrl: string;
     resetSuccess: boolean = false;
     redirectCountdown: number = 5;
@@ -50,41 +50,34 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
     errorMessage: string = '';
     type: string = '';
     pageLabel: string = '';
+    isLoading$: Observable<boolean>;
+
+
     constructor(
         private authService: AuthService,
         private route: ActivatedRoute,
         private router: Router,
-        private messageService: MessageService,
         private fb: FormBuilder
     ) {
+        this.isLoading$ = this.authService.isLoadingSubject;
+        console.log('isLoading$', this.isLoading$);
         this.initForm();
+
     }
 
     ngOnInit(): void {
-        console.log('ngOnInit');
-
-        // Read type from route params or route data
         const routeData = this.route.snapshot.data;
         if (routeData['type']) {
-            // Override with route data type (for change-password route)
             this.type = routeData['type'];
         } else {
-            // Read from route params (for :type/reset-password route)
             this.type = this.route.snapshot.params['type'] || '';
         }
-
-        // Set pageLabel based on type
         this.setPageLabel();
 
         const queryParamsSub = this.route.queryParams.subscribe((queryParams) => {
-            let resetToken = queryParams['reset-token'] || queryParams['token'] || '';
-            console.log('resetToken from queryParams', resetToken);
-            if (resetToken) {
-                resetToken = decodeURIComponent(resetToken);
-                resetToken = resetToken.replace(/ /g, '+');
-                console.log('resetToken', resetToken);
-                (this as any).resetToken = resetToken;
-            }
+            let resetToken = queryParams['reset-token'] || '';
+            this.resetToken = decodeURIComponent(resetToken);
+            this.resetToken = this.resetToken.replace(/ /g, '+');
         });
         this.unsubscribe.push(queryParamsSub);
     }
@@ -101,46 +94,58 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
     }
 
     submit() {
+
+        if (this.authService.isLoadingSubject.value) return;
+        console.log('loading', this.authService.isLoadingSubject.value);
         if (this.resetPassForm.invalid) {
+            this.hasError = true;
+            this.errorMessage = 'Please enter a valid new password.';
             return;
         }
 
-        const resetToken = (this as any).resetToken || '';
         const newPassword = this.resetPassForm.get('password')?.value;
 
-        if (!resetToken) {
-            this.messageService.add({
-                severity: 'error',
-                summary: 'Error',
-                detail: 'Reset token is missing. Please use the link from your email.',
-            });
+        if (!this.resetToken) {
+            this.hasError = true;
+            this.errorMessage = 'Reset token is missing. Please use the link from your email.';
             return;
         }
-        console.log('resetToken from submit', resetToken);
-        console.log('newPassword from submit', newPassword);
 
-        const resetSub = this.authService.resetPasswordConfirm(resetToken, newPassword).subscribe({
+
+        const resetSub = this.authService.resetPasswordConfirm(this.resetToken, newPassword).subscribe({
             next: (response: any) => {
-                if (response?.success === true) {
-                    this.resetSuccess = true;
-                    this.startRedirectCountdown();
-                } else {
-                    this.messageService.add({
-                        severity: 'error',
-                        summary: 'Error',
-                        detail: response?.message || 'Password reset failed.',
-                    });
+                console.log('response', response);
+                if (!response?.success) {
+                    this.handleBusinessError(response);
+                    return;
                 }
                 this.resetSuccess = true;
                 this.startRedirectCountdown();
             },
-            error: (error: any) => {
-                this.hasError = true;
-                this.errorMessage = 'Password reset failed. Please try again.';
-            }
+
         });
 
         this.unsubscribe.push(resetSub);
+    }
+
+    private handleBusinessError(error: any) {
+        this.hasError = true;
+        const code = (error.message).toString();
+        switch (code) {
+
+            case 'ERP11135':
+                this.errorMessage = 'Invalid Reset Token. Please use the link from your email.';
+                return;
+            case 'ERP11136':
+                this.errorMessage = 'Invalid New Password. Please enter a valid password.';
+                return;
+            case 'ERP11137':
+                this.errorMessage = 'New Password Format is incompliant. Please check the password requirements.';
+                return;
+            default:
+                this.errorMessage = code || 'Unexpected error occurred.';
+                return;
+        }
     }
 
     initForm() {

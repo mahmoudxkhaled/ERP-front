@@ -10,9 +10,11 @@ import { Verify2FAComponent } from './components/verify-2fa/verify-2fa.component
 
 const routes: Routes = [
     { path: '', component: LoginComponent },
+
     { path: 'email-verified', component: EmailVerifiedComponent },
-    { path: 'emailVerified/:email', component: EmailVerifiedComponent },
+
     { path: 'verify-email', component: VerificationEmailComponent },
+
     {
         path: ':type/reset-password',
         component: ResetPasswordComponent,

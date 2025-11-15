@@ -35,12 +35,12 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
     constructor(
-        private apiService: AuthService,
+        private authService: AuthService,
         private router: Router,
         private rtlService: LanguageDIRService,
         private localStorageService: LocalStorageService
     ) {
-        this.isLoading$ = this.apiService.isLoadingSubject;
+        this.isLoading$ = this.authService.isLoadingSubject;
     }
 
     ngOnInit(): void {
@@ -63,7 +63,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
     submit() {
-        if (this.apiService.isLoadingSubject.value) return;
+        if (this.authService.isLoadingSubject.value) return;
 
         if (this.loginCreditials.invalid) {
             this.hasError = true;
@@ -76,7 +76,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         const email = this.email?.value as string;
         const password = this.password?.value as string;
 
-        const loginSubscription = this.apiService.login(email, password).subscribe({
+        const loginSubscription = this.authService.login(email, password).subscribe({
             next: (response: any) => {
 
                 if (!response?.success) {

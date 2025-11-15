@@ -56,20 +56,17 @@ export class ForgetPasswordComponent implements OnInit, OnDestroy {
 
     const requestSub = this.apiService.resetPasswordRequest(emailValue).subscribe({
       next: (response: any) => {
-        if (response?.success === true) {
-          this.successMessage = 'Please check your email for the reset link.';
-          this.validationMessage = '';
-        } else {
+
+        if (!response?.success) {
           this.validationMessage = response?.message || 'Failed to send reset link';
           this.successMessage = '';
+          return;
         }
-      },
-      error: (error: any) => {
-        this.validationMessage = error?.message || 'Failed to send reset link. Please try again.';
-        this.successMessage = '';
-      }
-    });
+        this.successMessage = 'Please check your email for the reset link.';
+        this.validationMessage = '';
 
+      },
+    });
     this.unsubscribe.push(requestSub);
   }
 
