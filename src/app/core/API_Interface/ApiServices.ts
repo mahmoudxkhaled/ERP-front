@@ -68,8 +68,7 @@ export class ApiServices {
           ReturnStatus: 200,
           Body: response
         };
-        console.log('result from callAPI', result);
-        return result;
+        return this.handelApiResponse(result);
       }),
 
       // Handle and modify errors before returning
@@ -133,4 +132,12 @@ export class ApiServices {
       })
     );
   }
+
+
+  private handelApiResponse(apiResult: ApiResult): any {
+    const parsed = JSON.parse(apiResult.Body);
+    return parsed;
+  }
+
+
 }

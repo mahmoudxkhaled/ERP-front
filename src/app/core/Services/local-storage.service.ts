@@ -7,28 +7,33 @@ export class LocalStorageService {
 
   constructor() { }
 
-  getCurrentUserData() : any{
+  getCurrentUserData(): any {
     let userData: any = localStorage.getItem('userData');
-    if(userData !== null){
+    if (userData !== null) {
       const data = JSON.parse(userData);
       return data
     }
     return null;
   }
 
-  setItem(key :string, data : any){
+  setItem(key: string, data: any) {
     localStorage.setItem(key, JSON.stringify(data));
   }
 
-  removeItem(key :string){
+  removeItem(key: string) {
     localStorage.removeItem(key);
   }
 
-  getItem(key :string){
+  getItem(key: string) {
     let data = localStorage.getItem(key);
-    if(data !== null && data !== 'undefined'){
+    if (data !== null && data !== 'undefined') {
       return JSON.parse(data);
     }
     return null;
+  }
+
+  getAccessToken() {
+    const userData = this.getCurrentUserData();
+    return userData?.token;
   }
 }

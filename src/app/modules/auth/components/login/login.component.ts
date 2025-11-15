@@ -20,17 +20,10 @@ export class LoginComponent implements OnInit, OnDestroy {
     isRtl: boolean = false;
     showPassword: boolean = false;
 
-
-    messages = [
-        "1 # Revolutionizing Ideas",
-        "1 # Advancing Security",
-        "1 # Building Confidence",
-        "1 # Inspiring Trust",
-        "1 # Leading Protection"
-    ];
     currentIndex = 0;
     typingSpeed = 100;
     pauseTime = 3000;
+    yearNow = new Date().getFullYear();
 
     get dark(): boolean {
         return this.layoutService.config().colorScheme !== 'light';
@@ -88,76 +81,52 @@ export class LoginComponent implements OnInit, OnDestroy {
 
         const loginSubscription = this.apiService.login(email, password).subscribe({
             next: (response: any) => {
-                if (response?.success === true) {
-                    const stored = this.setAuthFromResponseToLocalStorage(response);
-                    if (!stored) {
-                        console.warn('Login succeeded but auth payload was missing expected fields.');
-                    }
-                    this.handleSuccessfulLogin();
+
+                if (!response?.success) {
+                    this.handleBusinessError(response, email);
                     return;
                 }
-                this.hasError = true;
+                this.handleSuccessfulLogin();
             },
-            error: (error: any) => {
-                this.hasError = true;
-                const code = (error?.message || '').toString();
-                console.log('code from error', code);
-                switch (code) {
-                    case 'ERP11104':
-                        this.errorMessage = 'Invalid login credentials. Please check your email or password.';
-                        return;
-                    case 'ERP11100':
-                        this.router.navigate(['/auth/account-locked'], { queryParams: { status: 'Inactive' } });
-                        return;
-                    case 'ERP11101':
-                        this.router.navigate(['/auth/email-verified'], { queryParams: { email: email } });
-                        return;
-                    case 'ERP11102':
-                        this.router.navigate(['/auth/account-locked'], { queryParams: { status: 'Locked' } });
-                        return;
-                    case 'ERP11140': {
-                        const queryParams: any = {};
-                        if (email) { queryParams['email'] = email; }
-                        this.router.navigate(['/auth/email-verified'], { queryParams });
-                        return;
-                    }
-                    case 'ERP11103':
-                        this.router.navigate(['/auth/verify-code', email]);
-                        return;
-                    default:
-                        this.errorMessage = code || 'Unexpected error occurred.';
-                        console.error('Login error:', this.errorMessage);
-                        return;
-                }
-            }
         });
 
         this.unsubscribe.push(loginSubscription);
     }
 
-    setAuthFromResponseToLocalStorage(response: any): boolean {
-        if (!response?.success || !response?.message) {
-            return false;
+    private handleBusinessError(error: any, email: string) {
+        this.hasError = true;
+        const code = (error.message).toString();
+        console.log('code from error', code);
+        switch (code) {
+            case 'ERP11104':
+                this.errorMessage = 'Invalid login credentials. Please check your email or password.';
+                return;
+            case 'ERP11100':
+                this.router.navigate(['/auth/account-locked'], { queryParams: { status: 'Inactive' } });
+                return;
+            case 'ERP11101':
+                this.router.navigate(['/auth/email-verified'], { queryParams: { email: email } });
+                return;
+            case 'ERP11102':
+                this.router.navigate(['/auth/account-locked'], { queryParams: { status: 'Locked' } });
+                return;
+            case 'ERP11140': {
+                const queryParams: any = {};
+                if (email) { queryParams['email'] = email; }
+                this.router.navigate(['/auth/email-verified'], { queryParams });
+                return;
+            }
+            case 'ERP11103':
+                this.router.navigate(['/auth/verify-code', email]);
+                return;
+            default:
+                this.errorMessage = code || 'Unexpected error occurred.';
+                console.error('Login error:', this.errorMessage);
+                return;
         }
 
-        const payload = response.message;
-        const token = payload.Access_Token ?? payload.accessToken ?? payload.token;
-        const userId = payload.User_ID ?? payload.userId ?? payload.id;
-
-        if (!token || !userId) {
-            return false;
-        }
-
-        const authData = {
-            token,
-            userId,
-        };
-
-        console.log('authData from login component', authData);
-
-        this.localStorageService.setItem('userData', authData);
-        return true;
     }
+
 
 
     handleSuccessfulLogin() {
@@ -170,6 +139,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     togglePasswordVisibility(): void {
         this.showPassword = !this.showPassword;
     }
+
 
     ngOnDestroy(): void {
         this.unsubscribe.forEach((u) => u.unsubscribe());

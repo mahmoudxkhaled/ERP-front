@@ -5,7 +5,7 @@
     <div class="login-container">
         <!-- <div class="brand-logo">
             <div class="i-background">
-                <img src="../../../../../favicon.ico" alt="logo" />
+                <img src="/assets/images/quantum_logo.png" alt="logo" />
             </div>
         </div> -->
         <h2>Welcome to ERP</h2>
@@ -15,7 +15,6 @@
                 {{ errorMessage }}
             </span>
         </div>
-        <!-- <div class="message">1 # Revolutionizing Ideas</div> -->
         <form [formGroup]="loginCreditials" (ngSubmit)="submit()">
             <div class="form-group">
                 <input type="email" id="username" name="username" placeholder=" " formControlName="email" required
@@ -56,7 +55,7 @@
             <a routerLink="/auth/forget-password">Forgot Password?</a>
         </div>
         <div class="footer">
-            © 2025 Quantum PMC LLC. All rights reserved.
+            © {{ yearNow }} Quantum PMC LLC. All rights reserved.
         </div>
     </div>
 </div>

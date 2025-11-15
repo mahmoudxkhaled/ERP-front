@@ -205,11 +205,7 @@ export class AppTopbarComponent implements OnInit {
 
     onLogoutConfirm() {
         // User confirmed logout, proceed with logout
-        this.authService.logout().subscribe((r) => {
-            if (r.success) {
-                this.router.navigate(['/auth']);
-            }
-        });
+        this.authService.logout().subscribe();
     }
 
     onLogoutCancel() {

@@ -18,5 +18,5 @@ export class AppFooterComponent {
         //     this.companyLogo = newPhotoUrl ?? this.companyLogo;
         // });
     }
-
+    yearNow = new Date().getFullYear();
 }
