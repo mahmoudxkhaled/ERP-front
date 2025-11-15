@@ -38,7 +38,7 @@
                 </div>
             </div>
             <div class="flex align-items-center justify-content-center mt-4 gap-3">
-                <button class="login-btn" type="submit" [disabled]="loginCreditials.invalid">
+                <button class="login-btn" type="submit" [disabled]="loginCreditials.invalid || (isLoading$ | async)">
                     <ng-container *ngIf="isLoading$ | async">
                         <span class="indicator-progress" [style.display]="'block'">
                             {{ 'auth.login.pleaseWait' | translate }}

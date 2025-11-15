@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
-    selector: 'app-account-locked',
-    templateUrl: './account-locked.component.html',
-    styleUrls: ['./account-locked.component.scss']
+    selector: 'app-account-status',
+    templateUrl: './account-status.component.html',
+    styleUrls: ['./account-status.component.scss']
 })
-export class AccountLockedComponent implements OnInit {
+export class AccountStatusComponent implements OnInit {
     status: string = 'Locked';
     isInactive: boolean = false;
 

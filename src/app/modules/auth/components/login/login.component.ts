@@ -23,11 +23,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     currentIndex = 0;
     typingSpeed = 100;
     pauseTime = 3000;
-    yearNow = new Date().getFullYear();
 
-    get dark(): boolean {
-        return this.layoutService.config().colorScheme !== 'light';
-    }
+    yearNow = new Date().getFullYear();
 
     get email() {
         return this.loginCreditials.get('email');
@@ -38,7 +35,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
     constructor(
-        private layoutService: LayoutService,
         private apiService: AuthService,
         private router: Router,
         private rtlService: LanguageDIRService,
@@ -68,6 +64,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
     submit() {
+        if (this.apiService.isLoadingSubject.value) return;
+
         if (this.loginCreditials.invalid) {
             this.hasError = true;
             this.errorMessage = 'Please enter a valid email and password.';
@@ -96,38 +94,28 @@ export class LoginComponent implements OnInit, OnDestroy {
     private handleBusinessError(error: any, email: string) {
         this.hasError = true;
         const code = (error.message).toString();
-        console.log('code from error', code);
         switch (code) {
-            case 'ERP11104':
-                this.errorMessage = 'Invalid login credentials. Please check your email or password.';
-                return;
+
             case 'ERP11100':
-                this.router.navigate(['/auth/account-locked'], { queryParams: { status: 'Inactive' } });
+                this.router.navigate(['/auth/account-status'], { queryParams: { status: 'Inactive' } });
                 return;
             case 'ERP11101':
                 this.router.navigate(['/auth/email-verified'], { queryParams: { email: email } });
                 return;
             case 'ERP11102':
-                this.router.navigate(['/auth/account-locked'], { queryParams: { status: 'Locked' } });
+                this.router.navigate(['/auth/account-status'], { queryParams: { status: 'Locked' } });
                 return;
-            case 'ERP11140': {
-                const queryParams: any = {};
-                if (email) { queryParams['email'] = email; }
-                this.router.navigate(['/auth/email-verified'], { queryParams });
-                return;
-            }
             case 'ERP11103':
                 this.router.navigate(['/auth/verify-code', email]);
                 return;
+            case 'ERP11104':
+                this.errorMessage = 'Invalid login credentials. Please check your email or password.';
+                return;
             default:
                 this.errorMessage = code || 'Unexpected error occurred.';
-                console.error('Login error:', this.errorMessage);
                 return;
         }
-
     }
-
-
 
     handleSuccessfulLogin() {
         const userLang = this.rtlService.getLanguageFromStorage();
@@ -139,7 +127,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     togglePasswordVisibility(): void {
         this.showPassword = !this.showPassword;
     }
-
 
     ngOnDestroy(): void {
         this.unsubscribe.forEach((u) => u.unsubscribe());

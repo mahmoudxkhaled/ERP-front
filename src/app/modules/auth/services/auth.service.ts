@@ -17,19 +17,24 @@ export class AuthService {
         this.isLoadingSubject = new BehaviorSubject<boolean>(false);
     }
 
+
     login(email: string, password: string): Observable<any> {
         this.isLoadingSubject.next(true);
-        return this.apiServices.callAPI(ApiRequestTypes.Login, '', [email, password]).pipe(
+        return this.apiServices.callAPI(100, '', [email, password]).pipe(
             tap((response: any) => {
                 this.setAuthFromResponseToLocalStorage(response);
             }),
-            finalize(() => this.isLoadingSubject.next(false))
+            finalize(() => {
+                this.isLoadingSubject.next(false),
+                    this.getLoginDataPackage(email).subscribe();
+            }
+            )
         );
     }
 
     verify2FA(email: string, otp: string): Observable<any> {
         this.isLoadingSubject.next(true);
-        return this.apiServices.callAPI(ApiRequestTypes.Verify_2FA, '', [email, otp]).pipe(
+        return this.apiServices.callAPI(101, '', [email, otp]).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );
     }
@@ -38,7 +43,7 @@ export class AuthService {
         this.isLoadingSubject.next(true);
 
         const accessToken = this.localStorageService.getAccessToken();
-        return this.apiServices.callAPI(ApiRequestTypes.Logout, accessToken, []).pipe(
+        return this.apiServices.callAPI(102, accessToken, []).pipe(
             tap(() => {
                 this.localStorageService.removeItem('userData');
             }),
@@ -51,36 +56,44 @@ export class AuthService {
 
     set2FA(accessToken: string, status: boolean): Observable<any> {
         this.isLoadingSubject.next(true);
-        return this.apiServices.callAPI(ApiRequestTypes.Set_2FA, accessToken, [status.toString()]).pipe(
+        return this.apiServices.callAPI(103, accessToken, [status.toString()]).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );
     }
 
     changePassword(accessToken: string, oldPassword: string, newPassword: string): Observable<any> {
         this.isLoadingSubject.next(true);
-        return this.apiServices.callAPI(ApiRequestTypes.Change_Password, accessToken, [oldPassword, newPassword]).pipe(
+        return this.apiServices.callAPI(104, accessToken, [oldPassword, newPassword]).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );
     }
 
     resetPasswordRequest(email: string): Observable<any> {
         this.isLoadingSubject.next(true);
-        return this.apiServices.callAPI(ApiRequestTypes.Reset_Password_Request, '', [email]).pipe(
+        return this.apiServices.callAPI(105, '', [email]).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );
     }
 
     resetPasswordConfirm(resetToken: string, newPassword: string): Observable<any> {
         this.isLoadingSubject.next(true);
-        return this.apiServices.callAPI(ApiRequestTypes.Reset_Password_Confirm, '', [resetToken, newPassword]).pipe(
+        return this.apiServices.callAPI(106, '', [resetToken, newPassword]).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );
     }
 
     verifyEmail(verificationToken: string): Observable<any> {
         this.isLoadingSubject.next(true);
-        return this.apiServices.callAPI(ApiRequestTypes.Verify_Email, '', [verificationToken]).pipe(
+        return this.apiServices.callAPI(107, '', [verificationToken]).pipe(
             finalize(() => this.isLoadingSubject.next(false))
+        );
+    }
+
+    getLoginDataPackage(email: string) {
+        return this.apiServices.callAPI(110, this.localStorageService.getAccessToken(), [email]).pipe(
+            tap((response: any) => {
+                console.log('response from getLoginDataPackage', response);
+            }),
         );
     }
 

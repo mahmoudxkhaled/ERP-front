@@ -12,6 +12,7 @@ export enum ApiRequestTypes {
   Reset_Password_Request = 105,
   Reset_Password_Confirm = 106,
   Verify_Email = 107,
+  Get_Login_Data_Package = 110,
   // Actions by the ERP and Entity Administrators (codes 150 - 199)
   Create_Account = 150,
   Activate_Account = 151,
