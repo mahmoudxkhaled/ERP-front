@@ -60,9 +60,7 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
         private fb: FormBuilder
     ) {
         this.isLoading$ = this.authService.isLoadingSubject;
-        console.log('isLoading$', this.isLoading$);
         this.initForm();
-
     }
 
     ngOnInit(): void {
@@ -96,7 +94,6 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
     submit() {
 
         if (this.authService.isLoadingSubject.value) return;
-        console.log('loading', this.authService.isLoadingSubject.value);
         if (this.resetPassForm.invalid) {
             this.hasError = true;
             this.errorMessage = 'Please enter a valid new password.';

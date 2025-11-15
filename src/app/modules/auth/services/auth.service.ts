@@ -84,7 +84,6 @@ export class AuthService {
 
     resetPasswordConfirm(resetToken: string, newPassword: string): Observable<any> {
         this.isLoadingSubject.next(true);
-        console.log('loading', this.isLoadingSubject.value);
         return this.apiServices.callAPI(106, '', [resetToken, newPassword]).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );
