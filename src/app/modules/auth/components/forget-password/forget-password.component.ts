@@ -58,7 +58,7 @@ export class ForgetPasswordComponent implements OnInit, OnDestroy {
       next: (response: any) => {
 
         if (!response?.success) {
-          this.validationMessage = response?.message || 'Failed to send reset link';
+          this.validationMessage = 'Invalid email address format';
           this.successMessage = '';
           return;
         }
