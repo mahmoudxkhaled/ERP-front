@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, signal } from '@angular/core';
 import { MenuService } from '../app-menu/app.menu.service';
 import { ColorScheme, LayoutService, MenuMode } from '../app-services/app.layout.service';
+import { MessageService } from 'primeng/api';
 
 @Component({
     selector: 'app-config',
@@ -8,6 +9,12 @@ import { ColorScheme, LayoutService, MenuMode } from '../app-services/app.layout
 })
 export class AppConfigComponent implements OnInit {
     @Input() minimal: boolean = false;
+
+    // Track if there are unsaved changes
+    hasUnsavedChanges: boolean = false;
+
+    // Track if saving is in progress
+    isSaving: boolean = false;
 
     componentThemes: any[] = [];
 
@@ -21,7 +28,11 @@ export class AppConfigComponent implements OnInit {
 
     selectedScene = signal<string>('');
 
-    constructor(public layoutService: LayoutService, public menuService: MenuService) { }
+    constructor(
+        public layoutService: LayoutService,
+        public menuService: MenuService,
+        private messageService: MessageService
+    ) { }
 
     get visible(): boolean {
         return this.layoutService.state.configSidebarVisible;
@@ -38,6 +49,7 @@ export class AppConfigComponent implements OnInit {
             ...config,
             scale: _val,
         }));
+        this.hasUnsavedChanges = true; // Mark as changed
     }
 
     get menuMode(): MenuMode {
@@ -45,6 +57,7 @@ export class AppConfigComponent implements OnInit {
     }
     set menuMode(_val: MenuMode) {
         this.layoutService.config().menuMode = _val;
+        this.hasUnsavedChanges = true; // Mark as changed
         if (this.layoutService.isSlimPlus() || this.layoutService.isSlim() || this.layoutService.isHorizontal()) {
             this.menuService.reset();
         }
@@ -59,6 +72,7 @@ export class AppConfigComponent implements OnInit {
             ...config,
             menuProfilePosition: _val,
         }));
+        this.hasUnsavedChanges = true; // Mark as changed
         if (this.layoutService.isSlim() || this.layoutService.isHorizontal()) {
             this.menuService.reset();
         }
@@ -74,6 +88,7 @@ export class AppConfigComponent implements OnInit {
                 menuTheme: _val === 'dark' ? 'dark' : 'light',
                 colorScheme: _val,
             }));
+            this.hasUnsavedChanges = true; // Mark as changed
 
             setTimeout(() => {
                 if (_val === 'dark') {
@@ -91,17 +106,18 @@ export class AppConfigComponent implements OnInit {
             ...config,
             inputStyle: _val,
         }));
+        this.hasUnsavedChanges = true; // Mark as changed
     }
 
-    get ripple(): boolean {
-        return this.layoutService.config().ripple;
-    }
-    set ripple(_val: boolean) {
-        this.layoutService.config.update((config) => ({
-            ...config,
-            ripple: _val,
-        }));
-    }
+    // get ripple(): boolean {
+    //     return this.layoutService.config().ripple;
+    // }
+    // set ripple(_val: boolean) {
+    //     this.layoutService.config.update((config) => ({
+    //         ...config,
+    //         ripple: _val,
+    //     }));
+    // }
 
     get menuTheme(): string {
         return this.layoutService.config().menuTheme;
@@ -111,6 +127,7 @@ export class AppConfigComponent implements OnInit {
             ...config,
             menuTheme: _val,
         }));
+        this.hasUnsavedChanges = true; // Mark as changed
     }
 
     get topbarTheme(): string {
@@ -121,6 +138,7 @@ export class AppConfigComponent implements OnInit {
             ...config,
             topbarTheme: _val,
         }));
+        this.hasUnsavedChanges = true; // Mark as changed
     }
 
     get componentTheme(): string {
@@ -131,6 +149,7 @@ export class AppConfigComponent implements OnInit {
             ...config,
             componentTheme: _val,
         }));
+        this.hasUnsavedChanges = true; // Mark as changed
     }
 
     ngOnInit() {
@@ -156,14 +175,14 @@ export class AppConfigComponent implements OnInit {
             { name: 'light', color: '#FFFFFF' },
             { name: 'dark', color: '#212529' },
             { name: 'blue', color: '#1565C0' },
-            { name: 'purple', color: '#6A1B9A' },
+            { name: 'purple', color: ' #3F51B5' },
             { name: 'pink', color: '#AD1457' },
             { name: 'cyan', color: '#0097A7' },
             { name: 'teal', color: '#00796B' },
             { name: 'green', color: '#43A047' },
             { name: 'yellow', color: '#FBC02D' },
             { name: 'orange', color: '#FB8C00' },
-            { name: 'indigo', color: '#3F51B5' },
+            { name: 'indigo', color: '#6A1B9A' },
         ];
 
         this.scenes = [
@@ -280,22 +299,27 @@ export class AppConfigComponent implements OnInit {
 
     changeTheme(theme: string) {
         this.componentTheme = theme;
+        this.hasUnsavedChanges = true; // Mark as changed
     }
 
     changeTopbarTheme(theme: string) {
         this.topbarTheme = theme;
+        this.hasUnsavedChanges = true; // Mark as changed
     }
 
     changeMenuTheme(theme: ColorScheme) {
         this.menuTheme = theme;
+        this.hasUnsavedChanges = true; // Mark as changed
     }
 
     decrementScale() {
         this.scale--;
+        // hasUnsavedChanges will be set in the setter
     }
 
     incrementScale() {
         this.scale++;
+        // hasUnsavedChanges will be set in the setter
     }
 
     changeScene(item: any) {
@@ -306,7 +330,36 @@ export class AppConfigComponent implements OnInit {
         this.menuTheme = menuTheme;
         this.topbarTheme = topbarTheme;
         this.menuMode = menuMode;
+        this.hasUnsavedChanges = true; // Mark as changed
+    }
 
+    saveChanges() {
+        // Set saving state to show spinner
+        this.isSaving = true;
 
+        // Save current configuration to localStorage using LayoutService
+        this.layoutService.saveConfigToStorage();
+        // You can also call an API here to save the settings
+        console.log('Settings saved:', this.layoutService.config());
+        this.hasUnsavedChanges = false; // Reset after saving
+
+        // Show success message
+        this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Settings saved successfully',
+            life: 3000
+        });
+
+        // Wait a bit to show the spinner and message, then reload
+        setTimeout(() => {
+            window.location.reload();
+        }, 1500);
+    }
+
+    resetToDefaults() {
+        // Reset to default configuration using LayoutService
+        this.layoutService.resetConfigToDefaults();
+        this.hasUnsavedChanges = false; // Reset after resetting
     }
 }

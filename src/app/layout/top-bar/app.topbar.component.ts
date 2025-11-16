@@ -63,7 +63,7 @@ export class AppTopbarComponent implements OnInit {
     langLoading: boolean = false; // Track the loading state
     isListboxVisible: boolean = true; // Track visibility of the listbox
     showLogoutDialog: boolean = false; // Track logout dialog visibility
-
+    entityLogo: string = '';
     mockSearchData = {
         lessons: ['Lesson 1', 'Lesson 2', 'Lesson 3'],
         games: ['Game A', 'Game B', 'Game C'],
@@ -91,8 +91,18 @@ export class AppTopbarComponent implements OnInit {
         this.fetchUserTheme();
         // this.fetchNotifications();
         this.initializeStaticLanguages();
+        this.fetchEntityLogo();
     }
+    fetchEntityLogo() {
 
+        const userData = this.localStorage.getCurrentUserData();
+        if (userData) {
+            this.entityLogo = userData.entityLogo;
+        }
+
+        this.entityLogo = userData?.entityLogo ? userData.entityLogo : 'assets/media/White-Logo.png';
+
+    }
     fetchUserTheme() {
         const data = this.localStorageServ.getCurrentUserData();
         // Get theme from localStorage, or fallback to layout service config, or default to 'light'

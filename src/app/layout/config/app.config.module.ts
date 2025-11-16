@@ -8,6 +8,10 @@ import { InputSwitchModule } from 'primeng/inputswitch';
 import { AppConfigComponent } from './app.config.component';
 import { TooltipModule } from 'primeng/tooltip';
 import { TranslateModule } from '@ngx-translate/core';
+import { MessageModule } from 'primeng/message';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import { DividerModule } from 'primeng/divider';
 
 @NgModule({
     imports: [
@@ -18,8 +22,12 @@ import { TranslateModule } from '@ngx-translate/core';
         ButtonModule,
         InputSwitchModule,
         TooltipModule,
-        TranslateModule
+        TranslateModule,
+        MessageModule,
+        ToastModule,
+        DividerModule
     ],
+    providers: [MessageService],
     declarations: [
         AppConfigComponent
     ],

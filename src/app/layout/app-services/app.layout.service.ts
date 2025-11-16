@@ -34,10 +34,13 @@ interface LayoutState {
     providedIn: 'root',
 })
 export class LayoutService {
+    // Key for localStorage
+    private readonly LAYOUT_CONFIG_KEY = 'layoutConfig';
+
     _config: AppConfig = {
         ripple: true,
         inputStyle: 'outlined',
-        menuMode: 'static',
+        menuMode: 'reveal',
         colorScheme: 'light',
         componentTheme: 'purple',
         scale: 14,
@@ -71,6 +74,9 @@ export class LayoutService {
     menuProfileOpen$ = this.menuProfileOpen.asObservable();
 
     constructor() {
+        // Load saved configuration on initialization
+        this.loadConfigFromStorage();
+
         effect(() => {
             const config = this.config();
             if (this.updateStyle(config)) {
@@ -255,6 +261,76 @@ export class LayoutService {
         document.documentElement.style.fontSize = `${value}px`;
     }
 
+    /**
+     * Save current layout configuration to localStorage
+     */
+    saveConfigToStorage(): void {
+        try {
+            const config = this.config();
+            localStorage.setItem(this.LAYOUT_CONFIG_KEY, JSON.stringify(config));
+            console.log('Layout configuration saved to localStorage');
+        } catch (error) {
+            console.error('Error saving layout configuration:', error);
+        }
+    }
+
+    /**
+     * Load layout configuration from localStorage
+     * Returns true if config was loaded, false otherwise
+     */
+    loadConfigFromStorage(): boolean {
+        try {
+            const savedConfig = localStorage.getItem(this.LAYOUT_CONFIG_KEY);
+            if (savedConfig) {
+                const config: AppConfig = JSON.parse(savedConfig);
+                // Validate and apply the saved configuration
+                this.config.set({
+                    ripple: config.ripple ?? this._config.ripple,
+                    inputStyle: config.inputStyle ?? this._config.inputStyle,
+                    menuMode: config.menuMode ?? this._config.menuMode,
+                    colorScheme: config.colorScheme ?? this._config.colorScheme,
+                    componentTheme: config.componentTheme ?? this._config.componentTheme,
+                    scale: config.scale ?? this._config.scale,
+                    menuTheme: config.menuTheme ?? this._config.menuTheme,
+                    topbarTheme: config.topbarTheme ?? this._config.topbarTheme,
+                    menuProfilePosition: config.menuProfilePosition ?? this._config.menuProfilePosition,
+                });
+                // Apply the scale immediately
+                this.changeScale(this.config().scale);
+                // Apply the theme
+                this.changeTheme();
+                console.log('Layout configuration loaded from localStorage');
+                return true;
+            }
+        } catch (error) {
+            console.error('Error loading layout configuration:', error);
+        }
+        return false;
+    }
+
+    /**
+     * Reset configuration to default values
+     */
+    resetConfigToDefaults(): void {
+        const defaultConfig: AppConfig = {
+            ripple: true,
+            inputStyle: 'outlined',
+            menuMode: 'slim-plus',
+            colorScheme: 'light',
+            componentTheme: 'purple',
+            scale: 14,
+            menuTheme: 'light',
+            topbarTheme: 'purple',
+            menuProfilePosition: 'start',
+        };
+
+        this.config.set(defaultConfig);
+        this.changeScale(defaultConfig.scale);
+        this.changeTheme();
+        // Save defaults to localStorage
+        this.saveConfigToStorage();
+        window.location.reload();
+    }
 
 
 }

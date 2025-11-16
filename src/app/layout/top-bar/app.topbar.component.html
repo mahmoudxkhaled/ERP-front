@@ -1,17 +1,26 @@
 <div class="layout-topbar" [ngClass]="{ 'border-bottom-none': layoutService.config().topbarTheme !== 'light' }">
-    <div class="layout-topbar-start flex justify-content-between align-items-center" style="margin-top: 10px">
-        <div class="flex align-items-center">
-            <a class="layout-topbar-logo" routerLink="/" style="margin-left: 30px">
-                <img [src]="ComapnyLogo" alt="Company Logo" />
-            </a>
-            <a #menuButton class="layout-menu-button" (click)="onMenuButtonClick()" pRipple>
-                <i class="pi pi-angle-right"></i>
-            </a>
-        </div>
+
+
+    <div class="mx-4 flex align-items-center company-info-desktop">
+
+        <img width="60" [src]="entityLogo" alt="Company Logo" />
+        <p style="font-size: 1.2rem; font-weight: 600;"> Quantum - ERP System</p>
+    </div>
+    <div class="company-info-mobile layout-topbar-start flex justify-content-between align-items-center"
+        style="margin-top: 10px">
+
+
 
         <div id="" class="flex justify-content-center flex-grow-1">
             <a class="iaware-logo layout-topbar-logo" routerLink="/">
-                <img src="../../assets/media/logo1.png" alt="iAware Logo" />
+                <!-- <svg width="150" viewBox="0 0 200 40" xmlns="http://www.w3.org/2000/svg">
+                    <text x="10" y="30" font-family="Arial, sans-serif" font-size="32"
+                        fill="var(--topbar-item-text-color)" font-weight="700">
+                        ERP Logo
+                    </text>
+                </svg> -->
+                <img width="70" src="../../assets/media/White-Logo.png" alt="Company Logo" />
+                <!-- <img src="../../assets/media/logo1.png" alt="iAware Logo" /> -->
             </a>
         </div>
 
@@ -20,10 +29,20 @@
         </a>
     </div>
 
-    <div class="layout-topbar-middel">
-        <a class="layout-topbar-logo" routerLink="/">
-            <img src="../../assets/media/logo1.png" width="100" alt="Logo" />
-        </a>
+    <div class="layout-topbar-middel company-info-desktop">
+
+
+        <!-- <a class="layout-topbar-logo company-info-desktop" routerLink="/"> -->
+        <!-- <svg width="150" viewBox="0 0 200 40" xmlns="http://www.w3.org/2000/svg">
+                <text x="10" y="30" font-family="Arial, sans-serif" font-size="32" fill="var(--topbar-item-text-color)"
+                    font-weight="700">
+                    ERP Logo
+                </text>
+            </svg> -->
+        <!-- <img src="../../assets/media/logo1.png" width="100" alt="Logo" /> -->
+        <!-- </a> -->
+        <img width="70" src="../../assets/media/White-Logo.png" routerLink="/" style="cursor: pointer;"
+            alt="Company Logo" />
     </div>
     <div class="layout-topbar-end">
         <div class="layout-topbar-actions-end">
