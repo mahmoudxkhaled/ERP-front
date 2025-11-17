@@ -4,7 +4,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxIntlTelInputModule } from '@justin-s/ngx-intl-tel-input';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgxEditorModule } from 'ngx-editor';
-import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
 import { AccordionModule } from 'primeng/accordion';
 import { AnimateOnScrollModule } from 'primeng/animateonscroll';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -152,7 +151,6 @@ const imports = [
     ChartModule,
     ScrollPanelModule,
     PasswordModule,
-    MonacoEditorModule,
     TranslateModule,
     CarouselModule,
     TagModule,
