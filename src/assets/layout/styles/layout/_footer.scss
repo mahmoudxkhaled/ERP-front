@@ -4,7 +4,9 @@
         align-items: center;
         justify-content: center;
         padding: 1.5rem;
-        background-color: var(--surface-card);
+        color: var(--topbar-item-text-color);
+        background-color: var(--topbar-bg);
+        // background-color: var(--surface-card);
     }
 }
 

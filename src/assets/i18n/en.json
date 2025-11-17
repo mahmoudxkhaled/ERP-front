@@ -189,7 +189,7 @@
             "rippleEffect": "Ripple Effect",
             "menuThemes": "Menu Themes",
             "menu_theme_selector": "Menu themes are only available in light mode by design as large surfaces can emit too much brightness in dark mode.",
-            "topbarThemes": "Topbar Themes",
+            "topbarThemes": "Topbar & Footer Themes",
             "componentThemes": "Component Themes"
         },
         "support-tabmenu": {
