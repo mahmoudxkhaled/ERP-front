@@ -1,7 +1,4 @@
-/**
- * Interface for Get Login Data Package
- * Complete login data package structure returned from the API
- */
+
 export interface Get_Login_Data_Package {
     Account_Details: IAccountDetails;
     User_Details: IUserDetails;
@@ -11,10 +8,7 @@ export interface Get_Login_Data_Package {
     Account_Settings: IAccountSettings;
 }
 
-/**
- * Interface for Account Details
- * Contains information about the user account
- */
+
 export interface IAccountDetails {
     Account_ID: number;
     Email: string;
@@ -27,10 +21,7 @@ export interface IAccountDetails {
     Profile_Picture: string;
 }
 
-/**
- * Interface for User Details
- * Contains personal information about the user
- */
+
 export interface IUserDetails {
     User_ID: number;
     First_Name: string;
@@ -45,10 +36,7 @@ export interface IUserDetails {
     Is_Active: boolean;
 }
 
-/**
- * Interface for Entity Details
- * Contains information about the entity (company/department)
- */
+
 export interface IEntityDetails {
     Entity_ID: number;
     Code: string;
@@ -62,10 +50,7 @@ export interface IEntityDetails {
     Logo: string;
 }
 
-/**
- * Interface for Functions Details
- * Contains permissions/access details for different system functions
- */
+
 export interface IFunctionsDetails {
     DBS: Record<string, any>;
     SysAdm: Record<string, any>;
@@ -78,18 +63,10 @@ export interface IFunctionsDetails {
     PC: Record<string, any>;
 }
 
-/**
- * Interface for Modules Details
- * Contains information about system modules
- */
 export interface IModulesDetails {
     [key: string]: any;
 }
 
-/**
- * Interface for Account Settings
- * Contains user preferences and settings
- */
 export interface IAccountSettings {
     Language: string;
     Theme: string;

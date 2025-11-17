@@ -1,21 +1,18 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { AppLayoutModule } from './layout/app-layout/app.layout.module';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { MessageService } from 'primeng/api';
-import { ErrorHandlingInterceptor } from './core/Interceptors/error-handling.interceptor';
-import { SharedModule } from './Shared/shared/shared.module';
-import { MonacoEditorModule } from 'ngx-monaco-editor-v2';
-import { environment } from 'src/environments/environment';
-import { AppTranslateModule } from './Shared/shared/app-translate.module';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { NgModule } from '@angular/core';
 import { TranslateModule } from '@ngx-translate/core';
-import { LoadingInterceptor } from './core/Interceptors/LoadingInterceptor';
-import { SafePipe } from './core/pipes/safe.pipe';
+import { MessageService } from 'primeng/api';
 import { DialogModule } from 'primeng/dialog';
 import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog';
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { ErrorHandlingInterceptor } from './core/Interceptors/error-handling.interceptor';
+import { LoadingInterceptor } from './core/Interceptors/LoadingInterceptor';
+import { SafePipe } from './core/pipes/safe.pipe';
+import { AppLayoutModule } from './layout/app-layout/app.layout.module';
+import { AppTranslateModule } from './Shared/shared/app-translate.module';
+import { SharedModule } from './Shared/shared/shared.module';
 @NgModule({
     declarations: [AppComponent, SafePipe],
     imports: [
@@ -28,39 +25,9 @@ import { DialogService, DynamicDialogModule } from 'primeng/dynamicdialog';
         TranslateModule,
         AppTranslateModule.forRoot(),
         SharedModule,
-        MonacoEditorModule.forRoot({
-            baseUrl: environment.assetsPath,
-            defaultOptions: {
-                language: 'html',
-                scrollBeyondLastLine: false,
-                minimap: {
-                    enabled: false,
-                },
-                scrollbar: {
-                    useShadows: true,
-                    verticalHasArrows: false,
-                    horizontalHasArrows: false,
-                    vertical: 'visible',
-                    verticalScrollbarSize: 12,
-                    horizontalScrollbarSize: 12,
-                    arrowSize: 30,
-                },
-                automaticLayout: true,
-            },
-        }),
     ],
     providers: [
         DialogService,
-        // {
-        //     provide: HTTP_INTERCEPTORS,
-        //     useClass: authInterceptor,
-        //     multi: true,
-        // },
-        // {
-        //     provide: HTTP_INTERCEPTORS,
-        //     useClass: tokenInterceptor,
-        //     multi: true,
-        // },
         MessageService,
         {
             provide: HTTP_INTERCEPTORS,
