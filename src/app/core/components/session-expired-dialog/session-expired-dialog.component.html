@@ -1,12 +1,32 @@
-<div class="grid">
-    <div class="col-12 text-center">
-        <h2>{{'shared.headers.sessionExpired' | translate}}</h2>
+<div class="session-expired-container">
+    <!-- Orange clock icon at the top -->
+    <div class="icon-container">
+        <i class="pi pi-clock session-icon"></i>
     </div>
-    <div class="col-12 text-center">
-        <p class="centered-text">{{'shared.headers.sessionExpiredMessage' | translate}}</p>
+
+    <!-- Session Expired title -->
+    <h2 class="session-title">{{'shared.headers.sessionExpired' | translate}}</h2>
+
+    <!-- First message -->
+    <p class="session-message">
+        Your session has expired. You will be redirected to the login page in:
+    </p>
+
+    <!-- Circular countdown with gradient -->
+    <div class="countdown-container">
+        <div class="countdown-circle">
+            <span class="countdown-number">{{ countdown }}</span>
+        </div>
     </div>
-    <div class="col-12 text-center">
-        <button pButton type="button" [label]="'shared.actions.ok' | translate" (click)="onLogout()" class="p-button-primary"></button>
+
+    <!-- Second message -->
+    <p class="session-message">
+        Please log in again to continue using the application.
+    </p>
+
+    <!-- Logout Now button -->
+    <div class="button-container">
+        <button pButton type="button" label="Logout Now" (click)="onLogout()" class="logout-button">
+        </button>
     </div>
-    
 </div>

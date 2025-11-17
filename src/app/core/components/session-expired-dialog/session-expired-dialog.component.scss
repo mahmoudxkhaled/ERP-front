@@ -1,12 +1,115 @@
-.centered-text {
-  text-align: center; /* Horizontally center the text */
-  margin-bottom: 20px; /* Optional: Add space below the text */
+// Global styles for the PrimeNG dialog container
+::ng-deep .session-expired-dialog-container {
+  .p-dialog-header {
+    display: none !important;
+  }
+
+  .p-dialog-content {
+    padding: 0 !important;
+    background-color: transparent !important;
+  }
+
+  .p-dialog {
+    border-radius: 12px;
+    overflow: hidden;
+  }
 }
 
-.centered-footer {
+.session-expired-container {
   display: flex;
-  justify-content: center; /* Horizontally center the button */
-  align-items: center; /* Vertically center the button (optional) */
-  width: 100%; /* Ensure the footer spans the full width */
-  padding: 10px 0; /* Optional: Add padding for spacing */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: #ffffff;
+  border: 2px solid #3F51B5; // Dark purple border
+  border-radius: 12px;
+  min-height: 400px;
+  width: 100%;
+}
+
+// Orange clock icon container
+.icon-container {
+  margin-bottom: 1.5rem;
+}
+
+.session-icon {
+  font-size: 3rem;
+  color: #FF9800; // Orange color
+}
+
+// Session Expired title
+.session-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #212529; // Dark text color
+  margin: 0 0 1rem 0;
+  text-align: center;
+}
+
+// Message text styling
+.session-message {
+  font-size: 1rem;
+  color: #6c757d; // Dark grey text
+  text-align: center;
+  margin: 0.5rem 0;
+  line-height: 1.5;
+}
+
+// Countdown container
+.countdown-container {
+  margin: 2rem 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+// Circular countdown with gradient
+.countdown-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  // background: linear-gradient(135deg, #3F51B5 0%, #E91E63 100%); // Dark purple to magenta gradient
+    background: linear-gradient(90deg, #001f3f, #0059b3) !important;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(63, 81, 181, 0.3);
+}
+
+.countdown-number {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1;
+}
+
+// Button container
+.button-container {
+  margin-top: 2rem;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+// Logout Now button styling
+::ng-deep .logout-button {
+  background-color: #f8f9fa !important; // Light grey background
+  border: 1px solid #6c757d !important; // Dark grey border
+  color: #212529 !important; // Dark grey text
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: #e9ecef !important;
+    border-color: #495057 !important;
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.25);
+  }
 }

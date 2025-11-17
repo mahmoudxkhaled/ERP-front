@@ -129,6 +129,7 @@ export class ErrorHandlingInterceptor implements HttpInterceptor {
 
         this.sessionExpiredDialogRef = this.dialogService.open(SessionExpiredDialogComponent, {
             header: '',
+            showHeader: false,
             width: '450px',
             modal: true,
             closable: false,
