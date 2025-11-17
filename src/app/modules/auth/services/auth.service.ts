@@ -50,6 +50,7 @@ export class AuthService {
         this.isLoadingSubject.next(true);
 
         const accessToken = this.localStorageService.getAccessToken();
+        // Add custom header to identify logout request - this will be checked in error interceptor
         return this.apiServices.callAPI(102, accessToken, []).pipe(
             tap(() => {
                 this.localStorageService.removeItem('userData');

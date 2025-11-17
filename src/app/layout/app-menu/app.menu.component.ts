@@ -3,6 +3,8 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslationService } from '../../core/Services/translation.service';
 import { AuthService } from '../../modules/auth/services/auth.service';
+import { LogoutComponent } from 'src/app/modules/auth/components/logout/logout.component';
+import { DialogService } from 'primeng/dynamicdialog';
 
 @Component({
     selector: 'app-menu',
@@ -16,7 +18,8 @@ export class AppMenuComponent implements OnInit {
     constructor(
         private translate: TranslationService,
         private router: Router,
-        private authService: AuthService
+        private authService: AuthService,
+        private dialogService: DialogService
     ) {
     }
 
@@ -65,7 +68,7 @@ export class AppMenuComponent implements OnInit {
                         label: this.translate.getInstant('menu.logout'),
                         hasPermession: true,
                         icon: 'fa fa-sign-out-alt',
-                        command: () => this.handleLogout()
+                        command: () => this.logOut()
                     },
                 ],
             },
@@ -159,21 +162,16 @@ export class AppMenuComponent implements OnInit {
         return true;
     }
 
-    handleLogout(): void {
-        // Show logout confirmation dialog
-        this.showLogoutDialog = true;
-    }
 
-    onLogoutConfirm() {
-        // User confirmed logout, proceed with logout
-        this.authService.logout().subscribe((r) => {
-            if (r.success) {
-                this.router.navigate(['/auth']);
-            }
+    logOut() {
+        this.dialogService.open(LogoutComponent, {
+            showHeader: true,
+            header: this.translate.getInstant('shared.headers.confirmLogout'),
+            styleClass: 'custom-dialog',
+            maskStyleClass: 'custom-backdrop',
+            dismissableMask: true,
+            width: '30vw',
+            closable: true,
         });
-    }
-
-    onLogoutCancel() {
-        // User cancelled logout, dialog will close automatically
     }
 }

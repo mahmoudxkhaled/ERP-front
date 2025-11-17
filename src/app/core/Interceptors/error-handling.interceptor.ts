@@ -2,6 +2,7 @@ import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest
 import { Injectable, Injector } from '@angular/core';
 import { Router } from '@angular/router';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { MessageService } from 'primeng/api';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { AuthService } from 'src/app/modules/auth/services/auth.service';
@@ -12,113 +13,119 @@ import { SessionExpiredDialogComponent } from '../components/session-expired-dia
 export class ErrorHandlingInterceptor implements HttpInterceptor {
     private router: Router;
     private sessionExpiredDialogRef: DynamicDialogRef | null = null;
-    constructor(private injector: Injector, private localStorageService: LocalStorageService, private dialogService: DialogService, private authService: AuthService) { }
+    constructor(
+        private injector: Injector,
+        private localStorageService: LocalStorageService,
+        private dialogService: DialogService,
+        private authService: AuthService,
+        private messageService: MessageService
+    ) { }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         this.router = this.injector.get(Router);
-        console.log('req', req);
+
+        // Check if this is a logout request - skip error handling for logout
+        const isLogoutRequest = this.isLogoutRequest(req);
+
         return next.handle(req).pipe(
             // Check successful responses for error codes in the body
             tap((event: HttpEvent<any>) => {
-                if (event instanceof HttpResponse) {
-                    this.checkResponseForErrorCodes(event);
+                if (event instanceof HttpResponse && !isLogoutRequest) {
+                    this.handleBusinessError(event);
                 }
             }),
             catchError((error: HttpErrorResponse) => {
-                console.log('error', error);
-                this.handleError(error);
+                // Skip error handling for logout requests
+                if (!isLogoutRequest) {
+                    this.showErrorMessage(error);
+                }
                 return throwError(() => new Error(error.message || 'An unknown error occurred'));
             })
         );
     }
 
-    private checkResponseForErrorCodes(response: HttpResponse<any>): void {
-        let responseBody: any = null;
-        let errorCode: string | null = null;
+    /**
+     * Check if the request is a logout API call (request code 102)
+     * The request code is stored in the first byte of the Contents array
+     */
+    private isLogoutRequest(req: HttpRequest<any>): boolean {
+        // Check if request body exists and contains Contents array
+        if (req.body && req.body.Contents && Array.isArray(req.body.Contents)) {
+            // Request code 102 is stored in the first byte
+            return req.body.Contents[0] === 102;
+        }
+        return false;
+    }
 
-        console.log('response', response);
-        // Extract response body
-        const body = response.body;
 
-        // Parse response body if it's a string
-        if (typeof body === 'string') {
-            try {
-                responseBody = JSON.parse(body);
-            } catch (e) {
-                // If parsing fails, check if the string itself contains JSON
-                const jsonMatch = body.match(/\{[\s\S]*\}/);
-                if (jsonMatch) {
-                    try {
-                        responseBody = JSON.parse(jsonMatch[0]);
-                    } catch (parseError) {
-                        // If still can't parse, return early
-                        return;
-                    }
-                } else {
-                    return;
-                }
-            }
-        } else if (body && typeof body === 'object') {
-            // Body is already an object
-            responseBody = body;
-        } else {
+    private handleBusinessError(response: HttpResponse<any>): void {
+        // Check if response body exists and contains error information
+        if (!response || !response.body) {
             return;
         }
 
-        // Check if response indicates an error (success: false)
-        if (responseBody && responseBody.success === false) {
-            console.log('responseBody', responseBody);
-            // Extract error code from message field
-            if (responseBody.message) {
-                errorCode = responseBody.message.toString();
-            }
+        const body = response.body;
+        let errorCode: string | null = null;
 
-            // Show session expired dialog if error code matches
-            if (errorCode && (errorCode === 'ERP11041' || errorCode === 'ERP11042')) {
-                this.showSessionExpiredDialog();
-                return;
-            }
+        // Extract error code from different possible response structures
+        if (body.message && !body.success) {
+            errorCode = body.message.toString();
+        }
+
+        // Check if error code matches session expired codes
+        if (errorCode && (errorCode === 'ERP11040' || errorCode === 'ERP11041' || errorCode === 'ERP11042' ||
+            errorCode === 'ERP11060' || errorCode === 'ERP11061' || errorCode === 'ERP11062')) {
+            this.showSessionExpiredDialog();
         }
     }
 
-    private handleError(error: HttpErrorResponse): void {
+    private showErrorMessage(error: HttpErrorResponse): void {
         let errorMessage = 'An error occurred. Please try again.';
         let errorCode: string | null = null;
 
-        // Extract error message and code from different possible error structures
+        // If server returned error object
         if (error.error) {
-            // Check if error.error is a string (JSON string) that needs parsing
+
+            // Case: error is JSON string
             if (typeof error.error === 'string') {
                 try {
-                    const parsedError = JSON.parse(error.error);
-                    errorMessage = parsedError.message || errorMessage;
-                    errorCode = parsedError.message || parsedError.errorCode || null;
-                } catch (e) {
-                    // If parsing fails, check if the string itself is an error code
+                    const parsed = JSON.parse(error.error);
+                    errorMessage = parsed.message || errorMessage;
+                    errorCode = parsed.errorCode || parsed.message || null;
+
+                } catch {
+                    // Error is plain string
+                    errorMessage = error.error;
                     errorCode = error.error;
                 }
-            } else if (error.error.message) {
+            }
+
+            // Case: structured object
+            else if (error.error.message) {
                 errorMessage = error.error.message;
-                errorCode = error.error.message;
-            } else if (error.error.errorCode) {
-                errorCode = error.error.errorCode;
-            } else if (error.error.errorList && error.error.errorList.length > 0) {
-                errorMessage = error.error.errorList.map((err: any) => err.message).join(', ');
-                // Check if errorList contains error codes
-                const firstError = error.error.errorList[0];
-                errorCode = firstError.errorCode || firstError.message || null;
+                errorCode = error.error.errorCode || error.error.message;
+            }
+
+            // Case: error list (common in ERP)
+            else if (error.error.errorList && Array.isArray(error.error.errorList)) {
+                errorMessage = error.error.errorList.map((e: any) => e.message).join(', ');
+                errorCode = error.error.errorList[0].errorCode || null;
             }
         }
 
-        // Handle specific error codes that require navigation
-        if (errorCode) {
-            const codeString = errorCode.toString();
-            if (codeString === 'ERP11041' || codeString === 'ERP11042') {
-                // Show session expired dialog for these authentication errors
-                this.showSessionExpiredDialog();
-                return;
-            }
+        // Session expired codes (HTTP error version)
+        if (errorCode && ['ERP11040', 'ERP11041', 'ERP11042', 'ERP11060', 'ERP11061', 'ERP11062'].includes(errorCode)) {
+            this.showSessionExpiredDialog();
+            return;
         }
+
+        // Fallback UI message
+        this.messageService.add({
+            severity: 'error',
+            summary: `Error ${error.status}`,
+            detail: errorMessage,
+            life: 6000
+        });
     }
 
     private showSessionExpiredDialog(): void {
