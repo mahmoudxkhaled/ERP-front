@@ -496,7 +496,7 @@
             "companyBackgrounds": "Company Backgrounds",
             "sessionExpired": "Session Expired",
             "sessionExpiredMessage": "Someone kicked you out. Please log in again.",
-            "logoutaccount": "Are you sure you want to log out of your account?",
+            "logoutaccount": "Are you sure you want to log out?",
             "confirmLogout": "Confirm Logout"
         },
         "labels": {

@@ -27,7 +27,7 @@
                         }}</span>
                 </div>
                 <div class="surface-100 border-1 border-300 border-round p-3 flex flex-column align-items-center justify-content-center gap-2 cursor-pointer  "
-                    style="width:10rem;height:10rem" (click)="navigateToRoute('/summary/logout')">
+                    style="width:10rem;height:10rem" (click)="logOut()">
                     <span class="text-2xl">🚪</span>
                     <span class="text-sm font-medium text-700 text-center">{{ translate.getInstant('dashboard.logout')
                         }}</span>
@@ -119,4 +119,4 @@
 </div>
 
 <!-- Logout Confirmation Dialog -->
-<app-logout [(visible)]="showLogoutDialog" (onConfirm)="onLogoutConfirm()" (onCancel)="onLogoutCancel()"></app-logout>
+<!-- <app-logout [(visible)]="showLogoutDialog" (onConfirm)="onLogoutConfirm()" (onCancel)="onLogoutCancel()"></app-logout> -->

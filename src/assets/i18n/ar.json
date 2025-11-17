@@ -353,7 +353,7 @@
             "companyBackgrounds": "خلفيات الشركة",
             "sessionExpired": "انتهت الجلسة",
             "sessionExpiredMessage": "قام شخص بطردك. يرجى تسجيل الدخول مرة أخرى.",
-            "logoutaccount": "هل أنت متأكد من أنك تريد تسجيل الخروج من حسابك؟",
+            "logoutaccount": "هل أنت متأكد من أنك تريد تسجيل الخروج؟",
             "confirmLogout": "تأكيد تسجيل الخروج"
         },
         "labels": {

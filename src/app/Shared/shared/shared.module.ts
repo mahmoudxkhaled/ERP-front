@@ -72,11 +72,11 @@ import { AppConfigModule } from 'src/app/layout/config/app.config.module';
 import { ColorScemaSettingsComponent } from '../components/color-scema-settings/color-scema-settings.component';
 import { ERPInfoComponent } from '../components/erp-info/erp-info.component';
 import { ERPVariablesComponent } from '../components/erp-variables/erp-variables.component';
-import { LogoutComponent } from '../components/logout/logout.component';
 import { TableLoadingSpinnerComponent } from '../components/table-loading-spinner/table-loading-spinner/table-loading-spinner.component';
 import { ComingSoonComponent } from 'src/app/demo/components/pages/coming-soon/coming-soon.component';
 import { InputMaskModule } from 'primeng/inputmask';
 import { SessionExpiredDialogComponent } from 'src/app/core/components/session-expired-dialog/session-expired-dialog.component';
+import { LogoutComponent } from 'src/app/modules/auth/components/logout/logout.component';
 const components = [
     ComingSoonComponent,
     ColorScemaSettingsComponent,

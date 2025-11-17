@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
 import { TranslationService } from 'src/app/core/Services/translation.service';
 import { AuthService } from '../auth/services/auth.service';
+import { LogoutComponent } from '../auth/components/logout/logout.component';
+import { DialogService } from 'primeng/dynamicdialog';
 
 @Component({
     selector: 'app-dashboard',
@@ -19,6 +21,7 @@ export class DashboardComponent implements OnInit {
         private localStorageService: LocalStorageService,
         private router: Router,
         public translate: TranslationService,
+        private dialogService: DialogService,
         private authService: AuthService
     ) { }
 
@@ -101,7 +104,16 @@ export class DashboardComponent implements OnInit {
         });
     }
 
-    onLogoutCancel() {
-        // User cancelled logout, dialog will close automatically
+    logOut() {
+        this.dialogService.open(LogoutComponent, {
+            showHeader: true,
+            header: this.translate.getInstant('shared.headers.confirmLogout'),
+            styleClass: 'custom-dialog',
+            maskStyleClass: 'custom-backdrop',
+            dismissableMask: true,
+            width: '30vw',
+            closable: true,
+        });
     }
+
 }

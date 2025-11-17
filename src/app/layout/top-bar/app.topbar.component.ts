@@ -62,7 +62,6 @@ export class AppTopbarComponent implements OnInit {
     themeLoading: boolean = false;
     langLoading: boolean = false; // Track the loading state
     isListboxVisible: boolean = true; // Track visibility of the listbox
-    showLogoutDialog: boolean = false; // Track logout dialog visibility
     entityLogo: string = '';
     mockSearchData = {
         lessons: ['Lesson 1', 'Lesson 2', 'Lesson 3'],
@@ -225,19 +224,6 @@ export class AppTopbarComponent implements OnInit {
         this.isListboxVisible = !this.isListboxVisible; // Toggle visibility
     }
 
-    logOut() {
-        // Show logout confirmation dialog
-        this.showLogoutDialog = true;
-    }
-
-    onLogoutConfirm() {
-        // User confirmed logout, proceed with logout
-        this.authService.logout().subscribe();
-    }
-
-    onLogoutCancel() {
-        // User cancelled logout, dialog will close automatically
-    }
 
     search(event: any) {
         const query = event.query.toLowerCase();

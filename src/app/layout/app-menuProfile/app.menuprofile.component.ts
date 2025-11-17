@@ -6,6 +6,8 @@ import { Subscription } from 'rxjs';
 import { LocalStorageService } from '../../core/Services/local-storage.service';
 import { AuthService } from '../../modules/auth/services/auth.service';
 import { TranslationService } from 'src/app/core/Services/translation.service';
+import { LogoutComponent } from 'src/app/modules/auth/components/logout/logout.component';
+import { DialogService } from 'primeng/dynamicdialog';
 
 export interface GetUser {
     id: string;
@@ -53,7 +55,8 @@ export class AppMenuProfileComponent implements OnInit {
         private localStorage: LocalStorageService,
         private translate: TranslationService,
         private authService: AuthService,
-        private router: Router
+        private router: Router,
+        private dialogService: DialogService
     ) {
         const userData = this.localStorage.getItem('userData');
         if (userData && userData.userImageUrl) {
@@ -110,16 +113,14 @@ export class AppMenuProfileComponent implements OnInit {
     }
 
     logOut() {
-        // Show logout confirmation dialog
-        this.showLogoutDialog = true;
-    }
-
-    onLogoutConfirm() {
-        // User confirmed logout, proceed with logout
-        this.authService.logout().subscribe();
-    }
-
-    onLogoutCancel() {
-        // User cancelled logout, dialog will close automatically
+        this.dialogService.open(LogoutComponent, {
+            showHeader: true,
+            header: this.translate.getInstant('shared.headers.confirmLogout'),
+            styleClass: 'custom-dialog',
+            maskStyleClass: 'custom-backdrop',
+            dismissableMask: true,
+            width: '30vw',
+            closable: true,
+        });
     }
 }
