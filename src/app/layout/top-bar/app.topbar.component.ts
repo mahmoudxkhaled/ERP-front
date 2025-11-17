@@ -141,21 +141,41 @@ export class AppTopbarComponent implements OnInit {
         this.layoutService.onTopbarMenuToggle();
     }
 
+    // changeUserTheme() {
+    //     if (this.themeLoading) {
+    //         return; // Prevent multiple clicks while loading
+    //     }
+
+    //     // Get current theme from layout service config if userTheme is not set
+    //     if (!this.userTheme) {
+    //         const currentConfig = this.layoutService.config();
+    //         this.userTheme = currentConfig.colorScheme || 'light';
+    //     }
+
+    //     this.themeLoading = true; // Set loading to true
+    //     // Toggle theme: if current is 'light', switch to 'dark', otherwise switch to 'light'
+    //     this.userTheme = this.userTheme === 'light' ? 'dark' : 'light';
+    //     this.applyUserTheme(this.userTheme as 'light' | 'dark');
+    // }
     changeUserTheme() {
         if (this.themeLoading) {
             return; // Prevent multiple clicks while loading
         }
 
-        // Get current theme from layout service config if userTheme is not set
-        if (!this.userTheme) {
-            const currentConfig = this.layoutService.config();
-            this.userTheme = currentConfig.colorScheme || 'light';
-        }
-
         this.themeLoading = true; // Set loading to true
-        // Toggle theme: if current is 'light', switch to 'dark', otherwise switch to 'light'
+
         this.userTheme = this.userTheme === 'light' ? 'dark' : 'light';
         this.applyUserTheme(this.userTheme as 'light' | 'dark');
+
+
+        const data = this.localStorage.getCurrentUserData();
+        data.theme = this.userTheme;
+        this.localStorage.setItem('userData', data);
+        this.ref.detectChanges();
+        this.themeLoading = false; // Reset loading state after response
+
+
+
     }
 
     applyUserTheme(theme: string) {
@@ -172,9 +192,6 @@ export class AppTopbarComponent implements OnInit {
 
         // Call the method to change the theme, based on the updated color scheme
         this.layoutService.changeTheme();
-
-        // Reset loading state after theme change is complete
-        this.themeLoading = false;
         this.ref.detectChanges();
     }
 

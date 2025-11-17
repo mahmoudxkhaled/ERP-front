@@ -34,13 +34,12 @@ interface LayoutState {
     providedIn: 'root',
 })
 export class LayoutService {
-    // Key for localStorage
     private readonly LAYOUT_CONFIG_KEY = 'layoutConfig';
 
     _config: AppConfig = {
         ripple: true,
         inputStyle: 'outlined',
-        menuMode: 'reveal',
+        menuMode: 'drawer',
         colorScheme: 'light',
         componentTheme: 'purple',
         scale: 14,
@@ -74,9 +73,6 @@ export class LayoutService {
     menuProfileOpen$ = this.menuProfileOpen.asObservable();
 
     constructor() {
-        // Load saved configuration on initialization
-        this.loadConfigFromStorage();
-
         effect(() => {
             const config = this.config();
             if (this.updateStyle(config)) {
@@ -261,6 +257,8 @@ export class LayoutService {
         document.documentElement.style.fontSize = `${value}px`;
     }
 
+
+
     /**
      * Save current layout configuration to localStorage
      */
@@ -308,14 +306,12 @@ export class LayoutService {
         return false;
     }
 
-    /**
-     * Reset configuration to default values
-     */
+
     resetConfigToDefaults(): void {
         const defaultConfig: AppConfig = {
             ripple: true,
             inputStyle: 'outlined',
-            menuMode: 'slim-plus',
+            menuMode: 'drawer',
             colorScheme: 'light',
             componentTheme: 'purple',
             scale: 14,
@@ -331,6 +327,5 @@ export class LayoutService {
         this.saveConfigToStorage();
         window.location.reload();
     }
-
 
 }
