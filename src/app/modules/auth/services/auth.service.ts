@@ -4,6 +4,7 @@ import { ApiRequestTypes } from 'src/app/core/API_Interface/ApiRequestTypes';
 import { ApiResult } from 'src/app/core/API_Interface/ApiResult';
 import { ApiServices } from 'src/app/core/API_Interface/ApiServices';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
+import { IAccountStatusResponse } from 'src/app/core/models/IAccountStatusResponse';
 
 @Injectable({
     providedIn: 'root',
@@ -50,10 +51,9 @@ export class AuthService {
         this.isLoadingSubject.next(true);
 
         const accessToken = this.localStorageService.getAccessToken();
-        // Add custom header to identify logout request - this will be checked in error interceptor
         return this.apiServices.callAPI(102, accessToken, []).pipe(
             tap(() => {
-                this.localStorageService.removeItem('userData');
+                this.localStorageService.clearLoginDataPackage();
             }),
             finalize(() => {
                 this.isLoadingSubject.next(false);
@@ -100,7 +100,8 @@ export class AuthService {
     getLoginDataPackage(email: string) {
         return this.apiServices.callAPI(110, this.localStorageService.getAccessToken(), [email]).pipe(
             tap((response: any) => {
-                console.log('response from getLoginDataPackage', response);
+                const accountData: IAccountStatusResponse = response.message;
+                this.localStorageService.setLoginDataPackage(accountData);
             }),
         );
     }

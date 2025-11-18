@@ -51,20 +51,51 @@ export interface IEntityDetails {
 }
 
 
-export interface IFunctionsDetails {
-    DBS: Record<string, any>;
-    SysAdm: Record<string, any>;
-    EntAdm: Record<string, any>;
-    DC: Record<string, any>;
-    FIN: Record<string, any>;
-    HR: Record<string, any>;
-    CRM: Record<string, any>;
-    SCM: Record<string, any>;
-    PC: Record<string, any>;
+/**
+ * Interface for individual function detail structure
+ * Each function contains its ID, name, regional name, and default order
+ */
+export interface IFunctionDetail {
+    FunctionID: number;
+    Name: string;
+    Name_Regional: string;
+    Default_Order: number;
 }
 
+/**
+ * Interface for Functions Details
+ * Contains all available functions organized by their code (DBS, SysAdm, etc.)
+ */
+export interface IFunctionsDetails {
+    DBS: IFunctionDetail;
+    SysAdm: IFunctionDetail;
+    EntAdm: IFunctionDetail;
+    DC: IFunctionDetail;
+    FIN: IFunctionDetail;
+    HR: IFunctionDetail;
+    CRM: IFunctionDetail;
+    SCM: IFunctionDetail;
+    PC: IFunctionDetail;
+}
+
+/**
+ * Interface for individual module detail structure
+ * Each module contains its ID, associated function ID, name, regional name, and default order
+ */
+export interface IModuleDetail {
+    ModuleID: number;
+    FunctionID: number;
+    Name: string;
+    Name_Regional: string;
+    Default_Order: number;
+}
+
+/**
+ * Interface for Modules Details
+ * Contains all available modules organized by their code (ACT, NOT, PRF, etc.)
+ */
 export interface IModulesDetails {
-    [key: string]: any;
+    [key: string]: IModuleDetail;
 }
 
 export interface IAccountSettings {
