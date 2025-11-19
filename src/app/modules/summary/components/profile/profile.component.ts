@@ -4,6 +4,7 @@ import { TranslationService } from 'src/app/core/Services/translation.service';
 import { MessageService } from 'primeng/api';
 import { AuthService } from 'src/app/modules/auth/services/auth.service';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
+import { IUserDetails, IAccountDetails, IEntityDetails, IAccountSettings } from 'src/app/core/models/IAccountStatusResponse';
 
 export function passwordComplexityValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -51,11 +52,23 @@ export class ProfileComponent implements OnInit {
     showNewPassword: boolean = false;
     showConfirmPassword: boolean = false;
 
+    userDetails: IUserDetails | null = null;
+    accountDetails: IAccountDetails | null = null;
+    entityDetails: IEntityDetails | null = null;
+    accountSettings: IAccountSettings | null = null;
+    regionalLanguage: boolean = false;
+    profilePictureUrl: string = '';
+
     roleOptions = [
         { label: 'System Admin', value: 'System Admin' },
         { label: 'Company Admin', value: 'Company Admin' },
         { label: 'Supervisor', value: 'Supervisor' },
         { label: 'Employee', value: 'Employee' }
+    ];
+
+    genderOptions = [
+        { label: 'Male', value: true },
+        { label: 'Female', value: false }
     ];
 
     constructor(
@@ -67,17 +80,57 @@ export class ProfileComponent implements OnInit {
     ) { }
 
     ngOnInit(): void {
+        this.loadUserData();
         this.initFormModels();
     }
 
+    loadUserData(): void {
+        this.userDetails = this.localStorageService.getUserDetails();
+        this.accountDetails = this.localStorageService.getAccountDetails();
+        this.entityDetails = this.localStorageService.getEntityDetails();
+        this.accountSettings = this.localStorageService.getAccountSettings();
+
+        const language = this.accountSettings?.Language;
+        if (language === 'English') {
+            this.regionalLanguage = false;
+        } else {
+            this.regionalLanguage = true;
+        }
+
+        this.profilePictureUrl = this.accountDetails?.Profile_Picture || '';
+    }
+
     initFormModels() {
+        const firstName = this.getFirstName();
+        const lastName = this.getLastName();
+        const middleName = this.getMiddleName();
+        const prefix = this.getPrefix();
+        const email = this.accountDetails?.Email || '';
+        const description = this.accountDetails?.Description || '';
+        const entityName = this.entityDetails?.Name || '';
+        const entityCode = this.entityDetails?.Code || '';
+        const entityDescription = this.entityDetails?.Description || '';
+        const gender = this.userDetails?.Gender !== undefined ? this.userDetails.Gender : null;
+        const accountId = this.accountDetails?.Account_ID || null;
+        const userId = this.userDetails?.User_ID || null;
+        const entityId = this.entityDetails?.Entity_ID || null;
+        const accountState = this.accountDetails?.Account_State || null;
+
         this.profileForm = this.fb.group({
-            firstName: ['John', [Validators.required]],
-            lastName: ['Doe', [Validators.required]],
-            email: ['john.doe@company.com', [Validators.required, Validators.email]],
-            phone: ['(555) 123-4567'],
-            role: ['System Admin', [Validators.required]],
-            department: ['IT Administration']
+            First_Name: [firstName, [Validators.required]],
+            Middle_Name: [middleName],
+            Last_Name: [lastName, [Validators.required]],
+            Prefix: [prefix],
+            Email: [email, [Validators.required, Validators.email]],
+            Description: [description],
+            Gender: [gender],
+            Account_ID: [accountId],
+            User_ID: [userId],
+            Entity_ID: [entityId],
+            Account_State: [accountState],
+            Entity_Name: [entityName],
+            Entity_Code: [entityCode],
+            Entity_Description: [entityDescription]
         });
 
         this.changePasswordForm = this.fb.group({
@@ -117,20 +170,91 @@ export class ProfileComponent implements OnInit {
     }
 
     resetForm(): void {
+        const firstName = this.getFirstName();
+        const lastName = this.getLastName();
+        const middleName = this.getMiddleName();
+        const prefix = this.getPrefix();
+        const email = this.accountDetails?.Email || '';
+        const description = this.accountDetails?.Description || '';
+        const entityName = this.entityDetails?.Name || '';
+        const entityCode = this.entityDetails?.Code || '';
+        const entityDescription = this.entityDetails?.Description || '';
+        const gender = this.userDetails?.Gender !== undefined ? this.userDetails.Gender : null;
+        const accountId = this.accountDetails?.Account_ID || null;
+        const userId = this.userDetails?.User_ID || null;
+        const entityId = this.entityDetails?.Entity_ID || null;
+        const accountState = this.accountDetails?.Account_State || null;
+
         this.profileForm.reset({
-            firstName: 'John',
-            lastName: 'Doe',
-            email: 'john.doe@company.com',
-            phone: '(555) 123-4567',
-            role: 'System Admin',
-            department: 'IT Administration'
+            First_Name: firstName,
+            Middle_Name: middleName,
+            Last_Name: lastName,
+            Prefix: prefix,
+            Email: email,
+            Description: description,
+            Gender: gender,
+            Account_ID: accountId,
+            User_ID: userId,
+            Entity_ID: entityId,
+            Account_State: accountState,
+            Entity_Name: entityName,
+            Entity_Code: entityCode,
+            Entity_Description: entityDescription
         });
 
         this.messageService.add({
             severity: 'info',
             summary: 'Form Reset',
-            detail: 'Profile information has been reset to default values.'
+            detail: 'Profile information has been reset to original values.'
         });
+    }
+
+    getFirstName(): string {
+        if (!this.userDetails) return '';
+
+        if (this.regionalLanguage) {
+            const firstNameRegional = this.userDetails.First_Name_Regional || '';
+            if (firstNameRegional.trim()) {
+                return firstNameRegional;
+            }
+        }
+        return this.userDetails.First_Name || '';
+    }
+
+    getLastName(): string {
+        if (!this.userDetails) return '';
+
+        if (this.regionalLanguage) {
+            const lastNameRegional = this.userDetails.Last_Name_Regional || '';
+            if (lastNameRegional.trim()) {
+                return lastNameRegional;
+            }
+        }
+        return this.userDetails.Last_Name || '';
+    }
+
+    getMiddleName(): string {
+        if (!this.userDetails) return '';
+
+        if (this.regionalLanguage) {
+            const middleNameRegional = this.userDetails.Middle_Name_Regional || '';
+            if (middleNameRegional.trim()) {
+                return middleNameRegional;
+            }
+        }
+        return this.userDetails.Middle_Name || '';
+    }
+
+    getPrefix(): string {
+        if (!this.userDetails) return '';
+
+        if (this.regionalLanguage) {
+            const prefixRegional = this.userDetails.Prefix_Regional || '';
+            if (prefixRegional.trim()) {
+                return prefixRegional;
+            }
+        }
+        return this.userDetails.Prefix || '';
     }
 
     cancelEdit(): void {
