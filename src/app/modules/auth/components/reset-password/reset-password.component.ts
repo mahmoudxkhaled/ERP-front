@@ -149,20 +149,52 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
         this.resetPassForm = this.fb.group(
             {
                 password: [
-                    'Kakuzu@123456',
+                    '',
                     Validators.compose([
                         Validators.required,
                         Validators.minLength(8),
-                        Validators.maxLength(100),
+                        Validators.maxLength(15),
                         passwordComplexityValidator(),
                     ]),
                 ],
-                cPassword: ['Kakuzu@123456', Validators.compose([Validators.required])],
+                cPassword: ['', Validators.compose([Validators.required])],
             },
             {
                 validator: passwordMatchValidator.MatchPassword,
             }
         );
+    }
+
+    getPasswordLength(): number {
+        const password = this.resetPassForm.get('password')?.value || '';
+        return password.length;
+    }
+
+    checkPasswordLength(): boolean {
+        const password = this.resetPassForm.get('password')?.value || '';
+        return password.length >= 8 && password.length <= 15;
+    }
+
+    checkStartsWithLetter(): boolean {
+        const password = this.resetPassForm.get('password')?.value || '';
+        return /^[A-Za-z]/.test(password);
+    }
+
+    checkHasUppercaseAndLowercase(): boolean {
+        const password = this.resetPassForm.get('password')?.value || '';
+        const hasLowercase = /[a-z]/.test(password);
+        const hasUppercase = /[A-Z]/.test(password);
+        return hasLowercase && hasUppercase;
+    }
+
+    checkHasNumber(): boolean {
+        const password = this.resetPassForm.get('password')?.value || '';
+        return /[0-9]/.test(password);
+    }
+
+    checkHasSpecialChar(): boolean {
+        const password = this.resetPassForm.get('password')?.value || '';
+        return /[^A-Za-z0-9]/.test(password);
     }
 
     private startRedirectCountdown(): void {

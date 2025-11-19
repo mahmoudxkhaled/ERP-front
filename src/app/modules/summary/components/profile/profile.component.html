@@ -168,18 +168,6 @@
     <div style="margin-bottom: 20px;">
 
         <p-panel header="Change Password" class="mb-4">
-            <!-- Password Requirements Instructions -->
-            <div class="mb-4 p-3" style="background-color: #f0f0f0; border-radius: 4px;">
-                <h4 class="text-sm font-semibold mb-2">Password Requirements:</h4>
-                <ul class="text-sm" style="margin: 0; padding-left: 20px;">
-                    <li>Minimum 8 characters</li>
-                    <li>Starts with a letter (uppercase or lowercase)</li>
-                    <li>Contains at least one lowercase letter</li>
-                    <li>Contains at least one uppercase letter</li>
-                    <li>Contains at least one digit</li>
-                    <li>Contains at least one special character (non-alphanumeric)</li>
-                </ul>
-            </div>
 
             <form [formGroup]="changePasswordForm" (ngSubmit)="onChangePassword()">
                 <div class="grid">
@@ -225,40 +213,70 @@
                                 style="cursor: pointer; position: absolute; right: 12px; color: #6c757d; font-size: 1rem;">
                             </i>
                         </div>
-                        <!-- Validation Messages -->
+
+                        <!-- Password Length Indicator -->
+                        <div *ngIf="getPasswordLength() > 0" style="margin-top: 0.5rem; margin-bottom: 0.75rem;">
+                            <span [style.color]="checkPasswordLength() ? '#22c55e' : '#6b7280'"
+                                [style.font-weight]="checkPasswordLength() ? '600' : '400'" [style.font-size]="'1rem'">
+                                {{ getPasswordLength() }}
+                            </span>
+                        </div>
+
+                        <!-- Real-time Password Validation Rules -->
+                        <div *ngIf="changePasswordForm.get('newPassword')?.value" style="margin-top: 0.5rem;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <i [class]="checkPasswordLength() ? 'pi pi-check-circle' : 'pi pi-circle'"
+                                    [style.color]="checkPasswordLength() ? '#22c55e' : '#6b7280'"
+                                    style="font-size: 1rem;"></i>
+                                <span [style.color]="checkPasswordLength() ? '#22c55e' : '#6b7280'"
+                                    style="font-size: 0.875rem;">
+                                    Between 8-15 characters
+                                </span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <i [class]="checkStartsWithLetter() ? 'pi pi-check-circle' : 'pi pi-circle'"
+                                    [style.color]="checkStartsWithLetter() ? '#22c55e' : '#6b7280'"
+                                    style="font-size: 1rem;"></i>
+                                <span [style.color]="checkStartsWithLetter() ? '#22c55e' : '#6b7280'"
+                                    style="font-size: 0.875rem;">
+                                    Starts with a letter (uppercase or lowercase)
+                                </span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <i [class]="checkHasUppercaseAndLowercase() ? 'pi pi-check-circle' : 'pi pi-circle'"
+                                    [style.color]="checkHasUppercaseAndLowercase() ? '#22c55e' : '#6b7280'"
+                                    style="font-size: 1rem;"></i>
+                                <span [style.color]="checkHasUppercaseAndLowercase() ? '#22c55e' : '#6b7280'"
+                                    style="font-size: 0.875rem;">
+                                    At least one uppercase and one lowercase letter
+                                </span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <i [class]="checkHasNumber() ? 'pi pi-check-circle' : 'pi pi-circle'"
+                                    [style.color]="checkHasNumber() ? '#22c55e' : '#6b7280'"
+                                    style="font-size: 1rem;"></i>
+                                <span [style.color]="checkHasNumber() ? '#22c55e' : '#6b7280'"
+                                    style="font-size: 0.875rem;">
+                                    At least one number
+                                </span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <i [class]="checkHasSpecialChar() ? 'pi pi-check-circle' : 'pi pi-circle'"
+                                    [style.color]="checkHasSpecialChar() ? '#22c55e' : '#6b7280'"
+                                    style="font-size: 1rem;"></i>
+                                <span [style.color]="checkHasSpecialChar() ? '#22c55e' : '#6b7280'"
+                                    style="font-size: 0.875rem;">
+                                    At least one special character (non-alphanumeric)
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Error Messages for other validations -->
                         <div class="validation-messages mt-2"
                             *ngIf="changePasswordForm.get('newPassword')?.invalid && (changePasswordForm.get('newPassword')?.dirty || changePasswordForm.get('newPassword')?.touched)">
                             <small class="p-error block"
                                 *ngIf="changePasswordForm.get('newPassword')?.errors?.['required']">
                                 New password is required.
-                            </small>
-                            <small class="p-error block"
-                                *ngIf="changePasswordForm.get('newPassword')?.errors?.['minlength']">
-                                Password must be at least 8 characters long.
-                            </small>
-                            <small class="p-error block"
-                                *ngIf="changePasswordForm.get('newPassword')?.errors?.['maxlength']">
-                                Password must not exceed 100 characters.
-                            </small>
-                            <small class="p-error block"
-                                *ngIf="changePasswordForm.get('newPassword')?.errors?.['doesNotStartWithLetter']">
-                                Password must start with a letter (uppercase or lowercase).
-                            </small>
-                            <small class="p-error block"
-                                *ngIf="changePasswordForm.get('newPassword')?.errors?.['missingUppercase']">
-                                Password must contain at least one uppercase letter.
-                            </small>
-                            <small class="p-error block"
-                                *ngIf="changePasswordForm.get('newPassword')?.errors?.['missingLowercase']">
-                                Password must contain at least one lowercase letter.
-                            </small>
-                            <small class="p-error block"
-                                *ngIf="changePasswordForm.get('newPassword')?.errors?.['missingNumber']">
-                                Password must contain at least one number.
-                            </small>
-                            <small class="p-error block"
-                                *ngIf="changePasswordForm.get('newPassword')?.errors?.['missingSpecialChar']">
-                                Password must contain at least one special character.
                             </small>
                             <small class="p-error block"
                                 *ngIf="changePasswordForm.get('newPassword')?.errors?.['passwordSameAsOld']">

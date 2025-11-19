@@ -140,7 +140,7 @@ export class ProfileComponent implements OnInit {
                 Validators.compose([
                     Validators.required,
                     Validators.minLength(8),
-                    Validators.maxLength(100),
+                    Validators.maxLength(15),
                     passwordComplexityValidator(),
                 ])
             ],
@@ -439,6 +439,38 @@ export class ProfileComponent implements OnInit {
         oldPasswordControl?.updateValueAndValidity();
         newPasswordControl?.updateValueAndValidity();
         confirmPasswordControl?.updateValueAndValidity();
+    }
+
+    getPasswordLength(): number {
+        const password = this.changePasswordForm.get('newPassword')?.value || '';
+        return password.length;
+    }
+
+    checkPasswordLength(): boolean {
+        const password = this.changePasswordForm.get('newPassword')?.value || '';
+        return password.length >= 8 && password.length <= 15;
+    }
+
+    checkStartsWithLetter(): boolean {
+        const password = this.changePasswordForm.get('newPassword')?.value || '';
+        return /^[A-Za-z]/.test(password);
+    }
+
+    checkHasUppercaseAndLowercase(): boolean {
+        const password = this.changePasswordForm.get('newPassword')?.value || '';
+        const hasLowercase = /[a-z]/.test(password);
+        const hasUppercase = /[A-Z]/.test(password);
+        return hasLowercase && hasUppercase;
+    }
+
+    checkHasNumber(): boolean {
+        const password = this.changePasswordForm.get('newPassword')?.value || '';
+        return /[0-9]/.test(password);
+    }
+
+    checkHasSpecialChar(): boolean {
+        const password = this.changePasswordForm.get('newPassword')?.value || '';
+        return /[^A-Za-z0-9]/.test(password);
     }
 
     private handlePasswordChangeError(error: any): void {
