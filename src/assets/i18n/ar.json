@@ -75,6 +75,49 @@
             }
         }
     },
+    "settings": {
+        "title": "الإعدادات",
+        "description": "إدارة إعدادات التطبيق",
+        "tabs": {
+            "layoutTheme": "إعدادات التخطيط والسمة",
+            "incoming": "الإعدادات القادمة"
+        },
+        "sections": {
+            "general": "الإعدادات العامة",
+            "notifications": "الإشعارات",
+            "security": "الأمان",
+            "privacy": "الخصوصية"
+        },
+        "fields": {
+            "language": "اللغة",
+            "theme": "السمة",
+            "timezone": "المنطقة الزمنية",
+            "emailNotifications": "إشعارات البريد الإلكتروني",
+            "pushNotifications": "الإشعارات الفورية",
+            "smsNotifications": "إشعارات الرسائل النصية",
+            "twoFactorAuth": "المصادقة الثنائية",
+            "sessionTimeout": "انتهاء الجلسة",
+            "autoLogout": "تسجيل الخروج التلقائي",
+            "profileVisibility": "رؤية الملف الشخصي",
+            "analyticsTracking": "تتبع التحليلات",
+            "dataRetention": "الاحتفاظ بالبيانات"
+        },
+        "options": {
+            "light": "فاتح",
+            "dark": "داكن",
+            "indefinitely": "بلا حدود"
+        },
+        "actions": {
+            "save": "حفظ الإعدادات",
+            "reset": "إعادة تعيين إلى الافتراضي",
+            "cancel": "إلغاء التغييرات"
+        },
+        "messages": {
+            "saveSuccess": "تم حفظ الإعدادات بنجاح",
+            "resetInfo": "تم إعادة تعيين الإعدادات إلى القيم الافتراضية",
+            "cancelInfo": "تم إرجاع الإعدادات إلى آخر حالة محفوظة"
+        }
+    },
     "profile": {
         "title": "الملف الشخصي",
         "description": "إدارة معلومات ملفك الشخصي",
@@ -86,12 +129,88 @@
             "email": "البريد الإلكتروني",
             "phone": "الهاتف",
             "role": "الدور",
-            "department": "القسم"
+            "department": "القسم",
+            "prefix": "اللقب",
+            "middleName": "الاسم الأوسط",
+            "gender": "الجنس"
+        },
+        "labels": {
+            "emailAddress": "عنوان البريد الإلكتروني",
+            "account": "الحساب",
+            "company": "الشركة"
+        },
+        "placeholders": {
+            "prefix": "أدخل اللقب (مثل: السيد، السيدة، د.)",
+            "firstName": "أدخل الاسم الأول",
+            "middleName": "أدخل الاسم الأوسط",
+            "lastName": "أدخل الاسم الأخير",
+            "email": "أدخل عنوان البريد الإلكتروني",
+            "selectGender": "اختر الجنس"
+        },
+        "password": {
+            "changePassword": "تغيير كلمة المرور",
+            "oldPassword": "كلمة المرور القديمة",
+            "newPassword": "كلمة المرور الجديدة",
+            "confirmPassword": "تأكيد كلمة المرور الجديدة",
+            "enterOldPassword": "أدخل كلمة المرور القديمة",
+            "enterNewPassword": "أدخل كلمة المرور الجديدة",
+            "confirmNewPassword": "أكد كلمة المرور الجديدة",
+            "requirements": {
+                "between8to15": "بين 8-15 حرفًا",
+                "startsWithLetter": "يبدأ بحرف (كبير أو صغير)",
+                "uppercaseAndLowercase": "حرف كبير وحرف صغير على الأقل",
+                "atLeastOneNumber": "رقم واحد على الأقل",
+                "atLeastOneSpecial": "رمز خاص واحد على الأقل (غير أبجدي رقمي)"
+            },
+            "errors": {
+                "oldPasswordRequired": "كلمة المرور القديمة مطلوبة.",
+                "oldPasswordWrong": "كلمة المرور القديمة التي أدخلتها غير صحيحة. يرجى المحاولة مرة أخرى.",
+                "newPasswordRequired": "كلمة المرور الجديدة مطلوبة.",
+                "passwordSameAsOld": "كلمة المرور الجديدة لا يمكن أن تكون نفس كلمة المرور القديمة.",
+                "passwordFormatIncompliant": "تنسيق كلمة المرور غير متوافق. يرجى التحقق من متطلبات كلمة المرور.",
+                "passwordsMismatch": "كلمات المرور غير متطابقة.",
+                "confirmPasswordRequired": "يرجى تأكيد كلمة المرور الخاصة بك."
+            },
+            "dialog": {
+                "title": "تغيير كلمة المرور",
+                "question": "تغيير كلمة المرور الخاصة بك؟",
+                "message": "أنت على وشك تغيير كلمة مرور حسابك.",
+                "important": "مهم:",
+                "importantMessage": "سيتم تطبيق هذا التغيير عند تسجيل الدخول التالي.",
+                "details": "ستحتاج إلى استخدام كلمة المرور الجديدة لتسجيل الدخول إلى حسابك بعد تسجيل الخروج أو انتهاء جلستك الحالية.",
+                "cancel": "إلغاء",
+                "confirm": "تغيير كلمة المرور"
+            }
+        },
+        "twoFactor": {
+            "title": "المصادقة الثنائية (2FA)",
+            "status": "حالة 2FA",
+            "enabled": "تم تفعيل المصادقة الثنائية.",
+            "disabled": "تم تعطيل المصادقة الثنائية.",
+            "enable": "تفعيل 2FA",
+            "disable": "تعطيل 2FA",
+            "dialog": {
+                "enableTitle": "تفعيل المصادقة الثنائية؟",
+                "disableTitle": "تعطيل المصادقة الثنائية؟",
+                "enableMessage": "أنت على وشك تفعيل المصادقة الثنائية لحسابك.",
+                "disableMessage": "أنت على وشك تعطيل المصادقة الثنائية لحسابك.",
+                "important": "مهم:",
+                "importantMessage": "سيتم تطبيق هذا التغيير عند تسجيل الدخول التالي.",
+                "details": "سيتم إرسال بريد إلكتروني يحتوي على رمز التحقق إلى عنوان بريدك الإلكتروني المسجل. ستحتاج إلى إدخال هذا الرمز لإكمال تسجيل الدخول.",
+                "cancel": "إلغاء",
+                "confirmEnable": "تفعيل 2FA",
+                "confirmDisable": "تعطيل 2FA"
+            }
         },
         "actions": {
             "save": "حفظ التغييرات",
             "reset": "إعادة تعيين",
             "cancel": "إلغاء"
+        },
+        "messages": {
+            "saveSuccess": "تم حفظ معلومات الملف الشخصي بنجاح!",
+            "resetInfo": "تم إعادة تعيين معلومات الملف الشخصي إلى القيم الأصلية.",
+            "cancelInfo": "تم إلغاء التغييرات."
         }
     },
     "layout": {
@@ -191,7 +310,11 @@
             "menuThemes": "سمات القائمة",
             "menu_theme_selector": "سمات القائمة متاحة فقط في الوضع الفاتح بالتصميم حيث يمكن للأسطح الكبيرة أن تنبعث منها سطوع كبير في الوضع الداكن.",
             "topbarThemes": "سمات الشريط العلوي و السفلى",
-            "componentThemes": "سمات المكونات"
+            "componentThemes": "سمات المكونات",
+            "saveChanges": "حفظ التغييرات",
+            "resetToDefaults": "إعادة تعيين إلى الافتراضي",
+            "unsavedChangesWarning": "لديك تغييرات غير محفوظة. انقر على \"حفظ التغييرات\" لحفظها.",
+            "settingsSavedSuccess": "تم حفظ الإعدادات بنجاح"
         }
     },
 

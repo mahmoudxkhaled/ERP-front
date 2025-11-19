@@ -253,11 +253,24 @@ $gutter: 1rem; //for primeflex grid system
     // color: white !important;
 }
 
-.rtl-layout .layout-drawer .layout-sidebar .layout-menu-container .layout-menu .layout-root-menuitem > .layout-menuitem-root-text > span {
-  margin-left: -46px;
-  opacity: 0;
-  transition: all 0.1s;
+@media screen and (min-width: 992px) {
+  .ltr-layout .layout-drawer .layout-sidebar .layout-menu-container .layout-menu .layout-root-menuitem > .layout-menuitem-root-text > span {
+      margin-left: auto;
+      opacity: 0;
+      transition: all 0.1s;
+  }
 }
+
+
+
+
+
+
+// .rtl-layout .layout-drawer .layout-sidebar .layout-menu-container .layout-menu .layout-root-menuitem > .layout-menuitem-root-text > span {
+//   margin-left: -46px;
+//   opacity: 0;
+//   transition: all 0.1s;
+// }
   
 //   .ltr-layout .see-more h1, .ltr-layout .see-more h2, .ltr-layout .see-more h3, 
 //   .ltr-layout .see-more h4, .ltr-layout .see-more h5, .ltr-layout .see-more h6,

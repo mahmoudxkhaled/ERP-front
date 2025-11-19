@@ -7,16 +7,18 @@
 <div class="card">
     <div class="flex justify-content-end align-items-center mb-3">
         <div class="flex gap-2">
-            <p-button label="Save Changes" [icon]="isSaving ? 'pi pi-spin pi-spinner' : 'pi pi-save'" severity="success"
+            <p-button [label]="translate.getInstant('layout.config.saveChanges')"
+                [icon]="isSaving ? 'pi pi-spin pi-spinner' : 'pi pi-save'" severity="success"
                 [disabled]="!hasUnsavedChanges || isSaving" (onClick)="saveChanges()">
             </p-button>
-            <p-button label="Reset to Defaults" icon="pi pi-refresh" severity="danger" (onClick)="resetToDefaults()">
+            <p-button [label]="translate.getInstant('layout.config.resetToDefaults')" icon="pi pi-refresh"
+                severity="danger" (onClick)="resetToDefaults()">
             </p-button>
         </div>
     </div>
     <div class="my-3">
         <p-message *ngIf="hasUnsavedChanges" severity="warn"
-            text="You have unsaved changes. Click &quot;Save Changes&quot; to persist them." class="mb-3">
+            [text]="translate.getInstant('layout.config.unsavedChangesWarning')" class="mb-3">
         </p-message>
     </div>
     <div class="p-4" style="width: 50%;">

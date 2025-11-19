@@ -47,10 +47,8 @@
     <div class="layout-topbar-end">
         <div class="layout-topbar-actions-end">
             <ul class="layout-topbar-items" style="align-items: center">
-                <li class="mx-1">
-                    <p style="font-size: 1.2rem; font-weight: 600; cursor: pointer;" routerLink="/summary/profile"> {{
-                        userName }}</p>
-                </li>
+
+
 
                 <li>
                     <i [class]="
@@ -77,8 +75,15 @@
                             (onChange)="changeUserLanguage($event)"></p-listbox>
                     </div>
                 </li>
-
-
+                <li>
+                    <p style="font-size: 1.2rem; font-weight: 600; cursor: pointer;" routerLink="/summary/profile"> {{
+                        userName }}</p>
+                </li>
+                <li>
+                    <img [src]="profilePictureUrl" alt="avatar" style="width: 32px; height: 32px; vertical-align: middle;
+                    border-radius: 50%;
+                    border: 1px solid gray; background-color: white; cursor: pointer;" routerLink="/summary/profile" />
+                </li>
 
                 <!-- <li>
                     <i class="pi pi-power-off text-xl cursor-pointer" (click)="logOut()"></i>

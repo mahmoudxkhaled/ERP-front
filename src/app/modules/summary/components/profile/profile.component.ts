@@ -164,8 +164,8 @@ export class ProfileComponent implements OnInit {
     saveProfileInfo(): void {
         this.messageService.add({
             severity: 'success',
-            summary: 'Success',
-            detail: 'Profile information saved successfully!'
+            summary: this.translate.getInstant('shared.messages.success'),
+            detail: this.translate.getInstant('profile.messages.saveSuccess')
         });
     }
 
@@ -204,8 +204,8 @@ export class ProfileComponent implements OnInit {
 
         this.messageService.add({
             severity: 'info',
-            summary: 'Form Reset',
-            detail: 'Profile information has been reset to original values.'
+            summary: this.translate.getInstant('profile.actions.reset'),
+            detail: this.translate.getInstant('profile.messages.resetInfo')
         });
     }
 
@@ -260,8 +260,8 @@ export class ProfileComponent implements OnInit {
     cancelEdit(): void {
         this.messageService.add({
             severity: 'warn',
-            summary: 'Cancelled',
-            detail: 'Changes have been cancelled.'
+            summary: this.translate.getInstant('shared.actions.cancel'),
+            detail: this.translate.getInstant('profile.messages.cancelInfo')
         });
     }
 

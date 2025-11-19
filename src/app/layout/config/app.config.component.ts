@@ -2,6 +2,7 @@ import { Component, Input, OnInit, signal } from '@angular/core';
 import { MenuService } from '../app-menu/app.menu.service';
 import { ColorScheme, LayoutService, MenuMode } from '../app-services/app.layout.service';
 import { MessageService } from 'primeng/api';
+import { TranslationService } from 'src/app/core/Services/translation.service';
 
 @Component({
     selector: 'app-config',
@@ -31,7 +32,8 @@ export class AppConfigComponent implements OnInit {
     constructor(
         public layoutService: LayoutService,
         public menuService: MenuService,
-        private messageService: MessageService
+        private messageService: MessageService,
+        public translate: TranslationService
     ) { }
 
     get visible(): boolean {
@@ -346,8 +348,8 @@ export class AppConfigComponent implements OnInit {
         // Show success message
         this.messageService.add({
             severity: 'success',
-            summary: 'Success',
-            detail: 'Settings saved successfully',
+            summary: this.translate.getInstant('shared.messages.success'),
+            detail: this.translate.getInstant('layout.config.settingsSavedSuccess'),
             life: 3000
         });
 

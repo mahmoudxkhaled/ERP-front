@@ -39,7 +39,7 @@ export class LayoutService {
     _config: AppConfig = {
         ripple: true,
         inputStyle: 'outlined',
-        menuMode: 'drawer',
+        menuMode: 'reveal',
         colorScheme: 'light',
         componentTheme: 'purple',
         scale: 14,
@@ -311,7 +311,7 @@ export class LayoutService {
         const defaultConfig: AppConfig = {
             ripple: true,
             inputStyle: 'outlined',
-            menuMode: 'drawer',
+            menuMode: 'reveal',
             colorScheme: 'light',
             componentTheme: 'purple',
             scale: 14,

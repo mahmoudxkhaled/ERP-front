@@ -116,8 +116,8 @@ export class SettingsComponent implements OnInit {
         // Show success message
         this.messageService.add({
             severity: 'success',
-            summary: 'Success',
-            detail: 'Settings saved successfully',
+            summary: this.translate.getInstant('shared.messages.success'),
+            detail: this.translate.getInstant('settings.messages.saveSuccess'),
             life: 3000
         });
 
@@ -142,8 +142,8 @@ export class SettingsComponent implements OnInit {
 
         this.messageService.add({
             severity: 'info',
-            summary: 'Settings Reset',
-            detail: 'Settings have been reset to default values',
+            summary: this.translate.getInstant('settings.actions.reset'),
+            detail: this.translate.getInstant('settings.messages.resetInfo'),
             life: 3000
         });
     }
@@ -154,8 +154,8 @@ export class SettingsComponent implements OnInit {
 
         this.messageService.add({
             severity: 'info',
-            summary: 'Changes Cancelled',
-            detail: 'Settings have been reverted to last saved state',
+            summary: this.translate.getInstant('settings.actions.cancel'),
+            detail: this.translate.getInstant('settings.messages.cancelInfo'),
             life: 3000
         });
     }

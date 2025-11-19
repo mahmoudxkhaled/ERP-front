@@ -4,7 +4,7 @@
     <!-- Page Header -->
     <div class="mb-4">
         <h1 class="text-3xl font-bold  mb-2">{{ translate.getInstant('dashboard.profile') }}</h1>
-        <p class="text-gray-600">Manage your profile information</p>
+        <p class="text-gray-600">{{ translate.getInstant('profile.description') }}</p>
     </div>
 
     <!-- Profile Overview Card -->
@@ -13,7 +13,7 @@
             <div class="p-4 surface-ground border-round-top">
                 <h2 class="  m-0 text-2xl font-bold">
                     <i class="pi pi-user mr-2"></i>
-                    Profile Overview
+                    {{ translate.getInstant('profile.overview') }}
                 </h2>
             </div>
         </ng-template>
@@ -42,7 +42,8 @@
                             <i class="pi pi-envelope text-white text-lg"></i>
                         </div>
                         <div>
-                            <p class="text-sm text-color-secondary m-0 font-medium">Email Address</p>
+                            <p class="text-sm text-color-secondary m-0 font-medium">{{
+                                translate.getInstant('profile.labels.emailAddress') }}</p>
                             <p class="text-lg font-semibold m-0 text-900">{{ profileForm.get('Email')?.value }}</p>
                         </div>
                     </div>
@@ -56,7 +57,8 @@
                                 <i class="pi pi-info-circle text-white text-lg"></i>
                             </div>
                             <div class="flex-1">
-                                <p class="text-sm text-color-secondary m-0 mb-1 font-medium">Account</p>
+                                <p class="text-sm text-color-secondary m-0 mb-1 font-medium">{{
+                                    translate.getInstant('profile.labels.account') }}</p>
                                 <p class="text-base m-0 text-900 line-height-3">{{ profileForm.get('Description')?.value
                                     }}</p>
                             </div>
@@ -72,7 +74,8 @@
                                 <i class="pi pi-building text-white text-lg"></i>
                             </div>
                             <div>
-                                <p class="text-sm text-color-secondary m-0 font-medium">Company</p>
+                                <p class="text-sm text-color-secondary m-0 font-medium">{{
+                                    translate.getInstant('profile.labels.company') }}</p>
                                 <p class="text-lg font-semibold m-0 text-900">{{ profileForm.get('Entity_Name')?.value
                                     }}</p>
                             </div>
@@ -88,72 +91,76 @@
         <div class="grid mt-4">
             <!-- Personal Information Panel -->
             <div class="col-12">
-                <p-panel header="Personal Information" class="h-full">
+                <p-panel [header]="translate.getInstant('profile.personalInfo')" class="h-full">
                     <div class="grid">
                         <!-- Prefix -->
                         <div class="col-12 md:col-6">
                             <label class="block text-sm font-medium  mb-2">
                                 <i class="pi pi-user mr-2 text-blue-500"></i>
-                                Prefix
+                                {{ translate.getInstant('profile.fields.prefix') }}
                             </label>
-                            <input pInputText formControlName="Prefix" placeholder="Enter prefix (e.g., Mr., Mrs., Dr.)"
-                                class="w-full">
+                            <input pInputText formControlName="Prefix"
+                                [placeholder]="translate.getInstant('profile.placeholders.prefix')" class="w-full">
                         </div>
 
                         <!-- First Name -->
                         <div class="col-12 md:col-6">
                             <label class="block text-sm font-medium  mb-2">
                                 <i class="pi pi-user mr-2 text-blue-500"></i>
-                                First Name
+                                {{ translate.getInstant('profile.fields.firstName') }}
                             </label>
-                            <input pInputText formControlName="First_Name" placeholder="Enter first name"
-                                class="w-full">
+                            <input pInputText formControlName="First_Name"
+                                [placeholder]="translate.getInstant('profile.placeholders.firstName')" class="w-full">
                         </div>
 
                         <!-- Middle Name -->
                         <div class="col-12 md:col-6">
                             <label class="block text-sm font-medium  mb-2">
                                 <i class="pi pi-user mr-2 text-blue-500"></i>
-                                Middle Name
+                                {{ translate.getInstant('profile.fields.middleName') }}
                             </label>
-                            <input pInputText formControlName="Middle_Name" placeholder="Enter middle name"
-                                class="w-full">
+                            <input pInputText formControlName="Middle_Name"
+                                [placeholder]="translate.getInstant('profile.placeholders.middleName')" class="w-full">
                         </div>
 
                         <!-- Last Name -->
                         <div class="col-12 md:col-6">
                             <label class="block text-sm font-medium  mb-2">
                                 <i class="pi pi-user mr-2 text-blue-500"></i>
-                                Last Name
+                                {{ translate.getInstant('profile.fields.lastName') }}
                             </label>
-                            <input pInputText formControlName="Last_Name" placeholder="Enter last name" class="w-full">
+                            <input pInputText formControlName="Last_Name"
+                                [placeholder]="translate.getInstant('profile.placeholders.lastName')" class="w-full">
                         </div>
 
                         <!-- Email -->
                         <div class="col-12 md:col-6">
                             <label class="block text-sm font-medium  mb-2">
                                 <i class="pi pi-envelope mr-2 text-blue-500"></i>
-                                Email
+                                {{ translate.getInstant('profile.fields.email') }}
                             </label>
-                            <input pInputText formControlName="Email" placeholder="Enter email address" class="w-full">
+                            <input pInputText formControlName="Email"
+                                [placeholder]="translate.getInstant('profile.placeholders.email')" class="w-full">
                         </div>
 
                         <!-- Gender -->
                         <div class="col-12 md:col-6">
                             <label class="block text-sm font-medium  mb-2">
                                 <i class="pi pi-users mr-2 text-blue-500"></i>
-                                Gender
+                                {{ translate.getInstant('profile.fields.gender') }}
                             </label>
                             <p-dropdown [options]="genderOptions" formControlName="Gender" optionLabel="label"
-                                optionValue="value" placeholder="Select gender" class="w-full">
+                                optionValue="value"
+                                [placeholder]="translate.getInstant('profile.placeholders.selectGender')"
+                                class="w-full">
                             </p-dropdown>
                         </div>
 
 
                         <div class="col-12 md:col-6">
                             <div class="flex justify-content-start gap-3 my-4">
-                                <p-button label="Save Changes" icon="pi pi-save" severity="success"
-                                    (onClick)="saveProfileInfo()"></p-button>
+                                <p-button [label]="translate.getInstant('profile.actions.save')" icon="pi pi-save"
+                                    severity="success" (onClick)="saveProfileInfo()"></p-button>
                             </div>
                         </div>
                     </div>
@@ -167,7 +174,7 @@
     <!-- Change Password Section -->
     <div style="margin-bottom: 20px;">
 
-        <p-panel header="Change Password" class="mb-4">
+        <p-panel [header]="translate.getInstant('profile.password.changePassword')" class="mb-4">
 
             <form [formGroup]="changePasswordForm" (ngSubmit)="onChangePassword()">
                 <div class="grid">
@@ -175,11 +182,12 @@
                     <div class="col-12 md:col-4">
                         <label class="block text-sm font-medium mb-2">
                             <i class="pi pi-lock mr-2 text-blue-500"></i>
-                            Old Password
+                            {{ translate.getInstant('profile.password.oldPassword') }}
                         </label>
                         <div class="p-input-icon-right" style="position: relative; display: flex; align-items: center;">
                             <input pInputText [type]="showOldPassword ? 'text' : 'password'"
-                                formControlName="oldPassword" placeholder="Enter old password" class="w-full"
+                                formControlName="oldPassword"
+                                [placeholder]="translate.getInstant('profile.password.enterOldPassword')" class="w-full"
                                 style="padding-right: 40px;" (keyup)="validateAllPasswordFields()"
                                 [ngClass]="{'ng-invalid ng-dirty': changePasswordForm.get('oldPassword')?.invalid && changePasswordForm.get('oldPassword')?.touched}">
                             <i [class]="showOldPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"
@@ -189,11 +197,11 @@
                         </div>
                         <small class="p-error"
                             *ngIf="changePasswordForm.get('oldPassword')?.errors?.['required'] && changePasswordForm.get('oldPassword')?.touched">
-                            Old password is required.
+                            {{ translate.getInstant('profile.password.errors.oldPasswordRequired') }}
                         </small>
                         <small class="p-error"
                             *ngIf="changePasswordForm.get('oldPassword')?.errors?.['oldPasswordWrong'] && changePasswordForm.get('oldPassword')?.touched">
-                            The old password you entered is incorrect. Please try again.
+                            {{ translate.getInstant('profile.password.errors.oldPasswordWrong') }}
                         </small>
                     </div>
 
@@ -201,11 +209,12 @@
                     <div class="col-12 md:col-4">
                         <label class="block text-sm font-medium mb-2">
                             <i class="pi pi-key mr-2 text-blue-500"></i>
-                            New Password
+                            {{ translate.getInstant('profile.password.newPassword') }}
                         </label>
                         <div class="p-input-icon-right" style="position: relative; display: flex; align-items: center;">
                             <input pInputText [type]="showNewPassword ? 'text' : 'password'"
-                                formControlName="newPassword" placeholder="Enter new password" class="w-full"
+                                formControlName="newPassword"
+                                [placeholder]="translate.getInstant('profile.password.enterNewPassword')" class="w-full"
                                 style="padding-right: 40px;" (keyup)="validateAllPasswordFields()"
                                 [ngClass]="{'ng-invalid ng-dirty': changePasswordForm.get('newPassword')?.invalid && changePasswordForm.get('newPassword')?.touched}">
                             <i [class]="showNewPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"
@@ -230,7 +239,7 @@
                                     style="font-size: 1rem;"></i>
                                 <span [style.color]="checkPasswordLength() ? '#22c55e' : '#6b7280'"
                                     style="font-size: 0.875rem;">
-                                    Between 8-15 characters
+                                    {{ translate.getInstant('profile.password.requirements.between8to15') }}
                                 </span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
@@ -239,7 +248,7 @@
                                     style="font-size: 1rem;"></i>
                                 <span [style.color]="checkStartsWithLetter() ? '#22c55e' : '#6b7280'"
                                     style="font-size: 0.875rem;">
-                                    Starts with a letter (uppercase or lowercase)
+                                    {{ translate.getInstant('profile.password.requirements.startsWithLetter') }}
                                 </span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
@@ -248,7 +257,7 @@
                                     style="font-size: 1rem;"></i>
                                 <span [style.color]="checkHasUppercaseAndLowercase() ? '#22c55e' : '#6b7280'"
                                     style="font-size: 0.875rem;">
-                                    At least one uppercase and one lowercase letter
+                                    {{ translate.getInstant('profile.password.requirements.uppercaseAndLowercase') }}
                                 </span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
@@ -257,7 +266,7 @@
                                     style="font-size: 1rem;"></i>
                                 <span [style.color]="checkHasNumber() ? '#22c55e' : '#6b7280'"
                                     style="font-size: 0.875rem;">
-                                    At least one number
+                                    {{ translate.getInstant('profile.password.requirements.atLeastOneNumber') }}
                                 </span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
@@ -266,7 +275,7 @@
                                     style="font-size: 1rem;"></i>
                                 <span [style.color]="checkHasSpecialChar() ? '#22c55e' : '#6b7280'"
                                     style="font-size: 0.875rem;">
-                                    At least one special character (non-alphanumeric)
+                                    {{ translate.getInstant('profile.password.requirements.atLeastOneSpecial') }}
                                 </span>
                             </div>
                         </div>
@@ -276,15 +285,15 @@
                             *ngIf="changePasswordForm.get('newPassword')?.invalid && (changePasswordForm.get('newPassword')?.dirty || changePasswordForm.get('newPassword')?.touched)">
                             <small class="p-error block"
                                 *ngIf="changePasswordForm.get('newPassword')?.errors?.['required']">
-                                New password is required.
+                                {{ translate.getInstant('profile.password.errors.newPasswordRequired') }}
                             </small>
                             <small class="p-error block"
                                 *ngIf="changePasswordForm.get('newPassword')?.errors?.['passwordSameAsOld']">
-                                New password cannot be the same as your old password.
+                                {{ translate.getInstant('profile.password.errors.passwordSameAsOld') }}
                             </small>
                             <small class="p-error block"
                                 *ngIf="changePasswordForm.get('newPassword')?.errors?.['passwordFormatIncompliant']">
-                                Password format is incompliant. Please check the password requirements.
+                                {{ translate.getInstant('profile.password.errors.passwordFormatIncompliant') }}
                             </small>
                         </div>
                     </div>
@@ -293,12 +302,13 @@
                     <div class="col-12 md:col-4">
                         <label class="block text-sm font-medium mb-2">
                             <i class="pi pi-check-circle mr-2 text-blue-500"></i>
-                            Confirm New Password
+                            {{ translate.getInstant('profile.password.confirmPassword') }}
                         </label>
                         <div class="p-input-icon-right" style="position: relative; display: flex; align-items: center;">
                             <input pInputText [type]="showConfirmPassword ? 'text' : 'password'"
-                                formControlName="confirmPassword" placeholder="Confirm new password" class="w-full"
-                                style="padding-right: 40px;" (keyup)="validateAllPasswordFields()"
+                                formControlName="confirmPassword"
+                                [placeholder]="translate.getInstant('profile.password.confirmNewPassword')"
+                                class="w-full" style="padding-right: 40px;" (keyup)="validateAllPasswordFields()"
                                 [ngClass]="{'ng-invalid ng-dirty': changePasswordForm.get('confirmPassword')?.invalid && changePasswordForm.get('confirmPassword')?.touched}">
                             <i [class]="showConfirmPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"
                                 (click)="togglePasswordVisibility('confirm')"
@@ -307,33 +317,34 @@
                         </div>
                         <small class="p-error"
                             *ngIf="changePasswordForm.get('confirmPassword')?.errors?.['passwordMismatch'] && changePasswordForm.get('confirmPassword')?.touched">
-                            Passwords do not match.
+                            {{ translate.getInstant('profile.password.errors.passwordsMismatch') }}
                         </small>
                         <small class="p-error"
                             *ngIf="changePasswordForm.get('confirmPassword')?.errors?.['required'] && changePasswordForm.get('confirmPassword')?.touched">
-                            Please confirm your password.
+                            {{ translate.getInstant('profile.password.errors.confirmPasswordRequired') }}
                         </small>
                     </div>
                 </div>
                 <div class="flex justify-content-end mt-3">
-                    <p-button label="Change Password" icon="pi pi-save" severity="success" type="submit"
-                        [disabled]="changePasswordForm.invalid"></p-button>
+                    <p-button [label]="translate.getInstant('profile.password.changePassword')" icon="pi pi-save"
+                        severity="success" type="submit" [disabled]="changePasswordForm.invalid"></p-button>
                 </div>
             </form>
         </p-panel>
     </div>
 
     <!-- 2FA Settings Section -->
-    <p-panel header="Two-Factor Authentication (2FA)" class="mb-4 mt-4">
+    <p-panel [header]="translate.getInstant('profile.twoFactor.title')" class="mb-4 mt-4">
         <div class="flex align-items-center justify-content-between mb-3">
             <div>
-                <h3 class="text-lg font-semibold mb-2">2FA Status</h3>
+                <h3 class="text-lg font-semibold mb-2">{{ translate.getInstant('profile.twoFactor.status') }}</h3>
                 <p class="text-gray-600">
-                    {{ twoFactorEnabled ? 'Two-factor authentication is enabled.' : 'Two-factor authentication is
-                    disabled.' }}
+                    {{ twoFactorEnabled ? translate.getInstant('profile.twoFactor.enabled') :
+                    translate.getInstant('profile.twoFactor.disabled') }}
                 </p>
             </div>
-            <p-button [label]="twoFactorEnabled ? 'Disable 2FA' : 'Enable 2FA'"
+            <p-button
+                [label]="twoFactorEnabled ? translate.getInstant('profile.twoFactor.disable') : translate.getInstant('profile.twoFactor.enable')"
                 [icon]="twoFactorEnabled ? 'pi pi-times' : 'pi pi-shield'"
                 [severity]="twoFactorEnabled ? 'danger' : 'success'" (onClick)="toggle2FA()">
             </p-button>
@@ -345,61 +356,64 @@
 </div>
 
 <!-- Change Password Confirmation Dialog -->
-<p-dialog [(visible)]="showChangePasswordDialog" [modal]="true" [style]="{ width: '500px' }" header="Change Password">
+<p-dialog [(visible)]="showChangePasswordDialog" [modal]="true" [style]="{ width: '500px' }"
+    [header]="translate.getInstant('profile.password.dialog.title')">
     <div class="flex flex-column align-items-center gap-3">
         <i class="pi pi-key" style="font-size: 3rem; color: var(--primary-color);"></i>
         <div class="text-center">
             <p class="text-lg font-semibold mb-2">
-                Change Your Password?
+                {{ translate.getInstant('profile.password.dialog.question') }}
             </p>
             <p class="text-gray-600 mb-2">
-                You are about to change your account password.
+                {{ translate.getInstant('profile.password.dialog.message') }}
             </p>
             <p class="text-gray-600 mb-2">
-                <strong>Important:</strong> This change will take effect on your next login.
+                <strong>{{ translate.getInstant('profile.password.dialog.important') }}</strong> {{
+                translate.getInstant('profile.password.dialog.importantMessage') }}
             </p>
             <p class="text-gray-600">
-                You will need to use your new password to log in to your account after you sign out or your current
-                session expires.
+                {{ translate.getInstant('profile.password.dialog.details') }}
             </p>
         </div>
     </div>
     <ng-template pTemplate="footer">
-        <p-button label="Cancel" icon="pi pi-times" severity="secondary" (onClick)="cancelChangePassword()"
-            class="p-button-text"></p-button>
-        <p-button label="Change Password" icon="pi pi-check" severity="success"
-            (onClick)="confirmChangePassword()"></p-button>
+        <p-button [label]="translate.getInstant('profile.password.dialog.cancel')" icon="pi pi-times"
+            severity="secondary" (onClick)="cancelChangePassword()" class="p-button-text"></p-button>
+        <p-button [label]="translate.getInstant('profile.password.dialog.confirm')" icon="pi pi-check"
+            severity="success" (onClick)="confirmChangePassword()"></p-button>
     </ng-template>
 </p-dialog>
 
 <!-- 2FA Confirmation Dialog -->
 <p-dialog [(visible)]="show2FADialog" [modal]="true" [style]="{ width: '500px' }"
-    [header]="twoFactorEnabled ? 'Disable Two-Factor Authentication' : 'Enable Two-Factor Authentication'">
+    [header]="twoFactorEnabled ? translate.getInstant('profile.twoFactor.dialog.disableTitle') : translate.getInstant('profile.twoFactor.dialog.enableTitle')">
     <div class="flex flex-column align-items-center gap-3">
         <i [class]="twoFactorEnabled ? 'pi pi-exclamation-triangle' : 'pi pi-shield'"
             style="font-size: 3rem; color: var(--primary-color);"></i>
         <div class="text-center">
             <p class="text-lg font-semibold mb-2">
-                {{ twoFactorEnabled ? 'Disable Two-Factor Authentication?' : 'Enable Two-Factor Authentication?' }}
+                {{ twoFactorEnabled ? translate.getInstant('profile.twoFactor.dialog.disableTitle') :
+                translate.getInstant('profile.twoFactor.dialog.enableTitle') }}
             </p>
             <p class="text-gray-600 mb-2">
                 {{ twoFactorEnabled
-                ? 'You are about to disable two-factor authentication for your account.'
-                : 'You are about to enable two-factor authentication for your account.' }}
+                ? translate.getInstant('profile.twoFactor.dialog.disableMessage')
+                : translate.getInstant('profile.twoFactor.dialog.enableMessage') }}
             </p>
             <p class="text-gray-600 mb-2">
-                <strong>Important:</strong> This change will take effect on your next login.
+                <strong>{{ translate.getInstant('profile.twoFactor.dialog.important') }}</strong> {{
+                translate.getInstant('profile.twoFactor.dialog.importantMessage') }}
             </p>
             <p class="text-gray-600">
-                An email with a verification code will be sent to your registered email address.
-                You will need to enter this code to complete your login.
+                {{ translate.getInstant('profile.twoFactor.dialog.details') }}
             </p>
         </div>
     </div>
     <ng-template pTemplate="footer">
-        <p-button label="Cancel" icon="pi pi-times" severity="secondary" (onClick)="cancelToggle2FA()"
-            class="p-button-text"></p-button>
-        <p-button [label]="twoFactorEnabled ? 'Disable 2FA' : 'Enable 2FA'"
+        <p-button [label]="translate.getInstant('profile.twoFactor.dialog.cancel')" icon="pi pi-times"
+            severity="secondary" (onClick)="cancelToggle2FA()" class="p-button-text"></p-button>
+        <p-button
+            [label]="twoFactorEnabled ? translate.getInstant('profile.twoFactor.dialog.confirmDisable') : translate.getInstant('profile.twoFactor.dialog.confirmEnable')"
             [icon]="twoFactorEnabled ? 'pi pi-times' : 'pi pi-check'"
             [severity]="twoFactorEnabled ? 'danger' : 'success'" (onClick)="confirmToggle2FA()"></p-button>
     </ng-template>

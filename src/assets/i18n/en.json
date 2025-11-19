@@ -75,6 +75,49 @@
             }
         }
     },
+    "settings": {
+        "title": "Settings",
+        "description": "Manage your application settings",
+        "tabs": {
+            "layoutTheme": "Layout & Theme Settings",
+            "incoming": "Incoming Settings"
+        },
+        "sections": {
+            "general": "General Settings",
+            "notifications": "Notifications",
+            "security": "Security",
+            "privacy": "Privacy"
+        },
+        "fields": {
+            "language": "Language",
+            "theme": "Theme",
+            "timezone": "Timezone",
+            "emailNotifications": "Email Notifications",
+            "pushNotifications": "Push Notifications",
+            "smsNotifications": "SMS Notifications",
+            "twoFactorAuth": "Two-Factor Authentication",
+            "sessionTimeout": "Session Timeout",
+            "autoLogout": "Auto Logout",
+            "profileVisibility": "Profile Visibility",
+            "analyticsTracking": "Analytics Tracking",
+            "dataRetention": "Data Retention"
+        },
+        "options": {
+            "light": "Light",
+            "dark": "Dark",
+            "indefinitely": "Indefinitely"
+        },
+        "actions": {
+            "save": "Save Settings",
+            "reset": "Reset to Defaults",
+            "cancel": "Cancel Changes"
+        },
+        "messages": {
+            "saveSuccess": "Settings saved successfully",
+            "resetInfo": "Settings have been reset to default values",
+            "cancelInfo": "Settings have been reverted to last saved state"
+        }
+    },
     "profile": {
         "title": "Profile",
         "description": "Manage your profile information",
@@ -86,12 +129,88 @@
             "email": "Email",
             "phone": "Phone",
             "role": "Role",
-            "department": "Department"
+            "department": "Department",
+            "prefix": "Prefix",
+            "middleName": "Middle Name",
+            "gender": "Gender"
+        },
+        "labels": {
+            "emailAddress": "Email Address",
+            "account": "Account",
+            "company": "Company"
+        },
+        "placeholders": {
+            "prefix": "Enter prefix (e.g., Mr., Mrs., Dr.)",
+            "firstName": "Enter first name",
+            "middleName": "Enter middle name",
+            "lastName": "Enter last name",
+            "email": "Enter email address",
+            "selectGender": "Select gender"
+        },
+        "password": {
+            "changePassword": "Change Password",
+            "oldPassword": "Old Password",
+            "newPassword": "New Password",
+            "confirmPassword": "Confirm New Password",
+            "enterOldPassword": "Enter old password",
+            "enterNewPassword": "Enter new password",
+            "confirmNewPassword": "Confirm new password",
+            "requirements": {
+                "between8to15": "Between 8-15 characters",
+                "startsWithLetter": "Starts with a letter (uppercase or lowercase)",
+                "uppercaseAndLowercase": "At least one uppercase and one lowercase letter",
+                "atLeastOneNumber": "At least one number",
+                "atLeastOneSpecial": "At least one special character (non-alphanumeric)"
+            },
+            "errors": {
+                "oldPasswordRequired": "Old password is required.",
+                "oldPasswordWrong": "The old password you entered is incorrect. Please try again.",
+                "newPasswordRequired": "New password is required.",
+                "passwordSameAsOld": "New password cannot be the same as your old password.",
+                "passwordFormatIncompliant": "Password format is incompliant. Please check the password requirements.",
+                "passwordsMismatch": "Passwords do not match.",
+                "confirmPasswordRequired": "Please confirm your password."
+            },
+            "dialog": {
+                "title": "Change Password",
+                "question": "Change Your Password?",
+                "message": "You are about to change your account password.",
+                "important": "Important:",
+                "importantMessage": "This change will take effect on your next login.",
+                "details": "You will need to use your new password to log in to your account after you sign out or your current session expires.",
+                "cancel": "Cancel",
+                "confirm": "Change Password"
+            }
+        },
+        "twoFactor": {
+            "title": "Two-Factor Authentication (2FA)",
+            "status": "2FA Status",
+            "enabled": "Two-factor authentication is enabled.",
+            "disabled": "Two-factor authentication is disabled.",
+            "enable": "Enable 2FA",
+            "disable": "Disable 2FA",
+            "dialog": {
+                "enableTitle": "Enable Two-Factor Authentication?",
+                "disableTitle": "Disable Two-Factor Authentication?",
+                "enableMessage": "You are about to enable two-factor authentication for your account.",
+                "disableMessage": "You are about to disable two-factor authentication for your account.",
+                "important": "Important:",
+                "importantMessage": "This change will take effect on your next login.",
+                "details": "An email with a verification code will be sent to your registered email address. You will need to enter this code to complete your login.",
+                "cancel": "Cancel",
+                "confirmEnable": "Enable 2FA",
+                "confirmDisable": "Disable 2FA"
+            }
         },
         "actions": {
             "save": "Save Changes",
             "reset": "Reset",
             "cancel": "Cancel"
+        },
+        "messages": {
+            "saveSuccess": "Profile information saved successfully!",
+            "resetInfo": "Profile information has been reset to original values.",
+            "cancelInfo": "Changes have been cancelled."
         }
     },
     "layout": {
@@ -190,7 +309,11 @@
             "menuThemes": "Menu Themes",
             "menu_theme_selector": "Menu themes are only available in light mode by design as large surfaces can emit too much brightness in dark mode.",
             "topbarThemes": "Topbar & Footer Themes",
-            "componentThemes": "Component Themes"
+            "componentThemes": "Component Themes",
+            "saveChanges": "Save Changes",
+            "resetToDefaults": "Reset to Defaults",
+            "unsavedChangesWarning": "You have unsaved changes. Click \"Save Changes\" to persist them.",
+            "settingsSavedSuccess": "Settings saved successfully"
         },
         "support-tabmenu": {
             "taps": {

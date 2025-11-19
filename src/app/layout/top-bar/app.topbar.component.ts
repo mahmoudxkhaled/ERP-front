@@ -68,6 +68,7 @@ export class AppTopbarComponent implements OnInit {
     account: IAccountDetails;
     entityDetails: IEntityDetails;
     userName: string = '';
+    profilePictureUrl: string = '';
     accountSettings: IAccountSettings;
     regionalLanguage: boolean = false;
     entityName: string = '';
@@ -150,6 +151,7 @@ export class AppTopbarComponent implements OnInit {
                 this.userName = this.account?.Email || 'User';
             }
         }
+        this.profilePictureUrl = this.account?.Profile_Picture !== null && this.account?.Profile_Picture !== undefined && this.account?.Profile_Picture !== '' ? this.account?.Profile_Picture : 'assets/media/avatar.png';
     }
 
     fetchUserTheme() {
