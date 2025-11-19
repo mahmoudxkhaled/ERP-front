@@ -8,7 +8,7 @@ import { LanguageDIRService } from 'src/app/core/Services/LanguageDIR.service';
 import { TranslationService } from 'src/app/core/Services/translation.service';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/modules/auth/services/auth.service';
-import { IUserDetails, IAccountDetails, IAccountSettings } from 'src/app/core/models/IAccountStatusResponse';
+import { IUserDetails, IAccountDetails, IAccountSettings, IEntityDetails } from 'src/app/core/models/IAccountStatusResponse';
 enum NotificationTypeEnum {
     SendCampaignNotification = 1,
     SendCampaignLessonNotification = 2,
@@ -66,9 +66,11 @@ export class AppTopbarComponent implements OnInit {
     entityLogo: string = '';
     user: IUserDetails;
     account: IAccountDetails;
+    entityDetails: IEntityDetails;
     userName: string = '';
     accountSettings: IAccountSettings;
     regionalLanguage: boolean = false;
+    entityName: string = '';
     mockSearchData = {
         lessons: ['Lesson 1', 'Lesson 2', 'Lesson 3'],
         games: ['Game A', 'Game B', 'Game C'],
@@ -97,13 +99,15 @@ export class AppTopbarComponent implements OnInit {
         this.loadUserDetails();
         // this.fetchNotifications();
         this.initializeStaticLanguages();
-        this.fetchEntityLogo();
     }
     loadUserDetails() {
         this.user = this.localStorage.getUserDetails() as IUserDetails;
         this.account = this.localStorage.getAccountDetails() as IAccountDetails;
+        this.entityDetails = this.localStorage.getEntityDetails() as IEntityDetails;
         this.accountSettings = this.localStorage.getAccountSettings() as IAccountSettings;
 
+
+        this.entityLogo = this.entityDetails?.Logo !== null && this.entityDetails?.Logo !== undefined && this.entityDetails?.Logo !== '' ? this.entityDetails?.Logo : 'assets/media/White-Logo.png';
         const language = this.accountSettings?.Language;
         if (language === 'English') {
             this.regionalLanguage = false;
@@ -111,6 +115,21 @@ export class AppTopbarComponent implements OnInit {
             this.regionalLanguage = true;
         }
 
+        // Set entity name with regional language support
+        if (this.entityDetails) {
+            if (this.regionalLanguage) {
+                const nameRegional = this.entityDetails.Name_Regional || '';
+                if (nameRegional.trim()) {
+                    this.entityName = nameRegional;
+                } else {
+                    this.entityName = this.entityDetails.Name || '';
+                }
+            } else {
+                this.entityName = this.entityDetails.Name || '';
+            }
+        }
+
+        // Set user name with regional language support
         if (this.user) {
             let regionalName = '';
             if (this.regionalLanguage) {
@@ -132,16 +151,7 @@ export class AppTopbarComponent implements OnInit {
             }
         }
     }
-    fetchEntityLogo() {
 
-        const userData = this.localStorage.getCurrentUserData();
-        if (userData) {
-            this.entityLogo = userData.entityLogo;
-        }
-
-        this.entityLogo = userData?.entityLogo ? userData.entityLogo : 'assets/media/White-Logo.png';
-
-    }
     fetchUserTheme() {
         const data = this.localStorageServ.getCurrentUserData();
         // Get theme from localStorage, or fallback to layout service config, or default to 'light'
