@@ -8,6 +8,7 @@ import { LanguageDIRService } from 'src/app/core/Services/LanguageDIR.service';
 import { TranslationService } from 'src/app/core/Services/translation.service';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/modules/auth/services/auth.service';
+import { IUserDetails, IAccountDetails, IAccountSettings } from 'src/app/core/models/IAccountStatusResponse';
 enum NotificationTypeEnum {
     SendCampaignNotification = 1,
     SendCampaignLessonNotification = 2,
@@ -63,6 +64,11 @@ export class AppTopbarComponent implements OnInit {
     langLoading: boolean = false; // Track the loading state
     isListboxVisible: boolean = true; // Track visibility of the listbox
     entityLogo: string = '';
+    user: IUserDetails;
+    account: IAccountDetails;
+    userName: string = '';
+    accountSettings: IAccountSettings;
+    regionalLanguage: boolean = false;
     mockSearchData = {
         lessons: ['Lesson 1', 'Lesson 2', 'Lesson 3'],
         games: ['Game A', 'Game B', 'Game C'],
@@ -88,9 +94,43 @@ export class AppTopbarComponent implements OnInit {
         // this.userLanguageId = data.language;
 
         this.fetchUserTheme();
+        this.loadUserDetails();
         // this.fetchNotifications();
         this.initializeStaticLanguages();
         this.fetchEntityLogo();
+    }
+    loadUserDetails() {
+        this.user = this.localStorage.getUserDetails() as IUserDetails;
+        this.account = this.localStorage.getAccountDetails() as IAccountDetails;
+        this.accountSettings = this.localStorage.getAccountSettings() as IAccountSettings;
+
+        const language = this.accountSettings?.Language;
+        if (language === 'English') {
+            this.regionalLanguage = false;
+        } else {
+            this.regionalLanguage = true;
+        }
+
+        if (this.user) {
+            let regionalName = '';
+            if (this.regionalLanguage) {
+                const firstNameRegional = this.user.First_Name_Regional || '';
+                const lastNameRegional = this.user.Last_Name_Regional || '';
+                regionalName = (firstNameRegional + ' ' + lastNameRegional).trim();
+            }
+
+            const firstNameEnglish = this.user.First_Name || '';
+            const lastNameEnglish = this.user.Last_Name || '';
+            const englishName = (firstNameEnglish + ' ' + lastNameEnglish).trim();
+
+            if (this.regionalLanguage && regionalName) {
+                this.userName = regionalName;
+            } else if (englishName) {
+                this.userName = englishName;
+            } else {
+                this.userName = this.account?.Email || 'User';
+            }
+        }
     }
     fetchEntityLogo() {
 

@@ -83,7 +83,6 @@ export class Verify2FAComponent implements OnInit, OnDestroy {
     const userLang = this.rtlService.getLanguageFromStorage();
     this.rtlService.setUserLanguageCode(userLang);
     this.rtlService.setRtl(userLang === 'ar');
-    this.router.navigate(['/']);
   }
 
   moveToNext(event: any, nextInputId: string): void {

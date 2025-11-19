@@ -1,5 +1,13 @@
 import { Injectable } from '@angular/core';
-import { IAccountStatusResponse } from 'src/app/core/models/IAccountStatusResponse';
+import {
+  IAccountStatusResponse,
+  IAccountDetails,
+  IUserDetails,
+  IEntityDetails,
+  IFunctionsDetails,
+  IModulesDetails,
+  IAccountSettings
+} from 'src/app/core/models/IAccountStatusResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -73,5 +81,29 @@ export class LocalStorageService {
     this.removeItem('Modules_Details');
     this.removeItem('Account_Settings');
     this.removeItem('userData');
+  }
+
+  getUserDetails(): IUserDetails | null {
+    return this.getItem('User_Details');
+  }
+
+  getAccountDetails(): IAccountDetails | null {
+    return this.getItem('Account_Details');
+  }
+
+  getEntityDetails(): IEntityDetails | null {
+    return this.getItem('Entity_Details');
+  }
+
+  getFunctionsDetails(): IFunctionsDetails | null {
+    return this.getItem('Functions_Details');
+  }
+
+  getModulesDetails(): IModulesDetails | null {
+    return this.getItem('Modules_Details');
+  }
+
+  getAccountSettings(): IAccountSettings | null {
+    return this.getItem('Account_Settings');
   }
 }

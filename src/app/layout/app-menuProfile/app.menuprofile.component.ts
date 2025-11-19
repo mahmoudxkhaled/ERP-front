@@ -8,17 +8,9 @@ import { AuthService } from '../../modules/auth/services/auth.service';
 import { TranslationService } from 'src/app/core/Services/translation.service';
 import { LogoutComponent } from 'src/app/modules/auth/components/logout/logout.component';
 import { DialogService } from 'primeng/dynamicdialog';
+import { IAccountDetails, IAccountSettings, IUserDetails } from 'src/app/core/models/IAccountStatusResponse';
+import { switchMap } from 'rxjs';
 
-export interface GetUser {
-    id: string;
-    firstName: string;
-    lastName: string;
-    languageId: string;
-    email: string;
-    theme: string;
-    photoUrl: string;
-    iAwareTeam?: boolean;
-}
 
 @Component({
     selector: 'app-menu-profile',
@@ -43,12 +35,14 @@ export interface GetUser {
 export class AppMenuProfileComponent implements OnInit {
     isAdmin: boolean = false;
     userName: string = 'John Doe';
-    imageUrl: string = '../../assets/media/avatar.png';
+    imageUrl: string = '';
     subs: Subscription = new Subscription();
-    user: GetUser;
+    user: IUserDetails;
+    account: IAccountDetails;
     currentPages: any;
     showLogoutDialog: boolean = false; // Track logout dialog visibility
-
+    accountSettings: IAccountSettings;
+    regionalLanguage: boolean = false;
     constructor(
         public layoutService: LayoutService,
         public el: ElementRef,
@@ -58,34 +52,54 @@ export class AppMenuProfileComponent implements OnInit {
         private router: Router,
         private dialogService: DialogService
     ) {
-        const userData = this.localStorage.getItem('userData');
-        if (userData && userData.userImageUrl) {
-            this.imageUrl = userData.userImageUrl;
-        }
+
     }
 
     ngOnInit(): void {
-        this.loadUser();
-
-        // this.userProfilePhotoService.userPhoto$.subscribe((newPhotoUrl) => {
-        //     this.imageUrl = newPhotoUrl ?? this.imageUrl;
-        // });
-
-        // this.userProfilePhotoService.userName$.subscribe((newName) => {
-        //     this.userName = newName ?? this.userName;
-        // });
+        this.loadUserDetails();
     }
 
-    loadUser() {
-        this.subs.add(
-            // this.userServ.getUserDetails().subscribe((res) => {
-            //     this.user = res.data;
-            //     if (res.data.userPhoto !== null || res.data.userPhoto !== undefined || res.data.userPhoto !== '') {
-            //         this.imageUrl = res.data.userPhoto ?? this.imageUrl;
-            //         this.userName = res.data.fullName;
-            //     }
-            // })
-        );
+    loadUserDetails() {
+        this.user = this.localStorage.getUserDetails() as IUserDetails;
+        this.account = this.localStorage.getAccountDetails() as IAccountDetails;
+        this.accountSettings = this.localStorage.getAccountSettings() as IAccountSettings;
+
+        // Add null check here (like in topbar component)
+        const language = this.accountSettings?.Language;
+        if (language === 'English') {
+            this.regionalLanguage = false;
+        } else {
+            this.regionalLanguage = true;
+        }
+
+        console.log('accountSettings', this.accountSettings);
+        if (this.user) {
+            console.log('user', this.user);
+
+            let regionalName = '';
+            if (this.regionalLanguage) {
+                const firstNameRegional = this.user.First_Name_Regional || '';
+                const lastNameRegional = this.user.Last_Name_Regional || '';
+                regionalName = (firstNameRegional + ' ' + lastNameRegional).trim();
+            }
+
+            const firstNameEnglish = this.user.First_Name || '';
+            const lastNameEnglish = this.user.Last_Name || '';
+            const englishName = (firstNameEnglish + ' ' + lastNameEnglish).trim();
+
+            if (this.regionalLanguage && regionalName) {
+                this.userName = regionalName;
+            } else if (englishName) {
+                this.userName = englishName;
+            } else {
+                this.userName = this.account?.Email || 'User';
+            }
+        }
+        if (this.account) {
+            console.log('account', this.account);
+            this.imageUrl = this.account.Profile_Picture !== null && this.account.Profile_Picture !== undefined && this.account.Profile_Picture !== '' ? this.account.Profile_Picture : 'assets/media/avatar.png';
+            console.log('imageUrl', this.imageUrl);
+        }
     }
 
     toggleMenu() {

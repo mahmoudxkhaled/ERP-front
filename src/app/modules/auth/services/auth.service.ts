@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, finalize, tap } from 'rxjs';
+import { BehaviorSubject, Observable, finalize, tap, switchMap } from 'rxjs';
 import { ApiRequestTypes } from 'src/app/core/API_Interface/ApiRequestTypes';
 import { ApiResult } from 'src/app/core/API_Interface/ApiResult';
 import { ApiServices } from 'src/app/core/API_Interface/ApiServices';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
 import { IAccountStatusResponse } from 'src/app/core/models/IAccountStatusResponse';
+import { Router } from '@angular/router';
 
 @Injectable({
     providedIn: 'root',
@@ -14,6 +15,7 @@ export class AuthService {
     constructor(
         private apiServices: ApiServices,
         private localStorageService: LocalStorageService,
+        private router: Router,
     ) {
         this.isLoadingSubject = new BehaviorSubject<boolean>(false);
     }
@@ -25,11 +27,17 @@ export class AuthService {
             tap((response: any) => {
                 this.setAuthFromResponseToLocalStorage(response);
             }),
+            switchMap(() => {
+                // Chain getLoginDataPackage to ensure it completes before navigation
+                return this.getLoginDataPackage(email);
+            }),
+            tap(() => {
+                // Navigation happens after data is loaded
+                this.router.navigate(['/']);
+            }),
             finalize(() => {
-                this.isLoadingSubject.next(false),
-                    this.getLoginDataPackage(email).subscribe();
-            }
-            )
+                this.isLoadingSubject.next(false);
+            })
         );
     }
 
@@ -39,11 +47,17 @@ export class AuthService {
             tap((response: any) => {
                 this.setAuthFromResponseToLocalStorage(response);
             }),
+            switchMap(() => {
+                // Chain getLoginDataPackage to ensure it completes before navigation
+                return this.getLoginDataPackage(email);
+            }),
+            tap(() => {
+                // Navigation happens after data is loaded
+                this.router.navigate(['/']);
+            }),
             finalize(() => {
-                this.isLoadingSubject.next(false),
-                    this.getLoginDataPackage(email).subscribe();
-            }
-            )
+                this.isLoadingSubject.next(false);
+            })
         );
     }
 
@@ -101,6 +115,7 @@ export class AuthService {
         return this.apiServices.callAPI(110, this.localStorageService.getAccessToken(), [email]).pipe(
             tap((response: any) => {
                 const accountData: IAccountStatusResponse = response.message;
+                console.log('accountData', accountData);
                 this.localStorageService.setLoginDataPackage(accountData);
             }),
         );
