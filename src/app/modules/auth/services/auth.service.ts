@@ -70,8 +70,8 @@ export class AuthService {
                 this.localStorageService.clearLoginDataPackage();
             }),
             finalize(() => {
-                this.isLoadingSubject.next(false);
                 window.location.reload();
+                this.isLoadingSubject.next(false);
             })
         );
     }

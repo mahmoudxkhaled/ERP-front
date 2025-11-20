@@ -21,7 +21,7 @@ import { SharedModule } from './Shared/shared/shared.module';
         AppRoutingModule,
         AppLayoutModule,
         DialogModule,
-        DynamicDialogModule,
+        // DynamicDialogModule,
         TranslateModule,
         AppTranslateModule.forRoot(),
         SharedModule,
