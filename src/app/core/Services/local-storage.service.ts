@@ -47,13 +47,13 @@ export class LocalStorageService {
   }
 
   getEntityId() {
-    const userData = this.getCurrentUserData();
-    return userData?.Entity_Details.Entity_ID;
+    const entityData = this.getEntityDetails();
+    return entityData?.Entity_ID ?? '';
   }
 
   getParentEntityId() {
-    const userData = this.getCurrentUserData();
-    return userData?.Entity_Details.Parent_Entity_ID;
+    const entityData = this.getEntityDetails();
+    return entityData?.Parent_Entity_ID ?? '';
   }
 
   setLoginDataPackage(accountData: IAccountStatusResponse): void {

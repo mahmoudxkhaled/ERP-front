@@ -1,7 +1,7 @@
 <div class="card">
     <div class="flex justify-content-between align-items-center mb-4">
-        <h2>Manage Entities (إدارة الشركات)</h2>
-        <p-button label="Add New (إضافة شركة جديدة)" icon="pi pi-plus" (onClick)="navigateToNew()" [loading]="loading">
+        <h2>Manage Entities</h2>
+        <p-button label="Add New" icon="pi pi-plus" (onClick)="navigateToNew()" [loading]="loading">
         </p-button>
     </div>
 
@@ -9,57 +9,80 @@
         <app-table-loading-spinner *ngIf="tableLoadingSpinner"></app-table-loading-spinner>
         <p-table #entitiesTable [value]="entities" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
             responsiveLayout="scroll" [rowsPerPageOptions]="[10, 25, 50]"
-            [globalFilterFields]="['name', 'countryCode', 'active']" [loading]="loading">
+            [globalFilterFields]="['code', 'name', 'description', 'parentEntityId']" [loading]="loading">
 
             <ng-template pTemplate="caption">
                 <div class="flex justify-content-between align-items-center">
                     <span class="p-input-icon-left">
                         <i class="pi pi-search"></i>
                         <input pInputText type="text" placeholder="Search" #searchInput
-                            (input)="$event.target && $any($event.target).value && ($any($event.target).value.length > 0 || $any($event.target).value.length === 0) && searchInput.value && entitiesTable.filterGlobal(searchInput.value, 'contains')" />
+                            (input)="onSearchInput($event, entitiesTable)" />
                     </span>
                 </div>
             </ng-template>
 
             <ng-template pTemplate="header">
                 <tr>
-                    <th>Name (اسم الشركة)</th>
-                    <th>Country (الدولة)</th>
-                    <th>Status (الحالة)</th>
-                    <th>Actions (الإجراءات)</th>
+                    <th style="width: 100px;">Id</th>
+                    <th style="width: 140px;">Code</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <!-- <th style="width: 150px;">Parent</th> -->
+                    <th style="width: 140px; text-align: center;">Type</th>
+                    <th style="width: 120px; text-align: center;">Status</th>
+                    <th style="width: 120px; text-align: center;">Actions</th>
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="body" let-entity>
                 <tr>
-                    <td class="font-semibold">{{ entity.name }}</td>
-                    <td>{{ entity.countryCode }}</td>
-                    <td>
-                        <p-tag [value]="getStatusLabel(entity.active)" [severity]="getStatusSeverity(entity.active)">
-                        </p-tag>
+                    <td class=" ">
+                        <div>
+                            <p-tag [value]="'#' + entity.id" severity="info"></p-tag>
+                        </div>
                     </td>
                     <td>
-                        <p-button label="Edit (تعديل)" icon="pi pi-pencil"
-                            class="p-button-sm p-button-outlined p-button-primary mr-2" (onClick)="edit(entity)"
-                            [disabled]="loading">
-                        </p-button>
-                        <p-button
-                            [label]="(entity.active ? 'Deactivate' : 'Activate') + ' (' + (entity.active ? 'تعطيل' : 'تفعيل') + ')'"
-                            [icon]="entity.active ? 'pi pi-ban' : 'pi pi-check'"
-                            class="p-button-sm p-button-outlined p-button-warning mr-2" (onClick)="toggle(entity)"
-                            [disabled]="loading">
-                        </p-button>
-                        <p-button label="Assign Admin (تعيين مدير)" icon="pi pi-user-plus"
-                            class="p-button-sm p-button-outlined p-button-secondary" (onClick)="assignAdmin(entity)"
-                            [disabled]="loading">
-                        </p-button>
+                        <div class="flex align-items-center gap-2">
+                            <span class="font-semibold text-lg">{{ entity.code }}</span>
+                            <!-- <p-tag [value]="'#' + entity.id" severity="info"></p-tag> -->
+                        </div>
+                    </td>
+                    <td>
+                        <div class="flex flex-column">
+                            <span class="font-semibold">{{ entity.name }}</span>
+                            <small class="text-500">{{ getParentLabel(entity) }}</small>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="text-600 line-height-3">{{ entity.description || 'No description provided.'
+                            }}</span>
+                    </td>
+                    <!-- <td>
+                        <p-tag [value]="entity.parentEntityId ? ('#' + entity.parentEntityId) : 'Root Entity'"
+                            severity="secondary"></p-tag>
+                    </td> -->
+                    <td class="text-center">
+                        <p-tag [value]="getTypeLabel(entity)" [severity]="getTypeSeverity(entity)"></p-tag>
+                    </td>
+
+                    <td class="text-center">
+                        <p-inputSwitch [formControl]="activationControls[entity.id]"
+                            (onChange)="onStatusToggle(entity)">
+                        </p-inputSwitch>
+                    </td>
+                    <td class="text-center">
+                        <button pButton pRipple type="button" icon="pi pi-ellipsis-v"
+                            class="p-button-rounded p-button-text p-button-plain"
+                            (click)="openMenu(rowMenu, entity, $event)" [disabled]="menuItems.length === 0">
+                        </button>
+                        <p-menu #rowMenu [model]="menuItems" [popup]="true" [appendTo]="'body'"></p-menu>
                     </td>
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="emptymessage">
                 <tr>
-                    <td colspan="4" class="text-center">No entities found</td>
+                    <td colspan="8" class="text-center">No entities found</td>
                 </tr>
             </ng-template>
         </p-table>
@@ -67,3 +90,26 @@
 </div>
 
 <p-toast></p-toast>
+
+<p-dialog [(visible)]="activationEntityDialog" [modal]="true" [style]="{ width: '450px' }" [closable]="true"
+    [draggable]="false" [resizable]="false">
+    <ng-template pTemplate="header">
+        <h3>{{ currentEntityForActivation?.active ? 'Deactivate Entity' : 'Activate Entity' }}</h3>
+    </ng-template>
+    <div class="flex flex-column gap-3">
+        <p>
+            Are you sure you want to
+            <strong>{{ currentEntityForActivation?.active ? 'deactivate' : 'activate' }}</strong>
+            <strong>{{ currentEntityForActivation?.name }}</strong>?
+        </p>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="onCancelActivationDialog()"
+            [disabled]="loading">
+        </p-button>
+        <p-button [label]="currentEntityForActivation?.active ? 'Deactivate' : 'Activate'"
+            [icon]="currentEntityForActivation?.active ? 'pi pi-ban' : 'pi pi-check'"
+            (onClick)="activation(!currentEntityForActivation?.active)" [loading]="loading" [disabled]="loading">
+        </p-button>
+    </ng-template>
+</p-dialog>

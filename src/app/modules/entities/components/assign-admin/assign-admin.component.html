@@ -1,10 +1,10 @@
 <div class="card">
-    <h2>Assign Admin (تعيين مدير)</h2>
+    <h2>Assign Admin</h2>
     <p class="text-600 mb-4">Entity: <strong>{{ entityName }}</strong></p>
 
     <form [formGroup]="form" (ngSubmit)="submit()">
         <div class="field">
-            <label for="userId">Select User (اختر المستخدم) <span class="text-red-500">*</span></label>
+            <label for="userId">Select User <span class="text-red-500">*</span></label>
             <p-dropdown id="userId" formControlName="userId" [options]="users" optionLabel="name" optionValue="id"
                 placeholder="Select a user" [class.ng-invalid]="submitted && f['userId'].invalid" [disabled]="loading">
                 <ng-template let-user pTemplate="item">
@@ -22,10 +22,10 @@
         </div>
 
         <div class="flex justify-content-end gap-2 mt-4">
-            <p-button label="Cancel (إلغاء)" icon="pi pi-times" class="p-button-secondary" (onClick)="cancel()"
+            <p-button label="Cancel" icon="pi pi-times" class="p-button-secondary" (onClick)="cancel()"
                 [disabled]="loading">
             </p-button>
-            <p-button label="Assign (تعيين)" icon="pi pi-check" type="submit" [loading]="loading" [disabled]="loading">
+            <p-button label="Assign" icon="pi pi-check" type="submit" [loading]="loading" [disabled]="loading">
             </p-button>
         </div>
     </form>

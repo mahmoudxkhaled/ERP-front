@@ -19,6 +19,7 @@ export interface IAccountDetails {
     Entity_Role_ID: number;
     Account_State: number;
     Profile_Picture: string;
+    System_Role_ID: number;
 }
 
 
@@ -51,10 +52,6 @@ export interface IEntityDetails {
 }
 
 
-/**
- * Interface for individual function detail structure
- * Each function contains its ID, name, regional name, and default order
- */
 export interface IFunctionDetail {
     FunctionID: number;
     Name: string;
@@ -62,10 +59,6 @@ export interface IFunctionDetail {
     Default_Order: number;
 }
 
-/**
- * Interface for Functions Details
- * Contains all available functions organized by their code (DBS, SysAdm, etc.)
- */
 export interface IFunctionsDetails {
     DBS: IFunctionDetail;
     SysAdm: IFunctionDetail;
@@ -78,10 +71,7 @@ export interface IFunctionsDetails {
     PC: IFunctionDetail;
 }
 
-/**
- * Interface for individual module detail structure
- * Each module contains its ID, associated function ID, name, regional name, and default order
- */
+
 export interface IModuleDetail {
     ModuleID: number;
     FunctionID: number;
@@ -90,10 +80,6 @@ export interface IModuleDetail {
     Default_Order: number;
 }
 
-/**
- * Interface for Modules Details
- * Contains all available modules organized by their code (ACT, NOT, PRF, etc.)
- */
 export interface IModulesDetails {
     [key: string]: IModuleDetail;
 }
@@ -105,10 +91,7 @@ export interface IAccountSettings {
     Modules_Order: string;
 }
 
-/**
- * Main interface for Account Status Response
- * This is the complete response structure returned from the API
- */
+
 export interface IAccountStatusResponse {
     Account_Details: IAccountDetails;
     User_Details: IUserDetails;

@@ -1,52 +1,65 @@
 <div class="card">
-    <h2>{{ isEdit ? 'Edit Entity (تعديل شركة)' : 'Create Entity (إضافة شركة جديدة)' }}</h2>
+    <h2>{{ isEdit ? 'Edit Entity' : 'Create Entity' }}</h2>
 
     <form [formGroup]="form" (ngSubmit)="submit()">
         <div class="grid">
             <div class="col-12 md:col-6">
-                <div class="field">
-                    <label for="name">Company Name (اسم الشركة) <span class="text-red-500">*</span></label>
+                <div class="field p-fluid">
+                    <label for="code">Entity Code <span class="text-red-500">*</span></label>
+                    <input id="code" type="text" pInputText formControlName="code"
+                        [class.ng-invalid]="submitted && f['code'].invalid" placeholder="Enter entity code" />
+                    <small class="p-error" *ngIf="submitted && f['code'].invalid && codeError">
+                        {{ codeError }}
+                    </small>
+                </div>
+            </div>
+
+            <div class="col-12 md:col-6">
+                <div class="field p-fluid">
+                    <label for="name">Company Name <span class="text-red-500">*</span></label>
                     <input id="name" type="text" pInputText formControlName="name"
                         [class.ng-invalid]="submitted && f['name'].invalid" placeholder="Enter company name" />
-                    <small class="p-error" *ngIf="submitted && f['name'].invalid">
-                        Company name is required
+                    <small class="p-error" *ngIf="submitted && f['name'].invalid && nameError">
+                        {{ nameError }}
                     </small>
                 </div>
             </div>
 
             <div class="col-12 md:col-6">
-                <div class="field">
-                    <label for="countryCode">Country (الدولة) <span class="text-red-500">*</span></label>
-                    <input id="countryCode" type="text" pInputText formControlName="countryCode"
-                        [class.ng-invalid]="submitted && f['countryCode'].invalid" placeholder="Enter country code" />
-                    <small class="p-error" *ngIf="submitted && f['countryCode'].invalid">
-                        Country code is required
+                <div class="field p-fluid">
+                    <label for="description">Description <span class="text-red-500">*</span></label>
+                    <textarea id="description" rows="4" pInputTextarea formControlName="description"
+                        [class.ng-invalid]="submitted && f['description'].invalid"
+                        placeholder="Add a clear description for this entity"></textarea>
+                    <small class="p-error" *ngIf="submitted && f['description'].invalid">
+                        Description is required
                     </small>
                 </div>
             </div>
 
-            <div class="col-12 md:col-6">
-                <div class="field">
-                    <label for="timezone">Timezone (المنطقة الزمنية)</label>
-                    <input id="timezone" type="text" pInputText formControlName="timezone"
-                        placeholder="Enter timezone" />
+            <div class="col-12 md:col-6" *ngIf="showParentSelector">
+                <div class="field p-fluid">
+                    <label for="parentEntity">Parent Entity</label>
+                    <p-dropdown id="parentEntity" [options]="parentEntities" optionLabel="Name" optionValue="ID"
+                        placeholder="Select parent entity" formControlName="parentEntityId">
+                    </p-dropdown>
                 </div>
             </div>
 
-            <div class="col-12 md:col-6">
-                <div class="field">
-                    <label for="taxId">Tax ID (الرقم الضريبي)</label>
-                    <input id="taxId" type="text" pInputText formControlName="taxId" placeholder="Enter tax ID" />
+            <div class="col-12 md:col-6" *ngIf="showIsPersonal">
+                <div class="field flex flex-column p-fluid">
+                    <label for="isPersonal">Personal Entity?</label>
+                    <p-inputSwitch id="isPersonal" formControlName="isPersonal"></p-inputSwitch>
                 </div>
             </div>
         </div>
 
         <div class="flex justify-content-end gap-2 mt-4">
-            <p-button label="Cancel (إلغاء)" icon="pi pi-times" class="p-button-secondary" (onClick)="cancel()"
+            <p-button label="Cancel" icon="pi pi-times" class="p-button-secondary" (onClick)="cancel()"
                 [disabled]="loading">
             </p-button>
-            <p-button [label]="(isEdit ? 'Update' : 'Save') + ' (' + (isEdit ? 'تحديث' : 'حفظ') + ')'"
-                icon="pi pi-check" type="submit" [loading]="loading" [disabled]="loading">
+            <p-button [label]="isEdit ? 'Update' : 'Save'" icon="pi pi-check" type="submit" [loading]="loading"
+                [disabled]="loading">
             </p-button>
         </div>
     </form>

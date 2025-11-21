@@ -29,6 +29,7 @@ export class AuthService {
         this.isLoadingSubject.next(true);
         return this.apiServices.callAPI(100, '', [email, password]).pipe(
             tap((response: any) => {
+                console.log('response', response);
                 this.setAuthFromResponseToLocalStorage(response);
             }),
             switchMap(() => {

@@ -148,7 +148,7 @@ export class ErrorHandlingInterceptor implements HttpInterceptor {
         this.sessionExpiredDialogRef.onClose.subscribe((data) => {
             if (data && data.logout) {
                 // Perform logout: clear storage, navigate, and reload
-                this.localStorageService.removeItem('userData');
+                this.localStorageService.clearLoginDataPackage()
                 this.router.navigate(['/auth']);
                 window.location.reload();
             }

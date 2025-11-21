@@ -21,16 +21,16 @@ export class EntitiesService {
     }
 
     private getEntityId(): string {
-        return this.localStorageService.getEntityId();
+        return this.localStorageService.getEntityId()?.toString() ?? '';
     }
 
     private getParentEntityId(): string {
-        return this.localStorageService.getParentEntityId();
+        return this.localStorageService.getParentEntityId()?.toString() ?? '';
     }
 
-    addEntity(code: string, name: string, description: string, isPersonal: boolean): Observable<any> {
+    addEntity(code: string, name: string, description: string, isPersonal: boolean, parentEntityId: number = 0): Observable<any> {
         this.isLoadingSubject.next(true);
-        const params = [code, name, description, this.getParentEntityId(), isPersonal.toString()];
+        const params = [code, name, description, parentEntityId.toString(), isPersonal.toString()];
         return this.apiServices.callAPI(400, this.getAccessToken(), params).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );
@@ -62,20 +62,22 @@ export class EntitiesService {
         code: string,
         name: string,
         description: string,
-        parentEntityId: string,
-        isRegional: boolean,
+        parentEntityId: number,
+        IsRegional: boolean,
         isPersonal: boolean
     ): Observable<any> {
         this.isLoadingSubject.next(true);
         const params = [
-            entityId,
+            entityId.toString(),
             code,
             name,
             description,
-            parentEntityId,
-            isRegional.toString(),
+            parentEntityId.toString(),
+            IsRegional.toString(),
             isPersonal.toString()
         ];
+        console.log('params', params);
+
         return this.apiServices.callAPI(404, this.getAccessToken(), params).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );
