@@ -51,92 +51,11 @@ export class EntityFormComponent implements OnInit, OnDestroy {
     }
 
     loadEntity(): void {
-        if (!this.entityId) return;
 
-        this.loading = true;
-        const sub = this.entitiesService.getById(this.entityId).subscribe({
-            next: (response: any) => {
-                if (response?.success === true && response?.data) {
-                    this.form.patchValue(response.data);
-                } else {
-                    const errorMsg = response?.message || 'Failed to load entity';
-                    this.messageService.add({
-                        severity: 'error',
-                        summary: 'Error',
-                        detail: errorMsg
-                    });
-                }
-                this.loading = false;
-            },
-            error: (error: any) => {
-                const errorMsg = error?.message || 'Error loading entity';
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: errorMsg
-                });
-                this.loading = false;
-            }
-        });
-        this.subscriptions.push(sub);
     }
 
     submit(): void {
-        this.submitted = true;
 
-        if (this.form.invalid) {
-            this.messageService.add({
-                severity: 'warn',
-                summary: 'Validation Error',
-                detail: 'Please fill in all required fields'
-            });
-            return;
-        }
-
-        this.loading = true;
-        const formData = this.form.value;
-
-        // Add id if editing
-        if (this.isEdit && this.entityId) {
-            formData.id = this.entityId;
-        }
-
-        const action = this.isEdit
-            ? this.entitiesService.update(formData)
-            : this.entitiesService.create(formData);
-
-        const sub = action.subscribe({
-            next: (response: any) => {
-                if (response?.success === true) {
-                    this.messageService.add({
-                        severity: 'success',
-                        summary: 'Success',
-                        detail: this.isEdit ? 'Entity updated successfully' : 'Entity created successfully'
-                    });
-                    setTimeout(() => {
-                        this.router.navigate(['/company-administration/entities/list']);
-                    }, 1500);
-                } else {
-                    const errorMsg = response?.message || 'Failed to save entity';
-                    this.messageService.add({
-                        severity: 'error',
-                        summary: 'Error',
-                        detail: errorMsg
-                    });
-                }
-                this.loading = false;
-            },
-            error: (error: any) => {
-                const errorMsg = error?.message || 'Error saving entity';
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: errorMsg
-                });
-                this.loading = false;
-            }
-        });
-        this.subscriptions.push(sub);
     }
 
     cancel(): void {

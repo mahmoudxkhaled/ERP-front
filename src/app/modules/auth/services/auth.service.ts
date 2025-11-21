@@ -20,6 +20,10 @@ export class AuthService {
         this.isLoadingSubject = new BehaviorSubject<boolean>(false);
     }
 
+    private getAccessToken(): string {
+        return this.localStorageService.getAccessToken();
+    }
+
 
     login(email: string, password: string): Observable<any> {
         this.isLoadingSubject.next(true);
@@ -64,8 +68,7 @@ export class AuthService {
     logout(): Observable<any> {
         this.isLoadingSubject.next(true);
 
-        const accessToken = this.localStorageService.getAccessToken();
-        return this.apiServices.callAPI(102, accessToken, []).pipe(
+        return this.apiServices.callAPI(102, this.getAccessToken(), []).pipe(
             tap(() => {
                 this.localStorageService.clearLoginDataPackage();
             }),
@@ -76,16 +79,16 @@ export class AuthService {
         );
     }
 
-    set2FA(accessToken: string, status: boolean): Observable<any> {
+    set2FA(status: boolean): Observable<any> {
         this.isLoadingSubject.next(true);
-        return this.apiServices.callAPI(103, accessToken, [status.toString()]).pipe(
+        return this.apiServices.callAPI(103, this.getAccessToken(), [status.toString()]).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );
     }
 
-    changePassword(accessToken: string, oldPassword: string, newPassword: string): Observable<any> {
+    changePassword(oldPassword: string, newPassword: string): Observable<any> {
         this.isLoadingSubject.next(true);
-        return this.apiServices.callAPI(104, accessToken, [oldPassword, newPassword]).pipe(
+        return this.apiServices.callAPI(104, this.getAccessToken(), [oldPassword, newPassword]).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );
     }
@@ -112,7 +115,7 @@ export class AuthService {
     }
 
     getLoginDataPackage(email: string) {
-        return this.apiServices.callAPI(110, this.localStorageService.getAccessToken(), [email]).pipe(
+        return this.apiServices.callAPI(110, this.getAccessToken(), [email]).pipe(
             tap((response: any) => {
                 const accountData: IAccountStatusResponse = response.message;
                 console.log('accountData', accountData);

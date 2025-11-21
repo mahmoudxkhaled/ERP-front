@@ -54,34 +54,7 @@ export class AssignAdminComponent implements OnInit, OnDestroy {
     }
 
     loadEntity(): void {
-        if (!this.entityId) return;
 
-        this.loading = true;
-        const sub = this.entitiesService.getById(this.entityId).subscribe({
-            next: (response: any) => {
-                if (response?.success === true && response?.data) {
-                    this.entityName = response.data.name || 'Entity';
-                } else {
-                    const errorMsg = response?.message || 'Failed to load entity';
-                    this.messageService.add({
-                        severity: 'error',
-                        summary: 'Error',
-                        detail: errorMsg
-                    });
-                }
-                this.loading = false;
-            },
-            error: (error: any) => {
-                const errorMsg = error?.message || 'Error loading entity';
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: errorMsg
-                });
-                this.loading = false;
-            }
-        });
-        this.subscriptions.push(sub);
     }
 
     loadUsers(): void {
@@ -94,61 +67,7 @@ export class AssignAdminComponent implements OnInit, OnDestroy {
     }
 
     submit(): void {
-        this.submitted = true;
 
-        if (this.form.invalid) {
-            this.messageService.add({
-                severity: 'warn',
-                summary: 'Validation Error',
-                detail: 'Please select a user'
-            });
-            return;
-        }
-
-        if (!this.entityId) {
-            this.messageService.add({
-                severity: 'error',
-                summary: 'Error',
-                detail: 'Entity ID is missing'
-            });
-            return;
-        }
-
-        this.loading = true;
-        const userId = this.form.value.userId;
-
-        const sub = this.entitiesService.assignAdmin(this.entityId, userId).subscribe({
-            next: (response: any) => {
-                if (response?.success === true) {
-                    this.messageService.add({
-                        severity: 'success',
-                        summary: 'Success',
-                        detail: 'Admin assigned successfully'
-                    });
-                    setTimeout(() => {
-                        this.router.navigate(['/company-administration/entities/list']);
-                    }, 1500);
-                } else {
-                    const errorMsg = response?.message || 'Failed to assign admin';
-                    this.messageService.add({
-                        severity: 'error',
-                        summary: 'Error',
-                        detail: errorMsg
-                    });
-                }
-                this.loading = false;
-            },
-            error: (error: any) => {
-                const errorMsg = error?.message || 'Error assigning admin';
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: errorMsg
-                });
-                this.loading = false;
-            }
-        });
-        this.subscriptions.push(sub);
     }
 
     cancel(): void {

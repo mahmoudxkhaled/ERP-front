@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { TranslationService } from 'src/app/core/Services/translation.service';
+import { SettingsService } from './services/settings.service';
+import { UserSettings } from './models/settings.model';
 
 @Component({
     selector: 'app-settings',

@@ -40,35 +40,7 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
     }
 
     loadEntities(): void {
-        this.loading = true;
-        this.tableLoadingSpinner = true;
-        const sub = this.entitiesService.list().subscribe({
-            next: (response: any) => {
-                if (response?.success === true) {
-                    this.entities = response.data || [];
-                } else {
-                    const errorMsg = response?.message || 'Failed to load entities';
-                    this.messageService.add({
-                        severity: 'error',
-                        summary: 'Error',
-                        detail: errorMsg
-                    });
-                }
-                this.loading = false;
-                this.tableLoadingSpinner = false;
-            },
-            error: (error: any) => {
-                const errorMsg = error?.message || 'Error loading entities';
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: errorMsg
-                });
-                this.loading = false;
-                this.tableLoadingSpinner = false;
-            }
-        });
-        this.subscriptions.push(sub);
+
     }
 
     edit(entity: Entity): void {
@@ -78,39 +50,7 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
     }
 
     toggle(entity: Entity): void {
-        if (!entity.id) return;
-        const active = !entity.active;
-        this.loading = true;
-        const sub = this.entitiesService.toggleActive(entity.id, active).subscribe({
-            next: (response: any) => {
-                if (response?.success === true) {
-                    entity.active = active;
-                    this.messageService.add({
-                        severity: 'success',
-                        summary: 'Success',
-                        detail: active ? 'Entity activated' : 'Entity deactivated'
-                    });
-                } else {
-                    const errorMsg = response?.message || 'Failed to update entity status';
-                    this.messageService.add({
-                        severity: 'error',
-                        summary: 'Error',
-                        detail: errorMsg
-                    });
-                }
-                this.loading = false;
-            },
-            error: (error: any) => {
-                const errorMsg = error?.message || 'Error updating entity status';
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: errorMsg
-                });
-                this.loading = false;
-            }
-        });
-        this.subscriptions.push(sub);
+
     }
 
     assignAdmin(entity: Entity): void {

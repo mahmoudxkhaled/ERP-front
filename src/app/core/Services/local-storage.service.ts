@@ -46,6 +46,16 @@ export class LocalStorageService {
     return userData?.token;
   }
 
+  getEntityId() {
+    const userData = this.getCurrentUserData();
+    return userData?.Entity_Details.Entity_ID;
+  }
+
+  getParentEntityId() {
+    const userData = this.getCurrentUserData();
+    return userData?.Entity_Details.Parent_Entity_ID;
+  }
+
   setLoginDataPackage(accountData: IAccountStatusResponse): void {
     if (accountData.User_Details) {
       this.setItem('User_Details', accountData.User_Details);

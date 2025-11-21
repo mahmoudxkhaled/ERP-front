@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { TranslationService } from 'src/app/core/Services/translation.service';
 import { MessageService } from 'primeng/api';
 import { AuthService } from 'src/app/modules/auth/services/auth.service';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
 import { IUserDetails, IAccountDetails, IEntityDetails, IAccountSettings } from 'src/app/core/models/IAccountStatusResponse';
+import { ProfileService } from './services/profile.service';
+import { ProfileOverview } from './models/profile.model';
 
 export function passwordComplexityValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -76,7 +79,8 @@ export class ProfileComponent implements OnInit {
         public translate: TranslationService,
         private messageService: MessageService,
         private authService: AuthService,
-        private localStorageService: LocalStorageService
+        private localStorageService: LocalStorageService,
+        private profileService: ProfileService
     ) { }
 
     ngOnInit(): void {
@@ -265,14 +269,6 @@ export class ProfileComponent implements OnInit {
         });
     }
 
-    getAccessToken(): string {
-        const userData = this.localStorageService.getItem('userData');
-        if (userData) {
-            return userData.accessToken || userData.token || '';
-        }
-        return '';
-    }
-
     getUserId(): string {
         const userData = this.localStorageService.getItem('userData');
         if (userData) {
@@ -300,18 +296,8 @@ export class ProfileComponent implements OnInit {
 
         const oldPassword = this.changePasswordForm.get('oldPassword')?.value;
         const newPassword = this.changePasswordForm.get('newPassword')?.value;
-        const accessToken = this.getAccessToken();
 
-        if (!accessToken) {
-            this.messageService.add({
-                severity: 'error',
-                summary: 'Error',
-                detail: 'Access token not found. Please login again.'
-            });
-            return;
-        }
-
-        this.authService.changePassword(accessToken, oldPassword, newPassword).subscribe({
+        this.authService.changePassword(oldPassword, newPassword).subscribe({
             next: (response: any) => {
                 if (response?.success === true) {
                     this.messageService.add({
@@ -342,19 +328,9 @@ export class ProfileComponent implements OnInit {
     confirmToggle2FA(): void {
         this.show2FADialog = false;
 
-        const accessToken = this.getAccessToken();
-        if (!accessToken) {
-            this.messageService.add({
-                severity: 'error',
-                summary: 'Error',
-                detail: 'Access token not found. Please login again.'
-            });
-            return;
-        }
-
         if (!this.twoFactorEnabled) {
             // Enabling 2FA
-            this.authService.set2FA(accessToken, true).subscribe({
+            this.authService.set2FA(true).subscribe({
                 next: (response: any) => {
                     if (response?.success === true) {
                         this.twoFactorEnabled = true;
@@ -382,7 +358,7 @@ export class ProfileComponent implements OnInit {
             });
         } else {
             // Disabling 2FA
-            this.authService.set2FA(accessToken, false).subscribe({
+            this.authService.set2FA(false).subscribe({
                 next: (response: any) => {
                     if (response?.success === true) {
                         this.twoFactorEnabled = false;
