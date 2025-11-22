@@ -1,6 +1,7 @@
-<div class="flex flex-column gap-3">
-    <p class="text-600">
-        Create a new administrator account for <strong>{{ entity.name }}</strong> (Entity #{{ entity.id }}).
+<div class="card">
+    <h2>Create Administrator Account</h2>
+    <p class="text-600 mb-4">
+        Create a new administrator account for <strong>{{ entityName || 'Entity' }}</strong> (Entity #{{ entityId }}).
     </p>
 
     <form [formGroup]="form" (ngSubmit)="submit()">

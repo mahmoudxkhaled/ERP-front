@@ -1,0 +1,320 @@
+<div class="card">
+    <!-- Header -->
+    <div class="flex justify-content-between align-items-center mb-4">
+        <h2>Entity Details</h2>
+        <p-button label="Back to List" icon="pi pi-arrow-left" class="p-button-secondary" (onClick)="navigateBack()"
+            [disabled]="loading">
+        </p-button>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div *ngIf="loading" class="flex justify-content-center align-items-center" style="min-height: 200px;">
+        <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+    </div>
+
+    <!-- Content -->
+    <div *ngIf="!loading && entityDetails">
+        <!-- Section 1: Basic Information -->
+        <p-panel header="Basic Information" class="mb-4">
+            <div class="grid">
+                <!-- Left Column: Logo -->
+                <div class="col-12 md:col-3">
+                    <div class="logo-container">
+                        <div *ngIf="loadingLogo" class="logo-loading">
+                            <i class="pi pi-spin pi-spinner"></i>
+                        </div>
+                        <div *ngIf="!loadingLogo">
+                            <div class="logo-circle">
+                                <div *ngIf="hasLogo && entityLogo" class="logo-preview">
+                                    <img [src]="'data:image/png;base64,' + entityLogo" alt="Entity Logo" />
+                                </div>
+                                <div *ngIf="!hasLogo" class="logo-placeholder">
+                                    <i class="pi pi-image"></i>
+                                </div>
+                            </div>
+                            <div class="logo-actions-container">
+                                <p-fileUpload mode="basic" name="logo" accept="image/*"
+                                    (onSelect)="onLogoUpload($event)" [maxFileSize]="5242880" [disabled]="loadingLogo"
+                                    chooseLabel="Upload Logo" styleClass="logo-upload-button">
+                                </p-fileUpload>
+                                <p-button *ngIf="hasLogo" label="Remove Logo" icon="pi pi-trash"
+                                    class="p-button-danger p-button-sm p-button-outlined logo-remove-button"
+                                    (onClick)="removeLogo()" [disabled]="loadingLogo">
+                                </p-button>
+                            </div>
+                            <p class="logo-dimensions">Recommended dimensions: 314x91 pixels</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Basic Information -->
+                <div class="col-12 md:col-9">
+                    <div class="grid">
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label class="font-semibold text-600">Entity Code</label>
+                                <p class="text-900 mt-2">{{ entityDetails.Code || entityDetails.code || 'N/A' }}</p>
+                            </div>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label class="font-semibold text-600">Entity ID</label>
+                                <p class="text-900 mt-2">#{{ entityId }}</p>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="field">
+                                <label class="font-semibold text-600">Name</label>
+                                <p class="text-900 mt-2">{{ getEntityName() || 'N/A' }}</p>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="field">
+                                <label class="font-semibold text-600">Description</label>
+                                <p class="text-900 mt-2 line-height-3">{{ getEntityDescription() || 'No description
+                                    provided.'
+                                    }}</p>
+                            </div>
+                        </div>
+                        <div class="col-12 md:col-4">
+                            <div class="field">
+                                <label class="font-semibold text-600">Status</label>
+                                <div class="mt-2">
+                                    <p-tag [value]="getStatusLabel()" [severity]="getStatusSeverity()"></p-tag>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 md:col-4">
+                            <div class="field">
+                                <label class="font-semibold text-600">Type</label>
+                                <div class="mt-2">
+                                    <p-tag [value]="getTypeLabel()" [severity]="getTypeSeverity()"></p-tag>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 md:col-4"
+                            *ngIf="entityDetails.Parent_Entity_ID || entityDetails.parent_Entity_ID || entityDetails.parentEntityId">
+                            <div class="field">
+                                <label class="font-semibold text-600">Parent Entity</label>
+                                <div class="mt-2">
+                                    <p-tag
+                                        [value]="'#' + (entityDetails.Parent_Entity_ID || entityDetails.parent_Entity_ID || entityDetails.parentEntityId)"
+                                        severity="secondary"></p-tag>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </p-panel>
+
+        <p-divider></p-divider>
+
+        <!-- Section 2: Contact Information -->
+        <p-panel header="Contact Information" class="mb-4">
+            <div *ngIf="loadingContacts" class="flex justify-content-center align-items-center"
+                style="min-height: 100px;">
+                <i class="pi pi-spin pi-spinner"></i>
+            </div>
+            <div *ngIf="!loadingContacts && entityContacts">
+                <div class="grid">
+                    <div class="col-12" *ngIf="entityContacts.address">
+                        <div class="field">
+                            <label class="font-semibold text-600">Address</label>
+                            <p class="text-900 mt-2">{{ entityContacts.address }}</p>
+                        </div>
+                    </div>
+                    <div class="col-12 md:col-4"
+                        *ngIf="entityContacts.phoneNumbers && entityContacts.phoneNumbers.length > 0">
+                        <div class="field">
+                            <label class="font-semibold text-600">Phone Numbers</label>
+                            <div class="mt-2 flex flex-column gap-2">
+                                <p-tag *ngFor="let phone of entityContacts.phoneNumbers" [value]="phone"
+                                    severity="info"></p-tag>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 md:col-4"
+                        *ngIf="entityContacts.faxNumbers && entityContacts.faxNumbers.length > 0">
+                        <div class="field">
+                            <label class="font-semibold text-600">Fax Numbers</label>
+                            <div class="mt-2 flex flex-column gap-2">
+                                <p-tag *ngFor="let fax of entityContacts.faxNumbers" [value]="fax"
+                                    severity="secondary"></p-tag>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 md:col-4" *ngIf="entityContacts.emails && entityContacts.emails.length > 0">
+                        <div class="field">
+                            <label class="font-semibold text-600">Email Addresses</label>
+                            <div class="mt-2 flex flex-column gap-2">
+                                <p-tag *ngFor="let email of entityContacts.emails" [value]="email"
+                                    severity="success"></p-tag>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12"
+                        *ngIf="!entityContacts.address && (!entityContacts.phoneNumbers || entityContacts.phoneNumbers.length === 0) && (!entityContacts.faxNumbers || entityContacts.faxNumbers.length === 0) && (!entityContacts.emails || entityContacts.emails.length === 0)">
+                        <p class="text-500">No contact information available.</p>
+                    </div>
+                </div>
+            </div>
+        </p-panel>
+
+        <p-divider></p-divider>
+
+        <!-- Section 3: Administrators -->
+        <p-panel header="Administrators" class="mb-4">
+            <div class="flex justify-content-between align-items-center mb-3">
+                <p class="text-600 m-0">Manage entity administrators</p>
+
+            </div>
+
+            <div *ngIf="loadingAdmins" class="flex justify-content-center align-items-center"
+                style="min-height: 100px;">
+                <i class="pi pi-spin pi-spinner"></i>
+            </div>
+
+            <p-table *ngIf="!loadingAdmins" [value]="entityAdmins" [paginator]="true" [rows]="10"
+                [showCurrentPageReport]="true" responsiveLayout="scroll" [rowsPerPageOptions]="[10, 25, 50]">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Account ID</th>
+                        <th>User ID</th>
+                        <th>Email</th>
+                        <th>Account State</th>
+                        <th style="width: 120px; text-align: center;">Actions</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-admin>
+                    <tr>
+                        <td>
+                            <span class="text-600">{{ admin.accountId }}</span>
+                        </td>
+                        <td>
+                            <span class="text-600">{{ admin.userId }}</span>
+                        </td>
+                        <td>
+                            <span class="text-600">{{ admin.email }}</span>
+                        </td>
+                        <td>
+                            <p-tag [value]="admin.accountState === 1 ? 'Active' : 'Inactive'"
+                                [severity]="admin.accountState === 1 ? 'success' : 'danger'"></p-tag>
+                        </td>
+                        <td class="text-center">
+                            <button pButton pRipple type="button" icon="pi pi-ellipsis-v"
+                                class="p-button-rounded p-button-text p-button-plain"
+                                (click)="openMenu(rowMenu, admin, $event)" [disabled]="loadingAdmins">
+                            </button>
+                            <p-menu #rowMenu [model]="menuItems" [popup]="true" [appendTo]="'body'"></p-menu>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="5" class="text-center">No administrators found.</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </p-panel>
+
+        <p-divider></p-divider>
+
+        <!-- Section 3B: Other Accounts -->
+        <p-panel header="Other Accounts" class="mb-4">
+            <div class="flex justify-content-between align-items-center mb-3">
+                <p class="text-600 m-0">Accounts with roles other than Entity Administrator</p>
+                <div class="flex gap-2">
+                    <p-button *appHasRole="[1, 2, 3]" label="Add Account" icon="pi pi-user-plus"
+                        (onClick)="navigateToAddAccount()" [disabled]="loadingAdmins"></p-button>
+                </div>
+            </div>
+
+            <div *ngIf="loadingAdmins" class="flex justify-content-center align-items-center"
+                style="min-height: 100px;">
+                <i class="pi pi-spin pi-spinner"></i>
+            </div>
+
+            <p-table *ngIf="!loadingAdmins" [value]="entityOtherAccounts" [paginator]="true" [rows]="10"
+                [showCurrentPageReport]="true" responsiveLayout="scroll" [rowsPerPageOptions]="[10, 25, 50]">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Account ID</th>
+                        <th>User ID</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Account State</th>
+                        <th style="width: 120px; text-align: center;">Actions</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-account>
+                    <tr>
+                        <td>
+                            <span class="text-600">{{ account.accountId }}</span>
+                        </td>
+                        <td>
+                            <span class="text-600">{{ account.userId }}</span>
+                        </td>
+                        <td>
+                            <span class="text-600">{{ account.email }}</span>
+                        </td>
+                        <td>
+                            <p-tag [value]="account.roleName"
+                                [severity]="account.systemRoleId === 4 ? 'info' : 'secondary'"></p-tag>
+                        </td>
+                        <td>
+                            <p-tag [value]="account.accountState === 1 ? 'Active' : 'Inactive'"
+                                [severity]="account.accountState === 1 ? 'success' : 'danger'"></p-tag>
+                        </td>
+                        <td class="text-center">
+                            <button pButton pRipple type="button" icon="pi pi-ellipsis-v"
+                                class="p-button-rounded p-button-text p-button-plain"
+                                (click)="openOtherAccountMenu(rowMenu, account, $event)" [disabled]="loadingAdmins">
+                            </button>
+                            <p-menu #rowMenu [model]="otherAccountsMenuItems" [popup]="true"
+                                [appendTo]="'body'"></p-menu>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="6" class="text-center">No other accounts found.</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </p-panel>
+
+    </div>
+</div>
+
+<!-- Delete Account Confirmation Dialog -->
+<p-dialog [(visible)]="deleteAccountDialog" [modal]="true" [style]="{ width: '450px' }" [closable]="true"
+    [draggable]="false" [resizable]="false">
+    <ng-template pTemplate="header">
+        <h3>Delete Account</h3>
+    </ng-template>
+    <div class="flex flex-column gap-3">
+        <p>
+            Are you sure you want to delete the account for <strong>{{ accountToDelete?.name }}</strong>?
+        </p>
+        <p class="text-red-500 font-semibold">This action cannot be undone.</p>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="onCancelDeleteAccountDialog()"
+            [disabled]="loadingAdmins">
+        </p-button>
+        <p-button class="p-button-danger" (onClick)="deleteAccount()" [disabled]="loadingAdmins">
+            <ng-container *ngIf="loadingAdmins">
+                <span class="indicator-progress" [style.display]="'block'">
+                    Please wait
+                    <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
+                </span>
+            </ng-container>
+            <ng-container *ngIf="!loadingAdmins">
+                <span>Delete</span>
+            </ng-container>
+        </p-button>
+    </ng-template>
+</p-dialog>
+
+<p-toast></p-toast>

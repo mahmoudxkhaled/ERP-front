@@ -1,9 +1,11 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import { EntitiesService } from '../../services/entities.service';
-import { Entity } from '../../models/entities.model';
+import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
+import { IAccountSettings } from 'src/app/core/models/IAccountStatusResponse';
 
 @Component({
     selector: 'app-create-entity-admin-account',
@@ -11,13 +13,14 @@ import { Entity } from '../../models/entities.model';
     styleUrls: ['./create-entity-admin-account.component.scss']
 })
 export class CreateEntityAdminAccountComponent implements OnInit, OnDestroy {
-    @Input() entity!: Entity;
-    @Output() accountCreated = new EventEmitter<void>();
-    @Output() cancel = new EventEmitter<void>();
-
+    entityId: string = '';
+    entityName: string = '';
     form!: FormGroup;
     loading: boolean = false;
+    loadingEntity: boolean = false;
     submitted: boolean = false;
+    accountSettings: IAccountSettings;
+    isRegional: boolean = false;
     private subscriptions: Subscription[] = [];
 
     // Entity Role ID constant - Entity Administrator Role ID
@@ -26,11 +29,29 @@ export class CreateEntityAdminAccountComponent implements OnInit, OnDestroy {
     constructor(
         private fb: FormBuilder,
         private entitiesService: EntitiesService,
-        private messageService: MessageService
-    ) { }
+        private messageService: MessageService,
+        private route: ActivatedRoute,
+        private router: Router,
+        private localStorageService: LocalStorageService
+    ) {
+        this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
+        this.isRegional = this.accountSettings?.Language !== 'English';
+    }
 
     ngOnInit(): void {
+        this.entityId = this.route.snapshot.paramMap.get('id') || '';
+        if (!this.entityId) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Invalid entity ID.'
+            });
+            this.router.navigate(['/company-administration/entities/list']);
+            return;
+        }
+
         this.initForm();
+        this.loadEntity();
     }
 
     ngOnDestroy(): void {
@@ -46,6 +67,33 @@ export class CreateEntityAdminAccountComponent implements OnInit, OnDestroy {
             firstName: ['', [Validators.required]],
             lastName: ['', [Validators.required]]
         });
+    }
+
+    /**
+     * Load entity details to display entity name
+     */
+    loadEntity(): void {
+        this.loadingEntity = true;
+        const sub = this.entitiesService.getEntityDetails(this.entityId).subscribe({
+            next: (response: any) => {
+                if (!response?.success) {
+                    this.handleBusinessError(response);
+                    return;
+                }
+
+                const entity = response?.message || {};
+                this.entityName = this.isRegional
+                    ? (entity?.Name_Regional || entity?.name_Regional || entity?.name || entity?.Name || '')
+                    : (entity?.Name || entity?.name || '');
+            },
+            error: () => {
+                this.handleUnexpectedError();
+                this.loadingEntity = false;
+            },
+            complete: () => this.loadingEntity = false
+        });
+
+        this.subscriptions.push(sub);
     }
 
     /**
@@ -77,10 +125,10 @@ export class CreateEntityAdminAccountComponent implements OnInit, OnDestroy {
         const email = this.form.value.email;
         const firstName = this.form.value.firstName;
         const lastName = this.form.value.lastName;
-        const entityId = parseInt(this.entity.id, 10);
+        const entityIdNum = parseInt(this.entityId, 10);
 
         // Validate entity ID
-        if (isNaN(entityId)) {
+        if (isNaN(entityIdNum)) {
             this.messageService.add({
                 severity: 'error',
                 summary: 'Error',
@@ -96,10 +144,11 @@ export class CreateEntityAdminAccountComponent implements OnInit, OnDestroy {
             email,
             firstName,
             lastName,
-            entityId,
+            entityIdNum,
             this.ENTITY_ROLE_ID
         ).subscribe({
             next: (response: any) => {
+                console.log('response', response);
                 if (!response?.success) {
                     this.handleBusinessError(response);
                     return;
@@ -113,8 +162,8 @@ export class CreateEntityAdminAccountComponent implements OnInit, OnDestroy {
                     life: 3000
                 });
 
-                // Emit event to close dialog and optionally reload entities
-                this.accountCreated.emit();
+                // Navigate to entity details page
+                this.router.navigate(['/company-administration/entities', this.entityId]);
             },
             error: () => {
                 this.handleUnexpectedError();
@@ -132,7 +181,7 @@ export class CreateEntityAdminAccountComponent implements OnInit, OnDestroy {
      * Handle cancel button click
      */
     onCancel(): void {
-        this.cancel.emit();
+        this.router.navigate(['/company-administration/entities', this.entityId]);
     }
 
     /**

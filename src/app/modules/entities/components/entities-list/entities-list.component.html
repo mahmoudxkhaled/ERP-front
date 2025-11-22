@@ -158,13 +158,3 @@
         </p-button>
     </ng-template>
 </p-dialog>
-
-<p-dialog [(visible)]="addAccountDialog" [modal]="true" [style]="{ width: '500px' }" [closable]="true"
-    [draggable]="false" [resizable]="false">
-    <ng-template pTemplate="header">
-        <h3>Add Account</h3>
-    </ng-template>
-    <app-create-entity-admin-account *ngIf="currentEntityForAccount" [entity]="currentEntityForAccount"
-        (accountCreated)="onAccountCreated()" (cancel)="onCancelAddAccountDialog()">
-    </app-create-entity-admin-account>
-</p-dialog>

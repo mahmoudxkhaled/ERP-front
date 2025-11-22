@@ -8,6 +8,7 @@ import { EntitiesRoutingModule } from './entities-routing.module';
 import { AssignAdminComponent } from './components/assign-admin/assign-admin.component';
 import { CreateEntityAdminAccountComponent } from './components/create-entity-admin-account/create-entity-admin-account.component';
 import { EntitiesListComponent } from './components/entities-list/entities-list.component';
+import { EntityDetailsComponent } from './components/entity-details/entity-details.component';
 import { EntityFormComponent } from './components/entity-form/entity-form.component';
 
 @NgModule({
@@ -15,7 +16,8 @@ import { EntityFormComponent } from './components/entity-form/entity-form.compon
         EntitiesListComponent,
         EntityFormComponent,
         AssignAdminComponent,
-        CreateEntityAdminAccountComponent
+        CreateEntityAdminAccountComponent,
+        EntityDetailsComponent
     ],
     imports: [
         EntitiesRoutingModule,

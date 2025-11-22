@@ -29,8 +29,6 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
     currentEntityForActivation?: Entity;
     deleteEntityDialog: boolean = false;
     currentEntityForDelete?: Entity;
-    addAccountDialog: boolean = false;
-    currentEntityForAccount?: Entity;
     constructor(
         private entitiesService: EntitiesService,
         private router: Router,
@@ -96,21 +94,16 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
         }
     }
 
+    viewDetails(entity: Entity): void {
+        if (entity.id) {
+            this.router.navigate(['/company-administration/entities', entity.id]);
+        }
+    }
+
     addAccount(entity: Entity): void {
-        this.currentEntityForAccount = entity;
-        this.addAccountDialog = true;
-    }
-
-    onCancelAddAccountDialog(): void {
-        this.addAccountDialog = false;
-        this.currentEntityForAccount = undefined;
-    }
-
-    onAccountCreated(): void {
-        this.addAccountDialog = false;
-        this.currentEntityForAccount = undefined;
-        // Optionally reload entities list
-        this.loadEntities(true);
+        if (entity.id) {
+            this.router.navigate(['/company-administration/entities', entity.id, 'add-account']);
+        }
     }
 
     openMenu(menuRef: any, entity: Entity, event: Event): void {
@@ -260,11 +253,18 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
 
     private configureMenuItems(): void {
         // Get user role to determine if "Add Account" should be shown
+        // SystemAdmin (2) OR EntityAdmin (3) can add accounts
+        // System_Role_ID is in AccountDetails, not AccountSettings
         const accountDetails = this.localStorageService.getAccountDetails();
-        const systemRole = accountDetails?.System_Role_ID || 0;
-        const canAddAccount = systemRole === Roles.Developer || systemRole === Roles.SystemAdministrator;
+        const systemRoleId = accountDetails?.System_Role_ID || 0;
+        const canAddAccount = systemRoleId === 2 || systemRoleId === 3; // SystemAdmin OR EntityAdmin
 
         this.menuItems = [
+            {
+                label: 'View Details',
+                icon: 'pi pi-eye',
+                command: () => this.currentEntity && this.viewDetails(this.currentEntity)
+            },
             {
                 label: 'Edit',
                 icon: 'pi pi-user-edit',

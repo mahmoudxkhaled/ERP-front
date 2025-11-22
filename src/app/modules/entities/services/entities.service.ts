@@ -187,5 +187,28 @@ export class EntitiesService {
             finalize(() => this.isLoadingSubject.next(false))
         );
     }
+
+
+    activateAccount(accountId: string): Observable<any> {
+        this.isLoadingSubject.next(true);
+        return this.apiServices.callAPI(151, this.getAccessToken(), [accountId]).pipe(
+            finalize(() => this.isLoadingSubject.next(false))
+        );
+    }
+
+    deactivateAccount(accountId: string): Observable<any> {
+        this.isLoadingSubject.next(true);
+        return this.apiServices.callAPI(152, this.getAccessToken(), [accountId]).pipe(
+            finalize(() => this.isLoadingSubject.next(false))
+        );
+    }
+
+
+    deleteAccount(accountId: string): Observable<any> {
+        this.isLoadingSubject.next(true);
+        return this.apiServices.callAPI(153, this.getAccessToken(), [accountId]).pipe(
+            finalize(() => this.isLoadingSubject.next(false))
+        );
+    }
 }
 

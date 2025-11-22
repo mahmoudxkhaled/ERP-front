@@ -76,6 +76,7 @@ import { ComingSoonComponent } from 'src/app/demo/components/pages/coming-soon/c
 import { InputMaskModule } from 'primeng/inputmask';
 import { SessionExpiredDialogComponent } from 'src/app/core/components/session-expired-dialog/session-expired-dialog.component';
 import { LogoutComponent } from 'src/app/modules/auth/components/logout/logout.component';
+import { HasRoleDirective } from 'src/app/core/directives/has-role.directive';
 const components = [
     ComingSoonComponent,
     ColorScemaSettingsComponent,
@@ -87,6 +88,7 @@ const components = [
 ];
 
 const imports = [
+    HasRoleDirective,
     InputMaskModule,
     SkeletonModule,
     TableModule,
@@ -171,7 +173,7 @@ const providers = [ConfirmationService, MessageService];
 @NgModule({
     declarations: [...components],
     imports: [...imports],
-    exports: [...imports, ...components,],
+    exports: [...imports, ...components],
     providers: [...providers],
 })
 export class SharedModule { }
