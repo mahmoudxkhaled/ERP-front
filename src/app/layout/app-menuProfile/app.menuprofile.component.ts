@@ -42,7 +42,6 @@ export class AppMenuProfileComponent implements OnInit {
     currentPages: any;
     showLogoutDialog: boolean = false; // Track logout dialog visibility
     accountSettings: IAccountSettings;
-    regionalLanguage: boolean = false;
     constructor(
         public layoutService: LayoutService,
         public el: ElementRef,
@@ -64,20 +63,11 @@ export class AppMenuProfileComponent implements OnInit {
         this.account = this.localStorage.getAccountDetails() as IAccountDetails;
         this.accountSettings = this.localStorage.getAccountSettings() as IAccountSettings;
 
-        // Add null check here (like in topbar component)
-        const language = this.accountSettings?.Language;
-        if (language === 'English') {
-            this.regionalLanguage = false;
-        } else {
-            this.regionalLanguage = true;
-        }
+        const isRegional = this.accountSettings?.Language !== 'English';
 
-        console.log('accountSettings', this.accountSettings);
         if (this.user) {
-            console.log('user', this.user);
-
             let regionalName = '';
-            if (this.regionalLanguage) {
+            if (isRegional) {
                 const firstNameRegional = this.user.First_Name_Regional || '';
                 const lastNameRegional = this.user.Last_Name_Regional || '';
                 regionalName = (firstNameRegional + ' ' + lastNameRegional).trim();
@@ -87,7 +77,7 @@ export class AppMenuProfileComponent implements OnInit {
             const lastNameEnglish = this.user.Last_Name || '';
             const englishName = (firstNameEnglish + ' ' + lastNameEnglish).trim();
 
-            if (this.regionalLanguage && regionalName) {
+            if (isRegional && regionalName) {
                 this.userName = regionalName;
             } else if (englishName) {
                 this.userName = englishName;

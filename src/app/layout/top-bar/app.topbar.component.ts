@@ -70,7 +70,6 @@ export class AppTopbarComponent implements OnInit {
     userName: string = '';
     profilePictureUrl: string = '';
     accountSettings: IAccountSettings;
-    regionalLanguage: boolean = false;
     entityName: string = '';
     mockSearchData = {
         lessons: ['Lesson 1', 'Lesson 2', 'Lesson 3'],
@@ -109,16 +108,11 @@ export class AppTopbarComponent implements OnInit {
 
 
         this.entityLogo = this.entityDetails?.Logo !== null && this.entityDetails?.Logo !== undefined && this.entityDetails?.Logo !== '' ? this.entityDetails?.Logo : 'assets/media/White-Logo.png';
-        const language = this.accountSettings?.Language;
-        if (language === 'English') {
-            this.regionalLanguage = false;
-        } else {
-            this.regionalLanguage = true;
-        }
+        const isRegional = this.accountSettings?.Language !== 'English';
 
         // Set entity name with regional language support
         if (this.entityDetails) {
-            if (this.regionalLanguage) {
+            if (isRegional) {
                 const nameRegional = this.entityDetails.Name_Regional || '';
                 if (nameRegional.trim()) {
                     this.entityName = nameRegional;
@@ -133,7 +127,7 @@ export class AppTopbarComponent implements OnInit {
         // Set user name with regional language support
         if (this.user) {
             let regionalName = '';
-            if (this.regionalLanguage) {
+            if (isRegional) {
                 const firstNameRegional = this.user.First_Name_Regional || '';
                 const lastNameRegional = this.user.Last_Name_Regional || '';
                 regionalName = (firstNameRegional + ' ' + lastNameRegional).trim();
@@ -143,7 +137,7 @@ export class AppTopbarComponent implements OnInit {
             const lastNameEnglish = this.user.Last_Name || '';
             const englishName = (firstNameEnglish + ' ' + lastNameEnglish).trim();
 
-            if (this.regionalLanguage && regionalName) {
+            if (isRegional && regionalName) {
                 this.userName = regionalName;
             } else if (englishName) {
                 this.userName = englishName;

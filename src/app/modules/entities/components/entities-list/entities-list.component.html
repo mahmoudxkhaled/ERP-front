@@ -1,15 +1,24 @@
 <div class="card">
     <div class="flex justify-content-between align-items-center mb-4">
         <h2>Manage Entities</h2>
-        <p-button label="Add New" icon="pi pi-plus" (onClick)="navigateToNew()" [loading]="loading">
+        <p-button (onClick)="navigateToNew()" [disabled]="!!(isLoading$ | async)">
+            <ng-container *ngIf="isLoading$ | async">
+                <span class="indicator-progress" [style.display]="'block'">
+                    Please wait
+                    <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
+                </span>
+            </ng-container>
+            <ng-container *ngIf="(isLoading$ | async) === false">
+                <span>Add New</span>
+            </ng-container>
         </p-button>
     </div>
 
-    <div class="iAware-loading-table-container" style="position: relative;">
+    <div class=" " style="position: relative;">
         <app-table-loading-spinner *ngIf="tableLoadingSpinner"></app-table-loading-spinner>
         <p-table #entitiesTable [value]="entities" [paginator]="true" [rows]="10" [showCurrentPageReport]="true"
             responsiveLayout="scroll" [rowsPerPageOptions]="[10, 25, 50]"
-            [globalFilterFields]="['code', 'name', 'description', 'parentEntityId']" [loading]="loading">
+            [globalFilterFields]="['code', 'name', 'description', 'parentEntityId']" [loading]="!!(isLoading$ | async)">
 
             <ng-template pTemplate="caption">
                 <div class="flex justify-content-between align-items-center">
@@ -105,11 +114,47 @@
     </div>
     <ng-template pTemplate="footer">
         <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="onCancelActivationDialog()"
-            [disabled]="loading">
+            [disabled]="!!(isLoading$ | async)">
         </p-button>
-        <p-button [label]="currentEntityForActivation?.active ? 'Deactivate' : 'Activate'"
-            [icon]="currentEntityForActivation?.active ? 'pi pi-ban' : 'pi pi-check'"
-            (onClick)="activation(!currentEntityForActivation?.active)" [loading]="loading" [disabled]="loading">
+        <p-button (onClick)="activation(!currentEntityForActivation?.active)" [disabled]="!!(isLoading$ | async)">
+            <ng-container *ngIf="isLoading$ | async">
+                <span class="indicator-progress" [style.display]="'block'">
+                    Please wait
+                    <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
+                </span>
+            </ng-container>
+            <ng-container *ngIf="(isLoading$ | async) === false">
+                <span>{{ currentEntityForActivation?.active ? 'Deactivate' : 'Activate' }}</span>
+            </ng-container>
+        </p-button>
+    </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="deleteEntityDialog" [modal]="true" [style]="{ width: '450px' }" [closable]="true"
+    [draggable]="false" [resizable]="false">
+    <ng-template pTemplate="header">
+        <h3>Delete Entity</h3>
+    </ng-template>
+    <div class="flex flex-column gap-3">
+        <p>
+            Are you sure you want to delete <strong>{{ currentEntityForDelete?.name }}</strong>?
+        </p>
+        <p class="text-red-500 font-semibold">This action cannot be undone.</p>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="onCancelDeleteDialog()"
+            [disabled]="!!(isLoading$ | async)">
+        </p-button>
+        <p-button class="p-button-danger" (onClick)="deleteEntity()" [disabled]="!!(isLoading$ | async)">
+            <ng-container *ngIf="isLoading$ | async">
+                <span class="indicator-progress" [style.display]="'block'">
+                    Please wait
+                    <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
+                </span>
+            </ng-container>
+            <ng-container *ngIf="(isLoading$ | async) === false">
+                <span>Delete</span>
+            </ng-container>
         </p-button>
     </ng-template>
 </p-dialog>

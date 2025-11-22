@@ -182,14 +182,19 @@ export class EntityFormComponent implements OnInit, OnDestroy {
                 }
 
                 const entity = response?.message ?? {};
-                const parentId = entity?.parentEntityId ?? entity?.Parent_Entity_ID ?? 0;
+
+                // Convert parentEntityId to number and ensure 0 is used for root entity
+                const parentId = entity?.Parent_Entity_ID;
+                const parentEntityId = parentId === null || parentId === undefined || parentId === '' || parentId === '0'
+                    ? 0
+                    : Number(parentId) || 0;
 
                 this.form.patchValue({
-                    code: entity?.code ?? entity?.Code ?? '',
-                    name: entity?.name ?? entity?.Name ?? '',
-                    description: entity?.description ?? entity?.Description ?? '',
-                    parentEntityId: parentId ? Number(parentId) : 0,
-                    isPersonal: entity?.isPersonal ?? entity?.Is_Personal ?? false
+                    code: entity?.Code ?? '',
+                    name: entity?.Name ?? '',
+                    description: entity?.Description ?? '',
+                    parentEntityId: parentEntityId,
+                    isPersonal: entity?.Is_Personal || false
                 });
 
                 if (!this.showIsPersonal) {

@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MenuItem, MessageService } from 'primeng/api';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { EntitiesService } from '../../services/entities.service';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
 import { Entity, EntityBackend, EntitiesListResponse } from '../../models/entities.model';
@@ -17,22 +17,25 @@ type EntityActionContext = 'list' | 'activate' | 'deactivate' | 'delete';
 })
 export class EntitiesListComponent implements OnInit, OnDestroy {
     entities: Entity[] = [];
-    loading = false;
+    isLoading$: Observable<boolean>;
     tableLoadingSpinner = false;
     private subscriptions: Subscription[] = [];
     activationControls: Record<string, FormControl<boolean>> = {};
     menuItems: MenuItem[] = [];
     currentEntity?: Entity;
     accountSettings: IAccountSettings;
-    regionalLanguage: boolean = false;
     activationEntityDialog: boolean = false;
     currentEntityForActivation?: Entity;
+    deleteEntityDialog: boolean = false;
+    currentEntityForDelete?: Entity;
     constructor(
         private entitiesService: EntitiesService,
         private router: Router,
         private messageService: MessageService,
         private localStorageService: LocalStorageService
-    ) { }
+    ) {
+        this.isLoading$ = this.entitiesService.isLoadingSubject.asObservable();
+    }
 
     ngOnInit(): void {
         this.configureMenuItems();
@@ -44,19 +47,12 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
     }
 
     loadEntities(forceReload: boolean = false): void {
-        if (this.loading && !forceReload) {
+        if (this.entitiesService.isLoadingSubject.value && !forceReload) {
             return;
         }
 
         this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
-        const language = this.accountSettings?.Language;
-        if (language === 'English') {
-            this.regionalLanguage = false;
-        } else {
-            this.regionalLanguage = true;
-        }
-
-        this.loading = true;
+        const isRegional = this.accountSettings?.Language !== 'English';
         this.tableLoadingSpinner = true;
 
         const sub = this.entitiesService.listEntities().subscribe({
@@ -70,8 +66,8 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
                 this.entities = Object.values(entitiesData).map((item: any) => ({
                     id: String(item?.Entity_ID || ''),
                     code: item?.Code || '',
-                    name: this.regionalLanguage ? item?.Name_Regional || '' : item?.Name || '',
-                    description: this.regionalLanguage ? item?.Description_Regional || '' : item?.Description || '',
+                    name: isRegional ? item?.Name_Regional || '' : item?.Name || '',
+                    description: isRegional ? item?.Description_Regional || '' : item?.Description || '',
                     parentEntityId: item?.Parent_Entity_ID ? String(item?.Parent_Entity_ID) : '',
                     active: Boolean(item?.Is_Active),
                     isPersonal: Boolean(item?.Is_Personal)
@@ -164,25 +160,42 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
     }
 
     confirmDelete(entity: Entity): void {
-        const confirmed = window.confirm(`Delete ${entity.name}? This cannot be undone.`);
-        if (!confirmed) {
+        this.currentEntityForDelete = entity;
+        this.deleteEntityDialog = true;
+    }
+
+    onCancelDeleteDialog(): void {
+        this.deleteEntityDialog = false;
+        this.currentEntityForDelete = undefined;
+    }
+
+    deleteEntity(): void {
+        if (!this.currentEntityForDelete) {
             return;
         }
+
+        const entity = this.currentEntityForDelete;
 
         const sub = this.entitiesService.deleteEntity(entity.id).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
                     this.handleBusinessError('delete', response);
+                    this.deleteEntityDialog = false;
                     return;
                 }
 
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Deleted',
-                    detail: `${entity.name} deleted successfully.`
+                    detail: `${entity.name} deleted successfully.`,
+                    life: 3000
                 });
+                this.deleteEntityDialog = false;
                 this.loadEntities(true);
             },
+            complete: () => {
+                this.currentEntityForDelete = undefined;
+            }
         });
 
         this.subscriptions.push(sub);
@@ -271,8 +284,6 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
 
         if (context === 'list') {
             this.resetLoadingFlags();
-        } else {
-            this.loading = false;
         }
     }
 
@@ -314,7 +325,6 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
     }
 
     private resetLoadingFlags(): void {
-        this.loading = false;
         this.tableLoadingSpinner = false;
     }
 }

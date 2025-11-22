@@ -59,7 +59,7 @@ export class ProfileComponent implements OnInit {
     accountDetails: IAccountDetails | null = null;
     entityDetails: IEntityDetails | null = null;
     accountSettings: IAccountSettings | null = null;
-    regionalLanguage: boolean = false;
+    isRegional: boolean = false;
     profilePictureUrl: string = '';
 
     roleOptions = [
@@ -94,12 +94,9 @@ export class ProfileComponent implements OnInit {
         this.entityDetails = this.localStorageService.getEntityDetails();
         this.accountSettings = this.localStorageService.getAccountSettings();
 
-        const language = this.accountSettings?.Language;
-        if (language === 'English') {
-            this.regionalLanguage = false;
-        } else {
-            this.regionalLanguage = true;
-        }
+        this.isRegional = this.accountSettings?.Language !== 'English';
+
+
 
         this.profilePictureUrl = this.accountDetails?.Profile_Picture || '';
     }
@@ -216,7 +213,7 @@ export class ProfileComponent implements OnInit {
     getFirstName(): string {
         if (!this.userDetails) return '';
 
-        if (this.regionalLanguage) {
+        if (this.isRegional) {
             const firstNameRegional = this.userDetails.First_Name_Regional || '';
             if (firstNameRegional.trim()) {
                 return firstNameRegional;
@@ -228,7 +225,7 @@ export class ProfileComponent implements OnInit {
     getLastName(): string {
         if (!this.userDetails) return '';
 
-        if (this.regionalLanguage) {
+        if (this.isRegional) {
             const lastNameRegional = this.userDetails.Last_Name_Regional || '';
             if (lastNameRegional.trim()) {
                 return lastNameRegional;
@@ -240,7 +237,7 @@ export class ProfileComponent implements OnInit {
     getMiddleName(): string {
         if (!this.userDetails) return '';
 
-        if (this.regionalLanguage) {
+        if (this.isRegional) {
             const middleNameRegional = this.userDetails.Middle_Name_Regional || '';
             if (middleNameRegional.trim()) {
                 return middleNameRegional;
@@ -252,7 +249,7 @@ export class ProfileComponent implements OnInit {
     getPrefix(): string {
         if (!this.userDetails) return '';
 
-        if (this.regionalLanguage) {
+        if (this.isRegional) {
             const prefixRegional = this.userDetails.Prefix_Regional || '';
             if (prefixRegional.trim()) {
                 return prefixRegional;
