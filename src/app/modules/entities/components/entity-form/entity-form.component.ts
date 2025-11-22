@@ -2,7 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
-import { Subscription } from 'rxjs';
+import { Subscription, throwError } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { EntitiesService } from '../../services/entities.service';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
 import { IAccountSettings } from 'src/app/core/models/IAccountStatusResponse';
@@ -23,6 +24,8 @@ export class EntityFormComponent implements OnInit, OnDestroy {
     submitted: boolean = false;
     showParentSelector: boolean = false;
     showIsPersonal: boolean = false;
+    showAccountSection: boolean = false;
+    systemRole: number = 0;
     parentEntities: any[] = [];
     private subscriptions: Subscription[] = [];
 
@@ -48,28 +51,32 @@ export class EntityFormComponent implements OnInit, OnDestroy {
 
     private initializeRoleBasedLogic(): void {
         const accountDetails = this.localStorageService.getAccountDetails();
-        const systemRole = accountDetails?.System_Role_ID;
+        this.systemRole = accountDetails?.System_Role_ID || 0;
 
-        switch (systemRole) {
+        switch (this.systemRole) {
             case Roles.Developer:
                 this.showParentSelector = true;
                 this.showIsPersonal = true;
+                this.showAccountSection = true;
                 this.loadAllEntities();
                 break;
             case Roles.SystemAdministrator:
                 this.showParentSelector = false;
                 this.showIsPersonal = false;
+                this.showAccountSection = true;
                 this.form.patchValue({ parentEntityId: 0, isPersonal: false });
                 break;
             case Roles.EntityAdministrator:
                 this.showParentSelector = true;
                 this.showIsPersonal = false;
+                this.showAccountSection = false;
                 this.form.patchValue({ isPersonal: false });
                 this.loadEntityTree();
                 break;
             default:
                 this.showParentSelector = false;
                 this.showIsPersonal = false;
+                this.showAccountSection = false;
                 this.form.patchValue({ parentEntityId: 0, isPersonal: false });
                 break;
         }
@@ -85,7 +92,10 @@ export class EntityFormComponent implements OnInit, OnDestroy {
             name: ['', [Validators.required, this.entityCodeNameDescValidator]],
             description: ['', [Validators.required, this.entityCodeNameDescValidator]],
             parentEntityId: [0],
-            isPersonal: [false]
+            isPersonal: [false],
+            email: ['', [Validators.required, Validators.email]],
+            firstName: ['', [Validators.required, this.entityCodeNameDescValidator]],
+            lastName: ['', [Validators.required, this.entityCodeNameDescValidator]]
         });
     }
 
@@ -110,9 +120,9 @@ export class EntityFormComponent implements OnInit, OnDestroy {
                 if (res?.success) {
                     const entitiesData = res.message || {};
                     const entities = Object.values(entitiesData).map((item: any) => ({
-                        ID: item?.Entity_ID || item?.id,
-                        Name: item?.Name || item?.name || '',
-                        Code: item?.Code || item?.code || ''
+                        ID: item?.Entity_ID,
+                        Name: item?.Name || '',
+                        Code: item?.Code || ''
                     }));
 
                     this.parentEntities = [
@@ -147,8 +157,8 @@ export class EntityFormComponent implements OnInit, OnDestroy {
                         })
                         .map((item: any) => ({
                             ID: item?.Entity_ID || item?.id,
-                            Name: item?.Name || item?.name || '',
-                            Code: item?.Code || item?.code || ''
+                            Name: item?.Name || '',
+                            Code: item?.Code || ''
                         }));
 
                     this.parentEntities = [
@@ -213,7 +223,29 @@ export class EntityFormComponent implements OnInit, OnDestroy {
 
     submit(): void {
         this.submitted = true;
-        if (this.loading || this.form.invalid) {
+
+        // Validate form - check account fields only if account section is shown
+        if (this.loading) {
+            return;
+        }
+
+        // Check if account fields are required and valid
+        if (this.showAccountSection && !this.isEdit) {
+            const accountFieldsValid = this.form.get('email')?.valid &&
+                this.form.get('firstName')?.valid &&
+                this.form.get('lastName')?.valid;
+            if (!accountFieldsValid) {
+                this.messageService.add({
+                    severity: 'warn',
+                    summary: 'Validation',
+                    detail: 'Please fill in all required fields including account information.'
+                });
+                return;
+            }
+        }
+
+        // Check entity fields
+        if (this.form.get('code')?.invalid || this.form.get('name')?.invalid || this.form.get('description')?.invalid) {
             this.messageService.add({
                 severity: 'warn',
                 summary: 'Validation',
@@ -226,10 +258,11 @@ export class EntityFormComponent implements OnInit, OnDestroy {
         const isRegional = accountSettings?.Language !== 'English';
 
         this.loading = true;
-        const { code, name, description, parentEntityId, isPersonal } = this.form.value;
+        const { code, name, description, parentEntityId, isPersonal, email, firstName, lastName } = this.form.value;
 
-        const sub = (this.isEdit
-            ? this.entitiesService.updateEntityDetails(
+        // Handle edit mode (keep existing logic)
+        if (this.isEdit) {
+            const sub = this.entitiesService.updateEntityDetails(
                 this.entityId,
                 code,
                 name,
@@ -237,36 +270,111 @@ export class EntityFormComponent implements OnInit, OnDestroy {
                 Number(parentEntityId) || 0,
                 isRegional,
                 isPersonal || false
-            )
-            : this.entitiesService.addEntity(
+            ).subscribe({
+                next: (response: any) => {
+                    if (!response?.success) {
+                        this.handleBusinessError('update', response);
+                        return;
+                    }
+
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Success',
+                        detail: 'Entity updated successfully.'
+                    });
+                    this.router.navigate(['/company-administration/entities/list']);
+                },
+                error: () => {
+                    this.handleUnexpectedError();
+                    this.loading = false;
+                },
+                complete: () => this.loading = false
+            });
+
+            this.subscriptions.push(sub);
+            return;
+        }
+
+        // Handle create mode
+        const parentId = Number(parentEntityId) || 0;
+        const isPersonalValue = isPersonal || false;
+
+        // For SystemAdministrator or Developer: Create Entity → Create Account
+        if (this.systemRole === Roles.SystemAdministrator || this.systemRole === Roles.Developer) {
+            const sub = this.entitiesService.addEntity(
                 code,
                 name,
                 description,
-                isPersonal || false,
-                Number(parentEntityId) || 0
-            )
-        ).subscribe({
-            next: (response: any) => {
-                if (!response?.success) {
-                    this.handleBusinessError(this.isEdit ? 'update' : 'create', response);
-                    return;
-                }
+                parentId,
+                isPersonalValue
+            ).pipe(
+                switchMap((entityResponse: any) => {
+                    if (!entityResponse?.success) {
+                        this.handleBusinessError('create', entityResponse);
+                        return throwError(() => entityResponse);
+                    }
 
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Success',
-                    detail: this.isEdit ? 'Entity updated successfully.' : 'Entity created successfully.'
-                });
-                this.router.navigate(['/company-administration/entities/list']);
-            },
-            error: () => {
-                this.handleUnexpectedError();
-                this.loading = false;
-            },
-            complete: () => this.loading = false
-        });
+                    // Extract Entity_ID from response
+                    const entityId = entityResponse.message; // int Entity_ID
+                    const entityRoleId = 15; // Fixed value
 
-        this.subscriptions.push(sub);
+                    // Step 2: Create Account
+                    return this.entitiesService.createAccount(email, firstName, lastName, entityId, entityRoleId);
+                })
+            ).subscribe({
+                next: (accountResponse: any) => {
+                    if (!accountResponse?.success) {
+                        this.handleCreateAccountError(accountResponse);
+                        return;
+                    }
+
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Success',
+                        detail: 'Entity and administrator account created successfully.'
+                    });
+                    this.router.navigate(['/company-administration/entities/list']);
+                },
+                error: (error: any) => {
+                    // Error already handled in switchMap or handleCreateAccountError
+                    this.loading = false;
+                },
+                complete: () => this.loading = false
+            });
+
+            this.subscriptions.push(sub);
+        }
+        // For EntityAdministrator: Create Entity only
+        else if (this.systemRole === Roles.EntityAdministrator) {
+            const sub = this.entitiesService.addEntity(
+                code,
+                name,
+                description,
+                parentId,
+                isPersonalValue
+            ).subscribe({
+                next: (response: any) => {
+                    if (!response?.success) {
+                        this.handleBusinessError('create', response);
+                        return;
+                    }
+
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Success',
+                        detail: 'Entity created successfully.'
+                    });
+                    this.router.navigate(['/company-administration/entities/list']);
+                },
+                error: () => {
+                    this.handleUnexpectedError();
+                    this.loading = false;
+                },
+                complete: () => this.loading = false
+            });
+
+            this.subscriptions.push(sub);
+        }
     }
 
     cancel(): void {
@@ -299,6 +407,39 @@ export class EntityFormComponent implements OnInit, OnDestroy {
         return '';
     }
 
+    get emailError(): string {
+        const control = this.f['email'];
+        if (control?.errors?.['required'] && this.submitted && this.showAccountSection) {
+            return 'Email is required.';
+        }
+        if (control?.errors?.['email'] && this.submitted && this.showAccountSection) {
+            return 'Please enter a valid email address.';
+        }
+        return '';
+    }
+
+    get firstNameError(): string {
+        const control = this.f['firstName'];
+        if (control?.errors?.['required'] && this.submitted && this.showAccountSection) {
+            return 'First name is required.';
+        }
+        if (control?.errors?.['invalidFormat'] && this.submitted && this.showAccountSection) {
+            return 'Only letters, spaces, hyphens (-), apostrophes (\'), dots (.), and underscores (_) are allowed.';
+        }
+        return '';
+    }
+
+    get lastNameError(): string {
+        const control = this.f['lastName'];
+        if (control?.errors?.['required'] && this.submitted && this.showAccountSection) {
+            return 'Last name is required.';
+        }
+        if (control?.errors?.['invalidFormat'] && this.submitted && this.showAccountSection) {
+            return 'Only letters, spaces, hyphens (-), apostrophes (\'), dots (.), and underscores (_) are allowed.';
+        }
+        return '';
+    }
+
     private handleBusinessError(context: EntityFormContext, response: any): void {
         const code = String(response?.message || '');
         let detail = '';
@@ -326,7 +467,6 @@ export class EntityFormComponent implements OnInit, OnDestroy {
     }
 
     private getCreationErrorMessage(code: string): string {
-        console.log('code', code);
         switch (code) {
             case 'ERP11250':
                 return 'Invalid parent entity.';
@@ -376,6 +516,33 @@ export class EntityFormComponent implements OnInit, OnDestroy {
             summary: 'Error',
             detail: 'Session expired. Please login again.'
         });
+    }
+
+    private handleCreateAccountError(response: any): void {
+        const code = String(response?.message || '');
+        const detail = this.getCreateAccountErrorMessage(code);
+
+        this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail
+        });
+        this.loading = false;
+    }
+
+    private getCreateAccountErrorMessage(code: string): string {
+        switch (code) {
+            case 'ERP11350':
+                return 'Invalid email format.';
+            case 'ERP11351':
+                return 'Email already exists. Please use a different email.';
+            case 'ERP11352':
+                return 'Invalid first name format.';
+            case 'ERP11354':
+                return 'Invalid entity ID.';
+            default:
+                return 'Session expired. Please login again.';
+        }
     }
 }
 

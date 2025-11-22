@@ -28,9 +28,9 @@
             <div class="col-12 md:col-6">
                 <div class="field p-fluid">
                     <label for="description">Description <span class="text-red-500">*</span></label>
-                    <textarea id="description" rows="4" pInputTextarea formControlName="description"
+                    <input id="description" type="text" pInputTextarea formControlName="description"
                         [class.ng-invalid]="submitted && f['description'].invalid"
-                        placeholder="Add a clear description for this entity"></textarea>
+                        placeholder="Add a clear description for this entity" />
                     <small class="p-error" *ngIf="submitted && f['description'].invalid">
                         Description is required
                     </small>
@@ -47,9 +47,48 @@
             </div>
 
             <div class="col-12 md:col-6" *ngIf="showIsPersonal">
-                <div class="field flex flex-column p-fluid">
-                    <label for="isPersonal">Personal Entity?</label>
+                <div class="field flex  p-fluid">
+                    <label for="isPersonal" class="mx-2">Personal Entity?</label>
                     <p-inputSwitch id="isPersonal" formControlName="isPersonal"></p-inputSwitch>
+                </div>
+            </div>
+        </div>
+
+        <!-- Account Section -->
+        <div *ngIf="showAccountSection && !isEdit" class="mt-4">
+            <h3 class="mb-3">Administrator Account</h3>
+            <div class="grid">
+                <div class="col-12 md:col-6">
+                    <div class="field p-fluid">
+                        <label for="email">Email <span class="text-red-500">*</span></label>
+                        <input id="email" type="email" pInputText formControlName="email"
+                            [class.ng-invalid]="submitted && f['email'].invalid" placeholder="Enter email address" />
+                        <small class="p-error" *ngIf="submitted && f['email'].invalid && emailError">
+                            {{ emailError }}
+                        </small>
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-6">
+                    <div class="field p-fluid">
+                        <label for="firstName">First Name <span class="text-red-500">*</span></label>
+                        <input id="firstName" type="text" pInputText formControlName="firstName"
+                            [class.ng-invalid]="submitted && f['firstName'].invalid" placeholder="Enter first name" />
+                        <small class="p-error" *ngIf="submitted && f['firstName'].invalid && firstNameError">
+                            {{ firstNameError }}
+                        </small>
+                    </div>
+                </div>
+
+                <div class="col-12 md:col-6">
+                    <div class="field p-fluid">
+                        <label for="lastName">Last Name <span class="text-red-500">*</span></label>
+                        <input id="lastName" type="text" pInputText formControlName="lastName"
+                            [class.ng-invalid]="submitted && f['lastName'].invalid" placeholder="Enter last name" />
+                        <small class="p-error" *ngIf="submitted && f['lastName'].invalid && lastNameError">
+                            {{ lastNameError }}
+                        </small>
+                    </div>
                 </div>
             </div>
         </div>

@@ -28,10 +28,10 @@ export class EntitiesService {
         return this.localStorageService.getParentEntityId()?.toString() ?? '';
     }
 
-    addEntity(code: string, name: string, description: string, isPersonal: boolean, parentEntityId: number = 0): Observable<any> {
+    addEntity(code: string, name: string, description: string, parentEntityId: number, isPersonal: boolean): Observable<any> {
         this.isLoadingSubject.next(true);
         const params = [code, name, description, parentEntityId.toString(), isPersonal.toString()];
-        return this.apiServices.callAPI(400, this.getAccessToken(), params).pipe(
+        return this.apiServices.callAPI(200, this.getAccessToken(), params).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );
     }
@@ -164,6 +164,14 @@ export class EntitiesService {
     removeEntityLogo(entityId: string): Observable<any> {
         this.isLoadingSubject.next(true);
         return this.apiServices.callAPI(422, this.getAccessToken(), [entityId]).pipe(
+            finalize(() => this.isLoadingSubject.next(false))
+        );
+    }
+
+    createAccount(email: string, firstName: string, lastName: string, entityId: number, entityRoleId: number): Observable<any> {
+        this.isLoadingSubject.next(true);
+        const params = [email, firstName, lastName, entityId.toString(), entityRoleId.toString()];
+        return this.apiServices.callAPI(120, this.getAccessToken(), params).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );
     }
