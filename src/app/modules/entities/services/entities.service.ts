@@ -170,8 +170,20 @@ export class EntitiesService {
 
     createAccount(email: string, firstName: string, lastName: string, entityId: number, entityRoleId: number): Observable<any> {
         this.isLoadingSubject.next(true);
+        console.log('email', email);
+        console.log('firstName', firstName);
+        console.log('lastName', lastName);
+        console.log('entityId', entityId);
+        console.log('entityRoleId', entityRoleId);
         const params = [email, firstName, lastName, entityId.toString(), entityRoleId.toString()];
-        return this.apiServices.callAPI(120, this.getAccessToken(), params).pipe(
+        return this.apiServices.callAPI(150, this.getAccessToken(), params).pipe(
+            finalize(() => this.isLoadingSubject.next(false))
+        );
+    }
+
+    getEntityAccountsList(entityId: string): Observable<any> {
+        this.isLoadingSubject.next(true);
+        return this.apiServices.callAPI(500, this.getAccessToken(), [entityId]).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );
     }

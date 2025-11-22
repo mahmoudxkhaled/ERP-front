@@ -7,6 +7,7 @@ import { EntitiesService } from '../../services/entities.service';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
 import { Entity, EntityBackend, EntitiesListResponse } from '../../models/entities.model';
 import { IAccountSettings } from 'src/app/core/models/IAccountStatusResponse';
+import { Roles } from 'src/app/core/models/system-roles';
 
 type EntityActionContext = 'list' | 'activate' | 'deactivate' | 'delete';
 
@@ -28,6 +29,8 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
     currentEntityForActivation?: Entity;
     deleteEntityDialog: boolean = false;
     currentEntityForDelete?: Entity;
+    addAccountDialog: boolean = false;
+    currentEntityForAccount?: Entity;
     constructor(
         private entitiesService: EntitiesService,
         private router: Router,
@@ -91,6 +94,23 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
         if (entity.id) {
             this.router.navigate(['/company-administration/entities', entity.id, 'assign-admin']);
         }
+    }
+
+    addAccount(entity: Entity): void {
+        this.currentEntityForAccount = entity;
+        this.addAccountDialog = true;
+    }
+
+    onCancelAddAccountDialog(): void {
+        this.addAccountDialog = false;
+        this.currentEntityForAccount = undefined;
+    }
+
+    onAccountCreated(): void {
+        this.addAccountDialog = false;
+        this.currentEntityForAccount = undefined;
+        // Optionally reload entities list
+        this.loadEntities(true);
     }
 
     openMenu(menuRef: any, entity: Entity, event: Event): void {
@@ -239,6 +259,11 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
     }
 
     private configureMenuItems(): void {
+        // Get user role to determine if "Add Account" should be shown
+        const accountDetails = this.localStorageService.getAccountDetails();
+        const systemRole = accountDetails?.System_Role_ID || 0;
+        const canAddAccount = systemRole === Roles.Developer || systemRole === Roles.SystemAdministrator;
+
         this.menuItems = [
             {
                 label: 'Edit',
@@ -250,6 +275,11 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
                 icon: 'pi pi-user-plus',
                 command: () => this.currentEntity && this.assignAdmin(this.currentEntity)
             },
+            ...(canAddAccount ? [{
+                label: 'Add Account',
+                icon: 'pi pi-user-plus',
+                command: () => this.currentEntity && this.addAccount(this.currentEntity)
+            }] : []),
             {
                 label: 'Delete',
                 icon: 'pi pi-trash',
@@ -260,6 +290,7 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
 
     private handleBusinessError(context: EntityActionContext, response: any): void {
         const code = String(response?.message || '');
+        console.log('code', code);
         let detail = '';
 
         switch (context) {
@@ -273,7 +304,7 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
                 detail = this.getDeleteErrorMessage(code);
                 break;
             default:
-                detail = 'Session expired. Please login again.';
+                detail = 'An unexpected error occurred. Please try again.';
         }
 
         this.messageService.add({

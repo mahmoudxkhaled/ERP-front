@@ -1,0 +1,49 @@
+<div class="flex flex-column gap-3">
+    <p class="text-600">
+        Create a new administrator account for <strong>{{ entity.name }}</strong> (Entity #{{ entity.id }}).
+    </p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="flex flex-column gap-3">
+            <!-- Email Field -->
+            <div class="field p-fluid">
+                <label for="email">Email <span class="text-red-500">*</span></label>
+                <input id="email" type="email" pInputText formControlName="email"
+                    [class.ng-invalid]="submitted && f['email'].invalid" placeholder="Enter email address" />
+                <small class="p-error" *ngIf="submitted && f['email'].invalid">
+                    <span *ngIf="f['email'].errors?.['required']">Email is required.</span>
+                    <span *ngIf="f['email'].errors?.['email']">Please enter a valid email address.</span>
+                </small>
+            </div>
+
+            <!-- First Name Field -->
+            <div class="field p-fluid">
+                <label for="firstName">First Name <span class="text-red-500">*</span></label>
+                <input id="firstName" type="text" pInputText formControlName="firstName"
+                    [class.ng-invalid]="submitted && f['firstName'].invalid" placeholder="Enter first name" />
+                <small class="p-error" *ngIf="submitted && f['firstName'].invalid">
+                    First name is required.
+                </small>
+            </div>
+
+            <!-- Last Name Field -->
+            <div class="field p-fluid">
+                <label for="lastName">Last Name <span class="text-red-500">*</span></label>
+                <input id="lastName" type="text" pInputText formControlName="lastName"
+                    [class.ng-invalid]="submitted && f['lastName'].invalid" placeholder="Enter last name" />
+                <small class="p-error" *ngIf="submitted && f['lastName'].invalid">
+                    Last name is required.
+                </small>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-content-end gap-2 mt-4">
+            <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="onCancel()"
+                [disabled]="loading">
+            </p-button>
+            <p-button label="Create Account" icon="pi pi-check" type="submit" [loading]="loading" [disabled]="loading">
+            </p-button>
+        </div>
+    </form>
+</div>

@@ -11,7 +11,7 @@ interface User {
     email: string;
 }
 
-type AssignAdminContext = 'details' | 'assign';
+type AssignAdminContext = 'details' | 'assign' | 'accounts';
 
 @Component({
     selector: 'app-assign-admin',
@@ -24,6 +24,7 @@ export class AssignAdminComponent implements OnInit, OnDestroy {
     entityName: string = '';
     users: User[] = [];
     loading: boolean = false;
+    loadingUsers: boolean = false;
     submitted: boolean = false;
     private subscriptions: Subscription[] = [];
 
@@ -79,10 +80,52 @@ export class AssignAdminComponent implements OnInit, OnDestroy {
     }
 
     loadUsers(): void {
-        this.users = [
-            { id: '1', name: 'John Doe', email: 'john@example.com' },
-            { id: '2', name: 'Jane Smith', email: 'jane@example.com' }
-        ];
+        if (!this.entityId) {
+            return;
+        }
+
+        this.loadingUsers = true;
+        const sub = this.entitiesService.getEntityAccountsList(this.entityId).subscribe({
+            next: (response: any) => {
+                if (!response?.success) {
+                    this.handleBusinessError('accounts', response);
+                    return;
+                }
+
+                // Map API response to User interface
+                // The API returns List<Account>, we need to map it to our User format
+                const accounts = response?.message || [];
+                console.log('accounts', accounts);
+
+                // Handle both array and object formats
+                const accountsArray = Array.isArray(accounts)
+                    ? accounts
+                    : Object.values(accounts);
+
+                this.users = accountsArray.map((account: any) => ({
+                    id: String(account?.Account_ID || account?.accountId || account?.id || ''),
+                    name: `${account?.First_Name || account?.firstName || ''} ${account?.Last_Name || account?.lastName || ''}`.trim() || account?.Name || 'Unknown',
+                    email: account?.Email || account?.email || ''
+                })).filter((user: User) => user.id && user.id !== ''); // Filter out invalid entries
+
+                // Show message if no users found
+                if (this.users.length === 0) {
+                    this.messageService.add({
+                        severity: 'info',
+                        summary: 'No Accounts',
+                        detail: 'No accounts found for this entity.',
+                        life: 3000
+                    });
+                }
+            },
+            error: () => {
+                this.handleUnexpectedError();
+                this.loadingUsers = false;
+            },
+            complete: () => this.loadingUsers = false
+        });
+
+        this.subscriptions.push(sub);
     }
 
     submit(): void {
@@ -142,6 +185,10 @@ export class AssignAdminComponent implements OnInit, OnDestroy {
             case 'details':
                 detail = this.getDetailsErrorMessage(code);
                 break;
+            case 'accounts':
+                detail = this.getAccountsErrorMessage(code);
+                this.loadingUsers = false;
+                break;
             default:
                 detail = code || 'Unexpected error occurred.';
         }
@@ -173,6 +220,15 @@ export class AssignAdminComponent implements OnInit, OnDestroy {
         }
 
         return code || 'Unexpected error occurred.';
+    }
+
+    private getAccountsErrorMessage(code: string): string {
+        switch (code) {
+            case 'ERP11260':
+                return 'Invalid Entity ID';
+            default:
+                return code || 'Failed to load accounts list.';
+        }
     }
 
     private handleUnexpectedError(): void {

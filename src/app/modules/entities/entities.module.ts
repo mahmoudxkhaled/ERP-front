@@ -6,6 +6,7 @@ import { EntitiesRoutingModule } from './entities-routing.module';
 
 // Components
 import { AssignAdminComponent } from './components/assign-admin/assign-admin.component';
+import { CreateEntityAdminAccountComponent } from './components/create-entity-admin-account/create-entity-admin-account.component';
 import { EntitiesListComponent } from './components/entities-list/entities-list.component';
 import { EntityFormComponent } from './components/entity-form/entity-form.component';
 
@@ -13,7 +14,8 @@ import { EntityFormComponent } from './components/entity-form/entity-form.compon
     declarations: [
         EntitiesListComponent,
         EntityFormComponent,
-        AssignAdminComponent
+        AssignAdminComponent,
+        CreateEntityAdminAccountComponent
     ],
     imports: [
         EntitiesRoutingModule,
