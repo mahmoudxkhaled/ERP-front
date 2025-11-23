@@ -9,7 +9,7 @@
                 </span>
             </ng-container>
             <ng-container *ngIf="(isLoading$ | async) === false">
-                <span>Add New</span>
+                <span>Add New Entity</span>
             </ng-container>
         </p-button>
     </div>
@@ -58,7 +58,9 @@
                     </td>
                     <td>
                         <div class="flex flex-column">
-                            <span class="font-semibold">{{ entity.name }}</span>
+                            <span style="cursor: pointer;" class="font-semibold"
+                                routerLink="/company-administration/entities/{{ entity.id }}">
+                                {{ entity.name }}</span>
                             <small class="text-500">{{ getParentLabel(entity) }}</small>
                         </div>
                     </td>

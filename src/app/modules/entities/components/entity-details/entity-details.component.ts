@@ -875,6 +875,23 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
                 return 'Invalid account selected.';
             case 'ERP11278':
                 return 'Account does not belong to this entity.';
+            // Update_Entity_Contacts error codes
+            case 'ERP11271':
+                return 'Invalid Address format.';
+            case 'ERP11272':
+                return 'Invalid Phone number format.';
+            case 'ERP11273':
+                return 'Invalid Fax number format.';
+            case 'ERP11274':
+                return 'Invalid Email format.';
+            // Assign_Entity_Logo error codes
+            case 'ERP11281':
+                return 'Unknown image format.';
+            case 'ERP11282':
+                return 'Empty image contents.';
+            // Delete_Entity_Admin error code
+            case 'ERP11279':
+                return 'Account ID is not an admin of this entity.';
             default:
                 if (context === 'details' || context === 'contacts' || context === 'admins') {
                     return code || 'Failed to load entity information.';
@@ -887,6 +904,7 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
      * Get error message for account operations
      */
     private getAccountErrorMessage(operation: string, code: string): string {
+        // Common error codes for all account operations
         switch (code) {
             case 'ERP11260':
                 return 'Invalid Entity ID';
@@ -894,6 +912,37 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
                 return 'Invalid account selected.';
             case 'ERP11278':
                 return 'Account does not belong to this entity.';
+        }
+
+        // Operation-specific error codes
+        switch (operation) {
+            case 'activate':
+                switch (code) {
+                    case 'ERP11150':
+                        return 'Email not found in entity.';
+                    case 'ERP11151':
+                        return 'Account already active.';
+                    default:
+                        return code || 'Failed to activate account. Please try again.';
+                }
+            case 'deactivate':
+                switch (code) {
+                    case 'ERP11150':
+                        return 'Email not found.';
+                    case 'ERP11152':
+                        return 'Account already deactivated.';
+                    default:
+                        return code || 'Failed to deactivate account. Please try again.';
+                }
+            case 'delete':
+                switch (code) {
+                    case 'ERP11150':
+                        return 'Email not found.';
+                    case 'ERP11153':
+                        return 'Account exists; must deactivate instead.';
+                    default:
+                        return code || 'Failed to delete account. Please try again.';
+                }
             default:
                 return code || `Failed to ${operation} account. Please try again.`;
         }

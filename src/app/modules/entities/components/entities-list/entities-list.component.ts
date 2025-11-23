@@ -88,12 +88,6 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
         }
     }
 
-    assignAdmin(entity: Entity): void {
-        if (entity.id) {
-            this.router.navigate(['/company-administration/entities', entity.id, 'assign-admin']);
-        }
-    }
-
     viewDetails(entity: Entity): void {
         if (entity.id) {
             this.router.navigate(['/company-administration/entities', entity.id]);
@@ -241,7 +235,7 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
     }
 
     getParentLabel(entity: Entity): string {
-        return entity.parentEntityId ? `Child of #${entity.parentEntityId}` : 'Root Entity';
+        return entity.parentEntityId ? `Sub from #${entity.parentEntityId}` : 'Root Entity';
     }
 
     private buildActivationControls(): void {
@@ -269,11 +263,6 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
                 label: 'Edit',
                 icon: 'pi pi-user-edit',
                 command: () => this.currentEntity && this.edit(this.currentEntity)
-            },
-            {
-                label: 'Assign Admin',
-                icon: 'pi pi-user-plus',
-                command: () => this.currentEntity && this.assignAdmin(this.currentEntity)
             },
             ...(canAddAccount ? [{
                 label: 'Add Account',

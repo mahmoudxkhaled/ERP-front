@@ -299,7 +299,7 @@ export class EntityFormComponent implements OnInit, OnDestroy {
         const parentId = Number(parentEntityId) || 0;
         const isPersonalValue = isPersonal || false;
 
-        // For SystemAdministrator or Developer: Create Entity → Create Account
+        // For SystemAdministrator or Developer: Create Entity → Create Entity Role → Create Account
         if (this.systemRole === Roles.SystemAdministrator || this.systemRole === Roles.Developer) {
             const sub = this.entitiesService.addEntity(
                 code,
@@ -314,12 +314,27 @@ export class EntityFormComponent implements OnInit, OnDestroy {
                         return throwError(() => entityResponse);
                     }
 
+                    console.log('entityResponse', entityResponse);
                     // Extract Entity_ID from response
-                    const entityId = entityResponse.message; // int Entity_ID
-                    const entityRoleId = 15; // Fixed value
+                    const entityId = entityResponse.message.Entity_ID; // int Entity_ID
 
-                    // Step 2: Create Account
-                    return this.entitiesService.createAccount(email, firstName, lastName, entityId, entityRoleId);
+                    // Step 2: Create Entity Role
+                    const roleTitle = `${name} Entity Administrator`;
+                    const roleDescription = `Default Entity Administrator role for ${name}`;
+                    return this.entitiesService.createEntityRole(entityId, roleTitle, roleDescription).pipe(
+                        switchMap((roleResponse: any) => {
+                            if (!roleResponse?.success) {
+                                this.handleCreateEntityRoleError(roleResponse);
+                                return throwError(() => roleResponse);
+                            }
+
+                            // Extract Entity_Role_ID from response
+                            const entityRoleId = roleResponse.message.Entity_Role_ID; // int Entity_Role_ID
+
+                            // Step 3: Create Account
+                            return this.entitiesService.createAccount(email, firstName, lastName, entityId, entityRoleId);
+                        })
+                    );
                 })
             ).subscribe({
                 next: (accountResponse: any) => {
@@ -331,12 +346,12 @@ export class EntityFormComponent implements OnInit, OnDestroy {
                     this.messageService.add({
                         severity: 'success',
                         summary: 'Success',
-                        detail: 'Entity and administrator account created successfully.'
+                        detail: 'Entity, role, and administrator account created successfully.'
                     });
                     this.router.navigate(['/company-administration/entities/list']);
                 },
                 error: (error: any) => {
-                    // Error already handled in switchMap or handleCreateAccountError
+                    // Error already handled in switchMap or handleCreateAccountError or handleCreateEntityRoleError
                     this.loading = false;
                 },
                 complete: () => this.loading = false
@@ -467,6 +482,7 @@ export class EntityFormComponent implements OnInit, OnDestroy {
     }
 
     private getCreationErrorMessage(code: string): string {
+        console.log('code', code);
         switch (code) {
             case 'ERP11250':
                 return 'Invalid parent entity.';
@@ -518,6 +534,33 @@ export class EntityFormComponent implements OnInit, OnDestroy {
         });
     }
 
+    private handleCreateEntityRoleError(response: any): void {
+        const code = String(response?.message || '');
+        const detail = this.getCreateEntityRoleErrorMessage(code);
+
+        this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail
+        });
+        this.loading = false;
+    }
+
+    private getCreateEntityRoleErrorMessage(code: string): string {
+        switch (code) {
+            case 'ERP11300':
+                return 'Invalid entity selected.';
+            case 'ERP11301':
+                return 'Invalid role title format.';
+            case 'ERP11302':
+                return 'Invalid role description format.';
+            case 'ERP11303':
+                return 'A role with this title already exists for this entity.';
+            default:
+                return 'Session expired. Please login again.';
+        }
+    }
+
     private handleCreateAccountError(response: any): void {
         const code = String(response?.message || '');
         const detail = this.getCreateAccountErrorMessage(code);
@@ -532,14 +575,18 @@ export class EntityFormComponent implements OnInit, OnDestroy {
 
     private getCreateAccountErrorMessage(code: string): string {
         switch (code) {
-            case 'ERP11350':
+            case 'ERP11130':
                 return 'Invalid email format.';
-            case 'ERP11351':
-                return 'Email already exists. Please use a different email.';
-            case 'ERP11352':
-                return 'Invalid first name format.';
-            case 'ERP11354':
-                return 'Invalid entity ID.';
+            case 'ERP11141':
+                return 'Account with same email already exists.';
+            case 'ERP11142':
+                return 'Invalid First Name format.';
+            case 'ERP11143':
+                return 'Invalid Last Name format.';
+            case 'ERP11144':
+                return 'Invalid Entity ID.';
+            case 'ERP11145':
+                return 'Invalid Role ID.';
             default:
                 return 'Session expired. Please login again.';
         }

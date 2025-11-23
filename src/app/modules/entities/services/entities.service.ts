@@ -31,7 +31,7 @@ export class EntitiesService {
     addEntity(code: string, name: string, description: string, parentEntityId: number, isPersonal: boolean): Observable<any> {
         this.isLoadingSubject.next(true);
         const params = [code, name, description, parentEntityId.toString(), isPersonal.toString()];
-        return this.apiServices.callAPI(200, this.getAccessToken(), params).pipe(
+        return this.apiServices.callAPI(400, this.getAccessToken(), params).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );
     }
@@ -164,6 +164,14 @@ export class EntitiesService {
     removeEntityLogo(entityId: string): Observable<any> {
         this.isLoadingSubject.next(true);
         return this.apiServices.callAPI(422, this.getAccessToken(), [entityId]).pipe(
+            finalize(() => this.isLoadingSubject.next(false))
+        );
+    }
+
+    createEntityRole(entityId: number, title: string, description: string): Observable<any> {
+        this.isLoadingSubject.next(true);
+        const params = [entityId.toString(), title, description];
+        return this.apiServices.callAPI(600, this.getAccessToken(), params).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );
     }
