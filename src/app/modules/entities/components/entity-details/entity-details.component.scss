@@ -9,3 +9,192 @@
     margin-bottom: 0.5rem;
 }
 
+
+
+
+/* NEW BASIC INFO BLOCK */
+::ng-deep {
+
+    .info-section {
+        padding: 1.5rem 1.75rem;
+        border-radius: 14px;
+        background: var(--surface-card);
+        border: 1px solid var(--surface-border);
+        margin-bottom: 2rem;
+    }
+
+    .info-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--text-color);
+        display: flex;
+        gap: .5rem;
+        align-items: center;
+
+        i {
+            color: var(--primary-color);
+        }
+    }
+
+    /* Identity */
+    .identity-wrapper {
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+    }
+
+    .identity-logo-wrapper {
+        position: relative;
+        width: 110px;
+        height: 110px;
+        
+        &:hover {
+            .logo-overlay {
+                opacity: 1;
+                visibility: visible;
+            }
+        }
+    }
+
+    .identity-logo {
+        width: 110px;
+        height: 110px;
+        border-radius: 10px;
+        background: var(--surface-ground);
+        border: 1px solid var(--surface-border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: .5rem;
+        transition: all 0.3s ease;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        i {
+            font-size: 2rem;
+            opacity: .3;
+        }
+    }
+
+    .logo-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 10;
+
+        .logo-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            align-items: center;
+
+            ::ng-deep {
+                .p-button {
+                    min-width: auto;
+                    padding: 0.5rem 1rem;
+                }
+
+                .p-fileupload-buttonbar {
+                    padding: 0;
+                    background: transparent;
+                    border: none;
+
+                    .p-button {
+                        background: var(--primary-color);
+                        border-color: var(--primary-color);
+                        color: white;
+
+                        &:hover {
+                            background: var(--primary-color);
+                            opacity: 0.9;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .logo-loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 20;
+
+        i {
+            font-size: 2rem;
+            color: var(--primary-color);
+        }
+    }
+
+    .identity-info {
+        display: flex;
+        flex-direction: column;
+        gap: .2rem;
+
+        .entity-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .entity-line {
+            font-size: .9rem;
+            color: var(--text-color-secondary);
+        }
+    }
+
+    /* Properties clean list */
+    .property-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1.5rem;
+        margin-top: .5rem;
+
+        .prop {
+            display: flex;
+            flex-direction: column;
+            gap: .4rem;
+
+            .label {
+                font-size: .8rem;
+                color: var(--text-color-secondary);
+                font-weight: 600;
+            }
+            .value {
+                font-size: 1rem;
+                font-weight: 500;
+                color: var(--text-color);
+            }
+        }
+    }
+
+    /* Description */
+    .desc-text {
+        font-size: .95rem;
+        line-height: 1.5;
+        color: var(--text-color);
+    }
+}

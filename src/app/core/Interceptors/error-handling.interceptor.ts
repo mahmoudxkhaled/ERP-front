@@ -59,6 +59,7 @@ export class ErrorHandlingInterceptor implements HttpInterceptor {
 
 
     private handleBusinessError(response: HttpResponse<any>): void {
+
         // Check if response body exists and contains error information
         if (!response || !response.body) {
             return;
@@ -72,11 +73,29 @@ export class ErrorHandlingInterceptor implements HttpInterceptor {
             errorCode = body.message.toString();
         }
 
-        // Check if error code matches session expired codes
-        if (errorCode && (errorCode === 'ERP11040' || errorCode === 'ERP11041' || errorCode === 'ERP11042' ||
-            errorCode === 'ERP11060' || errorCode === 'ERP11061' || errorCode === 'ERP11062')) {
-            this.showSessionExpiredDialog();
+        // If no error code found, return early
+        if (!errorCode) {
+            return;
         }
+
+        // Check if this is a generic error code (ERP11000-ERP11099)
+        if (this.isGenericErrorCode(errorCode)) {
+            // Handle session expired codes
+            if (this.isSessionExpiredCode(errorCode)) {
+                this.showSessionExpiredDialog();
+                return;
+            }
+
+            // Handle all other generic errors with toast message
+            const errorMessage = this.getGenericErrorMessage(errorCode);
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: errorMessage,
+                life: 6000
+            });
+        }
+        // If not a generic error code, let components handle it (business errors)
     }
 
     private showErrorMessage(error: HttpErrorResponse): void {
@@ -113,13 +132,29 @@ export class ErrorHandlingInterceptor implements HttpInterceptor {
             }
         }
 
-        // Session expired codes (HTTP error version)
-        if (errorCode && ['ERP11040', 'ERP11041', 'ERP11042', 'ERP11060', 'ERP11061', 'ERP11062'].includes(errorCode)) {
-            this.showSessionExpiredDialog();
+        // Check if this is a generic error code (ERP11000-ERP11099)
+        if (errorCode && this.isGenericErrorCode(errorCode)) {
+            // Handle session expired codes
+            if (this.isSessionExpiredCode(errorCode)) {
+                this.showSessionExpiredDialog();
+                return;
+            }
+
+            // Handle all other generic errors with toast message
+            const genericErrorMessage = this.getGenericErrorMessage(errorCode);
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: genericErrorMessage,
+                life: 6000
+            });
             return;
         }
 
-        // Fallback UI message
+        // If not a generic error code, do nothing - let components handle business errors
+        // Business errors (ERP11100+) should be handled by components, not interceptor
+
+        // Fallback UI message for non-generic errors
         this.messageService.add({
             severity: 'error',
             summary: `Error ${error.status}`,
@@ -154,6 +189,86 @@ export class ErrorHandlingInterceptor implements HttpInterceptor {
             }
             this.sessionExpiredDialogRef = null;
         });
+    }
+
+    /**
+     * Check if error code is a generic error code (ERP11000-ERP11099)
+     */
+    private isGenericErrorCode(code: string): boolean {
+        if (!code || typeof code !== 'string') {
+            return false;
+        }
+        const match = code.match(/^ERP11(\d{3})$/);
+        if (!match) {
+            return false;
+        }
+        const number = parseInt(match[1], 10);
+        return number >= 0 && number <= 99;
+    }
+
+    /**
+     * Check if error code requires session expired dialog
+     */
+    private isSessionExpiredCode(code: string): boolean {
+        const sessionExpiredCodes = [
+            'ERP11040', // Access Token missing
+            'ERP11041', // Access Token invalid
+            'ERP11042', // Access Token expired
+            'ERP11060', // Error adding new Access Token
+            'ERP11061', // Error extending Access Token
+            'ERP11062', // Error removing Access Token
+            'ERP11063'  // Entity Deactivated (account's entity is inactive → login blocked)
+        ];
+        return sessionExpiredCodes.includes(code);
+    }
+
+    /**
+     * Get user-friendly error message for generic error codes
+     */
+    private getGenericErrorMessage(code: string): string {
+        const errorMessages: { [key: string]: string } = {
+            // Access Denied
+            'ERP11000': 'Access denied. You do not have permission to perform this action.',
+            'ERP11055': 'Access denied. You do not have enough privilege to perform this action.',
+
+            // Blocked IP
+            'ERP11005': 'Your IP address has been permanently blocked. Please contact support.',
+            'ERP11006': 'Your IP address has been temporarily blocked. Please try again later.',
+
+            // Request Format Errors
+            'ERP11020': 'Invalid request format. Request is null.',
+            'ERP11021': 'Invalid request format. Request contents is null.',
+            'ERP11022': 'Invalid request format. Request contents is empty.',
+            'ERP11030': 'Unable to unpack ERP request. Please try again.',
+
+            // Execution/System Errors
+            'ERP11010': 'A global execution error occurred. Please try again.',
+            'ERP11050': 'Request implementation error. Global execution error occurred.',
+            'ERP11051': 'Request type is under development.',
+            'ERP11052': 'Unknown request type.',
+            'ERP11053': 'Error initializing Core database. Please contact support.',
+            'ERP11054': 'Error initializing ERP database. Please contact support.',
+            'ERP11056': 'Error logging request and response. Please try again.',
+            'ERP11057': 'Internal routing error occurred. Please try again.',
+            'ERP11058': 'Internal routing error - database issue. Please contact support.',
+            'ERP11059': 'Internal routing error - IP issues. Please contact support.',
+            'ERP11068': 'Core database transaction error. Please try again.',
+            'ERP11069': 'ERP database transaction error. Please try again.',
+
+            // Parameter Errors
+            'ERP11070': 'Invalid parameters count. Please check your request.'
+        };
+
+        // Handle parameter errors (ERP11071-ERP11099)
+        if (code.match(/^ERP11(071|072|073|074|075|076|077|078|079|08[0-9]|09[0-9])$/)) {
+            const match = code.match(/^ERP11(\d{3})$/);
+            if (match) {
+                const paramNumber = parseInt(match[1], 10) - 70;
+                return `Invalid data type for parameter ${paramNumber}. Please check your request.`;
+            }
+        }
+
+        return errorMessages[code] || `System error occurred (${code}). Please contact support.`;
     }
 
 }

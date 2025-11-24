@@ -27,12 +27,6 @@ interface EntityAccount {
     isActive?: boolean;
 }
 
-interface EntityContact {
-    address: string;
-    phoneNumbers: string[];
-    faxNumbers: string[];
-    emails: string[];
-}
 
 @Component({
     selector: 'app-entity-details',
@@ -43,16 +37,14 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
     entityId: string = '';
     loading: boolean = false;
     loadingDetails: boolean = false;
-    loadingContacts: boolean = false;
     loadingAdmins: boolean = false;
     loadingLogo: boolean = false;
 
     // Entity Details
     entityDetails: any = null;
-    entityContacts: EntityContact | null = null;
     entityAdmins: EntityAdmin[] = [];
     entityOtherAccounts: EntityAccount[] = [];
-    entityLogo: string | null = null;
+    entityLogo: string = 'assets/media/upload-photo.jpg';
     hasLogo: boolean = false;
 
     accountSettings: IAccountSettings;
@@ -68,6 +60,18 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
     deleteAccountDialog: boolean = false;
     accountToDelete?: EntityAdmin;
 
+    // Assign admin confirmation dialog
+    assignAdminDialog: boolean = false;
+    accountToAssign?: EntityAccount;
+
+    // Activate account confirmation dialog
+    activateAccountDialog: boolean = false;
+    accountToActivate?: EntityAdmin | EntityAccount;
+
+    // Deactivate account confirmation dialog
+    deactivateAccountDialog: boolean = false;
+    accountToDeactivate?: EntityAdmin | EntityAccount;
+
     // Menu items for admin actions
     menuItems: any[] = [];
     currentAdmin?: EntityAdmin;
@@ -75,6 +79,13 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
     // Menu items for other accounts actions
     otherAccountsMenuItems: any[] = [];
     currentAccount?: EntityAccount;
+
+    // Filter options for accounts list
+    includeSubentities: boolean = false;
+    activeOnly: boolean = false;
+
+    // Add account dialog
+    addAccountDialog: boolean = false;
 
     private subscriptions: Subscription[] = [];
 
@@ -122,16 +133,14 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
     loadAllData(): void {
         this.loading = true;
         this.loadingDetails = true;
-        this.loadingContacts = true;
         this.loadingAdmins = true;
         this.loadingLogo = true;
 
         // Load required APIs in parallel
         const requiredApis = forkJoin({
             details: this.entitiesService.getEntityDetails(this.entityId),
-            contacts: this.entitiesService.getEntityContacts(this.entityId),
             admins: this.entitiesService.getEntityAdmins(this.entityId),
-            accounts: this.entitiesService.getEntityAccountsList(this.entityId)
+            accounts: this.entitiesService.getEntityAccountsList(this.entityId, this.includeSubentities, this.activeOnly)
         });
 
         const sub = requiredApis.subscribe({
@@ -144,15 +153,6 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
                     console.log('entityDetails', this.entityDetails);
                 }
                 this.loadingDetails = false;
-
-                // Handle Entity Contacts
-                if (!responses.contacts?.success) {
-                    this.handleBusinessError('contacts', responses.contacts);
-                } else {
-                    this.mapContactsData(responses.contacts?.message || {});
-                    console.log('entityContacts', this.entityContacts);
-                }
-                this.loadingContacts = false;
 
                 // Handle Entity Admins and Accounts
                 if (!responses.admins?.success) {
@@ -175,7 +175,6 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
                 this.handleUnexpectedError();
                 this.loading = false;
                 this.loadingDetails = false;
-                this.loadingContacts = false;
                 this.loadingAdmins = false;
             }
         });
@@ -193,16 +192,40 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
         const sub = this.entitiesService.getEntityLogo(this.entityId).subscribe({
             next: (response: any) => {
                 if (response?.success && response?.message) {
-                    // Logo is typically returned as base64 string or URL
-                    this.entityLogo = response.message;
-                    this.hasLogo = true;
+                    const logoData = response.message;
+                    console.log('logoData', logoData);
+                    // Response structure: { Image_Format: string, Image: string (base64) }
+                    if (logoData?.Image && logoData.Image.trim() !== '') {
+                        // Convert base64 to byte array
+                        const binaryString = atob(logoData.Image);
+                        const byteArray = new Uint8Array(binaryString.length);
+                        for (let i = 0; i < binaryString.length; i++) {
+                            byteArray[i] = binaryString.charCodeAt(i);
+                        }
+                        console.log('Base64 to Byte Array:', Array.from(byteArray));
+                        console.log('Byte Array Length:', byteArray.length);
+
+                        // Extract image format (default to png if not provided)
+                        const imageFormat = logoData.Image_Format || 'png';
+                        // Build data URL with correct format
+                        this.entityLogo = `data:image/${imageFormat.toLowerCase()};base64,${logoData.Image}`;
+                        console.log('entityLogo', this.entityLogo);
+                        this.hasLogo = true;
+                    } else {
+                        // No logo available, use placeholder
+                        this.entityLogo = 'assets/media/upload-photo.jpg';
+                        this.hasLogo = false;
+                    }
                 } else {
+                    // No logo available, use placeholder
+                    this.entityLogo = 'assets/media/upload-photo.jpg';
                     this.hasLogo = false;
                 }
                 this.loadingLogo = false;
             },
             error: () => {
-                // Logo is optional, so we don't show error
+                // Logo is optional, so we don't show error - use placeholder
+                this.entityLogo = 'assets/media/upload-photo.jpg';
                 this.hasLogo = false;
                 this.loadingLogo = false;
             }
@@ -211,23 +234,6 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
         this.subscriptions.push(sub);
     }
 
-    /**
-     * Map contacts data from API response
-     */
-    private mapContactsData(data: any): void {
-        this.entityContacts = {
-            address: data?.Address || data?.address || '',
-            phoneNumbers: Array.isArray(data?.Phone_Numbers || data?.phoneNumbers)
-                ? (data.Phone_Numbers || data.phoneNumbers)
-                : [],
-            faxNumbers: Array.isArray(data?.Fax_Numbers || data?.faxNumbers)
-                ? (data.Fax_Numbers || data.faxNumbers)
-                : [],
-            emails: Array.isArray(data?.Emails || data?.emails)
-                ? (data.Emails || data.emails)
-                : []
-        };
-    }
 
     /**
      * Map accounts data from API response and separate admins from other accounts
@@ -375,15 +381,31 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * Show assign admin confirmation dialog
+     */
+    confirmAssignAccountAsAdmin(account: EntityAccount): void {
+        this.accountToAssign = account;
+        this.assignAdminDialog = true;
+    }
+
+    /**
+     * Cancel assign admin dialog
+     */
+    onCancelAssignAdminDialog(): void {
+        this.assignAdminDialog = false;
+        this.accountToAssign = undefined;
+    }
+
+    /**
      * Assign a specific account as admin
      */
-    assignAccountAsAdmin(account: EntityAccount): void {
-        if (!account.accountId || !this.entityId) {
+    assignAccountAsAdmin(): void {
+        if (!this.accountToAssign || !this.accountToAssign.accountId || !this.entityId) {
             return;
         }
 
         this.loadingAdmins = true;
-        const sub = this.entitiesService.assignEntityAdmin(this.entityId, account.accountId).subscribe({
+        const sub = this.entitiesService.assignEntityAdmin(this.entityId, this.accountToAssign.accountId).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
                     this.handleAccountError('assign', response);
@@ -396,6 +418,9 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
                     detail: 'Account assigned as administrator successfully.',
                     life: 3000
                 });
+
+                this.assignAdminDialog = false;
+                this.accountToAssign = undefined;
 
                 // Reload admins and accounts to reflect the change
                 this.reloadAdmins();
@@ -411,23 +436,55 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
     }
 
     /**
-     * Navigate to add account page
+     * Open add account dialog
      */
     navigateToAddAccount(): void {
-        this.router.navigate(['/company-administration/entities', this.entityId, 'add-account']);
+        this.addAccountDialog = true;
+    }
+
+    /**
+     * Handle account created event from create-entity-account component
+     */
+    onAccountCreated(): void {
+        this.addAccountDialog = false;
+        // Reload admins and accounts to reflect the change
+        this.reloadAdmins();
+    }
+
+    /**
+     * Handle cancel event from create-entity-account component
+     */
+    onAccountCancelled(): void {
+        this.addAccountDialog = false;
+    }
+
+    /**
+     * Show activate account confirmation dialog
+     */
+    confirmActivateAccount(account: EntityAdmin | EntityAccount): void {
+        this.accountToActivate = account;
+        this.activateAccountDialog = true;
+    }
+
+    /**
+     * Cancel activate account dialog
+     */
+    onCancelActivateAccountDialog(): void {
+        this.activateAccountDialog = false;
+        this.accountToActivate = undefined;
     }
 
     /**
      * Activate an account
      * Only available for SystemAdmin
      */
-    activateAccount(accountId: string): void {
-        if (!accountId) {
+    activateAccount(): void {
+        if (!this.accountToActivate || !this.accountToActivate.email) {
             return;
         }
 
         this.loadingAdmins = true;
-        const sub = this.entitiesService.activateAccount(accountId).subscribe({
+        const sub = this.entitiesService.activateAccount(this.accountToActivate.email).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
                     this.handleAccountError('activate', response);
@@ -440,6 +497,9 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
                     detail: 'Account activated successfully.',
                     life: 3000
                 });
+
+                this.activateAccountDialog = false;
+                this.accountToActivate = undefined;
 
                 // Reload admins and accounts
                 this.reloadAdmins();
@@ -455,16 +515,32 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * Show deactivate account confirmation dialog
+     */
+    confirmDeactivateAccount(account: EntityAdmin | EntityAccount): void {
+        this.accountToDeactivate = account;
+        this.deactivateAccountDialog = true;
+    }
+
+    /**
+     * Cancel deactivate account dialog
+     */
+    onCancelDeactivateAccountDialog(): void {
+        this.deactivateAccountDialog = false;
+        this.accountToDeactivate = undefined;
+    }
+
+    /**
      * Deactivate an account
      * Available for SystemAdmin and EntityAdmin
      */
-    deactivateAccount(accountId: string): void {
-        if (!accountId) {
+    deactivateAccount(): void {
+        if (!this.accountToDeactivate || !this.accountToDeactivate.email) {
             return;
         }
 
         this.loadingAdmins = true;
-        const sub = this.entitiesService.deactivateAccount(accountId).subscribe({
+        const sub = this.entitiesService.deactivateAccount(this.accountToDeactivate.email).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
                     this.handleAccountError('deactivate', response);
@@ -477,6 +553,9 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
                     detail: 'Account deactivated successfully.',
                     life: 3000
                 });
+
+                this.deactivateAccountDialog = false;
+                this.accountToDeactivate = undefined;
 
                 // Reload admins and accounts
                 this.reloadAdmins();
@@ -598,7 +677,7 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
             menuItemsList.push({
                 label: 'Activate Account',
                 icon: 'pi pi-check',
-                command: () => this.currentAdmin && this.activateAccount(this.currentAdmin.accountId)
+                command: () => this.currentAdmin && this.confirmActivateAccount(this.currentAdmin)
             });
         }
 
@@ -607,7 +686,7 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
             menuItemsList.push({
                 label: 'Deactivate Account',
                 icon: 'pi pi-times',
-                command: () => this.currentAdmin && this.deactivateAccount(this.currentAdmin.accountId)
+                command: () => this.currentAdmin && this.confirmDeactivateAccount(this.currentAdmin)
             });
         }
 
@@ -648,7 +727,7 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
             menuItemsList.push({
                 label: 'Assign Admin',
                 icon: 'pi pi-user-plus',
-                command: () => this.currentAccount && this.assignAccountAsAdmin(this.currentAccount)
+                command: () => this.currentAccount && this.confirmAssignAccountAsAdmin(this.currentAccount)
             });
         }
 
@@ -657,7 +736,7 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
             menuItemsList.push({
                 label: 'Activate Account',
                 icon: 'pi pi-check',
-                command: () => this.currentAccount && this.activateAccount(this.currentAccount.accountId)
+                command: () => this.currentAccount && this.confirmActivateAccount(this.currentAccount)
             });
         }
 
@@ -666,7 +745,7 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
             menuItemsList.push({
                 label: 'Deactivate Account',
                 icon: 'pi pi-times',
-                command: () => this.currentAccount && this.deactivateAccount(this.currentAccount.accountId)
+                command: () => this.currentAccount && this.confirmDeactivateAccount(this.currentAccount)
             });
         }
 
@@ -691,7 +770,7 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
         // Load both admins and accounts in parallel
         const reloadApis = forkJoin({
             admins: this.entitiesService.getEntityAdmins(this.entityId),
-            accounts: this.entitiesService.getEntityAccountsList(this.entityId)
+            accounts: this.entitiesService.getEntityAccountsList(this.entityId, this.includeSubentities, this.activeOnly)
         });
 
         const sub = reloadApis.subscribe({
@@ -744,15 +823,15 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
             return;
         }
 
-        // Read file as base64
+        // Read file as ArrayBuffer to get actual bytes
         const reader = new FileReader();
         reader.onload = () => {
-            const base64String = reader.result as string;
-            // Extract base64 data (remove data:image/...;base64, prefix)
-            const base64Data = base64String.split(',')[1] || base64String;
+            const arrayBuffer = reader.result as ArrayBuffer;
+            const byteArray = new Uint8Array(arrayBuffer);
             const imageFormat = file.type.split('/')[1] || 'png';
 
-            this.uploadLogo(base64Data, imageFormat);
+            // Send byte array directly - packRequest will handle it
+            this.uploadLogo(byteArray, imageFormat);
         };
         reader.onerror = () => {
             this.messageService.add({
@@ -761,15 +840,25 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
                 detail: 'Failed to read file.'
             });
         };
-        reader.readAsDataURL(file);
+        reader.readAsArrayBuffer(file);
     }
 
     /**
      * Upload logo to server
      */
-    uploadLogo(byteArray: string, imageFormat: string): void {
+    uploadLogo(byteArray: Uint8Array, imageFormat: string): void {
         this.loadingLogo = true;
-        const sub = this.entitiesService.assignEntityLogo(this.entityId, imageFormat, byteArray).subscribe({
+
+        // Convert byte array to base64 string
+        const base64String = btoa(
+            String.fromCharCode.apply(null, Array.from(byteArray))
+        );
+
+        const sub = this.entitiesService.assignEntityLogo(
+            this.entityId,
+            imageFormat,
+            base64String
+        ).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
                     this.handleBusinessError('uploadLogo', response);
@@ -783,7 +872,6 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
                     life: 3000
                 });
 
-                // Reload logo
                 this.loadLogo();
             },
             error: () => {
@@ -795,6 +883,7 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
 
         this.subscriptions.push(sub);
     }
+
 
     /**
      * Remove entity logo
@@ -815,7 +904,8 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
                     life: 3000
                 });
 
-                this.entityLogo = null;
+                // Use placeholder after removal
+                this.entityLogo = 'assets/media/upload-photo.jpg';
                 this.hasLogo = false;
                 this.loadingLogo = false;
             },
@@ -826,6 +916,13 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
         });
 
         this.subscriptions.push(sub);
+    }
+
+    /**
+     * Handle filter changes and reload accounts
+     */
+    onFilterChange(): void {
+        this.reloadAdmins();
     }
 
     /**

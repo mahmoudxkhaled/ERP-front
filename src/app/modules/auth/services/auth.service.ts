@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, finalize, tap, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, finalize, tap, switchMap, of } from 'rxjs';
 import { ApiRequestTypes } from 'src/app/core/API_Interface/ApiRequestTypes';
 import { ApiResult } from 'src/app/core/API_Interface/ApiResult';
 import { ApiServices } from 'src/app/core/API_Interface/ApiServices';
@@ -30,11 +30,19 @@ export class AuthService {
         return this.apiServices.callAPI(100, '', [email, password]).pipe(
             tap((response: any) => {
                 console.log('response', response);
-                this.setAuthFromResponseToLocalStorage(response);
+                // Only set auth data if login is successful
+                if (response?.success) {
+                    this.setAuthFromResponseToLocalStorage(response);
+                }
             }),
-            switchMap(() => {
-                // Chain getLoginDataPackage to ensure it completes before navigation
-                return this.getLoginDataPackage(email);
+            switchMap((response: any) => {
+                // Only proceed with getLoginDataPackage if login was successful
+                if (response?.success) {
+                    // Chain getLoginDataPackage to ensure it completes before navigation
+                    return this.getLoginDataPackage(email);
+                }
+                // If login failed, return the error response so component can handle it
+                return of(response);
             }),
             tap(() => {
                 // Navigation happens after data is loaded
@@ -50,11 +58,19 @@ export class AuthService {
         this.isLoadingSubject.next(true);
         return this.apiServices.callAPI(101, '', [email, otp]).pipe(
             tap((response: any) => {
-                this.setAuthFromResponseToLocalStorage(response);
+                // Only set auth data if 2FA verification is successful
+                if (response?.success) {
+                    this.setAuthFromResponseToLocalStorage(response);
+                }
             }),
-            switchMap(() => {
-                // Chain getLoginDataPackage to ensure it completes before navigation
-                return this.getLoginDataPackage(email);
+            switchMap((response: any) => {
+                // Only proceed with getLoginDataPackage if 2FA verification was successful
+                if (response?.success) {
+                    // Chain getLoginDataPackage to ensure it completes before navigation
+                    return this.getLoginDataPackage(email);
+                }
+                // If 2FA verification failed, return the error response so component can handle it
+                return of(response);
             }),
             tap(() => {
                 // Navigation happens after data is loaded

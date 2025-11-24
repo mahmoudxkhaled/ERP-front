@@ -147,12 +147,23 @@ export class EntitiesService {
         );
     }
 
-    assignEntityLogo(entityId: string, imageFormat: string, byteArray: string): Observable<any> {
+    assignEntityLogo(entityId: string, imageFormat: string, base64String: string): Observable<any> {
         this.isLoadingSubject.next(true);
-        return this.apiServices.callAPI(420, this.getAccessToken(), [entityId, imageFormat, byteArray]).pipe(
+
+        // Wrap base64 string with double quotes
+
+
+        const quotedBase64String = `"${base64String}"`;
+
+        return this.apiServices.callAPI(
+            420,
+            this.getAccessToken(),
+            [entityId, imageFormat, quotedBase64String]
+        ).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );
     }
+
 
     getEntityLogo(entityId: string): Observable<any> {
         this.isLoadingSubject.next(true);
@@ -171,6 +182,7 @@ export class EntitiesService {
     createEntityRole(entityId: number, title: string, description: string): Observable<any> {
         this.isLoadingSubject.next(true);
         const params = [entityId.toString(), title, description];
+        console.log('params', params);
         return this.apiServices.callAPI(600, this.getAccessToken(), params).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );
@@ -189,9 +201,10 @@ export class EntitiesService {
         );
     }
 
-    getEntityAccountsList(entityId: string): Observable<any> {
+    getEntityAccountsList(entityId: string, includeSubentities: boolean = false, activeOnly: boolean = false): Observable<any> {
         this.isLoadingSubject.next(true);
-        return this.apiServices.callAPI(500, this.getAccessToken(), [entityId]).pipe(
+        const params = [entityId, includeSubentities.toString(), activeOnly.toString()];
+        return this.apiServices.callAPI(500, this.getAccessToken(), params).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );
     }

@@ -2,6 +2,22 @@
     <h2>Assign Admin</h2>
     <p class="text-600 mb-4">Entity: <strong>{{ entityName }}</strong></p>
 
+    <!-- Filter Options -->
+    <p-panel header="Filter Options" class="mb-4">
+        <div class="flex gap-4 align-items-center">
+            <div class="flex align-items-center gap-2">
+                <label for="includeSubentities" class="text-600">Include Sub-entities:</label>
+                <p-inputSwitch id="includeSubentities" [(ngModel)]="includeSubentities"
+                    (onChange)="onFilterChange()" [disabled]="loadingUsers"></p-inputSwitch>
+            </div>
+            <div class="flex align-items-center gap-2">
+                <label for="activeOnly" class="text-600">Active Only:</label>
+                <p-inputSwitch id="activeOnly" [(ngModel)]="activeOnly" (onChange)="onFilterChange()"
+                    [disabled]="loadingUsers"></p-inputSwitch>
+            </div>
+        </div>
+    </p-panel>
+
     <form [formGroup]="form" (ngSubmit)="submit()">
         <div class="field">
             <label for="userId">Select User <span class="text-red-500">*</span></label>

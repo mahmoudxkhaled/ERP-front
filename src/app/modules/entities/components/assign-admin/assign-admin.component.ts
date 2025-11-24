@@ -26,6 +26,11 @@ export class AssignAdminComponent implements OnInit, OnDestroy {
     loading: boolean = false;
     loadingUsers: boolean = false;
     submitted: boolean = false;
+
+    // Filter options for accounts list
+    includeSubentities: boolean = false;
+    activeOnly: boolean = false;
+
     private subscriptions: Subscription[] = [];
 
     constructor(
@@ -85,7 +90,7 @@ export class AssignAdminComponent implements OnInit, OnDestroy {
         }
 
         this.loadingUsers = true;
-        const sub = this.entitiesService.getEntityAccountsList(this.entityId).subscribe({
+        const sub = this.entitiesService.getEntityAccountsList(this.entityId, this.includeSubentities, this.activeOnly).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
                     this.handleBusinessError('accounts', response);
@@ -164,6 +169,13 @@ export class AssignAdminComponent implements OnInit, OnDestroy {
         });
 
         this.subscriptions.push(sub);
+    }
+
+    /**
+     * Handle filter changes and reload users
+     */
+    onFilterChange(): void {
+        this.loadUsers();
     }
 
     cancel(): void {
