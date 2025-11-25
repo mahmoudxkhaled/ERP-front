@@ -1,10 +1,11 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { forkJoin, Subscription } from 'rxjs';
 import { EntitiesService } from '../../services/entities.service';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
 import { IAccountSettings } from 'src/app/core/models/IAccountStatusResponse';
+import { FileUpload } from 'primeng/fileupload';
 
 interface EntityAdmin {
     accountId: string;
@@ -34,6 +35,8 @@ interface EntityAccount {
     styleUrls: ['./entity-details.component.scss']
 })
 export class EntityDetailsComponent implements OnInit, OnDestroy {
+    @ViewChild('logoUploader') logoUploader?: FileUpload;
+
     entityId: string = '';
     loading: boolean = false;
     loadingDetails: boolean = false;
@@ -86,6 +89,10 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
 
     // Add account dialog
     addAccountDialog: boolean = false;
+    // Flag to track if we're creating an admin (to auto-assign after account creation)
+    isCreatingAdmin: boolean = false;
+    // Edit entity dialog
+    editEntityDialogVisible: boolean = false;
 
     private subscriptions: Subscription[] = [];
 
@@ -330,6 +337,35 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
     }
 
     /**
+     * Get entity code with null safety
+     */
+    getEntityCode(): string {
+        if (!this.entityDetails) return '';
+        return this.entityDetails.Code || this.entityDetails.code || '';
+    }
+
+    /**
+     * Determine if the entity has a parent entity
+     */
+    hasParentEntity(): boolean {
+        const parentId = this.localStorageService.getParentEntityId();
+        if (parentId === undefined || parentId === null) {
+            return false;
+        }
+
+        const normalized = String(parentId).trim();
+        return normalized !== '' && normalized !== '0';
+    }
+
+    /**
+     * Get a display label for the parent entity
+     */
+    getParentEntityLabel(): string {
+        const parentId = this.entityDetails.Parent_Entity_ID;
+        return parentId ? ` ${parentId}` : 'Root Entity';
+    }
+
+    /**
      * Get entity status label
      */
     getStatusLabel(): string {
@@ -371,6 +407,20 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
             ? this.entityDetails.Is_Personal
             : (this.entityDetails.is_Personal || this.entityDetails.isPersonal || false);
         return isPersonal ? 'warning' : 'info';
+    }
+
+    /**
+     * Open edit entity dialog
+     */
+    openEditEntityDialog(): void {
+        this.editEntityDialogVisible = true;
+    }
+
+    /**
+     * Reload entity details after dialog save
+     */
+    handleEntityUpdated(): void {
+        this.loadAllData();
     }
 
     /**
@@ -439,16 +489,61 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
      * Open add account dialog
      */
     navigateToAddAccount(): void {
+        this.isCreatingAdmin = false; // Regular account creation, not admin
+        this.addAccountDialog = true;
+    }
+
+    /**
+     * Open create admin dialog (creates account and auto-assigns as admin)
+     */
+    navigateToCreateAdmin(): void {
+        this.isCreatingAdmin = true; // Set flag to auto-assign as admin after creation
         this.addAccountDialog = true;
     }
 
     /**
      * Handle account created event from create-entity-account component
+     * @param accountId - The ID of the newly created account
      */
-    onAccountCreated(): void {
+    onAccountCreated(accountId: string): void {
         this.addAccountDialog = false;
-        // Reload admins and accounts to reflect the change
-        this.reloadAdmins();
+
+        // If we're creating an admin, auto-assign them as entity administrator
+        if (this.isCreatingAdmin && accountId && this.entityId) {
+            this.loadingAdmins = true;
+            const sub = this.entitiesService.assignEntityAdmin(this.entityId, accountId).subscribe({
+                next: (response: any) => {
+                    if (!response?.success) {
+                        this.handleAccountError('assign', response);
+                        this.isCreatingAdmin = false; // Reset flag even on error
+                        return;
+                    }
+
+                    // Show success message for both account creation and admin assignment
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Success',
+                        detail: 'Account created and assigned as administrator successfully.',
+                        life: 3000
+                    });
+
+                    this.isCreatingAdmin = false; // Reset flag after successful assignment
+                    // Reload admins to show the newly assigned admin
+                    this.reloadAdmins();
+                },
+                error: () => {
+                    this.handleUnexpectedError();
+                    this.isCreatingAdmin = false; // Reset flag on error
+                    this.loadingAdmins = false;
+                },
+                complete: () => this.loadingAdmins = false
+            });
+
+            this.subscriptions.push(sub);
+        } else {
+            // Regular account creation, just reload admins and accounts
+            this.reloadAdmins();
+        }
     }
 
     /**
@@ -807,20 +902,30 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
         if (!file.type.startsWith('image/')) {
             this.messageService.add({
                 severity: 'error',
-                summary: 'Error',
-                detail: 'Please select an image file.'
+                summary: 'Invalid File Type',
+                detail: 'Please select an image file (JPG, PNG, JPEG, WEBP).',
+                life: 5000
             });
             return;
         }
 
-        // Validate file size (max 5MB)
-        if (file.size > 5 * 1024 * 1024) {
+        // File size constants
+        const RECOMMENDED_FILE_SIZE = 200 * 1024; // 200KB recommended
+        const fileSizeInMB = (file.size / (1024 * 1024)).toFixed(2);
+        const recommendedSizeInKB = (RECOMMENDED_FILE_SIZE / 1024).toFixed(0);
+
+        // Warn if file is larger than recommended but still allow
+        if (file.size > RECOMMENDED_FILE_SIZE) {
             this.messageService.add({
-                severity: 'error',
-                summary: 'Error',
-                detail: 'File size must be less than 5MB.'
+                severity: 'warn',
+                summary: 'Large File Size',
+                detail: `File size (${fileSizeInMB}MB) is larger than recommended (${recommendedSizeInKB}KB). Upload may take longer.`,
+                life: 5000
             });
+            this.loadingLogo = false;
+            this.logoUploader?.clear();
             return;
+
         }
 
         // Read file as ArrayBuffer to get actual bytes
@@ -837,7 +942,8 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
             this.messageService.add({
                 severity: 'error',
                 summary: 'Error',
-                detail: 'Failed to read file.'
+                detail: 'Failed to read file. Please try again.',
+                life: 5000
             });
         };
         reader.readAsArrayBuffer(file);
@@ -882,6 +988,27 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
         });
 
         this.subscriptions.push(sub);
+    }
+
+    /**
+     * Allow clicking the logo area to trigger the file picker
+     * Works both when no logo exists and when logo exists (to upload another one)
+     */
+    onLogoAreaClick(): void {
+        if (this.loadingLogo) {
+            return;
+        }
+
+        // Trigger the file uploader
+        this.logoUploader?.choose();
+    }
+
+    /**
+     * Support keyboard users when focusing the logo area
+     */
+    onLogoAreaKeydown(event: KeyboardEvent | Event): void {
+        event.preventDefault();
+        this.onLogoAreaClick();
     }
 
 
@@ -1048,6 +1175,8 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
     /**
      * Handle unexpected errors
      */
+
+
     private handleUnexpectedError(): void {
         this.messageService.add({
             severity: 'error',

@@ -11,6 +11,7 @@ import { EntityDetailsComponent } from './components/entity-details/entity-detai
 import { EntityFormComponent } from './components/entity-form/entity-form.component';
 import { CreateEntityAccountComponent } from './components/create-entity-account/create-entity-account.component';
 import { EntityContactComponent } from './components/entity-contact/entity-contact.component';
+import { EditEntityDialogComponent } from './components/edit-entity-dialog/edit-entity-dialog.component';
 
 @NgModule({
     declarations: [
@@ -19,7 +20,8 @@ import { EntityContactComponent } from './components/entity-contact/entity-conta
         AssignAdminComponent,
         CreateEntityAccountComponent,
         EntityDetailsComponent,
-        EntityContactComponent
+        EntityContactComponent,
+        EditEntityDialogComponent
     ],
     imports: [
         EntitiesRoutingModule,

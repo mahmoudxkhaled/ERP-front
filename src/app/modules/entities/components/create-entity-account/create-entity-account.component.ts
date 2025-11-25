@@ -16,7 +16,7 @@ import { IAccountSettings } from 'src/app/core/models/IAccountStatusResponse';
 export class CreateEntityAccountComponent implements OnInit, OnDestroy, OnChanges {
     @Input() entityId: string = '';
     @Input() entityName: string = '';
-    @Output() accountCreated = new EventEmitter<void>();
+    @Output() accountCreated = new EventEmitter<string>(); // Emit account ID (string)
     @Output() cancelled = new EventEmitter<void>();
 
     form!: FormGroup;
@@ -164,7 +164,17 @@ export class CreateEntityAccountComponent implements OnInit, OnDestroy, OnChange
         this.loading = true;
 
         // Step 1: Create Entity Role
-        const roleTitle = `${this.entityName} System User`;
+        // Generate a random string (letters only) to ensure unique role title and avoid ERP11303 error
+        const generateRandomString = (length: number): string => {
+            const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            let result = '';
+            for (let i = 0; i < length; i++) {
+                result += letters.charAt(Math.floor(Math.random() * letters.length));
+            }
+            return result;
+        };
+        const uniqueSuffix = generateRandomString(8);
+        const roleTitle = `${this.entityName} System User ${uniqueSuffix}`;
         const roleDescription = `Default System User role for ${this.entityName}`;
 
         console.log('roleTitle', roleTitle);
@@ -191,7 +201,11 @@ export class CreateEntityAccountComponent implements OnInit, OnDestroy, OnChange
                     return;
                 }
 
+                // Extract Account_ID from response
+                const accountId = String(accountResponse?.message?.User_ID || '');
+
                 // Success - show success message
+
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Success',
@@ -204,8 +218,8 @@ export class CreateEntityAccountComponent implements OnInit, OnDestroy, OnChange
                 this.submitted = false;
                 this.loading = false;
 
-                // Emit event to parent component
-                this.accountCreated.emit();
+                // Emit event to parent component with account ID
+                this.accountCreated.emit(accountId);
             },
             error: (error: any) => {
                 // Error already handled in switchMap or handleCreateAccountError or handleCreateEntityRoleError

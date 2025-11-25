@@ -1,139 +1,230 @@
-<p-panel header="Contact Information" class="mb-4">
-    <div *ngIf="loading" class="flex justify-content-center align-items-center" style="min-height: 100px;">
-        <i class="pi pi-spin pi-spinner"></i>
-    </div>
-    <div *ngIf="!loading && contacts">
-        <div class="flex justify-content-end mb-3">
-            <p-button label="Edit" icon="pi pi-pencil" (onClick)="openEditDialog()"
-                [style]="{ 'margin-bottom': '1rem' }">
+<p-panel class="contact-panel mb-5">
+
+    <ng-template pTemplate="header">
+        <div class="flex align-items-center justify-content-between w-full">
+            <div class="flex align-items-center gap-3">
+                <i class="pi pi-briefcase text-primary text-2xl"></i>
+                <span class="text-xl font-semibold">Contact Information</span>
+            </div>
+            <p-button width="150px" label="Edit Contact Details" icon="pi pi-pencil" iconPos="left" size="small"
+                severity="contrast" (onClick)="openEditDialog()" class="edit-btn">
             </p-button>
         </div>
-        <div class="grid">
-            <div class="col-12" *ngIf="getDisplayAddress()">
-                <div class="field">
-                    <label class="font-semibold text-600">Address</label>
-                    <p class="text-900 mt-2">{{ getDisplayAddress() }}</p>
+    </ng-template>
+    <!-- Loading State -->
+    <div *ngIf="loading" class="flex justify-content-center align-items-center py-6">
+        <p-progressSpinner strokeWidth="4" styleClass="custom-spinner"></p-progressSpinner>
+    </div>
+
+    <!-- Content -->
+    <div *ngIf="!loading && contacts" class="contact-content">
+        <div class="grid contact-grid">
+            <!-- Address -->
+            <div class="col-12 lg:col-8">
+                <div class="contact-field">
+                    <div class="field-label">
+                        <i class="pi pi-home mr-2 text-primary"></i>
+                        <span class="font-semibold">Address</span>
+                    </div>
+                    <p class="mt-2 text-700 line-height-3 text-lg">
+                        {{ getDisplayAddress() || '—' }}
+                    </p>
                 </div>
             </div>
-            <div class="col-12 md:col-4" *ngIf="contacts.phoneNumbers && contacts.phoneNumbers.length > 0">
-                <div class="field">
-                    <label class="font-semibold text-600">Phone Numbers</label>
-                    <div class="mt-2 flex flex-column gap-2">
-                        <p-tag *ngFor="let phone of contacts.phoneNumbers" [value]="phone" severity="info"></p-tag>
+
+            <!-- Phone Numbers -->
+            <div class="col-12 md:col-6 lg:col-4">
+                <div class="contact-field">
+                    <div class="field-label">
+                        <i class="pi pi-phone mr-2 text-primary"></i>
+                        <span class="font-semibold">Phone Numbers</span>
+                    </div>
+                    <div class="mt-3 flex flex-column gap-3">
+                        <ng-container *ngIf="hasPhoneNumbers(); else noPhones">
+                            <div *ngFor="let phone of getPhoneNumbersForDisplay()" class="flex align-items-center">
+                                <p-tag [value]="formatPhoneDisplay(phone)" severity="info" [rounded]="true"
+                                    icon="pi pi-phone">
+                                </p-tag>
+                            </div>
+                        </ng-container>
+                        <ng-template #noPhones>
+                            <span class="text-500 italic">No phone numbers added</span>
+                        </ng-template>
                     </div>
                 </div>
             </div>
-            <div class="col-12 md:col-4" *ngIf="contacts.faxNumbers && contacts.faxNumbers.length > 0">
-                <div class="field">
-                    <label class="font-semibold text-600">Fax Numbers</label>
-                    <div class="mt-2 flex flex-column gap-2">
-                        <p-tag *ngFor="let fax of contacts.faxNumbers" [value]="fax" severity="secondary"></p-tag>
+
+            <!-- Fax Numbers -->
+            <div class="col-12 md:col-6 lg:col-4">
+                <div class="contact-field">
+                    <div class="field-label">
+                        <i class="pi pi-print mr-2 text-primary"></i>
+                        <span class="font-semibold">Fax Numbers</span>
+                    </div>
+                    <div class="mt-3 flex flex-column gap-3">
+                        <ng-container *ngIf="hasFaxNumbers(); else noFaxes">
+                            <div *ngFor="let fax of getFaxNumbersForDisplay()" class="flex align-items-center">
+                                <p-tag [value]="formatPhoneDisplay(fax)" severity="secondary" [rounded]="true"
+                                    icon="pi pi-print">
+                                </p-tag>
+                            </div>
+                        </ng-container>
+                        <ng-template #noFaxes>
+                            <span class="text-500 italic">No fax numbers added</span>
+                        </ng-template>
                     </div>
                 </div>
             </div>
-            <div class="col-12 md:col-4" *ngIf="contacts.emails && contacts.emails.length > 0">
-                <div class="field">
-                    <label class="font-semibold text-600">Email Addresses</label>
-                    <div class="mt-2 flex flex-column gap-2">
-                        <p-tag *ngFor="let email of contacts.emails" [value]="email" severity="success"></p-tag>
+
+            <!-- Emails -->
+            <div class="col-12 md:col-6 lg:col-4">
+                <div class="contact-field">
+                    <div class="field-label">
+                        <i class="pi pi-envelope mr-2 text-primary"></i>
+                        <span class="font-semibold">Email Addresses</span>
+                    </div>
+                    <div class="mt-3 flex flex-column gap-3">
+                        <ng-container *ngIf="hasEmails(); else noEmails">
+                            <div *ngFor="let email of getEmailsForDisplay()" class="flex align-items-center">
+                                <p-tag [value]="email" severity="success" [rounded]="true" icon="pi pi-envelope">
+                                </p-tag>
+                            </div>
+                        </ng-container>
+                        <ng-template #noEmails>
+                            <span class="text-500 italic">No email addresses added</span>
+                        </ng-template>
                     </div>
                 </div>
-            </div>
-            <div class="col-12"
-                *ngIf="!getDisplayAddress() && (!contacts.phoneNumbers || contacts.phoneNumbers.length === 0) && (!contacts.faxNumbers || contacts.faxNumbers.length === 0) && (!contacts.emails || contacts.emails.length === 0)">
-                <p class="text-500">No contact information available.</p>
             </div>
         </div>
     </div>
 </p-panel>
 
-<!-- Edit Dialog -->
-<p-dialog [(visible)]="editDialog" [modal]="true" [style]="{ width: '600px' }" [closable]="true" [draggable]="false"
-    [resizable]="false">
+<!-- Enhanced Edit Dialog -->
+<p-dialog [(visible)]="editDialog" [modal]="true" [style]="{ width: '680px', maxWidth: '95vw' }" [closable]="true"
+    [draggable]="false" [resizable]="false" [header]="''" styleClass="contact-edit-dialog">
+
+
+
     <ng-template pTemplate="header">
-        <h3>Update Contact Information</h3>
+        <div class="flex align-items-center gap-3 w-full border-bottom-1 surface-border pb-3">
+            <i class="pi pi-building text-primary text-2xl"></i>
+            <div>
+                <h3 class="m-0 text-xl font-semibold">Update Contact Information</h3>
+                <small class="text-500">{{ entityName }}</small>
+            </div>
+        </div>
     </ng-template>
 
-    <form [formGroup]="editForm" *ngIf="editForm">
-        <div class="flex flex-column gap-3">
-            <!-- Address Field -->
-            <div class="field p-fluid">
-                <label for="address">Address</label>
-                <input id="address" type="text" pInputText formControlName="address" placeholder="Enter address" />
-            </div>
+    <form *ngIf="editForm" [formGroup]="editForm" class="mt-4">
+        <div class="grid form-grid gap-4">
 
-            <!-- Is Regional Switch -->
-            <div class="field">
-                <div class="flex align-items-center gap-2">
-                    <p-inputSwitch formControlName="isRegional"></p-inputSwitch>
-                    <label for="isRegional">Use Regional Address</label>
-                </div>
+            <!-- Address -->
+            <div class="col-12">
+                <label for="address" class="block font-medium mb-2">
+                    <i class="pi pi-home mr-2"></i>Address <span class="text-red-500">*</span>
+                </label>
+                <textarea id="address" pInputTextarea rows="3" formControlName="address"
+                    placeholder="Enter full address..." class="w-full">
+          </textarea>
+                <small class="p-error" *ngIf="submitted && f['address']?.errors?.['required']">
+                    Address is required.
+                </small>
             </div>
 
             <!-- Phone Numbers -->
-            <div class="field">
-                <label class="font-semibold">Phone Numbers</label>
-                <div formArrayName="phoneNumbers" class="flex flex-column gap-2 mt-2">
-                    <div *ngFor="let phoneControl of phoneNumberControls; let i = index" class="flex gap-2">
-                        <input type="text" pInputText [formControl]="phoneControl" placeholder="Enter phone number"
-                            [class.ng-invalid]="submitted && phoneControl.invalid" class="flex-1" />
-                        <p-button icon="pi pi-trash" class="p-button-danger p-button-text"
-                            (onClick)="removePhoneNumber(i)" [disabled]="loading"></p-button>
+            <div class="col-12 md:col-6">
+                <div class="flex justify-content-between align-items-center mb-2">
+                    <label class="font-medium">
+                        <i class="pi pi-phone mr-2"></i>Phone Numbers
+                    </label>
+                    <p-button label="Add Phone" icon="pi pi-plus" size="small" severity="help"
+                        (onClick)="addPhoneNumber()">
+                    </p-button>
+                </div>
+                <div formArrayName="phoneNumbers" class="flex flex-column gap-3">
+                    <div *ngFor="let control of phoneNumberControls; let i = index" class="field-group">
+                        <div class="p-inputgroup">
+                            <span class="p-inputgroup-addon"><i class="pi pi-phone"></i></span>
+                            <input type="text" pInputText [formControl]="control" placeholder="1234567890"
+                                class="w-full" />
+                            <p-button icon="pi pi-trash" severity="danger" [text]="true"
+                                (onClick)="removePhoneNumber(i)">
+                            </p-button>
+                        </div>
+                        <small class="p-error" *ngIf="submitted && control.invalid">
+                            Only digits allowed (e.g., 1234567890)
+                        </small>
                     </div>
-                    <small class="p-error" *ngIf="submitted && phoneNumbersFormArray.invalid">
-                        Phone numbers must contain only digits (no '+', '-', '/' or spaces).
+                    <small *ngIf="phoneNumbersFormArray.length === 0" class="text-500 italic">
+                        No phone numbers added yet
                     </small>
                 </div>
-                <p-button label="Add Phone Number" icon="pi pi-plus" class="p-button-text p-button-sm mt-2"
-                    (onClick)="addPhoneNumber()" [disabled]="loading"></p-button>
             </div>
 
             <!-- Fax Numbers -->
-            <div class="field">
-                <label class="font-semibold">Fax Numbers</label>
-                <div formArrayName="faxNumbers" class="flex flex-column gap-2 mt-2">
-                    <div *ngFor="let faxControl of faxNumberControls; let i = index" class="flex gap-2">
-                        <input type="text" pInputText [formControl]="faxControl" placeholder="Enter fax number"
-                            [class.ng-invalid]="submitted && faxControl.invalid" class="flex-1" />
-                        <p-button icon="pi pi-trash" class="p-button-danger p-button-text"
-                            (onClick)="removeFaxNumber(i)" [disabled]="loading"></p-button>
+            <div class="col-12 md:col-6">
+                <div class="flex justify-content-between align-items-center mb-2">
+                    <label class="font-medium">
+                        <i class="pi pi-print mr-2"></i>Fax Numbers
+                    </label>
+                    <p-button label="Add Fax" icon="pi pi-plus" size="small" severity="help" (onClick)="addFaxNumber()">
+                    </p-button>
+                </div>
+                <div formArrayName="faxNumbers" class="flex flex-column gap-3">
+                    <div *ngFor="let control of faxNumberControls; let i = index" class="field-group">
+                        <div class="p-inputgroup">
+                            <span class="p-inputgroup-addon"><i class="pi pi-print"></i></span>
+                            <input type="text" pInputText [formControl]="control" placeholder="1234567890"
+                                class="w-full" />
+                            <p-button icon="pi pi-trash" severity="danger" [text]="true" (onClick)="removeFaxNumber(i)">
+                            </p-button>
+                        </div>
                     </div>
-                    <small class="p-error" *ngIf="submitted && faxNumbersFormArray.invalid">
-                        Fax numbers must contain only digits (no '+', '-', '/' or spaces).
+                    <small *ngIf="faxNumbersFormArray.length === 0" class="text-500 italic">
+                        No fax numbers added
                     </small>
                 </div>
-                <p-button label="Add Fax Number" icon="pi pi-plus" class="p-button-text p-button-sm mt-2"
-                    (onClick)="addFaxNumber()" [disabled]="loading"></p-button>
             </div>
 
             <!-- Emails -->
-            <div class="field">
-                <label class="font-semibold">Email Addresses</label>
-                <div formArrayName="emails" class="flex flex-column gap-2 mt-2">
-                    <div *ngFor="let emailControl of emailControls; let i = index" class="flex gap-2">
-                        <input type="email" pInputText [formControl]="emailControl" placeholder="Enter email address"
-                            [class.ng-invalid]="submitted && emailControl.invalid" class="flex-1" />
-                        <p-button icon="pi pi-trash" class="p-button-danger p-button-text" (onClick)="removeEmail(i)"
-                            [disabled]="loading"></p-button>
+            <div class="col-12">
+                <div class="flex justify-content-between align-items-center mb-2">
+                    <label class="font-medium">
+                        <i class="pi pi-envelope mr-2"></i>Email Addresses
+                    </label>
+                    <p-button label="Add Email" icon="pi pi-plus" size="small" severity="success"
+                        (onClick)="addEmail()">
+                    </p-button>
+                </div>
+                <div formArrayName="emails" class="flex flex-column gap-3">
+                    <div *ngFor="let control of emailControls; let i = index" class="field-group">
+                        <div class="p-inputgroup">
+                            <span class="p-inputgroup-addon">&#64;</span>
+                            <input type="email" pInputText [formControl]="control" placeholder="contact@example.com"
+                                class="w-full" />
+                            <p-button icon="pi pi-trash" severity="danger" [text]="true" (onClick)="removeEmail(i)">
+                            </p-button>
+                        </div>
+                        <small class="p-error" *ngIf="submitted && control.invalid">
+                            Please enter a valid email address
+                        </small>
                     </div>
-                    <small class="p-error" *ngIf="submitted && emailsFormArray.invalid">
-                        Please enter valid email addresses.
+                    <small *ngIf="emailsFormArray.length === 0" class="text-500 italic">
+                        No email addresses added
                     </small>
                 </div>
-                <p-button label="Add Email" icon="pi pi-plus" class="p-button-text p-button-sm mt-2"
-                    (onClick)="addEmail()" [disabled]="loading"></p-button>
             </div>
         </div>
     </form>
 
     <ng-template pTemplate="footer">
-        <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="onCancelEdit()"
-            [disabled]="loading">
-        </p-button>
-        <p-button label="Update" icon="pi pi-check" (onClick)="submitUpdate()" [disabled]="loading">
-            <ng-container *ngIf="loading">
-                <i class="pi pi-spin pi-spinner" style="margin-right: 0.5rem"></i>
-            </ng-container>
-        </p-button>
+        <div class="flex justify-content-end gap-3 pt-3 border-top-1 surface-border">
+            <p-button label="Cancel" icon="pi pi-times" severity="secondary" [text]="true" (onClick)="onCancelEdit()"
+                [disabled]="loading">
+            </p-button>
+            <p-button label="Save Changes" icon="pi pi-check" [loading]="loading" (onClick)="submitUpdate()">
+            </p-button>
+        </div>
     </ng-template>
 </p-dialog>

@@ -51,9 +51,7 @@ export class EntityContactComponent implements OnInit, OnDestroy {
         this.subscriptions.forEach((sub) => sub.unsubscribe());
     }
 
-    /**
-     * Load entity contacts
-     */
+
     loadContacts(): void {
         if (!this.entityId) {
             return;
@@ -66,12 +64,7 @@ export class EntityContactComponent implements OnInit, OnDestroy {
                     this.handleBusinessError(response);
                     return;
                 }
-
                 this.mapContactsData(response?.message || {});
-                this.loading = false;
-            },
-            error: () => {
-                this.handleUnexpectedError();
                 this.loading = false;
             }
         });
@@ -79,31 +72,27 @@ export class EntityContactComponent implements OnInit, OnDestroy {
         this.subscriptions.push(sub);
     }
 
-    /**
-     * Map contacts data from API response
-     */
+
     private mapContactsData(data: any): void {
+        console.log('data', data);
         this.contacts = {
-            address: data?.Address || data?.address || '',
-            addressRegional: data?.Address_Regional || data?.address_Regional || '',
-            phoneNumbers: Array.isArray(data?.Phone_Numbers || data?.phoneNumbers)
-                ? (data.Phone_Numbers || data.phoneNumbers)
+            address: data?.Address || '',
+            addressRegional: data?.Address_Regional || '',
+            phoneNumbers: Array.isArray(data?.PhoneNumbers)
+                ? data.PhoneNumbers
                 : [],
-            faxNumbers: Array.isArray(data?.Fax_Numbers || data?.faxNumbers)
-                ? (data.Fax_Numbers || data.faxNumbers)
+            faxNumbers: Array.isArray(data?.FaxNumbers)
+                ? data.FaxNumbers
                 : [],
-            emails: Array.isArray(data?.Emails || data?.emails)
-                ? (data.Emails || data.emails)
+            emails: Array.isArray(data?.Emails)
+                ? data.Emails
                 : []
         };
     }
 
-    /**
-     * Open edit dialog
-     */
+
     openEditDialog(): void {
         if (!this.contacts) {
-            // Initialize empty contacts if none exist
             this.contacts = {
                 address: '',
                 phoneNumbers: [],
@@ -116,16 +105,14 @@ export class EntityContactComponent implements OnInit, OnDestroy {
         this.editDialog = true;
     }
 
-    /**
-     * Initialize edit form
-     */
+
     initEditForm(): void {
         const address = this.isRegional && this.contacts?.addressRegional
             ? this.contacts.addressRegional
             : (this.contacts?.address || '');
 
         this.editForm = this.fb.group({
-            address: [address, []],
+            address: [address, [Validators.required]],
             isRegional: [this.isRegional, []],
             phoneNumbers: this.fb.array([]),
             faxNumbers: this.fb.array([]),
@@ -154,134 +141,127 @@ export class EntityContactComponent implements OnInit, OnDestroy {
         }
     }
 
-    /**
-     * Get form controls
-     */
+
     get f() {
         return this.editForm.controls;
     }
 
-    /**
-     * Get phone numbers form array
-     */
+
     get phoneNumbersFormArray(): FormArray {
         return this.editForm.get('phoneNumbers') as FormArray;
     }
 
-    /**
-     * Get phone numbers controls as FormControl array
-     */
     get phoneNumberControls(): FormControl[] {
         return this.phoneNumbersFormArray.controls as FormControl[];
     }
 
-    /**
-     * Get fax numbers form array
-     */
+
     get faxNumbersFormArray(): FormArray {
         return this.editForm.get('faxNumbers') as FormArray;
     }
 
-    /**
-     * Get fax numbers controls as FormControl array
-     */
+
     get faxNumberControls(): FormControl[] {
         return this.faxNumbersFormArray.controls as FormControl[];
     }
 
-    /**
-     * Get emails form array
-     */
+
     get emailsFormArray(): FormArray {
         return this.editForm.get('emails') as FormArray;
     }
 
-    /**
-     * Get email controls as FormControl array
-     */
+
     get emailControls(): FormControl[] {
         return this.emailsFormArray.controls as FormControl[];
     }
 
-    /**
-     * Add phone number field
-     */
+
     addPhoneNumber(value: string = ''): void {
         const phoneNumbersArray = this.phoneNumbersFormArray;
-        phoneNumbersArray.push(this.fb.control(value, [Validators.required, this.phoneNumberValidator]));
+        // Phone numbers are optional, but if provided, must be valid format
+        phoneNumbersArray.push(this.fb.control(value, [this.phoneNumberValidator]));
     }
 
-    /**
-     * Remove phone number field
-     */
+
     removePhoneNumber(index: number): void {
         this.phoneNumbersFormArray.removeAt(index);
     }
 
-    /**
-     * Add fax number field
-     */
+
     addFaxNumber(value: string = ''): void {
         const faxNumbersArray = this.faxNumbersFormArray;
-        faxNumbersArray.push(this.fb.control(value, [Validators.required, this.phoneNumberValidator]));
+        // Fax numbers are optional, but if provided, must be valid format
+        faxNumbersArray.push(this.fb.control(value, [this.phoneNumberValidator]));
     }
 
-    /**
-     * Remove fax number field
-     */
+
     removeFaxNumber(index: number): void {
         this.faxNumbersFormArray.removeAt(index);
     }
 
-    /**
-     * Add email field
-     */
+
     addEmail(value: string = ''): void {
         const emailsArray = this.emailsFormArray;
-        emailsArray.push(this.fb.control(value, [Validators.required, Validators.email]));
+        // Emails are optional, but if provided, must be valid email format
+        emailsArray.push(this.fb.control(value, [this.emailValidator]));
     }
 
-    /**
-     * Remove email field
-     */
+
     removeEmail(index: number): void {
         this.emailsFormArray.removeAt(index);
     }
 
-    /**
-     * Phone number validator - only digits allowed
-     */
+
     private phoneNumberValidator(control: any): { [key: string]: any } | null {
         if (!control.value) {
             return null;
         }
         const value = control.value.toString();
-        // Only digits allowed (no '+', '-', '/', spaces)
         const digitsOnly = /^\d+$/.test(value);
         return digitsOnly ? null : { invalidFormat: true };
     }
 
     /**
-     * Cancel edit dialog
+     * Email validator - validates email format only if value exists
      */
+    private emailValidator(control: any): { [key: string]: any } | null {
+        if (!control.value) {
+            return null; // Empty is valid (optional field)
+        }
+        // Use Angular's built-in email validator
+        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return emailPattern.test(control.value) ? null : { email: true };
+    }
+
+
     onCancelEdit(): void {
         this.editDialog = false;
         this.editForm.reset();
         this.submitted = false;
     }
 
-    /**
-     * Submit update
-     */
+
     submitUpdate(): void {
         this.submitted = true;
 
+        // Check if address is filled (required field)
+        const addressValue = this.editForm.get('address')?.value?.trim() || '';
+        if (!addressValue) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Validation',
+                detail: 'Address is required. Please fill in the address field.'
+            });
+            return;
+        }
+
+        // Check if form has validation errors (format errors in phone/fax/email)
         if (this.editForm.invalid || this.loading) {
             if (this.editForm.invalid) {
                 this.messageService.add({
                     severity: 'warn',
                     summary: 'Validation',
-                    detail: 'Please fill in all fields correctly.'
+                    detail: 'Please correct the errors in the form. Phone numbers, fax numbers, and emails must be in valid format if provided.'
                 });
             }
             return;
@@ -291,17 +271,14 @@ export class EntityContactComponent implements OnInit, OnDestroy {
         const address = formValue.address || '';
         const isRegional = formValue.isRegional || false;
 
-        // Get phone numbers (filter empty values)
         const phoneNumbers = this.phoneNumbersFormArray.controls
             .map(control => control.value)
             .filter(value => value && value.trim() !== '');
 
-        // Get fax numbers (filter empty values)
         const faxNumbers = this.faxNumbersFormArray.controls
             .map(control => control.value)
             .filter(value => value && value.trim() !== '');
 
-        // Get emails (filter empty values)
         const emails = this.emailsFormArray.controls
             .map(control => control.value)
             .filter(value => value && value.trim() !== '');
@@ -336,35 +313,28 @@ export class EntityContactComponent implements OnInit, OnDestroy {
                 // Reload contacts
                 this.loadContacts();
                 this.loading = false;
-            },
-            error: () => {
-                this.handleUnexpectedError();
-                this.loading = false;
             }
         });
 
         this.subscriptions.push(sub);
     }
 
-    /**
-     * Handle update errors
-     */
+
     private handleUpdateError(response: any): void {
         const code = String(response?.message || '');
         const detail = this.getUpdateErrorMessage(code);
 
-        this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail
-        });
+        if (detail) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail
+            });
+        }
         this.loading = false;
     }
 
-    /**
-     * Get error message for update
-     */
-    private getUpdateErrorMessage(code: string): string {
+    private getUpdateErrorMessage(code: string): string | null {
         switch (code) {
             case 'ERP11260':
                 return 'Invalid Entity ID.';
@@ -376,14 +346,11 @@ export class EntityContactComponent implements OnInit, OnDestroy {
                 return 'Invalid format for one or more Fax Number(s). Only digits are allowed (no "+", "-", "/" or spaces).';
             case 'ERP11274':
                 return 'Invalid format for one or more Email(s).';
-            default:
-                return code || 'An error occurred while updating contact information. Please try again.';
         }
+        return null;
+
     }
 
-    /**
-     * Handle business errors
-     */
     private handleBusinessError(response: any): void {
         const code = String(response?.message || '');
         if (code === 'ERP11260') {
@@ -396,20 +363,6 @@ export class EntityContactComponent implements OnInit, OnDestroy {
         this.loading = false;
     }
 
-    /**
-     * Handle unexpected errors
-     */
-    private handleUnexpectedError(): void {
-        this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'An unexpected error occurred. Please try again.'
-        });
-    }
-
-    /**
-     * Get display address (with regional support)
-     */
     getDisplayAddress(): string {
         if (!this.contacts) {
             return '';
@@ -417,6 +370,47 @@ export class EntityContactComponent implements OnInit, OnDestroy {
         return this.isRegional && this.contacts.addressRegional
             ? this.contacts.addressRegional
             : (this.contacts.address || '');
+    }
+
+    private sanitizeList(list?: string[]): string[] {
+        if (!Array.isArray(list)) {
+            return [];
+        }
+        return list
+            .map(item => (item ?? '').toString().trim())
+            .filter(item => item !== '');
+    }
+
+    formatPhoneDisplay(phone: string): string {
+        const cleaned = phone.replace(/\D/g, '');
+        if (cleaned.length === 10) {
+            return cleaned.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+        }
+        return phone;
+    }
+
+    hasPhoneNumbers(): boolean {
+        return this.getPhoneNumbersForDisplay().length > 0;
+    }
+
+    getPhoneNumbersForDisplay(): string[] {
+        return this.sanitizeList(this.contacts?.phoneNumbers);
+    }
+
+    hasFaxNumbers(): boolean {
+        return this.getFaxNumbersForDisplay().length > 0;
+    }
+
+    getFaxNumbersForDisplay(): string[] {
+        return this.sanitizeList(this.contacts?.faxNumbers);
+    }
+
+    hasEmails(): boolean {
+        return this.getEmailsForDisplay().length > 0;
+    }
+
+    getEmailsForDisplay(): string[] {
+        return this.sanitizeList(this.contacts?.emails);
     }
 }
 

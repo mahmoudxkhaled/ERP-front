@@ -1,200 +1,132 @@
-// Entity Details Component Styles
-
-.field {
-    margin-bottom: 1.5rem;
-}
-
-.field label {
-    display: block;
-    margin-bottom: 0.5rem;
-}
-
-
-
-
-/* NEW BASIC INFO BLOCK */
-::ng-deep {
-
-    .info-section {
-        padding: 1.5rem 1.75rem;
-        border-radius: 14px;
-        background: var(--surface-card);
-        border: 1px solid var(--surface-border);
-        margin-bottom: 2rem;
+.entity-profile-panel {
+    ::ng-deep .p-panel-header {
+      background: linear-gradient(90deg, var(--primary-600), var(--primary-500));
+      color: white;
+      border: none;
+      border-radius: 16px 16px 0 0;
+      padding: 1.5rem;
     }
-
-    .info-title {
-        font-size: 1.15rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-        color: var(--text-color);
-        display: flex;
-        gap: .5rem;
-        align-items: center;
-
-        i {
-            color: var(--primary-color);
-        }
+  
+    ::ng-deep .p-panel-content {
+      padding: 0 !important;
+      border-radius: 0 0 16px 16px;
+      overflow: hidden;
     }
+  }
+  
+  .entity-profile-content {
+    // background: var(--surface-ground);
+  }
+  
+  .profile-hero {
+    // background: linear-gradient(135deg, var(--surface-50) 0%, var(--surface-0) 100%);
+    // border: 1px solid var(--surface-200);
+  }
+  
+  // Logo wrapper with hover effects
+  .identity-logo-wrapper {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transition: transform 0.3s ease;
 
-    /* Identity */
-    .identity-wrapper {
-        display: flex;
-        gap: 2rem;
-        align-items: center;
-    }
-
-    .identity-logo-wrapper {
-        position: relative;
-        width: 110px;
-        height: 110px;
-        
-        &:hover {
-            .logo-overlay {
-                opacity: 1;
-                visibility: visible;
-            }
-        }
+    &:hover {
+      transform: scale(1.05);
     }
 
     .identity-logo {
-        width: 110px;
-        height: 110px;
-        border-radius: 10px;
-        background: var(--surface-ground);
-        border: 1px solid var(--surface-border);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: .5rem;
-        transition: all 0.3s ease;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--surface-100);
 
-        img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            border-radius: 8px;
-        }
-
-        i {
-            font-size: 2rem;
-            opacity: .3;
-        }
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
     }
 
+    // Hover overlay that appears on hover
     .logo-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.6);
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s ease;
-        z-index: 10;
-
-        .logo-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            align-items: center;
-
-            ::ng-deep {
-                .p-button {
-                    min-width: auto;
-                    padding: 0.5rem 1rem;
-                }
-
-                .p-fileupload-buttonbar {
-                    padding: 0;
-                    background: transparent;
-                    border: none;
-
-                    .p-button {
-                        background: var(--primary-color);
-                        border-color: var(--primary-color);
-                        color: white;
-
-                        &:hover {
-                            background: var(--primary-color);
-                            opacity: 0.9;
-                        }
-                    }
-                }
-            }
-        }
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      border-radius: 16px;
+      backdrop-filter: blur(4px);
     }
 
+    // Show overlay on hover
+    &:hover .logo-overlay {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    // Actions container inside overlay
+    .logo-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      align-items: center;
+
+      // Ensure buttons are clickable
+      ::ng-deep button,
+      ::ng-deep .p-button {
+        pointer-events: auto;
+      }
+    }
+
+    // Loading overlay
     .logo-loading-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(255, 255, 255, 0.9);
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 20;
-
-        i {
-            font-size: 2rem;
-            color: var(--primary-color);
-        }
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 16px;
+      z-index: 10;
     }
-
-    .identity-info {
-        display: flex;
+  }
+  
+  .edit-entity-btn {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: all 0.2s;
+  
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+  }
+  
+  // Responsive
+  @media (max-width: 768px) {
+    .profile-hero {
+      .grid {
         flex-direction: column;
-        gap: .2rem;
-
-        .entity-name {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-color);
-        }
-
-        .entity-line {
-            font-size: .9rem;
-            color: var(--text-color-secondary);
-        }
+        text-align: center;
+      }
+      
+      .logo-container {
+        margin-bottom: 1.5rem;
+      }
     }
-
-    /* Properties clean list */
-    .property-list {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-        gap: 1.5rem;
-        margin-top: .5rem;
-
-        .prop {
-            display: flex;
-            flex-direction: column;
-            gap: .4rem;
-
-            .label {
-                font-size: .8rem;
-                color: var(--text-color-secondary);
-                font-weight: 600;
-            }
-            .value {
-                font-size: 1rem;
-                font-weight: 500;
-                color: var(--text-color);
-            }
-        }
-    }
-
-    /* Description */
-    .desc-text {
-        font-size: .95rem;
-        line-height: 1.5;
-        color: var(--text-color);
-    }
-}
+  }

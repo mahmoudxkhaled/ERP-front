@@ -149,12 +149,7 @@ export class EntitiesService {
 
     assignEntityLogo(entityId: string, imageFormat: string, base64String: string): Observable<any> {
         this.isLoadingSubject.next(true);
-
-        // Wrap base64 string with double quotes
-
-
         const quotedBase64String = `"${base64String}"`;
-
         return this.apiServices.callAPI(
             420,
             this.getAccessToken(),
