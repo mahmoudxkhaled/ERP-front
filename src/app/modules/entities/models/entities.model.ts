@@ -17,10 +17,13 @@ export interface EntityBackend {
 /**
  * Backend API Response Structure
  * The message contains an object where keys are entity IDs and values are EntityBackend objects
+ * For paginated responses, Entities_List contains the paginated data and Total_Count contains the total number of records
  */
 export interface EntitiesListResponse {
     success: boolean;
-    message: Record<string, EntityBackend>;
+    message?: Record<string, EntityBackend>; // Kept for backward compatibility
+    Entities_List?: Record<string, EntityBackend>; // New paginated response field
+    Total_Count?: number; // Total number of entities in the system
 }
 
 /**

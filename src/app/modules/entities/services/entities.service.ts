@@ -90,9 +90,21 @@ export class EntitiesService {
         );
     }
 
-    listEntities(): Observable<any> {
+    /**
+     * Lists entities with pagination support
+     * @param lastEntityId - Page number as negative value (-1 = page 1, -2 = page 2, etc.). Use 0 to start from beginning.
+     * @param filterCount - Number of records per page (minimum 10, maximum 100)
+     */
+    listEntities(lastEntityId: number = 0, filterCount: number = 10): Observable<any> {
         this.isLoadingSubject.next(true);
-        return this.apiServices.callAPI(406, this.getAccessToken(), []).pipe(
+
+        // Validate and clamp filterCount between 10 and 100
+        const validatedFilterCount = Math.max(10, Math.min(100, filterCount));
+
+        // Convert parameters to strings for API call
+        const params = [lastEntityId.toString(), validatedFilterCount.toString()];
+
+        return this.apiServices.callAPI(406, this.getAccessToken(), params).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );
     }

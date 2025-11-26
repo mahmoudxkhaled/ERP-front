@@ -29,6 +29,11 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
     currentEntityForActivation?: Entity;
     deleteEntityDialog: boolean = false;
     currentEntityForDelete?: Entity;
+
+    // Pagination state properties
+    first: number = 0; // Current first record index
+    rows: number = 10; // Number of rows per page
+    totalRecords: number = 0; // Total number of entities
     constructor(
         private entitiesService: EntitiesService,
         private router: Router,
@@ -56,23 +61,87 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
         const isRegional = this.accountSettings?.Language !== 'English';
         this.tableLoadingSpinner = true;
 
-        const sub = this.entitiesService.listEntities().subscribe({
+        // Calculate page number from first and rows
+        // Mapping: -1 = page 1, -2 = page 2, -3 = page 3, etc.
+        // Examples:
+        //   first = 0,  rows = 10 -> page = (0/10) + 1 = 1 -> lastEntityId = -1 (page 1)
+        //   first = 10, rows = 10 -> page = (10/10) + 1 = 2 -> lastEntityId = -2 (page 2)
+        //   first = 20, rows = 10 -> page = (20/10) + 1 = 3 -> lastEntityId = -3 (page 3)
+        const currentPage = Math.floor(this.first / this.rows) + 1;
+        const lastEntityId = -currentPage; // Convert to negative: page 1 = -1, page 2 = -2, etc.
+
+        // Call service with pagination parameters
+        const sub = this.entitiesService.listEntities(lastEntityId, this.rows).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
                     this.handleBusinessError('list', response);
                     return;
                 }
                 console.log('response', response);
-                const entitiesData = response?.message || {};
-                this.entities = Object.values(entitiesData).map((item: any) => ({
-                    id: String(item?.Entity_ID || ''),
-                    code: item?.Code || '',
-                    name: isRegional ? item?.Name_Regional || '' : item?.Name || '',
-                    description: isRegional ? item?.Description_Regional || '' : item?.Description || '',
-                    parentEntityId: item?.Parent_Entity_ID ? String(item?.Parent_Entity_ID) : '',
-                    active: Boolean(item?.Is_Active),
-                    isPersonal: Boolean(item?.Is_Personal)
-                }));
+                console.log('response.message', response?.message);
+                console.log('response.message["0"]', response?.message?.["0"]);
+
+                // Extract Total_Count from response.message["0"].Total_Count
+                // The API returns Total_Count in the "0" key of the message object
+                if (response?.message?.["0"]?.Total_Count !== undefined) {
+                    // Ensure it's a number, not a string
+                    this.totalRecords = Number(response.message["0"].Total_Count);
+                    console.log('Total_Count extracted and set to totalRecords:', this.totalRecords);
+                } else if (response?.message?.Total_Count !== undefined) {
+                    // Fallback: check if Total_Count is directly in message
+                    this.totalRecords = Number(response.message.Total_Count);
+                    console.log('Total_Count found in message (fallback):', this.totalRecords);
+                } else {
+                    console.error('Total_Count not found. Available keys in message:', Object.keys(response?.message || {}));
+                    console.error('response.message["0"] content:', response?.message?.["0"]);
+                    // Don't update totalRecords if Total_Count is not found
+                    // This prevents overwriting with incorrect value
+                }
+
+                console.log('Final totalRecords value (type:', typeof this.totalRecords, '):', this.totalRecords);
+
+                // Extract entities from response.message, excluding the "0" key which contains Total_Count
+                // The API returns entities as keys "1", "2", "8", "11", etc. in the message object
+                let entitiesData: any = {};
+                if (response?.message) {
+                    // Extract all keys except "0" which contains Total_Count
+                    const messageData = response.message;
+                    entitiesData = {};
+                    console.log('Extracting entities from message keys:', Object.keys(messageData));
+                    Object.keys(messageData).forEach((key) => {
+                        // Skip key "0" (contains Total_Count) and only include entity objects
+                        if (key !== "0") {
+                            const item = messageData[key];
+                            console.log(`Checking key "${key}":`, item, 'Type:', typeof item, 'Has Entity_ID:', item?.Entity_ID !== undefined);
+                            if (typeof item === 'object' && item !== null && item.Entity_ID !== undefined) {
+                                entitiesData[key] = item;
+                                console.log(`Entity added from key "${key}"`);
+                            }
+                        }
+                    });
+                    console.log('Final entitiesData keys:', Object.keys(entitiesData));
+                    console.log('Number of entities extracted:', Object.keys(entitiesData).length);
+                    console.log('entitiesData values:', Object.values(entitiesData));
+                }
+
+                console.log('About to map entitiesData. entitiesData:', entitiesData);
+                console.log('Object.values(entitiesData):', Object.values(entitiesData));
+
+                this.entities = Object.values(entitiesData).map((item: any) => {
+                    console.log('Mapping item:', item);
+                    return {
+                        id: String(item?.Entity_ID || ''),
+                        code: item?.Code || '',
+                        name: isRegional ? item?.Name_Regional || '' : item?.Name || '',
+                        description: isRegional ? item?.Description_Regional || '' : item?.Description || '',
+                        parentEntityId: item?.Parent_Entity_ID ? String(item?.Parent_Entity_ID) : '',
+                        active: Boolean(item?.Is_Active),
+                        isPersonal: Boolean(item?.Is_Personal)
+                    };
+                });
+
+                console.log('Final entities array length:', this.entities.length);
+                console.log('Final entities:', this.entities);
 
                 this.buildActivationControls();
             },
@@ -80,6 +149,30 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
         });
 
         this.subscriptions.push(sub);
+    }
+
+    /**
+     * Handles page change event from PrimeNG table paginator
+     * @param event - PrimeNG pagination event containing first and rows
+     */
+    onPageChange(event: any): void {
+        this.first = event.first;
+        this.rows = event.rows;
+        this.loadEntities(true);
+    }
+
+    /**
+     * Checks if currently on the first page
+     */
+    isFirstPage(): boolean {
+        return this.first === 0;
+    }
+
+    /**
+     * Checks if currently on the last page
+     */
+    isLastPage(): boolean {
+        return this.totalRecords > 0 ? this.first + this.rows >= this.totalRecords : true;
     }
 
     edit(entity: Entity): void {
@@ -283,6 +376,9 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
         let detail = '';
 
         switch (context) {
+            case 'list':
+                detail = this.getListErrorMessage(code);
+                break;
             case 'activate':
                 detail = this.getActivateErrorMessage(code);
                 break;
@@ -304,6 +400,15 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
 
         if (context === 'list') {
             this.resetLoadingFlags();
+        }
+    }
+
+    private getListErrorMessage(code: string): string {
+        switch (code) {
+            case 'ERP11255':
+                return 'Invalid value for the Filter_Count parameter. Should be a minimum of 10 records and a maximum of 100 records.';
+            default:
+                return 'An error occurred while loading entities. Please try again.';
         }
     }
 
