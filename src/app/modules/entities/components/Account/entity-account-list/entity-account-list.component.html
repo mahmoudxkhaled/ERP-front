@@ -46,7 +46,7 @@
                     <th class="text-center">Role</th>
                     <th class="text-center">Account State</th>
                     <th class="text-center">Last Login</th>
-                    <th class="text-center" style="width: 120px;">Actions</th>
+                    <th class="text-start" style="width: 200px;">Actions</th>
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-account>
@@ -70,10 +70,10 @@
                     </td>
                     <td class="text-center">
                         <span class="text-600">
-                            {{ account.Last_Login ? (account.Last_Login | date:'short') : 'Never' }}
+                            {{ isDefaultDate(account.Last_Login) ? 'Never' : (account.Last_Login | date:'short') }}
                         </span>
                     </td>
-                    <td class="text-center">
+                    <td class="text-start">
                         <button pButton pRipple type="button" icon="pi pi-ellipsis-v"
                             class="p-button-rounded p-button-text p-button-plain"
                             (click)="openOtherAccountMenu(rowMenu, account, $event)" [disabled]="loadingAccounts">
@@ -264,11 +264,6 @@
 <app-entity-account-details [(visible)]="viewAccountDetailsDialog" [account]="selectedAccountForDetails"
     (saved)="onAccountDetailsSaved()">
 </app-entity-account-details>
-
-<!-- Update Account Details Component -->
-<app-entity-account-update-details [(visible)]="updateAccountDetailsDialog" [account]="selectedAccountForDetails"
-    (saved)="onAccountDetailsSaved()">
-</app-entity-account-update-details>
 
 <!-- Update Account Email Dialog -->
 <p-dialog [(visible)]="updateAccountEmailDialog" [modal]="true" [style]="{ width: '500px' }" [closable]="true"

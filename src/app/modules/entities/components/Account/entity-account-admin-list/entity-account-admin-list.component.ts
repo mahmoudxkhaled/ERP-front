@@ -67,7 +67,6 @@ export class EntityAccountAdminListComponent implements OnInit, OnDestroy, OnCha
 
     // Account management dialog properties
     viewAccountDetailsDialog: boolean = false;
-    updateAccountDetailsDialog: boolean = false;
     updateAccountEmailDialog: boolean = false;
     updateAccountEntityDialog: boolean = false;
     selectedAccountForDetails?: EntityAccount;
@@ -191,7 +190,7 @@ export class EntityAccountAdminListComponent implements OnInit, OnDestroy, OnCha
             const accountId = String(account?.Account_ID || '');
             const userId = account?.User_ID || 0;
             const systemRoleId = account?.System_Role_ID || 0;
-            const accountState = account?.Account_State || 1;
+            const accountState = account?.Account_State || 0;
             const email = account?.Email || '';
             const roleName = this.permissionService.getRoleName(systemRoleId);
             const twoFA = account?.Two_FA || false;
@@ -454,15 +453,6 @@ export class EntityAccountAdminListComponent implements OnInit, OnDestroy, OnCha
                 label: 'View/Edit Account Details',
                 icon: 'pi pi-eye',
                 command: () => this.currentAdmin && this.openViewAccountDetails(this.currentAdmin)
-            });
-        }
-
-        // Update Account Details
-        if (canUpdateAccountDetails) {
-            menuItemsList.push({
-                label: 'Update Account Details',
-                icon: 'pi pi-pencil',
-                command: () => this.currentAdmin && this.openUpdateAccountDetails(this.currentAdmin)
             });
         }
 
@@ -911,14 +901,6 @@ export class EntityAccountAdminListComponent implements OnInit, OnDestroy, OnCha
     }
 
     /**
-     * Open update account details dialog
-     */
-    openUpdateAccountDetails(admin: EntityAccount): void {
-        this.selectedAccountForDetails = admin;
-        this.updateAccountDetailsDialog = true;
-    }
-
-    /**
      * Handle account details saved event
      */
     onAccountDetailsSaved(): void {
@@ -1169,5 +1151,16 @@ export class EntityAccountAdminListComponent implements OnInit, OnDestroy, OnCha
             default:
                 return null;
         }
+    }
+
+    /**
+     * Check if date is before 2025 - if so, show "Never"
+     */
+    isDefaultDate(dateString: string | null | undefined): boolean {
+        if (!dateString) {
+            return true;
+        }
+        const date = new Date(dateString);
+        return date.getFullYear() < 2025;
     }
 }

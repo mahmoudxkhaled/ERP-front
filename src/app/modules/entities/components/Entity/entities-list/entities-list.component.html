@@ -40,40 +40,41 @@
 
             <ng-template pTemplate="header">
                 <tr>
-                    <th style="width: 100px;">Id</th>
-                    <th style="width: 140px;">Code</th>
-                    <th>Name</th>
-                    <th>Description</th>
+                    <th>Id</th>
+                    <th style="width: 100px;">Code</th>
+                    <th style="width: 200px;">Name</th>
+                    <th style="width: 300px;">Description</th>
                     <!-- <th style="width: 150px;">Parent</th> -->
-                    <th style="width: 140px; text-align: center;">Type</th>
-                    <th style="width: 120px; text-align: center;">Status</th>
-                    <th style="width: 120px; text-align: center;">Actions</th>
+                    <th style=" text-align: center;">Type</th>
+                    <th style=" text-align: center;">Status</th>
+                    <th style="width: 150px; text-align: start;">Actions</th>
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="body" let-entity>
                 <tr>
-                    <td class=" ">
+                    <td>
                         <div>
                             <p-tag [value]="'#' + entity.id" severity="info"></p-tag>
                         </div>
                     </td>
                     <td>
                         <div class="flex align-items-center gap-2">
-                            <span class="font-semibold text-lg">{{ entity.code }}</span>
+                            <span class="font-semibold text-lg code-text">{{ entity.code }}</span>
                             <!-- <p-tag [value]="'#' + entity.id" severity="info"></p-tag> -->
                         </div>
                     </td>
                     <td>
                         <div class="flex flex-column">
-                            <span style="cursor: pointer;" class="font-semibold"
+                            <span style="cursor: pointer;" class="font-semibold name-text"
                                 routerLink="/company-administration/entities/{{ entity.id }}">
                                 {{ entity.name }}</span>
                             <small class="text-500">{{ getParentLabel(entity) }}</small>
                         </div>
                     </td>
                     <td>
-                        <span class="text-600 line-height-3">{{ entity.description || 'No description provided.'
+                        <span class="text-600 line-height-3 description-text">{{ entity.description || 'No description
+                            provided.'
                             }}</span>
                     </td>
                     <!-- <td>
@@ -89,7 +90,7 @@
                             (onChange)="onStatusToggle(entity)">
                         </p-inputSwitch>
                     </td>
-                    <td class="text-center">
+                    <td class="text-start">
                         <button pButton pRipple type="button" icon="pi pi-ellipsis-v"
                             class="p-button-rounded p-button-text p-button-plain"
                             (click)="openMenu(rowMenu, entity, $event)" [disabled]="menuItems.length === 0">

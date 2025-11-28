@@ -68,7 +68,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
 
   // Account management dialog properties
   viewAccountDetailsDialog: boolean = false;
-  updateAccountDetailsDialog: boolean = false;
   updateAccountEmailDialog: boolean = false;
   updateAccountEntityDialog: boolean = false;
   selectedAccountForDetails?: EntityAccount;
@@ -640,15 +639,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
       });
     }
 
-    // Update Account Details
-    if (canUpdateAccountDetails) {
-      menuItemsList.push({
-        label: 'Update Account Details',
-        icon: 'pi pi-pencil',
-        command: () => this.currentAccount && this.openUpdateAccountDetails(this.currentAccount)
-      });
-    }
-
     // Update Account Email
     if (canUpdateAccountEmail) {
       menuItemsList.push({
@@ -856,14 +846,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
   openViewAccountDetails(account: EntityAccount): void {
     this.selectedAccountForDetails = account;
     this.viewAccountDetailsDialog = true;
-  }
-
-  /**
-   * Open update account details dialog
-   */
-  openUpdateAccountDetails(account: EntityAccount): void {
-    this.selectedAccountForDetails = account;
-    this.updateAccountDetailsDialog = true;
   }
 
   /**
@@ -1126,18 +1108,20 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     const code = String(response?.message || '');
     const detail = this.getCreateEntityRoleErrorMessage(code);
 
-    this.messageService.add({
-      severity: 'error',
-      summary: 'Error',
-      detail
-    });
+    if (detail) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail
+      });
+    }
     this.loading = false;
   }
 
   /**
    * Get error message for create entity role
    */
-  private getCreateEntityRoleErrorMessage(code: string): string {
+  private getCreateEntityRoleErrorMessage(code: string): string | null {
     switch (code) {
       case 'ERP11300':
         return 'Invalid entity selected.';
@@ -1148,7 +1132,7 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
       case 'ERP11303':
         return 'A role with this title already exists for this entity.';
       default:
-        return code || 'An error occurred while creating the role. Please try again.';
+        return null;
     }
   }
 
@@ -1159,18 +1143,20 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     const code = String(response?.message || '');
     const detail = this.getCreateAccountErrorMessage(code);
 
-    this.messageService.add({
-      severity: 'error',
-      summary: 'Error',
-      detail
-    });
+    if (detail) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail
+      });
+    }
     this.loading = false;
   }
 
   /**
    * Get error message for create account
    */
-  private getCreateAccountErrorMessage(code: string): string {
+  private getCreateAccountErrorMessage(code: string): string | null {
     switch (code) {
       case 'ERP11130':
         return 'Invalid email address format';
@@ -1185,9 +1171,19 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
       case 'ERP11145':
         return 'Invalid Role ID -> The entity does not have a Role with this ID';
       default:
-        return code || 'An error occurred while creating the account. Please try again.';
+        return null;
     }
   }
 
+  /**
+   * Check if date is before 2025 - if so, show "Never"
+   */
+  isDefaultDate(dateString: string | null | undefined): boolean {
+    if (!dateString) {
+      return true;
+    }
+    const date = new Date(dateString);
+    return date.getFullYear() < 2025;
+  }
 
 }

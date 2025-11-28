@@ -1,35 +1,77 @@
-<p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '500px' }" [closable]="true" [draggable]="false"
+<p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '600px' }" [closable]="true" [draggable]="false"
     [resizable]="false" (onHide)="onDialogHide()">
     <ng-template pTemplate="header">
-        <h3>View/Edit Account Details</h3>
+        <h3>Account Details</h3>
     </ng-template>
-    <form *ngIf="accountDetailsForm" [formGroup]="accountDetailsForm" (ngSubmit)="saveAccountDetails()">
-        <div class="flex flex-column gap-3">
-            <!-- Email Field (Read-only) -->
-            <div class="field p-fluid">
-                <label for="detailsEmail">Email</label>
-                <input id="detailsEmail" type="email" pInputText formControlName="email" readonly />
+
+    <!-- Loading State -->
+    <div *ngIf="loadingAccountDetails" class="loading-container">
+        <i class="pi pi-spin pi-spinner"></i>
+        <p class="loading-text">Loading account information...</p>
+    </div>
+
+    <!-- Content -->
+    <div *ngIf="!loadingAccountDetails" class="dialog-content">
+        <!-- Account Information Section -->
+        <div class="info-section">
+            <!-- Account ID -->
+            <div class="info-field">
+                <label class="info-label">Account ID</label>
+                <span class="info-value">{{ accountId || 'N/A' }}</span>
             </div>
 
-            <!-- Description Field -->
+            <!-- User ID -->
+            <div class="info-field">
+                <label class="info-label">User ID</label>
+                <span class="info-value">{{ userId || 'N/A' }}</span>
+            </div>
+
+            <!-- Email -->
+            <div class="info-field">
+                <label class="info-label">Email</label>
+                <span class="info-value">{{ email || 'N/A' }}</span>
+            </div>
+
+            <!-- Entity ID -->
+            <div class="info-field">
+                <label class="info-label">Entity ID</label>
+                <span class="info-value">{{ entityId || 'N/A' }}</span>
+            </div>
+
+            <!-- Entity Role ID -->
+            <div class="info-field">
+                <label class="info-label">Entity Role ID</label>
+                <span class="info-value">{{ entityRoleId || 'N/A' }}</span>
+            </div>
+
+            <!-- Account State -->
+            <div class="info-field">
+                <label class="info-label">Account State</label>
+                <div class="info-value">
+                    <p-tag [value]="getAccountStateText()" [severity]="getAccountStateSeverity()"></p-tag>
+                </div>
+            </div>
+        </div>
+
+        <!-- Description Field (Editable) -->
+        <div class="description-section">
             <div class="field p-fluid">
-                <label for="detailsDescription">Description</label>
-                <textarea id="detailsDescription" pInputTextarea formControlName="description" rows="3"
+                <label for="detailsDescription" class="info-label">Description</label>
+                <textarea id="detailsDescription" pInputTextarea [formControl]="descriptionFormControl" rows="4"
                     placeholder="Enter account description"></textarea>
             </div>
         </div>
+    </div>
 
-        <!-- Action Buttons -->
-        <div class="flex justify-content-end gap-2 mt-4">
-            <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="closeDialog()"
-                [disabled]="savingAccountDetails || loadingAccountDetails">
+    <!-- Action Buttons -->
+    <ng-template pTemplate="footer">
+        <div class="flex justify-content-end gap-2">
+            <p-button label="Close" icon="pi pi-times" class="p-button-text" (onClick)="closeDialog()"
+                [disabled]="savingAccountDetails">
             </p-button>
-            <p-button label="Save" icon="pi pi-check" type="submit" [loading]="savingAccountDetails"
-                [disabled]="savingAccountDetails || loadingAccountDetails">
+            <p-button label="Save" icon="pi pi-check" (onClick)="saveAccountDetails()" [loading]="savingAccountDetails"
+                [disabled]="savingAccountDetails ||!isDescriptionModified">
             </p-button>
         </div>
-    </form>
-    <div *ngIf="loadingAccountDetails" class="flex justify-content-center align-items-center p-4">
-        <i class="pi pi-spin pi-spinner"></i>
-    </div>
+    </ng-template>
 </p-dialog>

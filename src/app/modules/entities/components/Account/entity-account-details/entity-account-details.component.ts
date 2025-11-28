@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormControl } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import { EntitiesService } from '../../../services/entities.service';
@@ -18,7 +18,22 @@ export class EntityAccountDetailsComponent implements OnInit, OnDestroy, OnChang
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() saved = new EventEmitter<void>();
 
-  accountDetailsForm!: FormGroup;
+  // Form control for editable description
+  descriptionFormControl: FormControl = new FormControl('');
+
+  // Account details properties (read-only)
+  accountId: number = 0;
+  email: string = '';
+  userId: number = 0;
+  entityId: number = 0;
+  entityRoleId: number = 0;
+  accountState: number = 0;
+  description: string = '';
+  descriptionRegional: string = '';
+
+  // Track original description to detect changes
+  originalDescription: string = '';
+
   loadingAccountDetails: boolean = false;
   savingAccountDetails: boolean = false;
   isRegional: boolean = false;
@@ -27,7 +42,6 @@ export class EntityAccountDetailsComponent implements OnInit, OnDestroy, OnChang
   private subscriptions: Subscription[] = [];
 
   constructor(
-    private fb: FormBuilder,
     private entitiesService: EntitiesService,
     private messageService: MessageService,
     private localStorageService: LocalStorageService
@@ -37,7 +51,6 @@ export class EntityAccountDetailsComponent implements OnInit, OnDestroy, OnChang
   }
 
   ngOnInit(): void {
-    this.initForm();
     if (this.visible && this.account) {
       this.loadAccountDetails(this.account.email);
     }
@@ -53,13 +66,6 @@ export class EntityAccountDetailsComponent implements OnInit, OnDestroy, OnChang
     }
   }
 
-  private initForm(): void {
-    this.accountDetailsForm = this.fb.group({
-      email: [{ value: '', disabled: true }],
-      description: ['']
-    });
-  }
-
   /**
    * Load account details by email
    */
@@ -72,12 +78,27 @@ export class EntityAccountDetailsComponent implements OnInit, OnDestroy, OnChang
           this.handleGetAccountDetailsError(response);
           return;
         }
+        console.log('account details response', response?.message);
 
         const accountData = response?.message || {};
-        this.accountDetailsForm.patchValue({
-          email: accountData.Email || email,
-          description: accountData.Description || accountData.Description_Regional || ''
-        });
+
+        // Populate all account details properties
+        this.accountId = accountData.Account_ID || 0;
+        this.email = accountData.Email || email;
+        this.userId = accountData.User_ID || 0;
+        this.entityId = accountData.Entity_ID || 0;
+        this.entityRoleId = accountData.Entity_Role_ID || 0;
+        this.accountState = accountData.Account_State ?? 1;
+        this.description = accountData.Description || '';
+        this.descriptionRegional = accountData.Description_Regional || '';
+
+        // Set description in form control based on regional setting
+        const descriptionToShow = this.isRegional
+          ? (this.descriptionRegional || this.description)
+          : (this.description || this.descriptionRegional);
+
+        this.descriptionFormControl.setValue(descriptionToShow, { emitEvent: false });
+        this.originalDescription = descriptionToShow;
       },
       error: () => {
         this.loadingAccountDetails = false;
@@ -88,17 +109,24 @@ export class EntityAccountDetailsComponent implements OnInit, OnDestroy, OnChang
   }
 
   /**
-   * Save account details
+   * Check if description has been modified
+   */
+  get isDescriptionModified(): boolean {
+    return this.descriptionFormControl.value !== this.originalDescription;
+  }
+
+  /**
+   * Save account details (only description)
    */
   saveAccountDetails(): void {
-    if (this.accountDetailsForm.invalid || !this.account) {
+    if (!this.account || !this.isDescriptionModified) {
       return;
     }
 
-    const { email, description } = this.accountDetailsForm.getRawValue();
+    const description = this.descriptionFormControl.value || '';
     this.savingAccountDetails = true;
 
-    const sub = this.entitiesService.updateAccountDetails(email, description, this.isRegional).subscribe({
+    const sub = this.entitiesService.updateAccountDetails(this.email, description, this.isRegional).subscribe({
       next: (response: any) => {
         this.savingAccountDetails = false;
         if (!response?.success) {
@@ -109,10 +137,11 @@ export class EntityAccountDetailsComponent implements OnInit, OnDestroy, OnChang
         this.messageService.add({
           severity: 'success',
           summary: 'Success',
-          detail: 'Account details updated successfully.'
+          detail: 'Account description updated successfully.'
         });
 
-        this.closeDialog();
+        // Update original description to reflect saved state
+        this.originalDescription = description;
         this.saved.emit();
       },
       error: () => {
@@ -126,7 +155,24 @@ export class EntityAccountDetailsComponent implements OnInit, OnDestroy, OnChang
   closeDialog(): void {
     this.visible = false;
     this.visibleChange.emit(false);
-    this.accountDetailsForm.reset();
+    // Reset description to original value if not saved
+    if (this.isDescriptionModified) {
+      this.descriptionFormControl.setValue(this.originalDescription, { emitEvent: false });
+    }
+  }
+
+  /**
+   * Get account state display text
+   */
+  getAccountStateText(): string {
+    return this.accountState === 1 ? 'Active' : 'Inactive';
+  }
+
+  /**
+   * Get account state severity for p-tag
+   */
+  getAccountStateSeverity(): string {
+    return this.accountState === 1 ? 'success' : 'danger';
   }
 
   onDialogHide(): void {
