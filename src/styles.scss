@@ -263,8 +263,17 @@ $gutter: 1rem; //for primeflex grid system
 
 
 
+ .p-menuitem-icon
+  {
+  margin-right: 0.5rem !important;
+}
+.rtl-layout .p-menuitem-icon
+  {
+  margin-left: 0.5rem !important;
+}
 
 
+ 
 
 // .rtl-layout .layout-drawer .layout-sidebar .layout-menu-container .layout-menu .layout-root-menuitem > .layout-menuitem-root-text > span {
 //   margin-left: -46px;

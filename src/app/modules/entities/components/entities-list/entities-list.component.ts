@@ -78,54 +78,24 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
                     return;
                 }
                 console.log('response', response);
-                console.log('response.message', response?.message);
-                console.log('response.message["0"]', response?.message?.["0"]);
+                this.totalRecords = Number(response.message.Total_Count);
 
-                // Extract Total_Count from response.message["0"].Total_Count
-                // The API returns Total_Count in the "0" key of the message object
-                if (response?.message?.["0"]?.Total_Count !== undefined) {
-                    // Ensure it's a number, not a string
-                    this.totalRecords = Number(response.message["0"].Total_Count);
-                    console.log('Total_Count extracted and set to totalRecords:', this.totalRecords);
-                } else if (response?.message?.Total_Count !== undefined) {
-                    // Fallback: check if Total_Count is directly in message
-                    this.totalRecords = Number(response.message.Total_Count);
-                    console.log('Total_Count found in message (fallback):', this.totalRecords);
-                } else {
-                    console.error('Total_Count not found. Available keys in message:', Object.keys(response?.message || {}));
-                    console.error('response.message["0"] content:', response?.message?.["0"]);
-                    // Don't update totalRecords if Total_Count is not found
-                    // This prevents overwriting with incorrect value
-                }
 
-                console.log('Final totalRecords value (type:', typeof this.totalRecords, '):', this.totalRecords);
-
-                // Extract entities from response.message, excluding the "0" key which contains Total_Count
-                // The API returns entities as keys "1", "2", "8", "11", etc. in the message object
                 let entitiesData: any = {};
-                if (response?.message) {
-                    // Extract all keys except "0" which contains Total_Count
-                    const messageData = response.message;
-                    entitiesData = {};
-                    console.log('Extracting entities from message keys:', Object.keys(messageData));
-                    Object.keys(messageData).forEach((key) => {
-                        // Skip key "0" (contains Total_Count) and only include entity objects
-                        if (key !== "0") {
-                            const item = messageData[key];
-                            console.log(`Checking key "${key}":`, item, 'Type:', typeof item, 'Has Entity_ID:', item?.Entity_ID !== undefined);
-                            if (typeof item === 'object' && item !== null && item.Entity_ID !== undefined) {
-                                entitiesData[key] = item;
-                                console.log(`Entity added from key "${key}"`);
-                            }
+                // Extract all keys except "0" which contains Total_Count
+                const messageData = response.message.Entities;
+                entitiesData = {};
+                Object.keys(messageData).forEach((key) => {
+                    // Skip key "0" (contains Total_Count) and only include entity objects
+                    if (key !== "0") {
+                        const item = messageData[key];
+                        console.log(`Checking key "${key}":`, item, 'Type:', typeof item, 'Has Entity_ID:', item?.Entity_ID !== undefined);
+                        if (typeof item === 'object' && item !== null && item.Entity_ID !== undefined) {
+                            entitiesData[key] = item;
+                            console.log(`Entity added from key "${key}"`);
                         }
-                    });
-                    console.log('Final entitiesData keys:', Object.keys(entitiesData));
-                    console.log('Number of entities extracted:', Object.keys(entitiesData).length);
-                    console.log('entitiesData values:', Object.values(entitiesData));
-                }
-
-                console.log('About to map entitiesData. entitiesData:', entitiesData);
-                console.log('Object.values(entitiesData):', Object.values(entitiesData));
+                    }
+                });
 
                 this.entities = Object.values(entitiesData).map((item: any) => {
                     console.log('Mapping item:', item);
@@ -139,10 +109,6 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
                         isPersonal: Boolean(item?.Is_Personal)
                     };
                 });
-
-                console.log('Final entities array length:', this.entities.length);
-                console.log('Final entities:', this.entities);
-
                 this.buildActivationControls();
             },
             complete: () => this.resetLoadingFlags()
@@ -151,26 +117,17 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
         this.subscriptions.push(sub);
     }
 
-    /**
-     * Handles page change event from PrimeNG table paginator
-     * @param event - PrimeNG pagination event containing first and rows
-     */
+
     onPageChange(event: any): void {
         this.first = event.first;
         this.rows = event.rows;
         this.loadEntities(true);
     }
 
-    /**
-     * Checks if currently on the first page
-     */
     isFirstPage(): boolean {
         return this.first === 0;
     }
 
-    /**
-     * Checks if currently on the last page
-     */
     isLastPage(): boolean {
         return this.totalRecords > 0 ? this.first + this.rows >= this.totalRecords : true;
     }
@@ -370,49 +327,52 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
         ];
     }
 
-    private handleBusinessError(context: EntityActionContext, response: any): void {
+    private handleBusinessError(context: EntityActionContext, response: any): void | null {
         const code = String(response?.message || '');
         console.log('code', code);
         let detail = '';
 
         switch (context) {
             case 'list':
-                detail = this.getListErrorMessage(code);
+                detail = this.getListErrorMessage(code) || '';
                 break;
             case 'activate':
-                detail = this.getActivateErrorMessage(code);
+                detail = this.getActivateErrorMessage(code) || '';
                 break;
             case 'deactivate':
-                detail = this.getDeactivateErrorMessage(code);
+                detail = this.getDeactivateErrorMessage(code) || '';
                 break;
             case 'delete':
-                detail = this.getDeleteErrorMessage(code);
+                detail = this.getDeleteErrorMessage(code) || '';
                 break;
             default:
-                detail = 'An unexpected error occurred. Please try again.';
+                return null;
         }
 
-        this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail
-        });
+        if (detail) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail
+            });
+        }
 
         if (context === 'list') {
             this.resetLoadingFlags();
         }
+        return null;
     }
 
-    private getListErrorMessage(code: string): string {
+    private getListErrorMessage(code: string): string | null {
         switch (code) {
             case 'ERP11255':
                 return 'Invalid value for the Filter_Count parameter. Should be a minimum of 10 records and a maximum of 100 records.';
             default:
-                return 'An error occurred while loading entities. Please try again.';
+                return null;
         }
     }
 
-    private getActivateErrorMessage(code: string): string {
+    private getActivateErrorMessage(code: string): string | null {
         switch (code) {
             case 'ERP11260':
                 return 'Invalid entity selected.';
@@ -421,11 +381,11 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
             case 'ERP11262':
                 return 'Entity is already active.';
             default:
-                return 'Session expired. Please login again.';
+                return null;
         }
     }
 
-    private getDeactivateErrorMessage(code: string): string {
+    private getDeactivateErrorMessage(code: string): string | null {
         switch (code) {
             case 'ERP11260':
                 return 'Invalid entity selected.';
@@ -434,18 +394,18 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
             case 'ERP11263':
                 return 'Entity is already inactive.';
             default:
-                return 'Session expired. Please login again.';
+                return null;
         }
     }
 
-    private getDeleteErrorMessage(code: string): string {
+    private getDeleteErrorMessage(code: string): string | null {
         switch (code) {
             case 'ERP11260':
                 return 'Invalid entity selected.';
             case 'ERP11270':
                 return 'Entity cannot be removed because it still has data.';
             default:
-                return 'Session expired. Please login again.';
+                return null;
         }
     }
 

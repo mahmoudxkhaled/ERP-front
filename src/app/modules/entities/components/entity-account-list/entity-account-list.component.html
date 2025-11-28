@@ -1,0 +1,262 @@
+<div class="card">
+    <!-- Filter Options -->
+    <div class="flex gap-4 align-items-center justify-content-end mb-3">
+        <div class="flex align-items-center gap-2">
+            <label for="includeSubentities" class="text-600">Include Sub-entities:</label>
+            <p-inputSwitch id="includeSubentities" [(ngModel)]="includeSubentities" (onChange)="onFilterChange()"
+                [disabled]="loadingAccounts"></p-inputSwitch>
+        </div>
+        <div class="flex align-items-center gap-2">
+            <label for="activeOnly" class="text-600">Active Only:</label>
+            <p-inputSwitch id="activeOnly" [(ngModel)]="activeOnly" (onChange)="onFilterChange()"
+                [disabled]="loadingAccounts"></p-inputSwitch>
+        </div>
+    </div>
+
+    <!-- Section: Accounts -->
+    <p-panel header=" " class="mb-4">
+        <ng-template pTemplate="header">
+            <div class="flex align-items-center justify-content-between w-full">
+                <div class="flex align-items-center gap-3">
+                    <i class="pi pi-briefcase text-primary text-2xl"></i>
+                    <span class="text-xl font-semibold">Accounts</span>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <p-button width="1500px" label="Add Account" icon="pi pi-user-plus" iconPos="left" size="small"
+                    severity="contrast" (onClick)="navigateToAddAccount()" [disabled]="loadingAccounts"></p-button>
+            </div>
+        </ng-template>
+
+        <div *ngIf="loadingAccounts" class="flex justify-content-center align-items-center" style="min-height: 100px;">
+            <i class="pi pi-spin pi-spinner"></i>
+        </div>
+
+        <p-table *ngIf="!loadingAccounts" [value]="entityAccounts" [paginator]="true" [first]="first" [rows]="rows"
+            [totalRecords]="totalRecords" [showCurrentPageReport]="true" responsiveLayout="scroll"
+            [rowsPerPageOptions]="[10, 25, 50, 100]"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [loading]="loadingAccounts"
+            (onPage)="onPageChange($event)">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th class="text-center">Account ID</th>
+                    <th class="text-center">User ID</th>
+                    <th>Email</th>
+                    <th class="text-center">Role</th>
+                    <th class="text-center">Account State</th>
+                    <th class="text-center">Last Login</th>
+                    <th class="text-center" style="width: 120px;">Actions</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-account>
+                <tr>
+                    <td class="text-center">
+                        <span class="text-600">{{ account.accountId }}</span>
+                    </td>
+                    <td class="text-center">
+                        <span class="text-600">{{ account.userId }}</span>
+                    </td>
+                    <td>
+                        <span class="text-600">{{ account.email }}</span>
+                    </td>
+                    <td class="text-center">
+                        <p-tag [value]="account.roleName"
+                            [severity]="account.systemRoleId === 4 ? 'info' : 'secondary'"></p-tag>
+                    </td>
+                    <td class="text-center">
+                        <p-tag [value]="account.accountState === 1 ? 'Active' : 'Inactive'"
+                            [severity]="account.accountState === 1 ? 'success' : 'danger'"></p-tag>
+                    </td>
+                    <td class="text-center">
+                        <span class="text-600">
+                            {{ account.Last_Login ? (account.Last_Login | date:'short') : 'Never' }}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <button pButton pRipple type="button" icon="pi pi-ellipsis-v"
+                            class="p-button-rounded p-button-text p-button-plain"
+                            (click)="openOtherAccountMenu(rowMenu, account, $event)" [disabled]="loadingAccounts">
+                        </button>
+                        <p-menu #rowMenu [model]="otherAccountsMenuItems" [popup]="true" [appendTo]="'body'"></p-menu>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="7" class="text-center">No accounts found.</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </p-panel>
+</div>
+
+<!-- Delete Account Confirmation Dialog -->
+<p-dialog [(visible)]="deleteAccountDialog" [modal]="true" [style]="{ width: '450px' }" [closable]="true"
+    [draggable]="false" [resizable]="false">
+    <ng-template pTemplate="header">
+        <h3>Delete Account</h3>
+    </ng-template>
+    <div class="flex flex-column gap-3">
+        <p>
+            Are you sure you want to delete the account for <strong>{{ accountToDelete?.email }}</strong>?
+        </p>
+        <p class="text-red-500 font-semibold">This action cannot be undone.</p>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="onCancelDeleteAccountDialog()"
+            [disabled]="loadingAccounts">
+        </p-button>
+        <p-button class="p-button-danger" (onClick)="deleteAccount()" [disabled]="loadingAccounts">
+            <ng-container *ngIf="loadingAccounts">
+                <span class="indicator-progress" [style.display]="'block'">
+                    Please wait
+                    <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
+                </span>
+            </ng-container>
+            <ng-container *ngIf="!loadingAccounts">
+                <span>Delete</span>
+            </ng-container>
+        </p-button>
+    </ng-template>
+</p-dialog>
+
+<!-- Add Account Dialog -->
+<p-dialog [(visible)]="addAccountDialog" [modal]="true" [style]="{ width: '500px' }" [closable]="true"
+    [draggable]="false" [resizable]="false">
+    <ng-template pTemplate="header">
+        <h3>Create New Account (System User)</h3>
+    </ng-template>
+    <form *ngIf="form" [formGroup]="form" (ngSubmit)="submit()">
+        <div class="flex flex-column gap-3">
+            <!-- Email Field -->
+            <div class="field p-fluid">
+                <label for="email">Email <span class="text-red-500">*</span></label>
+                <input id="email" type="email" pInputText formControlName="email"
+                    [class.ng-invalid]="submitted && f['email'].invalid" placeholder="Enter email address" />
+                <small class="p-error" *ngIf="submitted && f['email'].invalid">
+                    <span *ngIf="f['email'].errors?.['required']">Email is required.</span>
+                    <span *ngIf="f['email'].errors?.['email']">Please enter a valid email address.</span>
+                </small>
+            </div>
+
+            <!-- First Name Field -->
+            <div class="field p-fluid">
+                <label for="firstName">First Name <span class="text-red-500">*</span></label>
+                <input id="firstName" type="text" pInputText formControlName="firstName"
+                    [class.ng-invalid]="submitted && f['firstName'].invalid" placeholder="Enter first name" />
+                <small class="p-error" *ngIf="submitted && f['firstName'].invalid">
+                    First name is required.
+                </small>
+            </div>
+
+            <!-- Last Name Field -->
+            <div class="field p-fluid">
+                <label for="lastName">Last Name <span class="text-red-500">*</span></label>
+                <input id="lastName" type="text" pInputText formControlName="lastName"
+                    [class.ng-invalid]="submitted && f['lastName'].invalid" placeholder="Enter last name" />
+                <small class="p-error" *ngIf="submitted && f['lastName'].invalid">
+                    Last name is required.
+                </small>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-content-end gap-2 mt-4">
+            <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="onAccountCancelled()"
+                [disabled]="loading">
+            </p-button>
+            <p-button label="Create Account" icon="pi pi-check" type="submit" [loading]="loading" [disabled]="loading">
+            </p-button>
+        </div>
+    </form>
+</p-dialog>
+
+<!-- Activate Account Confirmation Dialog -->
+<p-dialog [(visible)]="activateAccountDialog" [modal]="true" [style]="{ width: '450px' }" [closable]="true"
+    [draggable]="false" [resizable]="false">
+    <ng-template pTemplate="header">
+        <h3>Activate Account</h3>
+    </ng-template>
+    <div class="flex flex-column gap-3">
+        <p>
+            Are you sure you want to activate the account for <strong>{{ accountToActivate?.email }}</strong>?
+        </p>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="onCancelActivateAccountDialog()"
+            [disabled]="loadingAccounts">
+        </p-button>
+        <p-button (onClick)="activateAccount()" [disabled]="loadingAccounts">
+            <ng-container *ngIf="loadingAccounts">
+                <span class="indicator-progress" [style.display]="'block'">
+                    Please wait
+                    <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
+                </span>
+            </ng-container>
+            <ng-container *ngIf="!loadingAccounts">
+                <span>Activate</span>
+            </ng-container>
+        </p-button>
+    </ng-template>
+</p-dialog>
+
+<!-- Deactivate Account Confirmation Dialog -->
+<p-dialog [(visible)]="deactivateAccountDialog" [modal]="true" [style]="{ width: '450px' }" [closable]="true"
+    [draggable]="false" [resizable]="false">
+    <ng-template pTemplate="header">
+        <h3>Deactivate Account</h3>
+    </ng-template>
+    <div class="flex flex-column gap-3">
+        <p>
+            Are you sure you want to deactivate the account for <strong>{{ accountToDeactivate?.email }}</strong>?
+        </p>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="onCancelDeactivateAccountDialog()"
+            [disabled]="loadingAccounts">
+        </p-button>
+        <p-button (onClick)="deactivateAccount()" [disabled]="loadingAccounts">
+            <ng-container *ngIf="loadingAccounts">
+                <span class="indicator-progress" [style.display]="'block'">
+                    Please wait
+                    <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
+                </span>
+            </ng-container>
+            <ng-container *ngIf="!loadingAccounts">
+                <span>Deactivate</span>
+            </ng-container>
+        </p-button>
+    </ng-template>
+</p-dialog>
+
+<!-- Assign Admin Confirmation Dialog -->
+<p-dialog [(visible)]="assignAdminDialog" [modal]="true" [style]="{ width: '450px' }" [closable]="true"
+    [draggable]="false" [resizable]="false">
+    <ng-template pTemplate="header">
+        <h3>Assign As Entity Admin</h3>
+    </ng-template>
+    <div class="flex flex-column gap-3">
+        <p>
+            Promote <strong>{{ accountToAssign?.email }}</strong> to entity administrator for
+            <strong>{{ getEntityName() }}</strong>? They will gain full admin permissions.
+        </p>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="onCancelAssignAdminDialog()"
+            [disabled]="loadingAccounts">
+        </p-button>
+        <p-button (onClick)="assignAccountAsAdmin()" [disabled]="loadingAccounts">
+            <ng-container *ngIf="loadingAccounts">
+                <span class="indicator-progress" [style.display]="'block'">
+                    Please wait
+                    <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
+                </span>
+            </ng-container>
+            <ng-container *ngIf="!loadingAccounts">
+                <span>Assign</span>
+            </ng-container>
+        </p-button>
+    </ng-template>
+</p-dialog>
+
+<p-toast></p-toast>

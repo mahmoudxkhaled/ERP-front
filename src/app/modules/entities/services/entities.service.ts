@@ -208,9 +208,33 @@ export class EntitiesService {
         );
     }
 
-    getEntityAccountsList(entityId: string, includeSubentities: boolean = false, activeOnly: boolean = false): Observable<any> {
+    /**
+     * Gets entity accounts list with pagination support
+     * @param entityId - Entity ID
+     * @param includeSubentities - Include sub-entities
+     * @param activeOnly - Filter active accounts only
+     * @param lastAccountId - Page number as negative value (-1 = page 1, -2 = page 2, etc.). Use 0 to start from beginning.
+     * @param filterCount - Number of records per page (minimum 10, maximum 100)
+     */
+    getEntityAccountsList(
+        entityId: string,
+        includeSubentities: boolean = false,
+        activeOnly: boolean = false,
+        lastAccountId: number = 0,
+        filterCount: number = 10
+    ): Observable<any> {
         this.isLoadingSubject.next(true);
-        const params = [entityId, includeSubentities.toString(), activeOnly.toString()];
+
+        // Validate and clamp filterCount between 10 and 100
+        const validatedFilterCount = Math.max(10, Math.min(100, filterCount));
+
+        const params = [
+            entityId,
+            includeSubentities.toString(),
+            activeOnly.toString(),
+            lastAccountId.toString(),
+            validatedFilterCount.toString()
+        ];
         return this.apiServices.callAPI(500, this.getAccessToken(), params).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );

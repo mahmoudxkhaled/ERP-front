@@ -40,3 +40,14 @@ export interface Entity {
     isPersonal: boolean;
 }
 
+
+export interface EntityAccount {
+    accountId: string;
+    userId: number;
+    email: string;
+    systemRoleId: number;
+    roleName: string;
+    accountState: number; // 1 = Active, 0 = Inactive
+    Two_FA: boolean;
+    Last_Login: string;
+}
