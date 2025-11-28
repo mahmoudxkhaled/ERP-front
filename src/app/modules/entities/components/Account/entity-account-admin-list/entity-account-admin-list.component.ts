@@ -1051,7 +1051,7 @@ export class EntityAccountAdminListComponent implements OnInit, OnDestroy, OnCha
             next: (response: any) => {
                 this.loadingEntityOptions = false;
                 if (response?.success) {
-                    const entities = response.message || {};
+                    const entities = response.message.Entities || {};
                     this.entityOptions = Object.values(entities).map((item: any) => ({
                         label: `${item?.Name || 'Entity'} (${item?.Code || 'N/A'})`,
                         value: Number(item?.Entity_ID || item?.id || 0)

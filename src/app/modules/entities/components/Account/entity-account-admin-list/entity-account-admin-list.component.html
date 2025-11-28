@@ -296,8 +296,8 @@
 </p-dialog>
 
 <!-- Update Account Entity Dialog -->
-<p-dialog [(visible)]="updateAccountEntityDialog" [modal]="true" [style]="{ width: '500px' }" [closable]="true"
-    [draggable]="false" [resizable]="false" (onHide)="onCloseUpdateAccountEntityDialog()">
+<p-dialog [(visible)]="updateAccountEntityDialog" [modal]="true" [style]="{ width: '700px' , height: '500px' }"
+    [closable]="true" [draggable]="false" [resizable]="false" (onHide)="onCloseUpdateAccountEntityDialog()">
     <ng-template pTemplate="header">
         <h3>Update Account Entity</h3>
     </ng-template>
@@ -334,17 +334,19 @@
                 </small>
             </div>
         </div>
+    </form>
 
-        <!-- Action Buttons -->
-        <div class="flex justify-content-end gap-2 mt-4">
+    <!-- Action Buttons -->
+    <ng-template pTemplate="footer">
+        <div class="flex justify-content-end gap-2">
             <p-button label="Cancel" icon="pi pi-times" class="p-button-text"
                 (onClick)="onCloseUpdateAccountEntityDialog()" [disabled]="savingAccountEntity">
             </p-button>
-            <p-button label="Update Entity" icon="pi pi-check" type="submit" [loading]="savingAccountEntity"
-                [disabled]="savingAccountEntity || updateEntityForm.invalid">
+            <p-button label="Update Entity" icon="pi pi-check" (onClick)="saveAccountEntity()"
+                [loading]="savingAccountEntity" [disabled]="savingAccountEntity || updateEntityForm.invalid">
             </p-button>
         </div>
-    </form>
+    </ng-template>
 </p-dialog>
 
 <p-toast></p-toast>

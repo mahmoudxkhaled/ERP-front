@@ -990,6 +990,7 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
    * Load entity options for dropdown
    */
   loadEntityOptions(): void {
+    console.log('loadEntityOptions');
     if (this.entityOptions.length > 0) {
       return; // Already loaded
     }
@@ -999,7 +1000,10 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
       next: (response: any) => {
         this.loadingEntityOptions = false;
         if (response?.success) {
-          const entities = response.message || {};
+          console.log('entities response', response);
+          const entities = response.message.Entities || {};
+
+
           this.entityOptions = Object.values(entities).map((item: any) => ({
             label: `${item?.Name || 'Entity'} (${item?.Code || 'N/A'})`,
             value: Number(item?.Entity_ID || item?.id || 0)
@@ -1026,8 +1030,8 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     // TODO: Implement entity roles API when available
     // For now, use default roles
     this.entityRoleOptions = [
-      { label: 'Entity Administrator', value: 15 },
-      { label: 'System User', value: 5 }
+      { label: 'Role 1', value: 15 },
+      { label: 'Role 2 ', value: 5 }
     ];
   }
 
