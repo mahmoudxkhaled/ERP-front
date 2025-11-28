@@ -553,17 +553,17 @@ export class EntityFormComponent implements OnInit, OnDestroy {
     private getCreateAccountErrorMessage(code: string): string | null {
         switch (code) {
             case 'ERP11130':
-                return 'Invalid email format.';
+                return 'Invalid email address format';
             case 'ERP11141':
-                return 'Account with same email already exists.';
+                return 'An account with the same email already exists';
             case 'ERP11142':
-                return 'Invalid First Name format.';
+                return 'Invalid First Name format -> Empty or contains special characters';
             case 'ERP11143':
-                return 'Invalid Last Name format.';
+                return 'Invalid Last Name format -> Empty or contains special characters';
             case 'ERP11144':
-                return 'Invalid Entity ID.';
+                return 'Invalid Entity ID -> The database does not have an Entity with this ID';
             case 'ERP11145':
-                return 'Invalid Role ID.';
+                return 'Invalid Role ID -> The entity does not have a Role with this ID';
             default:
                 return null;
         }

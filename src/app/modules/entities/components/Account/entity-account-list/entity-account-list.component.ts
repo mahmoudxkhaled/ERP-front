@@ -717,11 +717,13 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     const code = String(response?.message || '');
     const detail = this.getErrorMessage(context, code);
 
-    this.messageService.add({
-      severity: 'error',
-      summary: 'Error',
-      detail
-    });
+    if (detail) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail
+      });
+    }
   }
 
   /**
@@ -731,11 +733,13 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     const code = String(response?.message || '');
     const detail = this.getAccountErrorMessage(operation, code);
 
-    this.messageService.add({
-      severity: 'error',
-      summary: 'Error',
-      detail
-    });
+    if (detail) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail
+      });
+    }
     this.loadingAccounts = false;
     this.loading = false;
   }
@@ -747,18 +751,20 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     const code = String(response?.message || '');
     const detail = this.getAssignAdminErrorMessage(code);
 
-    this.messageService.add({
-      severity: 'error',
-      summary: 'Error',
-      detail
-    });
+    if (detail) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail
+      });
+    }
     this.loadingAccounts = false;
   }
 
   /**
    * Get user-friendly error message based on error code
    */
-  private getErrorMessage(context: string, code: string): string {
+  private getErrorMessage(context: string, code: string): string | null {
     switch (code) {
       case 'ERP11260':
         return 'Invalid Entity ID';
@@ -770,16 +776,16 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
         return 'Account does not belong to this entity.';
       default:
         if (context === 'accounts') {
-          return code || 'Failed to load account information.';
+          return null;
         }
-        return code || 'An error occurred. Please try again.';
+        return null;
     }
   }
 
   /**
    * Get error message for account operations
    */
-  private getAccountErrorMessage(operation: string, code: string): string {
+  private getAccountErrorMessage(operation: string, code: string): string | null {
     // Common error codes for all account operations
     switch (code) {
       case 'ERP11260':
@@ -795,39 +801,39 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
       case 'activate':
         switch (code) {
           case 'ERP11150':
-            return 'Email not found in entity.';
+            return 'Invalid email address → The Entity does not have an account with this email address';
           case 'ERP11151':
-            return 'Account already active.';
+            return 'The account is already active';
           default:
-            return code || 'Failed to activate account. Please try again.';
+            return null;
         }
       case 'deactivate':
         switch (code) {
           case 'ERP11150':
-            return 'Email not found.';
+            return 'Invalid email address → The Entity does not have an account with this email address';
           case 'ERP11152':
-            return 'Account already deactivated.';
+            return 'The account was already deactivated';
           default:
-            return code || 'Failed to deactivate account. Please try again.';
+            return null;
         }
       case 'delete':
         switch (code) {
           case 'ERP11150':
-            return 'Email not found.';
+            return 'Invalid email address → The Entity does not have an account with this email address';
           case 'ERP11153':
-            return 'Account exists; must deactivate instead.';
+            return 'Account was already created. Deactivate_Account to be used instead';
           default:
-            return code || 'Failed to delete account. Please try again.';
+            return null;
         }
       default:
-        return code || `Failed to ${operation} account. Please try again.`;
+        return null;
     }
   }
 
   /**
    * Get error message for assign admin operation
    */
-  private getAssignAdminErrorMessage(code: string): string {
+  private getAssignAdminErrorMessage(code: string): string | null {
     switch (code) {
       case 'ERP11260':
         return 'Invalid Entity ID.';
@@ -836,7 +842,7 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
       case 'ERP11278':
         return 'The account must belong directly to this entity before it can be promoted.';
       default:
-        return code || 'Failed to assign this account as admin. Please try again.';
+        return null;
     }
   }
 
