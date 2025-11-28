@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
-import { EntitiesService } from '../../services/entities.service';
+import { EntitiesService } from '../../../services/entities.service';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
 import { IAccountSettings } from 'src/app/core/models/IAccountStatusResponse';
 import { FileUpload } from 'primeng/fileupload';
@@ -78,17 +78,12 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
             next: (response: any) => {
                 if (!response?.success) {
                     this.handleBusinessError('details', response);
-                } else {
-                    this.entityDetails = response?.message || {};
-                    console.log('entityDetails', this.entityDetails);
+                    return;
                 }
+                this.entityDetails = response?.message || {};
+                console.log('entityDetails', this.entityDetails);
                 this.loadingDetails = false;
                 this.loading = false;
-            },
-            error: () => {
-                this.handleUnexpectedError();
-                this.loading = false;
-                this.loadingDetails = false;
             }
         });
 
@@ -344,10 +339,7 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
 
                 this.loadLogo();
             },
-            error: () => {
-                this.handleUnexpectedError();
-                this.loadingLogo = false;
-            },
+
             complete: () => this.loadingLogo = false
         });
 
@@ -400,10 +392,6 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
                 this.hasLogo = false;
                 this.loadingLogo = false;
             },
-            error: () => {
-                this.handleUnexpectedError();
-                this.loadingLogo = false;
-            }
         });
 
         this.subscriptions.push(sub);
@@ -420,67 +408,47 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
     /**
      * Handle business errors from API responses
      */
-    private handleBusinessError(context: string, response: any): void {
+    private handleBusinessError(context: string, response: any): void | null {
         const code = String(response?.message || '');
         const detail = this.getErrorMessage(context, code);
 
-        this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail
-        });
+        if (detail) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail
+            });
+        }
+        return null
     }
 
 
     /**
      * Get user-friendly error message based on error code
      */
-    private getErrorMessage(context: string, code: string): string {
+    private getErrorMessage(context: string, code: string): string | null {
         switch (code) {
             case 'ERP11260':
                 return 'Invalid Entity ID';
             case 'ERP11277':
-                return 'Invalid account selected.';
+                return 'Invalid Account ID (issued if the Account ID does not exist in the database, or if an entity administrator tries to assign an account outside his entity tree)';
             case 'ERP11278':
-                return 'Account does not belong to this entity.';
-            // Update_Entity_Contacts error codes
-            case 'ERP11271':
-                return 'Invalid Address format.';
-            case 'ERP11272':
-                return 'Invalid Phone number format.';
-            case 'ERP11273':
-                return 'Invalid Fax number format.';
-            case 'ERP11274':
-                return 'Invalid Email format.';
+                return 'Invalid action. The Entity Admin account must be assigned directly to the entity (i.e. the Account\'s Entity_ID must be equal to the Entity_ID)';
             // Assign_Entity_Logo error codes
             case 'ERP11281':
-                return 'Unknown image format.';
+                return 'Unknown image file format';
             case 'ERP11282':
-                return 'Empty image contents.';
+                return 'Empty contents for Image file';
             // Delete_Entity_Admin error code
             case 'ERP11279':
-                return 'Account ID is not an admin of this entity.';
+                return 'Invalid Account ID. Provided ID is not part of the Entity\'s admins';
             default:
-                if (context === 'details' || context === 'contacts' || context === 'admins') {
-                    return code || 'Failed to load entity information.';
-                }
-                return code || 'An error occurred. Please try again.';
+                return null;
         }
     }
 
 
-    /**
-     * Handle unexpected errors
-     */
 
-
-    private handleUnexpectedError(): void {
-        this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'An unexpected error occurred. Please try again.'
-        });
-    }
 }
 
 

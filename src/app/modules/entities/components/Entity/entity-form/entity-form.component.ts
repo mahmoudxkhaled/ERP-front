@@ -4,10 +4,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { Subscription, throwError } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { EntitiesService } from '../../services/entities.service';
+import { EntitiesService } from '../../../services/entities.service';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
 import { IAccountSettings } from 'src/app/core/models/IAccountStatusResponse';
 import { Roles } from 'src/app/core/models/system-roles';
+import { dE } from '@fullcalendar/core/internal-common';
 
 type EntityFormContext = 'create' | 'update' | 'details';
 
@@ -131,13 +132,7 @@ export class EntityFormComponent implements OnInit, OnDestroy {
                     ];
                 }
             },
-            error: () => {
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: 'Failed to load entities.'
-                });
-            }
+
         });
         this.subscriptions.push(sub);
     }
@@ -167,13 +162,6 @@ export class EntityFormComponent implements OnInit, OnDestroy {
                     ];
                 }
             },
-            error: () => {
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: 'Failed to load entity tree.'
-                });
-            }
         });
         this.subscriptions.push(sub);
     }
@@ -210,10 +198,6 @@ export class EntityFormComponent implements OnInit, OnDestroy {
                 if (!this.showIsPersonal) {
                     this.form.patchValue({ isPersonal: false });
                 }
-            },
-            error: () => {
-                this.handleUnexpectedError();
-                this.loading = false;
             },
             complete: () => this.loading = false
         });
@@ -283,10 +267,6 @@ export class EntityFormComponent implements OnInit, OnDestroy {
                         detail: 'Entity updated successfully.'
                     });
                     this.router.navigate(['/company-administration/entities/list']);
-                },
-                error: () => {
-                    this.handleUnexpectedError();
-                    this.loading = false;
                 },
                 complete: () => this.loading = false
             });
@@ -381,10 +361,6 @@ export class EntityFormComponent implements OnInit, OnDestroy {
                     });
                     this.router.navigate(['/company-administration/entities/list']);
                 },
-                error: () => {
-                    this.handleUnexpectedError();
-                    this.loading = false;
-                },
                 complete: () => this.loading = false
             });
 
@@ -455,98 +431,97 @@ export class EntityFormComponent implements OnInit, OnDestroy {
         return '';
     }
 
-    private handleBusinessError(context: EntityFormContext, response: any): void {
+    private handleBusinessError(context: EntityFormContext, response: any): void | null {
         const code = String(response?.message || '');
         let detail = '';
 
         switch (context) {
             case 'create':
-                detail = this.getCreationErrorMessage(code);
+                detail = this.getCreationErrorMessage(code) || '';
                 break;
             case 'update':
-                detail = this.getUpdateErrorMessage(code);
+                detail = this.getUpdateErrorMessage(code) || '';
                 break;
             case 'details':
-                detail = this.getDetailsErrorMessage(code);
+                detail = this.getDetailsErrorMessage(code) || '';
                 break;
             default:
-                detail = 'Unexpected error occurred.';
+                return null;
         }
-
-        this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail
-        });
+        if (detail) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail
+            });
+        }
         this.loading = false;
+        return null;
     }
 
-    private getCreationErrorMessage(code: string): string {
+    private getCreationErrorMessage(code: string): string | null {
         console.log('code', code);
         switch (code) {
             case 'ERP11250':
-                return 'Invalid parent entity.';
+                return 'Invalid Parent Entity ID';
             case 'ERP11251':
-                return 'Invalid entity code format. Only letters, spaces, hyphens, apostrophes, dots, and underscores are allowed.';
+                return 'Invalid \'Code\' format';
             case 'ERP11252':
-                return 'Invalid entity name format. Only letters, spaces, hyphens, apostrophes, dots, and underscores are allowed.';
+                return 'Invalid \'Name\' format';
             case 'ERP11253':
-                return 'Invalid description format.';
+                return 'Invalid \'Description\' format';
             case 'ERP11254':
-                return 'Duplicate entity code.';
+                return 'The \'Code\' is not unique in the main root Entity tree. The administrator adding the entity should be notified to adjust the \'Code\' field';
             default:
-                return 'Session expired. Please login again.';
+                return null;
         }
     }
 
-    private getUpdateErrorMessage(code: string): string {
+    private getUpdateErrorMessage(code: string): string | null {
         switch (code) {
             case 'ERP11260':
-                return 'Invalid entity.';
+                return 'Invalid Entity ID';
             case 'ERP11250':
-                return 'Invalid parent entity.';
+                return 'Invalid Parent Entity ID';
             case 'ERP11251':
-                return 'Invalid entity code format. Only letters, spaces, hyphens, apostrophes, dots, and underscores are allowed.';
+                return 'Invalid \'Code\' format';
             case 'ERP11252':
-                return 'Invalid entity name format. Only letters, spaces, hyphens, apostrophes, dots, and underscores are allowed.';
+                return 'Invalid \'Name\' format';
             case 'ERP11253':
-                return 'Invalid description format.';
+                return 'Invalid \'Description\' format';
             case 'ERP11254':
-                return 'Duplicate entity code.';
+                return 'The \'Code\' is not unique in the main root Entity tree. The administrator adding the entity should be notified to adjust the \'Code\' field';
             default:
-                return 'Session expired. Please login again.';
+                return null;
         }
     }
 
-    private getDetailsErrorMessage(code: string): string {
+    private getDetailsErrorMessage(code: string): string | null {
         if (code === 'ERP11260') {
-            return 'Invalid entity selected.';
+            return 'Invalid Entity ID';
         }
 
-        return 'Session expired. Please login again.';
+        return null;
     }
 
-    private handleUnexpectedError(): void {
-        this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Session expired. Please login again.'
-        });
-    }
+
 
     private handleCreateEntityRoleError(response: any): void {
         const code = String(response?.message || '');
         const detail = this.getCreateEntityRoleErrorMessage(code);
 
-        this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail
-        });
+        if (detail) {
+
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail
+            });
+        }
         this.loading = false;
     }
 
-    private getCreateEntityRoleErrorMessage(code: string): string {
+    private getCreateEntityRoleErrorMessage(code: string): string | null {
         switch (code) {
             case 'ERP11300':
                 return 'Invalid entity selected.';
@@ -557,7 +532,7 @@ export class EntityFormComponent implements OnInit, OnDestroy {
             case 'ERP11303':
                 return 'A role with this title already exists for this entity.';
             default:
-                return 'Session expired. Please login again.';
+                return null;
         }
     }
 
@@ -565,15 +540,17 @@ export class EntityFormComponent implements OnInit, OnDestroy {
         const code = String(response?.message || '');
         const detail = this.getCreateAccountErrorMessage(code);
 
-        this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail
-        });
+        if (detail) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail
+            });
+        }
         this.loading = false;
     }
 
-    private getCreateAccountErrorMessage(code: string): string {
+    private getCreateAccountErrorMessage(code: string): string | null {
         switch (code) {
             case 'ERP11130':
                 return 'Invalid email format.';
@@ -588,7 +565,7 @@ export class EntityFormComponent implements OnInit, OnDestroy {
             case 'ERP11145':
                 return 'Invalid Role ID.';
             default:
-                return 'Session expired. Please login again.';
+                return null;
         }
     }
 }

@@ -210,4 +210,146 @@
     </ng-template>
 </p-dialog>
 
+<!-- Remove Admin Access Confirmation Dialog -->
+<p-dialog [(visible)]="removeAdminDialog" [modal]="true" [style]="{ width: '450px' }" [closable]="true"
+    [draggable]="false" [resizable]="false">
+    <ng-template pTemplate="header">
+        <h3>Remove Admin Access</h3>
+    </ng-template>
+    <div class="flex flex-column gap-3">
+        <p>
+            Are you sure you want to remove admin access for <strong>{{ adminToRemove?.email }}</strong>?
+        </p>
+        <p class="text-600">
+            This will demote the account to a system user. The account will lose administrator privileges but will
+            remain active.
+        </p>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="onCancelRemoveAdminDialog()"
+            [disabled]="loadingAdmins">
+        </p-button>
+        <p-button (onClick)="removeAdmin()" [disabled]="loadingAdmins">
+            <ng-container *ngIf="loadingAdmins">
+                <span class="indicator-progress" [style.display]="'block'">
+                    Please wait
+                    <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
+                </span>
+            </ng-container>
+            <ng-container *ngIf="!loadingAdmins">
+                <span>Remove Admin Access</span>
+            </ng-container>
+        </p-button>
+    </ng-template>
+</p-dialog>
+
+<!-- View/Edit Account Details Component -->
+<app-entity-account-details [(visible)]="viewAccountDetailsDialog" [account]="selectedAccountForDetails"
+    (saved)="onAccountDetailsSaved()">
+</app-entity-account-details>
+
+<!-- Update Account Details Component -->
+<app-entity-account-update-details [(visible)]="updateAccountDetailsDialog" [account]="selectedAccountForDetails"
+    (saved)="onAccountDetailsSaved()">
+</app-entity-account-update-details>
+
+<!-- Update Account Email Dialog -->
+<p-dialog [(visible)]="updateAccountEmailDialog" [modal]="true" [style]="{ width: '500px' }" [closable]="true"
+    [draggable]="false" [resizable]="false" (onHide)="onCloseUpdateAccountEmailDialog()">
+    <ng-template pTemplate="header">
+        <h3>Update Account Email</h3>
+    </ng-template>
+    <form *ngIf="updateEmailForm" [formGroup]="updateEmailForm" (ngSubmit)="saveAccountEmail()">
+        <div class="flex flex-column gap-3">
+            <!-- Account ID Field (Read-only) -->
+            <div class="field p-fluid">
+                <label for="emailAccountId">Account ID</label>
+                <input id="emailAccountId" type="text" pInputText formControlName="accountId" readonly />
+            </div>
+
+            <!-- Current Email Field (Read-only) -->
+            <div class="field p-fluid">
+                <label for="currentEmail">Current Email</label>
+                <input id="currentEmail" type="email" pInputText formControlName="currentEmail" readonly />
+            </div>
+
+            <!-- New Email Field -->
+            <div class="field p-fluid">
+                <label for="newEmail">New Email <span class="text-red-500">*</span></label>
+                <input id="newEmail" type="email" pInputText formControlName="newEmail"
+                    [class.ng-invalid]="updateEmailForm.get('newEmail')?.invalid && updateEmailForm.get('newEmail')?.touched"
+                    placeholder="Enter new email address" />
+                <small class="p-error"
+                    *ngIf="updateEmailForm.get('newEmail')?.invalid && updateEmailForm.get('newEmail')?.touched">
+                    <span *ngIf="updateEmailForm.get('newEmail')?.errors?.['required']">New email is required.</span>
+                    <span *ngIf="updateEmailForm.get('newEmail')?.errors?.['email']">Please enter a valid email
+                        address.</span>
+                </small>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-content-end gap-2 mt-4">
+            <p-button label="Cancel" icon="pi pi-times" class="p-button-text"
+                (onClick)="onCloseUpdateAccountEmailDialog()" [disabled]="savingAccountEmail">
+            </p-button>
+            <p-button label="Update Email" icon="pi pi-check" type="submit" [loading]="savingAccountEmail"
+                [disabled]="savingAccountEmail || updateEmailForm.invalid">
+            </p-button>
+        </div>
+    </form>
+</p-dialog>
+
+<!-- Update Account Entity Dialog -->
+<p-dialog [(visible)]="updateAccountEntityDialog" [modal]="true" [style]="{ width: '500px' }" [closable]="true"
+    [draggable]="false" [resizable]="false" (onHide)="onCloseUpdateAccountEntityDialog()">
+    <ng-template pTemplate="header">
+        <h3>Update Account Entity</h3>
+    </ng-template>
+    <form *ngIf="updateEntityForm" [formGroup]="updateEntityForm" (ngSubmit)="saveAccountEntity()">
+        <div class="flex flex-column gap-3">
+            <!-- Email Field (Read-only) -->
+            <div class="field p-fluid">
+                <label for="entityEmail">Email</label>
+                <input id="entityEmail" type="email" pInputText formControlName="email" readonly />
+            </div>
+
+            <!-- Entity ID Field -->
+            <div class="field p-fluid">
+                <label for="entityId">Entity <span class="text-red-500">*</span></label>
+                <p-dropdown id="entityId" formControlName="entityId" [options]="entityOptions" optionLabel="label"
+                    optionValue="value" placeholder="Select Entity" [disabled]="loadingEntityOptions"
+                    (onChange)="loadEntityRoles($event.value)">
+                </p-dropdown>
+                <small class="p-error"
+                    *ngIf="updateEntityForm.get('entityId')?.invalid && updateEntityForm.get('entityId')?.touched">
+                    Entity is required.
+                </small>
+            </div>
+
+            <!-- Entity Role ID Field -->
+            <div class="field p-fluid">
+                <label for="entityRoleId">Entity Role <span class="text-red-500">*</span></label>
+                <p-dropdown id="entityRoleId" formControlName="entityRoleId" [options]="entityRoleOptions"
+                    optionLabel="label" optionValue="value" placeholder="Select Entity Role">
+                </p-dropdown>
+                <small class="p-error"
+                    *ngIf="updateEntityForm.get('entityRoleId')?.invalid && updateEntityForm.get('entityRoleId')?.touched">
+                    Entity Role is required.
+                </small>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-content-end gap-2 mt-4">
+            <p-button label="Cancel" icon="pi pi-times" class="p-button-text"
+                (onClick)="onCloseUpdateAccountEntityDialog()" [disabled]="savingAccountEntity">
+            </p-button>
+            <p-button label="Update Entity" icon="pi pi-check" type="submit" [loading]="savingAccountEntity"
+                [disabled]="savingAccountEntity || updateEntityForm.invalid">
+            </p-button>
+        </div>
+    </form>
+</p-dialog>
+
 <p-toast></p-toast>

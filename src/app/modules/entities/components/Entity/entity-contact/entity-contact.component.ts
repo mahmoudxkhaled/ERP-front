@@ -2,7 +2,7 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
-import { EntitiesService } from '../../services/entities.service';
+import { EntitiesService } from '../../../services/entities.service';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
 import { IAccountSettings } from 'src/app/core/models/IAccountStatusResponse';
 
@@ -337,15 +337,15 @@ export class EntityContactComponent implements OnInit, OnDestroy {
     private getUpdateErrorMessage(code: string): string | null {
         switch (code) {
             case 'ERP11260':
-                return 'Invalid Entity ID.';
+                return 'Invalid Entity ID';
             case 'ERP11271':
-                return 'Invalid format for provided Address.';
+                return 'Invalid format for provided Address';
             case 'ERP11272':
-                return 'Invalid format for one or more Phone Number(s). Only digits are allowed (no "+", "-", "/" or spaces).';
+                return 'Invalid format for one or more of provided Phone Number(s) (Note: Only digits are allowed, no \'+\', \'-\', \'/\' or spaces)';
             case 'ERP11273':
-                return 'Invalid format for one or more Fax Number(s). Only digits are allowed (no "+", "-", "/" or spaces).';
+                return 'Invalid format for one or more of provided Fax Number(s) (Note: Only digits are allowed, no \'+\', \'-\', \'/\' or spaces)';
             case 'ERP11274':
-                return 'Invalid format for one or more Email(s).';
+                return 'Invalid format for one or more of provided Email(s)';
         }
         return null;
 
@@ -357,7 +357,7 @@ export class EntityContactComponent implements OnInit, OnDestroy {
             this.messageService.add({
                 severity: 'error',
                 summary: 'Error',
-                detail: 'Invalid Entity ID.'
+                detail: 'Invalid Entity ID'
             });
         }
         this.loading = false;

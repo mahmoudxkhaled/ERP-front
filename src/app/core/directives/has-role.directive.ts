@@ -1,5 +1,5 @@
 import { Directive, Input, OnInit, TemplateRef, ViewContainerRef } from '@angular/core';
-import { LocalStorageService } from '../Services/local-storage.service';
+import { PermissionService } from '../Services/permission.service';
 
 /**
  * Structural directive that conditionally renders elements based on user roles.
@@ -41,10 +41,9 @@ export class HasRoleDirective implements OnInit {
          */
         private viewContainer: ViewContainerRef,
         /**
-         * LocalStorageService is used to get the current user's account details,
-         * specifically the System_Role_ID which we compare against the allowed roles.
+         * PermissionService centralizes role-based decisions.
          */
-        private localStorageService: LocalStorageService
+        private permissionService: PermissionService
     ) { }
 
     ngOnInit(): void {
@@ -57,19 +56,13 @@ export class HasRoleDirective implements OnInit {
      * If the user has the role, the element is shown. Otherwise, it's hidden.
      */
     private updateView(): void {
-        // Get the current user's account details from local storage
-        const accountDetails = this.localStorageService.getAccountDetails();
-
-        // Get the user's System_Role_ID, default to 0 if not found
-        const userRoleId = accountDetails?.System_Role_ID || 0;
-
         // Normalize the input: convert single number to array for easier checking
         const allowedRoles = Array.isArray(this.appHasRole)
             ? this.appHasRole
             : [this.appHasRole];
 
         // Check if the user's role is in the list of allowed roles
-        const hasRequiredRole = allowedRoles.includes(userRoleId);
+        const hasRequiredRole = this.permissionService.hasAnyRole(allowedRoles);
 
         // If user has the required role and view hasn't been created, create it
         if (hasRequiredRole && !this.hasView) {

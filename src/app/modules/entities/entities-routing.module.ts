@@ -2,10 +2,9 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 // Components
-import { EntitiesListComponent } from './components/entities-list/entities-list.component';
-import { EntityFormComponent } from './components/entity-form/entity-form.component';
-import { AssignAdminComponent } from './components/assign-admin/assign-admin.component';
-import { EntityDetailsComponent } from './components/entity-details/entity-details.component';
+import { EntitiesListComponent } from './components/Entity/entities-list/entities-list.component';
+import { EntityFormComponent } from './components/Entity/entity-form/entity-form.component';
+import { EntityDetailsComponent } from './components/Entity/entity-details/entity-details.component';
 
 const routes: Routes = [
     { path: '', redirectTo: 'list', pathMatch: 'full' },
@@ -13,7 +12,6 @@ const routes: Routes = [
     { path: 'new', component: EntityFormComponent, data: { breadcrumb: 'newEntity' } },
     { path: ':id', component: EntityDetailsComponent, data: { breadcrumb: 'entityDetails' } },
     { path: ':id/edit', component: EntityFormComponent, data: { breadcrumb: 'editEntity' } },
-    { path: ':id/assign-admin', component: AssignAdminComponent, data: { breadcrumb: 'assignAdmin' } },
 ];
 
 @NgModule({

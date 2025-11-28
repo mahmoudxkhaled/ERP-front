@@ -3,11 +3,12 @@ import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Observable, Subscription } from 'rxjs';
-import { EntitiesService } from '../../services/entities.service';
+import { EntitiesService } from '../../../services/entities.service';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
-import { Entity, EntityBackend, EntitiesListResponse } from '../../models/entities.model';
+import { Entity, EntityBackend, EntitiesListResponse } from '../../../models/entities.model';
 import { IAccountSettings } from 'src/app/core/models/IAccountStatusResponse';
 import { Roles } from 'src/app/core/models/system-roles';
+import { PermissionService } from 'src/app/core/Services/permission.service';
 
 type EntityActionContext = 'list' | 'activate' | 'deactivate' | 'delete';
 
@@ -38,7 +39,8 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
         private entitiesService: EntitiesService,
         private router: Router,
         private messageService: MessageService,
-        private localStorageService: LocalStorageService
+        private localStorageService: LocalStorageService,
+        private permissionService: PermissionService
     ) {
         this.isLoading$ = this.entitiesService.isLoadingSubject.asObservable();
     }
@@ -141,12 +143,6 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
     viewDetails(entity: Entity): void {
         if (entity.id) {
             this.router.navigate(['/company-administration/entities', entity.id]);
-        }
-    }
-
-    addAccount(entity: Entity): void {
-        if (entity.id) {
-            this.router.navigate(['/company-administration/entities', entity.id, 'add-account']);
         }
     }
 
@@ -296,12 +292,9 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
     }
 
     private configureMenuItems(): void {
-        // Get user role to determine if "Add Account" should be shown
-        // SystemAdmin (2) OR EntityAdmin (3) can add accounts
-        // System_Role_ID is in AccountDetails, not AccountSettings
-        const accountDetails = this.localStorageService.getAccountDetails();
-        const systemRoleId = accountDetails?.System_Role_ID || 0;
-        const canAddAccount = systemRoleId === 2 || systemRoleId === 3; // SystemAdmin OR EntityAdmin
+        // Check permissions using PermissionService
+        const canAddAccount = this.permissionService.can('Create_Account');
+        const canDeleteEntity = this.permissionService.can('Delete_Entity');
 
         this.menuItems = [
             {
@@ -314,16 +307,11 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
                 icon: 'pi pi-user-edit',
                 command: () => this.currentEntity && this.edit(this.currentEntity)
             },
-            ...(canAddAccount ? [{
-                label: 'Add Account',
-                icon: 'pi pi-user-plus',
-                command: () => this.currentEntity && this.addAccount(this.currentEntity)
-            }] : []),
-            {
+            ...(canDeleteEntity ? [{
                 label: 'Delete',
                 icon: 'pi pi-trash',
                 command: () => this.currentEntity && this.confirmDelete(this.currentEntity)
-            }
+            }] : [])
         ];
     }
 
@@ -366,7 +354,7 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
     private getListErrorMessage(code: string): string | null {
         switch (code) {
             case 'ERP11255':
-                return 'Invalid value for the Filter_Count parameter. Should be a minimum of 10 records and a maximum of 100 records.';
+                return 'Invalid value for the Filter_Count parameter, should be a minimum of 5 records, and a maximum of 100 records';
             default:
                 return null;
         }
@@ -375,11 +363,11 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
     private getActivateErrorMessage(code: string): string | null {
         switch (code) {
             case 'ERP11260':
-                return 'Invalid entity selected.';
+                return 'Invalid Entity ID';
             case 'ERP11261':
-                return 'Parent entities cannot be activated or deactivated from this screen.';
+                return 'An entity administrator cannot activate/deactivate his parent entity';
             case 'ERP11262':
-                return 'Entity is already active.';
+                return 'The entity is already active';
             default:
                 return null;
         }
@@ -388,11 +376,11 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
     private getDeactivateErrorMessage(code: string): string | null {
         switch (code) {
             case 'ERP11260':
-                return 'Invalid entity selected.';
+                return 'Invalid Entity ID';
             case 'ERP11261':
-                return 'Parent entities cannot be activated or deactivated from this screen.';
+                return 'An entity administrator cannot activate/deactivate his parent entity';
             case 'ERP11263':
-                return 'Entity is already inactive.';
+                return 'The entity is already deactivated';
             default:
                 return null;
         }
@@ -401,9 +389,9 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
     private getDeleteErrorMessage(code: string): string | null {
         switch (code) {
             case 'ERP11260':
-                return 'Invalid entity selected.';
+                return 'Invalid Entity ID';
             case 'ERP11270':
-                return 'Entity cannot be removed because it still has data.';
+                return 'The entity contains accounts and other data. It should be either deactivated, or all linked records need to be deleted first';
             default:
                 return null;
         }

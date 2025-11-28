@@ -110,23 +110,50 @@
 
 <p-toast></p-toast>
 
-<p-dialog [(visible)]="activationEntityDialog" [modal]="true" [style]="{ width: '450px' }" [closable]="true"
+<p-dialog [(visible)]="activationEntityDialog" [modal]="true" [style]="{ width: '500px' }" [closable]="true"
     [draggable]="false" [resizable]="false">
     <ng-template pTemplate="header">
         <h3>{{ currentEntityForActivation?.active ? 'Deactivate Entity' : 'Activate Entity' }}</h3>
     </ng-template>
     <div class="flex flex-column gap-3">
-        <p>
-            Are you sure you want to
-            <strong>{{ currentEntityForActivation?.active ? 'deactivate' : 'activate' }}</strong>
-            <strong>{{ currentEntityForActivation?.name }}</strong>?
-        </p>
+        <!-- Activation Message -->
+        <ng-container *ngIf="!currentEntityForActivation?.active">
+            <p>
+                Are you sure you want to <strong>activate</strong> <strong>{{ currentEntityForActivation?.name
+                    }}</strong>?
+            </p>
+        </ng-container>
+
+        <!-- Deactivation Message with Critical Warning -->
+        <ng-container *ngIf="currentEntityForActivation?.active">
+            <p>
+                Are you sure you want to <strong>deactivate : </strong> <strong>{{ currentEntityForActivation?.name
+                    }}</strong>?
+            </p>
+            <div class="p-3 border-round surface-border"
+                style="background: var(--red-50); border-left: 4px solid var(--red-500);">
+                <div class="flex align-items-start gap-2">
+                    <i class="pi pi-exclamation-triangle text-red-500 mt-1" style="font-size: 1.5rem;"></i>
+                    <div class="flex flex-column gap-2">
+                        <p class="text-red-700 font-semibold m-0" style="font-size: 1rem;">
+                            <strong>Critical Warning:</strong>
+                        </p>
+                        <p class="text-red-600 m-0 line-height-3" style="font-size: 0.95rem;">
+                            This action will <strong>forcibly logout all accounts</strong> under this entity's tree,
+                            and will <strong>not allow any login process</strong> for related accounts.
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+        </ng-container>
     </div>
     <ng-template pTemplate="footer">
         <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="onCancelActivationDialog()"
             [disabled]="!!(isLoading$ | async)">
         </p-button>
-        <p-button (onClick)="activation(!currentEntityForActivation?.active)" [disabled]="!!(isLoading$ | async)">
+        <p-button [severity]="currentEntityForActivation?.active ? 'danger' : 'success'"
+            (onClick)="activation(!currentEntityForActivation?.active)" [disabled]="!!(isLoading$ | async)">
             <ng-container *ngIf="isLoading$ | async">
                 <span class="indicator-progress" [style.display]="'block'">
                     Please wait

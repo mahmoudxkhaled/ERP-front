@@ -1,0 +1,35 @@
+<p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '500px' }" [closable]="true"
+    [draggable]="false" [resizable]="false" (onHide)="onDialogHide()">
+    <ng-template pTemplate="header">
+        <h3>Update Account Details</h3>
+    </ng-template>
+    <form *ngIf="updateDetailsForm" [formGroup]="updateDetailsForm" (ngSubmit)="saveUpdatedAccountDetails()">
+        <div class="flex flex-column gap-3">
+            <!-- Email Field (Read-only) -->
+            <div class="field p-fluid">
+                <label for="updateEmail">Email</label>
+                <input id="updateEmail" type="email" pInputText formControlName="email" readonly />
+            </div>
+
+            <!-- Description Field -->
+            <div class="field p-fluid">
+                <label for="updateDescription">Description</label>
+                <textarea id="updateDescription" pInputTextarea formControlName="description" rows="3"
+                    placeholder="Enter account description"></textarea>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-content-end gap-2 mt-4">
+            <p-button label="Cancel" icon="pi pi-times" class="p-button-text"
+                (onClick)="closeDialog()" [disabled]="savingAccountDetails">
+            </p-button>
+            <p-button label="Update" icon="pi pi-check" type="submit" [loading]="savingAccountDetails"
+                [disabled]="savingAccountDetails">
+            </p-button>
+        </div>
+    </form>
+    <div *ngIf="loadingAccountDetails" class="flex justify-content-center align-items-center p-4">
+        <i class="pi pi-spin pi-spinner"></i>
+    </div>
+</p-dialog>

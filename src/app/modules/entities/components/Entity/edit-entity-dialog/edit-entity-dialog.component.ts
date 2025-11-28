@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { MessageService } from 'primeng/api';
-import { EntitiesService } from '../../services/entities.service';
+import { EntitiesService } from '../../../services/entities.service';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
 import { IAccountSettings } from 'src/app/core/models/IAccountStatusResponse';
 
@@ -99,13 +99,7 @@ export class EditEntityDialogComponent implements OnInit, OnDestroy {
                     this.parentOptionsLoaded = true;
                 }
             },
-            error: () => {
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: 'Unable to load parent entities.'
-                });
-            }
+
         });
 
         this.subscriptions.push(sub);
@@ -139,14 +133,6 @@ export class EditEntityDialogComponent implements OnInit, OnDestroy {
 
                 this.loadingDetails = false;
             },
-            error: () => {
-                this.loadingDetails = false;
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: 'Unable to load entity details.'
-                });
-            }
         });
 
         this.subscriptions.push(sub);
@@ -189,14 +175,7 @@ export class EditEntityDialogComponent implements OnInit, OnDestroy {
                     this.saved.emit();
                     this.closeDialog();
                 },
-                error: () => {
-                    this.saving = false;
-                    this.messageService.add({
-                        severity: 'error',
-                        summary: 'Error',
-                        detail: 'Unable to update entity.'
-                    });
-                }
+
             });
 
         this.subscriptions.push(sub);
@@ -216,12 +195,39 @@ export class EditEntityDialogComponent implements OnInit, OnDestroy {
     }
 
     private handleBusinessError(response: any): void {
-        const detail = response?.message || 'Something went wrong.';
-        this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail
-        });
+        const code = String(response?.message || '');
+        const detail = this.getErrorMessage(code);
+
+        if (detail) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail
+            });
+        }
+    }
+
+    private getErrorMessage(code: string): string | null {
+        switch (code) {
+            // Get_Entity_Details error codes
+            case 'ERP11260':
+                return 'Invalid Entity ID';
+
+            // Update_Entity_Details error codes
+            case 'ERP11250':
+                return 'Invalid Parent Entity ID';
+            case 'ERP11251':
+                return 'Invalid \'Code\' format';
+            case 'ERP11252':
+                return 'Invalid \'Name\' format';
+            case 'ERP11253':
+                return 'Invalid \'Description\' format';
+            case 'ERP11254':
+                return 'The \'Code\' is not unique in the main root Entity tree. The administrator adding the entity should be notified to adjust the \'Code\' field';
+
+            default:
+                return null;
+        }
     }
 }
 

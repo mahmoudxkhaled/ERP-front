@@ -3,11 +3,11 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { Subscription, throwError } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { EntitiesService } from '../../services/entities.service';
+import { EntitiesService } from '../../../services/entities.service';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
 import { IAccountSettings } from 'src/app/core/models/IAccountStatusResponse';
-import { EntityAccount } from '../../models/entities.model';
-import { Roles } from 'src/app/core/models/system-roles';
+import { EntityAccount } from '../../../models/entities.model';
+import { PermissionService } from 'src/app/core/Services/permission.service';
 
 
 
@@ -31,13 +31,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
 
   accountSettings: IAccountSettings;
   isRegional: boolean = false;
-
-  // Role-based permissions
-  systemRoleId: number = 0;
-  isDeveloper: boolean = false;
-  isSystemAdmin: boolean = false;
-  isEntityAdmin: boolean = false;
-  readonly Roles = Roles;
 
   // Delete confirmation dialog
   deleteAccountDialog: boolean = false;
@@ -73,28 +66,43 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
   loadingEntity: boolean = false;
   entityName: string = '';
 
+  // Account management dialog properties
+  viewAccountDetailsDialog: boolean = false;
+  updateAccountDetailsDialog: boolean = false;
+  updateAccountEmailDialog: boolean = false;
+  updateAccountEntityDialog: boolean = false;
+  selectedAccountForDetails?: EntityAccount;
+
+  // Form groups for account management (only for email and entity updates)
+  updateEmailForm!: FormGroup;
+  updateEntityForm!: FormGroup;
+
+  // Loading states for account management operations
+  savingAccountEmail: boolean = false;
+  savingAccountEntity: boolean = false;
+
+  // Entity and role options for update entity dialog
+  entityOptions: any[] = [];
+  entityRoleOptions: any[] = [];
+  loadingEntityOptions: boolean = false;
+
   private subscriptions: Subscription[] = [];
 
   constructor(
     private entitiesService: EntitiesService,
     private messageService: MessageService,
     private localStorageService: LocalStorageService,
+    private permissionService: PermissionService,
     private fb: FormBuilder
   ) {
     this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
     this.isRegional = this.accountSettings?.Language !== 'English';
-
-    // Initialize role-based permissions
-    const accountDetails = this.localStorageService.getAccountDetails();
-    this.systemRoleId = accountDetails?.System_Role_ID || 0;
-    this.isDeveloper = this.systemRoleId === 1; // Developer = 1
-    this.isSystemAdmin = this.systemRoleId === 2; // SystemAdmin = 2
-    this.isEntityAdmin = this.systemRoleId === 3; // EntityAdmin = 3
   }
 
   ngOnInit(): void {
     // Initialize form on component init
     this.initForm();
+    this.initAccountManagementForms();
 
     if (this.entityId) {
       this.loadAccounts();
@@ -135,10 +143,7 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
           ? (entity?.Name_Regional || entity?.Name || '')
           : (entity?.Name || '');
       },
-      error: () => {
-        this.handleUnexpectedError();
-        this.loadingEntity = false;
-      },
+
       complete: () => this.loadingEntity = false
     });
 
@@ -185,10 +190,7 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
         const accountsData = response?.message?.Accounts || {};
         this.mapAccountsData(accountsData);
       },
-      error: () => {
-        this.handleUnexpectedError();
-        this.loadingAccounts = false;
-      },
+
       complete: () => this.loadingAccounts = false
     });
 
@@ -207,7 +209,7 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
       const systemRoleId = account?.System_Role_ID || 0;
       const accountState = account?.Account_State || 0;
       const email = account?.Email || '';
-      const roleName = this.getRoleName(systemRoleId);
+      const roleName = this.permissionService.getRoleName(systemRoleId);
       const twoFA = account?.Two_FA || false;
       const lastLogin = account?.Last_Login || null;
       return {
@@ -221,23 +223,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
         Last_Login: lastLogin
       };
     }).filter((account: EntityAccount) => account.systemRoleId !== 3);
-  }
-
-  private getRoleName(systemRoleId: number): string {
-    switch (systemRoleId) {
-      case 1:
-        return 'Developer';
-      case 2:
-        return 'System Administrator';
-      case 3:
-        return 'Entity Administrator';
-      case 4:
-        return 'System User';
-      case 5:
-        return 'Guest';
-      default:
-        return 'Unknown';
-    }
   }
 
   onFilterChange(): void {
@@ -259,6 +244,25 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
       email: ['', [Validators.required, Validators.email]],
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]]
+    });
+  }
+
+  /**
+   * Initialize forms for account management operations
+   */
+  initAccountManagementForms(): void {
+    // Form for updating account email
+    this.updateEmailForm = this.fb.group({
+      accountId: [{ value: '', disabled: true }],
+      currentEmail: [{ value: '', disabled: true }],
+      newEmail: ['', [Validators.required, Validators.email]]
+    });
+
+    // Form for updating account entity
+    this.updateEntityForm = this.fb.group({
+      email: [{ value: '', disabled: true }],
+      entityId: [0, [Validators.required]],
+      entityRoleId: [0, [Validators.required]]
     });
   }
 
@@ -431,10 +435,7 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
         this.reloadAccounts();
         this.accountUpdated.emit();
       },
-      error: () => {
-        this.handleUnexpectedError();
-        this.loadingAccounts = false;
-      },
+
       complete: () => this.loadingAccounts = false
     });
 
@@ -488,10 +489,7 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
         this.reloadAccounts();
         this.accountUpdated.emit();
       },
-      error: () => {
-        this.handleUnexpectedError();
-        this.loadingAccounts = false;
-      },
+
       complete: () => this.loadingAccounts = false
     });
 
@@ -547,10 +545,7 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
         this.reloadAccounts();
         this.accountUpdated.emit();
       },
-      error: () => {
-        this.handleUnexpectedError();
-        this.loadingAccounts = false;
-      },
+
       complete: () => this.loadingAccounts = false
     });
 
@@ -603,10 +598,7 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
         this.reloadAccounts();
         this.accountUpdated.emit();
       },
-      error: () => {
-        this.handleUnexpectedError();
-        this.loadingAccounts = false;
-      },
+
       complete: () => this.loadingAccounts = false
     });
 
@@ -630,9 +622,53 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
    */
   private configureOtherAccountMenuItems(account: EntityAccount): void {
     const menuItemsList: any[] = [];
+    const canActivateAccount = this.permissionService.canActivateAccount();
+    const canDeactivateAccount = this.permissionService.canDeactivateAccount();
+    const canDeleteAccount = this.permissionService.canDeleteAccount();
+    const canAssignAdmin = this.permissionService.canAssignAdmin();
+    const canGetAccountDetails = this.permissionService.can('Get_Account_Details');
+    const canUpdateAccountDetails = this.permissionService.can('Update_Account_Details');
+    const canUpdateAccountEmail = this.permissionService.can('Update_Account_Email');
+    const canUpdateAccountEntity = this.permissionService.can('Update_Account_Entity');
+
+    // View/Edit Account Details - Visible if user can get or update account details
+    if (canGetAccountDetails || canUpdateAccountDetails) {
+      menuItemsList.push({
+        label: 'View/Edit Account Details',
+        icon: 'pi pi-eye',
+        command: () => this.currentAccount && this.openViewAccountDetails(this.currentAccount)
+      });
+    }
+
+    // Update Account Details
+    if (canUpdateAccountDetails) {
+      menuItemsList.push({
+        label: 'Update Account Details',
+        icon: 'pi pi-pencil',
+        command: () => this.currentAccount && this.openUpdateAccountDetails(this.currentAccount)
+      });
+    }
+
+    // Update Account Email
+    if (canUpdateAccountEmail) {
+      menuItemsList.push({
+        label: 'Update Account Email',
+        icon: 'pi pi-envelope',
+        command: () => this.currentAccount && this.openUpdateAccountEmail(this.currentAccount)
+      });
+    }
+
+    // Update Account Entity
+    if (canUpdateAccountEntity) {
+      menuItemsList.push({
+        label: 'Update Account Entity',
+        icon: 'pi pi-building',
+        command: () => this.currentAccount && this.openUpdateAccountEntity(this.currentAccount)
+      });
+    }
 
     // Activate - For SystemAdmin and Developer when account is inactive (Account_State = 0)
-    if ((this.isSystemAdmin || this.isDeveloper) && account.accountState === 0) {
+    if (canActivateAccount && account.accountState === 0) {
       menuItemsList.push({
         label: 'Activate Account',
         icon: 'pi pi-check',
@@ -641,7 +677,7 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     // Deactivate - For SystemAdmin, Developer and EntityAdmin when account is active (Account_State = 1)
-    if ((this.isSystemAdmin || this.isDeveloper || this.isEntityAdmin) && account.accountState === 1) {
+    if (canDeactivateAccount && account.accountState === 1) {
       menuItemsList.push({
         label: 'Deactivate Account',
         icon: 'pi pi-times',
@@ -650,7 +686,7 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     // Delete - For SystemAdmin, Developer and EntityAdmin
-    if (this.isSystemAdmin || this.isDeveloper || this.isEntityAdmin) {
+    if (canDeleteAccount) {
       menuItemsList.push({
         label: 'Delete Account',
         icon: 'pi pi-trash',
@@ -659,7 +695,7 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     // Assign as Admin - available when account is not already admin
-    if ((this.isSystemAdmin || this.isDeveloper || this.isEntityAdmin) && this.isEligibleForAdmin(account)) {
+    if (canAssignAdmin && this.isEligibleForAdmin(account)) {
       menuItemsList.push({
         label: 'Assign as Admin',
         icon: 'pi pi-user-plus',
@@ -736,6 +772,8 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     switch (code) {
       case 'ERP11260':
         return 'Invalid Entity ID';
+      case 'ERP11255':
+        return 'Invalid value for the Filter_Count parameter, should be a minimum of 5 records, and a maximum of 100 records';
       case 'ERP11277':
         return 'Invalid account selected.';
       case 'ERP11278':
@@ -813,6 +851,275 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
   }
 
   /**
+   * Open view account details dialog
+   */
+  openViewAccountDetails(account: EntityAccount): void {
+    this.selectedAccountForDetails = account;
+    this.viewAccountDetailsDialog = true;
+  }
+
+  /**
+   * Open update account details dialog
+   */
+  openUpdateAccountDetails(account: EntityAccount): void {
+    this.selectedAccountForDetails = account;
+    this.updateAccountDetailsDialog = true;
+  }
+
+  /**
+   * Handle account details saved event
+   */
+  onAccountDetailsSaved(): void {
+    this.accountUpdated.emit();
+    this.reloadAccounts();
+  }
+
+  /**
+   * Open update account email dialog
+   */
+  openUpdateAccountEmail(account: EntityAccount): void {
+    this.selectedAccountForDetails = account;
+    this.updateEmailForm.patchValue({
+      accountId: account.accountId,
+      currentEmail: account.email,
+      newEmail: ''
+    });
+    this.updateAccountEmailDialog = true;
+  }
+
+  /**
+   * Open update account entity dialog
+   */
+  openUpdateAccountEntity(account: EntityAccount): void {
+    this.selectedAccountForDetails = account;
+    this.loadEntityOptions();
+    // Load account details first to get entityId and entityRoleId
+    const sub = this.entitiesService.getAccountDetails(account.email).subscribe({
+      next: (response: any) => {
+        if (response?.success) {
+          const accountData = response?.message || {};
+          this.updateEntityForm.patchValue({
+            email: account.email,
+            entityId: accountData.Entity_ID || 0,
+            entityRoleId: accountData.Entity_Role_ID || 0
+          });
+        } else {
+          // If loading fails, use default values
+          this.updateEntityForm.patchValue({
+            email: account.email,
+            entityId: 0,
+            entityRoleId: 0
+          });
+        }
+        this.updateAccountEntityDialog = true;
+      },
+      error: () => {
+        this.updateEntityForm.patchValue({
+          email: account.email,
+          entityId: 0,
+          entityRoleId: 0
+        });
+        this.updateAccountEntityDialog = true;
+      }
+    });
+    this.subscriptions.push(sub);
+  }
+
+
+  /**
+   * Save updated account email
+   */
+  saveAccountEmail(): void {
+    if (this.updateEmailForm.invalid || !this.selectedAccountForDetails) {
+      this.updateEmailForm.markAllAsTouched();
+      return;
+    }
+
+    const { accountId, currentEmail, newEmail } = this.updateEmailForm.getRawValue();
+    this.savingAccountEmail = true;
+
+    const sub = this.entitiesService.updateAccountEmail(Number(accountId), currentEmail, newEmail).subscribe({
+      next: (response: any) => {
+        this.savingAccountEmail = false;
+        if (!response?.success) {
+          this.handleUpdateAccountEmailError(response);
+          return;
+        }
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Account email updated successfully.'
+        });
+
+        this.updateAccountEmailDialog = false;
+        this.updateEmailForm.reset();
+        this.accountUpdated.emit();
+        this.reloadAccounts();
+      },
+      error: () => {
+        this.savingAccountEmail = false;
+      }
+    });
+
+    this.subscriptions.push(sub);
+  }
+
+  /**
+   * Save updated account entity
+   */
+  saveAccountEntity(): void {
+    if (this.updateEntityForm.invalid || !this.selectedAccountForDetails) {
+      this.updateEntityForm.markAllAsTouched();
+      return;
+    }
+
+    const { email, entityId, entityRoleId } = this.updateEntityForm.value;
+    this.savingAccountEntity = true;
+
+    const sub = this.entitiesService.updateAccountEntity(email, Number(entityId), Number(entityRoleId)).subscribe({
+      next: (response: any) => {
+        this.savingAccountEntity = false;
+        if (!response?.success) {
+          this.handleUpdateAccountEntityError(response);
+          return;
+        }
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Account entity updated successfully.'
+        });
+
+        this.updateAccountEntityDialog = false;
+        this.updateEntityForm.reset();
+        this.accountUpdated.emit();
+        this.reloadAccounts();
+      },
+      error: () => {
+        this.savingAccountEntity = false;
+      }
+    });
+
+    this.subscriptions.push(sub);
+  }
+
+  /**
+   * Load entity options for dropdown
+   */
+  loadEntityOptions(): void {
+    if (this.entityOptions.length > 0) {
+      return; // Already loaded
+    }
+
+    this.loadingEntityOptions = true;
+    const sub = this.entitiesService.listEntities(0, 100).subscribe({
+      next: (response: any) => {
+        this.loadingEntityOptions = false;
+        if (response?.success) {
+          const entities = response.message || {};
+          this.entityOptions = Object.values(entities).map((item: any) => ({
+            label: `${item?.Name || 'Entity'} (${item?.Code || 'N/A'})`,
+            value: Number(item?.Entity_ID || item?.id || 0)
+          })).filter((option: any) => !isNaN(option.value));
+
+          // Load entity roles if entity is selected
+          if (this.updateEntityForm.value.entityId) {
+            this.loadEntityRoles(Number(this.updateEntityForm.value.entityId));
+          }
+        }
+      },
+      error: () => {
+        this.loadingEntityOptions = false;
+      }
+    });
+
+    this.subscriptions.push(sub);
+  }
+
+  /**
+   * Load entity roles for selected entity
+   */
+  loadEntityRoles(entityId: number): void {
+    // TODO: Implement entity roles API when available
+    // For now, use default roles
+    this.entityRoleOptions = [
+      { label: 'Entity Administrator', value: 15 },
+      { label: 'System User', value: 5 }
+    ];
+  }
+
+  /**
+   * Close dialogs
+   */
+  onCloseUpdateAccountEmailDialog(): void {
+    this.updateAccountEmailDialog = false;
+    this.updateEmailForm.reset();
+  }
+
+  onCloseUpdateAccountEntityDialog(): void {
+    this.updateAccountEntityDialog = false;
+    this.updateEntityForm.reset();
+  }
+
+  /**
+   * Error handling methods
+   */
+  private handleUpdateAccountEmailError(response: any): void {
+    const code = String(response?.message || '');
+    const detail = this.getUpdateAccountEmailErrorMessage(code);
+
+    if (detail) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail
+      });
+    }
+  }
+
+  private handleUpdateAccountEntityError(response: any): void {
+    const code = String(response?.message || '');
+    const detail = this.getUpdateAccountEntityErrorMessage(code);
+
+    if (detail) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail
+      });
+    }
+  }
+
+  private getUpdateAccountEmailErrorMessage(code: string): string | null {
+    switch (code) {
+      case 'ERP11150':
+        return 'Invalid email address -> The Entity does not have an account with this email address';
+      case 'ERP11141':
+        return 'An account with the same email already exists';
+      case 'ERP11160':
+        return '\'Account_ID\' not matching with \'Current Email\'';
+      case 'ERP11161':
+        return 'Invalid format for the \'New_Email\'';
+      default:
+        return null;
+    }
+  }
+
+  private getUpdateAccountEntityErrorMessage(code: string): string | null {
+    switch (code) {
+      case 'ERP11150':
+        return 'Invalid email address -> The Entity does not have an account with this email address';
+      case 'ERP11144':
+        return 'Invalid Entity ID -> The database does not have an Entity with this ID';
+      case 'ERP11145':
+        return 'Invalid Role ID -> The entity does not have a Role with this ID';
+      default:
+        return null;
+    }
+  }
+
+  /**
    * Handle create entity role errors
    */
   private handleCreateEntityRoleError(response: any): void {
@@ -882,14 +1189,5 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     }
   }
 
-  /**
-   * Handle unexpected errors
-   */
-  private handleUnexpectedError(): void {
-    this.messageService.add({
-      severity: 'error',
-      summary: 'Error',
-      detail: 'An unexpected error occurred. Please try again.'
-    });
-  }
+
 }

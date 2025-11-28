@@ -262,5 +262,62 @@ export class EntitiesService {
             finalize(() => this.isLoadingSubject.next(false))
         );
     }
+
+    /**
+     * Get account details by email
+     * API Code: 155
+     * @param email - Account email address
+     */
+    getAccountDetails(email: string): Observable<any> {
+        this.isLoadingSubject.next(true);
+        return this.apiServices.callAPI(155, this.getAccessToken(), [email]).pipe(
+            finalize(() => this.isLoadingSubject.next(false))
+        );
+    }
+
+    /**
+     * Update account details
+     * API Code: 156
+     * @param email - Account email address
+     * @param description - Account description
+     * @param isRegional - Whether to use regional fields
+     */
+    updateAccountDetails(email: string, description: string, isRegional: boolean): Observable<any> {
+        this.isLoadingSubject.next(true);
+        const params = [email, description, isRegional.toString()];
+        return this.apiServices.callAPI(156, this.getAccessToken(), params).pipe(
+            finalize(() => this.isLoadingSubject.next(false))
+        );
+    }
+
+    /**
+     * Update account email address
+     * API Code: 157
+     * @param accountId - Account ID
+     * @param currentEmail - Current email address
+     * @param newEmail - New email address
+     */
+    updateAccountEmail(accountId: number, currentEmail: string, newEmail: string): Observable<any> {
+        this.isLoadingSubject.next(true);
+        const params = [accountId.toString(), currentEmail, newEmail];
+        return this.apiServices.callAPI(157, this.getAccessToken(), params).pipe(
+            finalize(() => this.isLoadingSubject.next(false))
+        );
+    }
+
+    /**
+     * Update account entity assignment
+     * API Code: 158
+     * @param email - Account email address
+     * @param entityId - New entity ID
+     * @param entityRoleId - New entity role ID
+     */
+    updateAccountEntity(email: string, entityId: number, entityRoleId: number): Observable<any> {
+        this.isLoadingSubject.next(true);
+        const params = [email, entityId.toString(), entityRoleId.toString()];
+        return this.apiServices.callAPI(158, this.getAccessToken(), params).pipe(
+            finalize(() => this.isLoadingSubject.next(false))
+        );
+    }
 }
 
