@@ -8,6 +8,7 @@ import { LocalStorageService } from 'src/app/core/Services/local-storage.service
 import { IAccountSettings } from 'src/app/core/models/IAccountStatusResponse';
 import { EntityAccount } from '../../../models/entities.model';
 import { PermissionService } from 'src/app/core/Services/permission.service';
+import { textFieldValidator, getTextFieldError } from 'src/app/core/Services/textFieldValidator';
 
 interface EntityAdmin {
     accountId: string;
@@ -526,8 +527,8 @@ export class EntityAccountAdminListComponent implements OnInit, OnDestroy, OnCha
     initForm(): void {
         this.form = this.fb.group({
             email: ['', [Validators.required, Validators.email]],
-            firstName: ['', [Validators.required]],
-            lastName: ['', [Validators.required]]
+            firstName: ['', [Validators.required, textFieldValidator()]],
+            lastName: ['', [Validators.required, textFieldValidator()]]
         });
     }
 
@@ -555,6 +556,14 @@ export class EntityAccountAdminListComponent implements OnInit, OnDestroy, OnCha
      */
     get f() {
         return this.form.controls;
+    }
+
+    get firstNameError(): string {
+        return getTextFieldError(this.f['firstName'], 'First name', this.submitted);
+    }
+
+    get lastNameError(): string {
+        return getTextFieldError(this.f['lastName'], 'Last name', this.submitted);
     }
 
     /**

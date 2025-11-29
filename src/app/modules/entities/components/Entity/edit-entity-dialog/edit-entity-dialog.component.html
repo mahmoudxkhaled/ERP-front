@@ -15,8 +15,8 @@
             <label for="code">Code</label>
             <input pInputText id="code" type="text" formControlName="code" placeholder="Enter entity code"
                 [class.p-invalid]="form.controls['code'].invalid && form.controls['code'].touched" />
-            <small *ngIf="form.controls['code'].invalid && form.controls['code'].touched" class="p-error">
-                Code is required.
+            <small *ngIf="form.controls['code'].invalid && form.controls['code'].touched && codeError" class="p-error">
+                {{ codeError }}
             </small>
         </div>
 
@@ -24,8 +24,8 @@
             <label for="name">Name</label>
             <input pInputText id="name" type="text" formControlName="name" placeholder="Enter entity name"
                 [class.p-invalid]="form.controls['name'].invalid && form.controls['name'].touched" />
-            <small *ngIf="form.controls['name'].invalid && form.controls['name'].touched" class="p-error">
-                Name is required.
+            <small *ngIf="form.controls['name'].invalid && form.controls['name'].touched && nameError" class="p-error">
+                {{ nameError }}
             </small>
         </div>
 
@@ -34,8 +34,10 @@
             <textarea pInputTextarea id="description" rows="3" formControlName="description"
                 placeholder="Enter entity description"
                 [class.p-invalid]="form.controls['description'].invalid && form.controls['description'].touched"></textarea>
-            <small *ngIf="form.controls['description'].invalid && form.controls['description'].touched" class="p-error">
-                Description is required.
+            <small
+                *ngIf="form.controls['description'].invalid && form.controls['description'].touched && descriptionError"
+                class="p-error">
+                {{ descriptionError }}
             </small>
         </div>
 

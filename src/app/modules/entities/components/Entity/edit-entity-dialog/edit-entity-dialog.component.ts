@@ -5,6 +5,7 @@ import { MessageService } from 'primeng/api';
 import { EntitiesService } from '../../../services/entities.service';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
 import { IAccountSettings } from 'src/app/core/models/IAccountStatusResponse';
+import { textFieldValidator, getTextFieldError } from 'src/app/core/Services/textFieldValidator';
 
 interface ParentOption {
     label: string;
@@ -63,9 +64,9 @@ export class EditEntityDialogComponent implements OnInit, OnDestroy {
 
     private initForm(): void {
         this.form = this.fb.group({
-            code: ['', Validators.required],
-            name: ['', Validators.required],
-            description: ['', Validators.required],
+            code: ['', [Validators.required, textFieldValidator()]],
+            name: ['', [Validators.required, textFieldValidator()]],
+            description: ['', [Validators.required, textFieldValidator()]],
             parentEntityId: [0],
             isPersonal: [false]
         });
@@ -228,6 +229,21 @@ export class EditEntityDialogComponent implements OnInit, OnDestroy {
             default:
                 return null;
         }
+    }
+
+    get codeError(): string {
+        const control = this.form.get('code');
+        return getTextFieldError(control, 'Code', control?.touched || false);
+    }
+
+    get nameError(): string {
+        const control = this.form.get('name');
+        return getTextFieldError(control, 'Name', control?.touched || false);
+    }
+
+    get descriptionError(): string {
+        const control = this.form.get('description');
+        return getTextFieldError(control, 'Description', control?.touched || false);
     }
 }
 

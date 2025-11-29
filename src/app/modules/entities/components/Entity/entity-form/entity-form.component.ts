@@ -8,6 +8,7 @@ import { EntitiesService } from '../../../services/entities.service';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
 import { IAccountSettings } from 'src/app/core/models/IAccountStatusResponse';
 import { Roles } from 'src/app/core/models/system-roles';
+import { textFieldValidator, getTextFieldError } from 'src/app/core/Services/textFieldValidator';
 import { dE } from '@fullcalendar/core/internal-common';
 
 type EntityFormContext = 'create' | 'update' | 'details';
@@ -89,37 +90,25 @@ export class EntityFormComponent implements OnInit, OnDestroy {
 
     initForm(): void {
         this.form = this.fb.group({
-            code: ['', [Validators.required, this.entityCodeNameDescValidator]],
-            name: ['', [Validators.required, this.entityCodeNameDescValidator]],
-            description: ['', [Validators.required, this.entityCodeNameDescValidator]],
+            code: ['', [Validators.required, textFieldValidator()]],
+            name: ['', [Validators.required, textFieldValidator()]],
+            description: ['', [Validators.required, textFieldValidator()]],
             parentEntityId: [0],
             isPersonal: [false],
             email: ['', [Validators.required, Validators.email]],
-            firstName: ['', [Validators.required, this.entityCodeNameDescValidator]],
-            lastName: ['', [Validators.required, this.entityCodeNameDescValidator]]
+            firstName: ['', [Validators.required, textFieldValidator()]],
+            lastName: ['', [Validators.required, textFieldValidator()]]
         });
-    }
-
-    /**
-     * Custom validator for entity code and name
-     * Allows: letters (A–Z, a–z, any language letters), space, hyphen, apostrophe, dot, underscore
-     */
-    private entityCodeNameDescValidator(control: any) {
-        if (!control.value) {
-            return null;
-        }
-
-        const pattern = /^[\p{L}\s'\-._]+$/u;
-        const isValid = pattern.test(control.value);
-
-        return isValid ? null : { invalidFormat: true };
     }
 
     loadAllEntities(): void {
         const sub = this.entitiesService.listEntities().subscribe({
             next: (res: any) => {
                 if (res?.success) {
-                    const entitiesData = res.message || {};
+
+                    console.log('res', res);
+                    const entitiesData = res.message.Entities
+                        || {};
                     const entities = Object.values(entitiesData).map((item: any) => ({
                         ID: item?.Entity_ID,
                         Name: item?.Name || '',
@@ -279,65 +268,11 @@ export class EntityFormComponent implements OnInit, OnDestroy {
         const parentId = Number(parentEntityId) || 0;
         const isPersonalValue = isPersonal || false;
 
-        // For SystemAdministrator or Developer: Create Entity → Create Entity Role → Create Account
+        // For SystemAdministrator or Developer: Validate email first, then Create Entity → Create Entity Role → Create Account
         if (this.systemRole === Roles.SystemAdministrator || this.systemRole === Roles.Developer) {
-            const sub = this.entitiesService.addEntity(
-                code,
-                name,
-                description,
-                parentId,
-                isPersonalValue
-            ).pipe(
-                switchMap((entityResponse: any) => {
-                    if (!entityResponse?.success) {
-                        this.handleBusinessError('create', entityResponse);
-                        return throwError(() => entityResponse);
-                    }
-
-                    console.log('entityResponse', entityResponse);
-                    // Extract Entity_ID from response
-                    const entityId = entityResponse.message.Entity_ID; // int Entity_ID
-
-                    // Step 2: Create Entity Role
-                    const roleTitle = `${name} Entity Administrator`;
-                    const roleDescription = `Default Entity Administrator role for ${name}`;
-                    return this.entitiesService.createEntityRole(entityId, roleTitle, roleDescription).pipe(
-                        switchMap((roleResponse: any) => {
-                            if (!roleResponse?.success) {
-                                this.handleCreateEntityRoleError(roleResponse);
-                                return throwError(() => roleResponse);
-                            }
-
-                            // Extract Entity_Role_ID from response
-                            const entityRoleId = roleResponse.message.Entity_Role_ID; // int Entity_Role_ID
-
-                            // Step 3: Create Account
-                            return this.entitiesService.createAccount(email, firstName, lastName, entityId, entityRoleId);
-                        })
-                    );
-                })
-            ).subscribe({
-                next: (accountResponse: any) => {
-                    if (!accountResponse?.success) {
-                        this.handleCreateAccountError(accountResponse);
-                        return;
-                    }
-
-                    this.messageService.add({
-                        severity: 'success',
-                        summary: 'Success',
-                        detail: 'Entity, role, and administrator account created successfully.'
-                    });
-                    this.router.navigate(['/company-administration/entities/list']);
-                },
-                error: (error: any) => {
-                    // Error already handled in switchMap or handleCreateAccountError or handleCreateEntityRoleError
-                    this.loading = false;
-                },
-                complete: () => this.loading = false
-            });
-
-            this.subscriptions.push(sub);
+            // Step 0: Pre-validate email before creating entity
+            this.validateEmailBeforeCreation(email, code, name, description, parentId, isPersonalValue, firstName, lastName);
+            return;
         }
         // For EntityAdministrator: Create Entity only
         else if (this.systemRole === Roles.EntityAdministrator) {
@@ -377,58 +312,39 @@ export class EntityFormComponent implements OnInit, OnDestroy {
     }
 
     get codeError(): string {
-        const control = this.f['code'];
-        if (control?.errors?.['required'] && this.submitted) {
-            return 'Entity code is required.';
-        }
-        if (control?.errors?.['invalidFormat'] && this.submitted) {
-            return 'Only letters, spaces, hyphens (-), apostrophes (\'), dots (.), and underscores (_) are allowed.';
-        }
-        return '';
+        return getTextFieldError(this.f['code'], 'Entity code', this.submitted);
     }
 
     get nameError(): string {
-        const control = this.f['name'];
-        if (control?.errors?.['required'] && this.submitted) {
-            return 'Company name is required.';
-        }
-        if (control?.errors?.['invalidFormat'] && this.submitted) {
-            return 'Only letters, spaces, hyphens (-), apostrophes (\'), dots (.), and underscores (_) are allowed.';
-        }
-        return '';
+        return getTextFieldError(this.f['name'], 'Company name', this.submitted);
     }
 
     get emailError(): string {
         const control = this.f['email'];
-        if (control?.errors?.['required'] && this.submitted && this.showAccountSection) {
+        if (!this.showAccountSection) {
+            return '';
+        }
+        if (control?.errors?.['required'] && this.submitted) {
             return 'Email is required.';
         }
-        if (control?.errors?.['email'] && this.submitted && this.showAccountSection) {
+        if (control?.errors?.['email'] && this.submitted) {
             return 'Please enter a valid email address.';
         }
         return '';
     }
 
     get firstNameError(): string {
-        const control = this.f['firstName'];
-        if (control?.errors?.['required'] && this.submitted && this.showAccountSection) {
-            return 'First name is required.';
+        if (!this.showAccountSection) {
+            return '';
         }
-        if (control?.errors?.['invalidFormat'] && this.submitted && this.showAccountSection) {
-            return 'Only letters, spaces, hyphens (-), apostrophes (\'), dots (.), and underscores (_) are allowed.';
-        }
-        return '';
+        return getTextFieldError(this.f['firstName'], 'First name', this.submitted);
     }
 
     get lastNameError(): string {
-        const control = this.f['lastName'];
-        if (control?.errors?.['required'] && this.submitted && this.showAccountSection) {
-            return 'Last name is required.';
+        if (!this.showAccountSection) {
+            return '';
         }
-        if (control?.errors?.['invalidFormat'] && this.submitted && this.showAccountSection) {
-            return 'Only letters, spaces, hyphens (-), apostrophes (\'), dots (.), and underscores (_) are allowed.';
-        }
-        return '';
+        return getTextFieldError(this.f['lastName'], 'Last name', this.submitted);
     }
 
     private handleBusinessError(context: EntityFormContext, response: any): void | null {
@@ -567,6 +483,123 @@ export class EntityFormComponent implements OnInit, OnDestroy {
             default:
                 return null;
         }
+    }
+
+    /**
+     * Pre-validate email before creating entity to prevent orphaned entities
+     * If email exists (API returns success), show error and prevent entity creation
+     * If email doesn't exist (error ERP11150), proceed with entity creation
+     */
+    private validateEmailBeforeCreation(
+        email: string,
+        code: string,
+        name: string,
+        description: string,
+        parentId: number,
+        isPersonalValue: boolean,
+        firstName: string,
+        lastName: string
+    ): void {
+        const sub = this.entitiesService.getAccountDetails(email).subscribe({
+            next: (response: any) => {
+                // If API returns success, email already exists
+                if (response?.success) {
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Email Exists',
+                        detail: 'An account with this email already exists. Please use a different email address.',
+                        life: 5000
+                    });
+                    this.loading = false;
+                    return;
+                }
+                // If not success, proceed with entity creation
+                this.proceedWithEntityCreation(code, name, description, parentId, isPersonalValue, email, firstName, lastName);
+            },
+            error: (error: any) => {
+                const errorCode = String(error?.message || '');
+                // If error is ERP11150, email doesn't exist - proceed with creation
+                if (errorCode === 'ERP11150') {
+                    this.proceedWithEntityCreation(code, name, description, parentId, isPersonalValue, email, firstName, lastName);
+                } else {
+                    // Other error - show and stop
+                    this.handleBusinessError('create', error);
+                }
+            }
+        });
+        this.subscriptions.push(sub);
+    }
+
+    /**
+     * Proceed with entity creation after email validation passes
+     */
+    private proceedWithEntityCreation(
+        code: string,
+        name: string,
+        description: string,
+        parentId: number,
+        isPersonalValue: boolean,
+        email: string,
+        firstName: string,
+        lastName: string
+    ): void {
+        const sub = this.entitiesService.addEntity(
+            code,
+            name,
+            description,
+            parentId,
+            isPersonalValue
+        ).pipe(
+            switchMap((entityResponse: any) => {
+                if (!entityResponse?.success) {
+                    this.handleBusinessError('create', entityResponse);
+                    return throwError(() => entityResponse);
+                }
+
+                console.log('entityResponse', entityResponse);
+                // Extract Entity_ID from response
+                const entityId = entityResponse.message.Entity_ID; // int Entity_ID
+
+                // Step 2: Create Entity Role
+                const roleTitle = `${name} Entity Administrator`;
+                const roleDescription = `Default Entity Administrator role for ${name}`;
+                return this.entitiesService.createEntityRole(entityId, roleTitle, roleDescription).pipe(
+                    switchMap((roleResponse: any) => {
+                        if (!roleResponse?.success) {
+                            this.handleCreateEntityRoleError(roleResponse);
+                            return throwError(() => roleResponse);
+                        }
+
+                        // Extract Entity_Role_ID from response
+                        const entityRoleId = roleResponse.message.Entity_Role_ID; // int Entity_Role_ID
+
+                        // Step 3: Create Account
+                        return this.entitiesService.createAccount(email, firstName, lastName, entityId, entityRoleId);
+                    })
+                );
+            })
+        ).subscribe({
+            next: (accountResponse: any) => {
+                if (!accountResponse?.success) {
+                    this.handleCreateAccountError(accountResponse);
+                    return;
+                }
+
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Success',
+                    detail: 'Entity, role, and administrator account created successfully.'
+                });
+                this.router.navigate(['/company-administration/entities/list']);
+            },
+            error: (error: any) => {
+                // Error already handled in switchMap or handleCreateAccountError or handleCreateEntityRoleError
+                this.loading = false;
+            },
+            complete: () => this.loading = false
+        });
+
+        this.subscriptions.push(sub);
     }
 }
 

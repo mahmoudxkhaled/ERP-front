@@ -145,8 +145,8 @@
                 <label for="firstName">First Name <span class="text-red-500">*</span></label>
                 <input id="firstName" type="text" pInputText formControlName="firstName"
                     [class.ng-invalid]="submitted && f['firstName'].invalid" placeholder="Enter first name" />
-                <small class="p-error" *ngIf="submitted && f['firstName'].invalid">
-                    First name is required.
+                <small class="p-error" *ngIf="submitted && f['firstName'].invalid && firstNameError">
+                    {{ firstNameError }}
                 </small>
             </div>
 
@@ -155,8 +155,8 @@
                 <label for="lastName">Last Name <span class="text-red-500">*</span></label>
                 <input id="lastName" type="text" pInputText formControlName="lastName"
                     [class.ng-invalid]="submitted && f['lastName'].invalid" placeholder="Enter last name" />
-                <small class="p-error" *ngIf="submitted && f['lastName'].invalid">
-                    Last name is required.
+                <small class="p-error" *ngIf="submitted && f['lastName'].invalid && lastNameError">
+                    {{ lastNameError }}
                 </small>
             </div>
         </div>

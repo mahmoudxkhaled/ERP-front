@@ -15,7 +15,11 @@
             <div class="field p-fluid">
                 <label for="updateDescription">Description</label>
                 <textarea id="updateDescription" pInputTextarea formControlName="description" rows="3"
-                    placeholder="Enter account description"></textarea>
+                    placeholder="Enter account description"
+                    [class.ng-invalid]="submitted && updateDetailsForm.get('description')?.invalid"></textarea>
+                <small class="p-error" *ngIf="submitted && updateDetailsForm.get('description')?.invalid && descriptionError">
+                    {{ descriptionError }}
+                </small>
             </div>
         </div>
 

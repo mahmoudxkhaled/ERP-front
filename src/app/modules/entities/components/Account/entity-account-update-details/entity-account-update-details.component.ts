@@ -6,6 +6,7 @@ import { EntitiesService } from '../../../services/entities.service';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
 import { IAccountSettings } from 'src/app/core/models/IAccountStatusResponse';
 import { EntityAccount } from '../../../models/entities.model';
+import { textFieldValidator, getTextFieldError } from 'src/app/core/Services/textFieldValidator';
 
 @Component({
   selector: 'app-entity-account-update-details',
@@ -23,6 +24,7 @@ export class EntityAccountUpdateDetailsComponent implements OnInit, OnDestroy, O
   savingAccountDetails: boolean = false;
   isRegional: boolean = false;
   accountSettings?: IAccountSettings;
+  submitted: boolean = false;
 
   private subscriptions: Subscription[] = [];
 
@@ -56,7 +58,7 @@ export class EntityAccountUpdateDetailsComponent implements OnInit, OnDestroy, O
   private initForm(): void {
     this.updateDetailsForm = this.fb.group({
       email: [{ value: '', disabled: true }],
-      description: ['']
+      description: ['', [textFieldValidator()]]
     });
   }
 
@@ -97,6 +99,7 @@ export class EntityAccountUpdateDetailsComponent implements OnInit, OnDestroy, O
    * Save updated account details
    */
   saveUpdatedAccountDetails(): void {
+    this.submitted = true;
     if (this.updateDetailsForm.invalid || !this.account) {
       return;
     }
@@ -133,6 +136,12 @@ export class EntityAccountUpdateDetailsComponent implements OnInit, OnDestroy, O
     this.visible = false;
     this.visibleChange.emit(false);
     this.updateDetailsForm.reset();
+    this.submitted = false;
+  }
+
+  get descriptionError(): string {
+    const control = this.updateDetailsForm.get('description');
+    return getTextFieldError(control, 'Description', this.submitted);
   }
 
   onDialogHide(): void {
