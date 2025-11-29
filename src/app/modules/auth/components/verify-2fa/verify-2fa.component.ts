@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -11,13 +11,14 @@ import { LanguageDIRService } from 'src/app/core/Services/LanguageDIR.service';
   templateUrl: './verify-2fa.component.html',
   styleUrl: './verify-2fa.component.scss'
 })
-export class Verify2FAComponent implements OnInit, OnDestroy {
+export class Verify2FAComponent implements OnInit, OnDestroy, AfterViewInit {
 
   email: string = '';
   validationMessage: string = '';
   form: FormGroup;
   isLoading$: Observable<boolean>;
   unsubscribe: Subscription[] = [];
+  @ViewChild('code1Input') code1Input!: ElementRef<HTMLInputElement>;
 
   constructor(
     private apiService: AuthService,
@@ -48,6 +49,16 @@ export class Verify2FAComponent implements OnInit, OnDestroy {
     });
   }
 
+  ngAfterViewInit(): void {
+    // Focus on the first input field when component loads
+    setTimeout(() => {
+      const firstInput = document.getElementById('code1') as HTMLInputElement;
+      if (firstInput) {
+        firstInput.focus();
+      }
+    }, 100);
+  }
+
   verify2FA() {
     this.validationMessage = '';
 
@@ -68,9 +79,12 @@ export class Verify2FAComponent implements OnInit, OnDestroy {
     if (otp && this.email) {
       const verifySubscription = this.apiService.verify2FA(this.email, otp).subscribe({
         next: (response: any) => {
-          if (response?.success === true) {
+          console.log('verify2FA response', response);
+          if (response?.success) {
+            console.log('verify2FA response success');
             this.handleSuccessfulLogin();
           } else {
+            console.log('verify2FA response error', response);
             this.validationMessage = 'Invalid verification code. Please try again.';
           }
         },
@@ -88,8 +102,27 @@ export class Verify2FAComponent implements OnInit, OnDestroy {
   moveToNext(event: any, nextInputId: string): void {
     const input = event.target as HTMLInputElement;
     if (input.value.length === 1 && /^[0-9]$/.test(input.value)) {
-      const nextInput = document.getElementById(nextInputId) as HTMLInputElement;
-      nextInput?.focus();
+      // If there's a next input, move to it
+      if (nextInputId) {
+        const nextInput = document.getElementById(nextInputId) as HTMLInputElement;
+        nextInput?.focus();
+      } else {
+        // This is the last input (code6) - check if all 6 digits are filled and auto-submit
+        setTimeout(() => {
+          // Check if all 6 code fields have values
+          const allCodesFilled =
+            this.form.get('code1')?.value &&
+            this.form.get('code2')?.value &&
+            this.form.get('code3')?.value &&
+            this.form.get('code4')?.value &&
+            this.form.get('code5')?.value &&
+            this.form.get('code6')?.value;
+
+          if (allCodesFilled && this.form.valid) {
+            this.verify2FA();
+          }
+        }, 150);
+      }
     }
   }
 

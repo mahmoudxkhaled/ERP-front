@@ -39,14 +39,15 @@ export class AuthService {
                 // Only proceed with getLoginDataPackage if login was successful
                 if (response?.success) {
                     // Chain getLoginDataPackage to ensure it completes before navigation
-                    return this.getLoginDataPackage(email);
+                    return this.getLoginDataPackage(email).pipe(
+                        tap(() => {
+                            // Navigation happens only after successful login and data is loaded
+                            this.router.navigate(['/']);
+                        })
+                    );
                 }
                 // If login failed, return the error response so component can handle it
                 return of(response);
-            }),
-            tap(() => {
-                // Navigation happens after data is loaded
-                this.router.navigate(['/']);
             }),
             finalize(() => {
                 this.isLoadingSubject.next(false);
@@ -56,8 +57,11 @@ export class AuthService {
 
     verify2FA(email: string, otp: string): Observable<any> {
         this.isLoadingSubject.next(true);
-        return this.apiServices.callAPI(101, '', [email, otp]).pipe(
+        console.log('verify2FA email', email);
+        console.log('verify2FA otp', otp);
+        return this.apiServices.callAPI(101, '', [email.toString(), otp.toString()]).pipe(
             tap((response: any) => {
+                console.log('verify2FA response service', response);
                 // Only set auth data if 2FA verification is successful
                 if (response?.success) {
                     this.setAuthFromResponseToLocalStorage(response);
@@ -67,14 +71,15 @@ export class AuthService {
                 // Only proceed with getLoginDataPackage if 2FA verification was successful
                 if (response?.success) {
                     // Chain getLoginDataPackage to ensure it completes before navigation
-                    return this.getLoginDataPackage(email);
+                    return this.getLoginDataPackage(email).pipe(
+                        tap(() => {
+                            // Navigation happens only after successful 2FA verification and data is loaded
+                            this.router.navigate(['/']);
+                        })
+                    );
                 }
                 // If 2FA verification failed, return the error response so component can handle it
                 return of(response);
-            }),
-            tap(() => {
-                // Navigation happens after data is loaded
-                this.router.navigate(['/']);
             }),
             finalize(() => {
                 this.isLoadingSubject.next(false);

@@ -196,7 +196,6 @@
                 "disableMessage": "You are about to disable two-factor authentication for your account.",
                 "important": "Important:",
                 "importantMessage": "This change will take effect on your next login.",
-                "details": "An email with a verification code will be sent to your registered email address. You will need to enter this code to complete your login.",
                 "cancel": "Cancel",
                 "confirmEnable": "Enable 2FA",
                 "confirmDisable": "Disable 2FA"

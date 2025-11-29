@@ -9,7 +9,7 @@
     <form [formGroup]="form" (ngSubmit)="verify2FA()">
       <div class="form-group">
         <div class="input-group justify-content-center" style="display: flex; gap: 10px; justify-content: center;">
-          <input type="text" class="custom-input" id="code1" maxlength="1" formControlName="code1"
+          <input type="text" class="custom-input" id="code1" #code1Input maxlength="1" formControlName="code1"
             (keyup)="moveToNext($event, 'code2')" />
           <input type="text" class="custom-input" id="code2" maxlength="1" formControlName="code2"
             (keyup)="moveToNext($event, 'code3')" (keydown.backspace)="moveToPrev($event, 'code1')" />
@@ -20,7 +20,7 @@
           <input type="text" class="custom-input" id="code5" maxlength="1" formControlName="code5"
             (keyup)="moveToNext($event, 'code6')" (keydown.backspace)="moveToPrev($event, 'code4')" />
           <input type="text" class="custom-input" id="code6" maxlength="1" formControlName="code6"
-            (keydown.backspace)="moveToPrev($event, 'code5')" />
+            (keyup)="moveToNext($event, '')" (keydown.backspace)="moveToPrev($event, 'code5')" />
         </div>
       </div>
       <div *ngIf="validationMessage" class="backend-error-message">
