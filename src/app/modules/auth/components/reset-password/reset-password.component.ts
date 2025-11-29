@@ -82,7 +82,7 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
 
     private setPageLabel(): void {
         const labelMap: { [key: string]: string } = {
-            'forgot-password': 'Reset your forgotten password',
+            'forgot-password': 'Reset your password',
             'unlock-account': 'Unlock your account',
             'new-account': 'Create your new account password',
             'change-password': 'Change your password'

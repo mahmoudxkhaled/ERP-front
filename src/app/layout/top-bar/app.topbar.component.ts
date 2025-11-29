@@ -9,6 +9,7 @@ import { TranslationService } from 'src/app/core/Services/translation.service';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/modules/auth/services/auth.service';
 import { IUserDetails, IAccountDetails, IAccountSettings, IEntityDetails } from 'src/app/core/models/IAccountStatusResponse';
+import { ImageService } from 'src/app/core/Services/image.service';
 enum NotificationTypeEnum {
     SendCampaignNotification = 1,
     SendCampaignLessonNotification = 2,
@@ -88,6 +89,7 @@ export class AppTopbarComponent implements OnInit {
         private translate: TranslationService,
         private router: Router,
         private authService: AuthService,
+        private imageService: ImageService,
     ) {
     }
 
@@ -107,7 +109,8 @@ export class AppTopbarComponent implements OnInit {
         this.accountSettings = this.localStorage.getAccountSettings() as IAccountSettings;
 
 
-        this.entityLogo = this.entityDetails?.Logo !== null && this.entityDetails?.Logo !== undefined && this.entityDetails?.Logo !== '' ? this.entityDetails?.Logo : 'assets/media/White-Logo.png';
+        // Handle entity logo from localStorage (stored as base64)
+        this.entityLogo = this.imageService.toImageDataUrl(this.entityDetails?.Logo);
         const isRegional = this.accountSettings?.Language !== 'English';
 
         // Set entity name with regional language support
