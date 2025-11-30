@@ -48,8 +48,11 @@ export class ProfileComponent implements OnInit {
     changePasswordForm!: FormGroup;
 
     twoFactorEnabled: boolean = false;
+    gender: boolean = false;
     show2FADialog: boolean = false;
     showChangePasswordDialog: boolean = false;
+    isChangingPassword: boolean = false;
+    isToggling2FA: boolean = false;
 
     showOldPassword: boolean = false;
     showNewPassword: boolean = false;
@@ -86,6 +89,14 @@ export class ProfileComponent implements OnInit {
     ngOnInit(): void {
         this.loadUserData();
         this.initFormModels();
+        this.twoFactorEnabled = this.localStorageService.get2FaStatus();
+        this.gender = this.localStorageService.getGender() || false;
+
+        if (this.gender) {
+            this.profilePictureUrl = this.accountDetails?.Profile_Picture || 'assets/media/avatar.png';
+        } else {
+            this.profilePictureUrl = this.accountDetails?.Profile_Picture || 'assets/media/female-avatar.png';
+        }
     }
 
     loadUserData(): void {
@@ -97,8 +108,6 @@ export class ProfileComponent implements OnInit {
         this.isRegional = this.accountSettings?.Language !== 'English';
 
 
-
-        this.profilePictureUrl = this.accountDetails?.Profile_Picture || '';
     }
 
     initFormModels() {
@@ -290,6 +299,7 @@ export class ProfileComponent implements OnInit {
 
     confirmChangePassword(): void {
         this.showChangePasswordDialog = false;
+        this.isChangingPassword = true;
 
         const oldPassword = this.changePasswordForm.get('oldPassword')?.value;
         const newPassword = this.changePasswordForm.get('newPassword')?.value;
@@ -306,9 +316,11 @@ export class ProfileComponent implements OnInit {
                 } else {
                     this.handlePasswordChangeError(response);
                 }
+                this.isChangingPassword = false;
             },
             error: (error: any) => {
                 this.handlePasswordChangeError(error);
+                this.isChangingPassword = false;
             }
         });
     }
@@ -323,7 +335,7 @@ export class ProfileComponent implements OnInit {
     }
 
     confirmToggle2FA(): void {
-        this.show2FADialog = false;
+        this.isToggling2FA = true;
 
         if (!this.twoFactorEnabled) {
             // Enabling 2FA
@@ -331,11 +343,18 @@ export class ProfileComponent implements OnInit {
                 next: (response: any) => {
                     if (response?.success === true) {
                         this.twoFactorEnabled = true;
+                        // Update localStorage with new 2FA status
+                        const accountDetails = this.localStorageService.getAccountDetails();
+                        if (accountDetails) {
+                            accountDetails.Two_FA = true;
+                            this.localStorageService.setItem('Account_Details', accountDetails);
+                        }
                         this.messageService.add({
                             severity: 'success',
                             summary: '2FA Enabled',
                             detail: 'Two-factor authentication has been enabled successfully. You will be required to verify with a code on your next login.'
                         });
+                        this.show2FADialog = false;
                     } else {
                         this.messageService.add({
                             severity: 'error',
@@ -343,6 +362,7 @@ export class ProfileComponent implements OnInit {
                             detail: response?.message || 'Failed to enable 2FA.'
                         });
                     }
+                    this.isToggling2FA = false;
                 },
                 error: (error: any) => {
                     const errorMessage = error?.message || 'Failed to enable 2FA. Please try again.';
@@ -351,6 +371,7 @@ export class ProfileComponent implements OnInit {
                         summary: 'Error',
                         detail: errorMessage
                     });
+                    this.isToggling2FA = false;
                 }
             });
         } else {
@@ -359,11 +380,18 @@ export class ProfileComponent implements OnInit {
                 next: (response: any) => {
                     if (response?.success === true) {
                         this.twoFactorEnabled = false;
+                        // Update localStorage with new 2FA status
+                        const accountDetails = this.localStorageService.getAccountDetails();
+                        if (accountDetails) {
+                            accountDetails.Two_FA = false;
+                            this.localStorageService.setItem('Account_Details', accountDetails);
+                        }
                         this.messageService.add({
                             severity: 'success',
                             summary: '2FA Disabled',
                             detail: 'Two-factor authentication has been disabled successfully.'
                         });
+                        this.show2FADialog = false;
                     } else {
                         this.messageService.add({
                             severity: 'error',
@@ -371,6 +399,7 @@ export class ProfileComponent implements OnInit {
                             detail: response?.message || 'Failed to disable 2FA.'
                         });
                     }
+                    this.isToggling2FA = false;
                 },
                 error: (error: any) => {
                     const errorMessage = error?.message || 'Failed to disable 2FA. Please try again.';
@@ -379,6 +408,7 @@ export class ProfileComponent implements OnInit {
                         summary: 'Error',
                         detail: errorMessage
                     });
+                    this.isToggling2FA = false;
                 }
             });
         }
@@ -446,56 +476,75 @@ export class ProfileComponent implements OnInit {
         return /[^A-Za-z0-9]/.test(password);
     }
 
+    /**
+     * Handle business errors from password change API responses
+     */
     private handlePasswordChangeError(error: any): void {
-        const errorCode = error?.message;
-        const errorMessage = 'Password change failed. Please try again.';
-        const oldPasswordControl = this.changePasswordForm.get('oldPassword');
-        const newPasswordControl = this.changePasswordForm.get('newPassword');
+        const errorCode = String(error?.message || '');
+        const errorInfo = this.getPasswordChangeErrorMessage(errorCode);
 
-        // Handle specific error codes
-        if (errorCode === 'ERP11104') {
-            // Old Password is Wrong
-            if (oldPasswordControl) {
-                const currentErrors = oldPasswordControl.errors || {};
-                oldPasswordControl.setErrors({ ...currentErrors, oldPasswordWrong: true });
-                oldPasswordControl.markAsTouched();
+        // Set form control errors if needed
+        if (errorInfo.controlName && errorInfo.errorKey) {
+            const control = this.changePasswordForm.get(errorInfo.controlName);
+            if (control) {
+                const currentErrors = control.errors || {};
+                control.setErrors({ ...currentErrors, [errorInfo.errorKey]: true });
+                control.markAsTouched();
             }
+        }
+
+        // Show error message
+        if (errorInfo.detail) {
             this.messageService.add({
                 severity: 'error',
-                summary: 'Invalid Old Password',
-                detail: 'The old password you entered is incorrect. Please try again.'
+                summary: errorInfo.summary || 'Error',
+                detail: errorInfo.detail
             });
-        } else if (errorCode === 'ERP11125') {
-            // Same as Old Password
-            if (newPasswordControl) {
-                const currentErrors = newPasswordControl.errors || {};
-                newPasswordControl.setErrors({ ...currentErrors, passwordSameAsOld: true });
-                newPasswordControl.markAsTouched();
-            }
-            this.messageService.add({
-                severity: 'error',
-                summary: 'Invalid Password',
-                detail: 'New password cannot be the same as your old password.'
-            });
-        } else if (errorCode === 'ERP11126') {
-            // Format is incompliant
-            if (newPasswordControl) {
-                const currentErrors = newPasswordControl.errors || {};
-                newPasswordControl.setErrors({ ...currentErrors, passwordFormatIncompliant: true });
-                newPasswordControl.markAsTouched();
-            }
-            this.messageService.add({
-                severity: 'error',
-                summary: 'Invalid Password Format',
-                detail: 'Password format is incompliant. Please check the password requirements.'
-            });
-        } else {
-            // Generic error
-            this.messageService.add({
-                severity: 'error',
-                summary: 'Error',
-                detail: errorMessage
-            });
+        }
+    }
+
+    /**
+     * Get user-friendly error message based on error code
+     */
+    private getPasswordChangeErrorMessage(code: string): {
+        detail: string | null;
+        summary?: string;
+        controlName?: string;
+        errorKey?: string
+    } {
+        switch (code) {
+            case 'ERP11104':
+                // Old Password is Wrong
+                return {
+                    detail: 'The old password you entered is incorrect. Please try again.',
+                    summary: 'Invalid Old Password',
+                    controlName: 'oldPassword',
+                    errorKey: 'oldPasswordWrong'
+                };
+
+            case 'ERP11125':
+                // Same as Old Password
+                return {
+                    detail: 'New password cannot be the same as your old password.',
+                    summary: 'Invalid Password',
+                    controlName: 'newPassword',
+                    errorKey: 'passwordSameAsOld'
+                };
+
+            case 'ERP11126':
+                // Format is incompliant
+                return {
+                    detail: 'Password format is incompliant. Please check the password requirements.',
+                    summary: 'Invalid Password Format',
+                    controlName: 'newPassword',
+                    errorKey: 'passwordFormatIncompliant'
+                };
+
+            default:
+                return {
+                    detail: 'Password change failed. Please try again.',
+                    summary: 'Error'
+                };
         }
     }
 

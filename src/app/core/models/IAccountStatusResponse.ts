@@ -18,6 +18,7 @@ export interface IAccountDetails {
     Entity_ID: number;
     Entity_Role_ID: number;
     Account_State: number;
+    Two_FA: boolean;
     Profile_Picture: string;
     System_Role_ID: number;
 }

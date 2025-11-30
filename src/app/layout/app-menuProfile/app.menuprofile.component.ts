@@ -42,6 +42,7 @@ export class AppMenuProfileComponent implements OnInit {
     currentPages: any;
     showLogoutDialog: boolean = false; // Track logout dialog visibility
     accountSettings: IAccountSettings;
+    gender: boolean = false;
     constructor(
         public layoutService: LayoutService,
         public el: ElementRef,
@@ -86,9 +87,13 @@ export class AppMenuProfileComponent implements OnInit {
             }
         }
         if (this.account) {
-            console.log('account', this.account);
-            this.imageUrl = this.account.Profile_Picture !== null && this.account.Profile_Picture !== undefined && this.account.Profile_Picture !== '' ? this.account.Profile_Picture : 'assets/media/avatar.png';
-            console.log('imageUrl', this.imageUrl);
+
+            this.gender = this.localStorage.getGender() || false;
+            if (this.gender) {
+                this.imageUrl = this.account.Profile_Picture || 'assets/media/avatar.png';
+            } else {
+                this.imageUrl = this.account.Profile_Picture || 'assets/media/female-avatar.png';
+            }
         }
     }
 

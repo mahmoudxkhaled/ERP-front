@@ -56,6 +56,16 @@ export class LocalStorageService {
     return entityData?.Parent_Entity_ID ?? '';
   }
 
+  get2FaStatus() {
+    const accountData = this.getAccountDetails();
+    return accountData?.Two_FA ?? false;
+  }
+
+  getGender() {
+    const userData = this.getUserDetails();
+    return userData?.Gender ?? false;
+  }
+
   setLoginDataPackage(accountData: IAccountStatusResponse): void {
     if (accountData.User_Details) {
       this.setItem('User_Details', accountData.User_Details);

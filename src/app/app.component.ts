@@ -8,6 +8,7 @@ import { TranslationService } from './core/Services/translation.service';
 import { LayoutService } from './layout/app-services/app.layout.service';
 import { NetworkStatusService } from './core/Services/network-status.service';
 import { Router } from '@angular/router';
+import { AuthService } from './modules/auth/services/auth.service';
 
 @Component({
     selector: 'app-root',
@@ -23,8 +24,11 @@ export class AppComponent implements OnInit, OnDestroy {
         private ref: ChangeDetectorRef,
         private networkStatusService: NetworkStatusService,
         private translate: TranslationService,
-        private router: Router
+        private router: Router,
+        private authService: AuthService
     ) {
+        this.refreshLoginDataPackage();
+
         this.translationService.setDefaultLang('en');
         const documentStyle = getComputedStyle(document.documentElement);
         const textColor = documentStyle.getPropertyValue('--primary-color');
@@ -57,6 +61,7 @@ export class AppComponent implements OnInit, OnDestroy {
     userLanguageCode: string | null = null;
 
     ngOnInit(): void {
+
         this.primengConfig.ripple = true;
 
         const userLangCode = this.rtlService.getLanguageFromStorage();
@@ -73,6 +78,36 @@ export class AppComponent implements OnInit, OnDestroy {
             this.translationService.useLanguage(lang);
             this.ref.detectChanges(); // Manually trigger change detection
         });
+
+        // Call getLoginDataPackage on window reload if user is authenticated
+    }
+
+    /**
+     * Refresh login data package on window reload
+     * Only runs if user is authenticated (has access token)
+     * Runs silently in the background without error handling
+     */
+    private refreshLoginDataPackage(): void {
+        const accessToken = this.localStorage.getAccessToken();
+
+        // Only proceed if user is authenticated
+        if (accessToken) {
+            const accountDetails = this.localStorage.getAccountDetails();
+            const email = accountDetails?.Email;
+
+            // Only call API if email is available
+            if (email) {
+                // Call silently in background - no error handling needed
+                this.authService.getLoginDataPackage(email).subscribe({
+                    next: () => {
+                        // Silently refresh data - no action needed
+                    },
+                    error: () => {
+                        // Silently fail - no error handling needed
+                    }
+                });
+            }
+        }
     }
 
     toggleDirection() {

@@ -326,8 +326,21 @@
                     </div>
                 </div>
                 <div class="flex justify-content-end mt-3">
-                    <p-button [label]="translate.getInstant('profile.password.changePassword')" icon="pi pi-save"
-                        severity="success" type="submit" [disabled]="changePasswordForm.invalid"></p-button>
+                    <p-button severity="success" type="submit"
+                        [disabled]="changePasswordForm.invalid || isChangingPassword">
+                        <ng-container *ngIf="isChangingPassword">
+                            <span class="indicator-progress" [style.display]="'block'">
+                                Please wait
+                                <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
+                            </span>
+                        </ng-container>
+                        <ng-container *ngIf="!isChangingPassword">
+                            <span>
+                                <i class="pi pi-save mr-2"></i>
+                                {{ translate.getInstant('profile.password.changePassword') }}
+                            </span>
+                        </ng-container>
+                    </p-button>
                 </div>
             </form>
         </p-panel>
@@ -343,10 +356,21 @@
                     translate.getInstant('profile.twoFactor.disabled') }}
                 </p>
             </div>
-            <p-button
-                [label]="twoFactorEnabled ? translate.getInstant('profile.twoFactor.disable') : translate.getInstant('profile.twoFactor.enable')"
-                [icon]="twoFactorEnabled ? 'pi pi-times' : 'pi pi-shield'"
-                [severity]="twoFactorEnabled ? 'danger' : 'success'" (onClick)="toggle2FA()">
+            <p-button [severity]="twoFactorEnabled ? 'danger' : 'success'" (onClick)="toggle2FA()"
+                [disabled]="isToggling2FA">
+                <ng-container *ngIf="isToggling2FA">
+                    <span class="indicator-progress" [style.display]="'block'">
+                        Please wait
+                        <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
+                    </span>
+                </ng-container>
+                <ng-container *ngIf="!isToggling2FA">
+                    <span>
+                        <i [class]="twoFactorEnabled ? 'pi pi-times mr-2' : 'pi pi-shield mr-2'"></i>
+                        {{ twoFactorEnabled ? translate.getInstant('profile.twoFactor.disable') :
+                        translate.getInstant('profile.twoFactor.enable') }}
+                    </span>
+                </ng-container>
             </p-button>
         </div>
 
@@ -405,10 +429,13 @@
     </div>
     <ng-template pTemplate="footer">
         <p-button [label]="translate.getInstant('profile.twoFactor.dialog.cancel')" icon="pi pi-times"
-            severity="secondary" (onClick)="cancelToggle2FA()" class="p-button-text"></p-button>
+            severity="secondary" (onClick)="cancelToggle2FA()" class="p-button-text"
+            [disabled]="isToggling2FA"></p-button>
         <p-button
             [label]="twoFactorEnabled ? translate.getInstant('profile.twoFactor.dialog.confirmDisable') : translate.getInstant('profile.twoFactor.dialog.confirmEnable')"
             [icon]="twoFactorEnabled ? 'pi pi-times' : 'pi pi-check'"
-            [severity]="twoFactorEnabled ? 'danger' : 'success'" (onClick)="confirmToggle2FA()"></p-button>
+            [severity]="twoFactorEnabled ? 'danger' : 'success'" (onClick)="confirmToggle2FA()"
+            [disabled]="isToggling2FA">
+        </p-button>
     </ng-template>
 </p-dialog>

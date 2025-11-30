@@ -69,15 +69,10 @@ export class AppTopbarComponent implements OnInit {
     account: IAccountDetails;
     entityDetails: IEntityDetails;
     userName: string = '';
-    profilePictureUrl: string = '';
     accountSettings: IAccountSettings;
     entityName: string = '';
-    mockSearchData = {
-        lessons: ['Lesson 1', 'Lesson 2', 'Lesson 3'],
-        games: ['Game A', 'Game B', 'Game C'],
-        phishingTemplates: ['Template X', 'Template Y', 'Template Z'],
-        wallpapers: ['Wallpaper 1', 'Wallpaper 2', 'Wallpaper 3'],
-    };
+    gender: boolean = false;
+    profilePictureUrl: string = '';
 
     constructor(
         public layoutService: LayoutService,
@@ -148,7 +143,13 @@ export class AppTopbarComponent implements OnInit {
                 this.userName = this.account?.Email || 'User';
             }
         }
-        this.profilePictureUrl = this.account?.Profile_Picture !== null && this.account?.Profile_Picture !== undefined && this.account?.Profile_Picture !== '' ? this.account?.Profile_Picture : 'assets/media/avatar.png';
+        this.gender = this.localStorage.getGender() || false;
+
+        if (this.gender) {
+            this.profilePictureUrl = this.account?.Profile_Picture || 'assets/media/avatar.png';
+        } else {
+            this.profilePictureUrl = this.account?.Profile_Picture || 'assets/media/female-avatar.png';
+        }
     }
 
     fetchUserTheme() {
@@ -274,37 +275,7 @@ export class AppTopbarComponent implements OnInit {
     }
 
 
-    search(event: any) {
-        const query = event.query.toLowerCase();
 
-        if (query.trim()) {
-            this.isSearching = true;
-
-            // Filter the mock data based on the search query
-            const filteredLessons = this.mockSearchData.lessons.filter((lesson) =>
-                lesson.toLowerCase().includes(query)
-            );
-            const filteredGames = this.mockSearchData.games.filter((game) =>
-                game.toLowerCase().includes(query)
-            );
-            const filteredTemplates = this.mockSearchData.phishingTemplates.filter((template) =>
-                template.toLowerCase().includes(query)
-            );
-            const filteredWallpapers = this.mockSearchData.wallpapers.filter((wallpaper) =>
-                wallpaper.toLowerCase().includes(query)
-            );
-
-            // Format the filtered results for autocomplete
-            this.filteredResults = this.mapSearchResults({
-                lessons: filteredLessons,
-                games: filteredGames,
-                phishingTemplates: filteredTemplates,
-                wallpapers: filteredWallpapers,
-            });
-
-            this.isSearching = false;
-        }
-    }
 
     //#region search
     // search(event: any) {
