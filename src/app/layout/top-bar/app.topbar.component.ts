@@ -1,15 +1,16 @@
-import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { LayoutService } from '../app-services/app.layout.service';
-import { finalize, Subscription } from 'rxjs';
-import { LocalStorageService } from '../../core/Services/local-storage.service';
-import { ILanguageModel } from 'src/app/modules/language/models/ILanguageModel';
+import { ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { ListboxChangeEvent } from 'primeng/listbox';
+import { Subscription } from 'rxjs';
+import { IAccountDetails, IAccountSettings, IEntityDetails, IUserDetails } from 'src/app/core/models/IAccountStatusResponse';
+import { EntityLogoService } from 'src/app/core/Services/entity-logo.service';
+import { ImageService } from 'src/app/core/Services/image.service';
 import { LanguageDIRService } from 'src/app/core/Services/LanguageDIR.service';
 import { TranslationService } from 'src/app/core/Services/translation.service';
-import { Router } from '@angular/router';
 import { AuthService } from 'src/app/modules/auth/services/auth.service';
-import { IUserDetails, IAccountDetails, IAccountSettings, IEntityDetails } from 'src/app/core/models/IAccountStatusResponse';
-import { ImageService } from 'src/app/core/Services/image.service';
+import { ILanguageModel } from 'src/app/modules/language/models/ILanguageModel';
+import { LocalStorageService } from '../../core/Services/local-storage.service';
+import { LayoutService } from '../app-services/app.layout.service';
 enum NotificationTypeEnum {
     SendCampaignNotification = 1,
     SendCampaignLessonNotification = 2,
@@ -37,7 +38,7 @@ export interface notificiationDto {
     templateUrl: './app.topbar.component.html',
     styleUrl: './app.topbar.component.scss',
 })
-export class AppTopbarComponent implements OnInit {
+export class AppTopbarComponent implements OnInit, OnDestroy {
     @ViewChild('menuButton') menuButton!: ElementRef;
     @ViewChild('mobileMenuButton') mobileMenuButton!: ElementRef;
     @Input() ComapnyLogo = '../../assets/images/companyDefaultLogo.png';
@@ -62,8 +63,8 @@ export class AppTopbarComponent implements OnInit {
     languages: ILanguageModel[] = [];
     isRtl: boolean = false;
     themeLoading: boolean = false;
-    langLoading: boolean = false; // Track the loading state
-    isListboxVisible: boolean = true; // Track visibility of the listbox
+    langLoading: boolean = false;
+    isListboxVisible: boolean = true;
     entityLogo: string = '';
     user: IUserDetails;
     account: IAccountDetails;
@@ -85,17 +86,31 @@ export class AppTopbarComponent implements OnInit {
         private router: Router,
         private authService: AuthService,
         private imageService: ImageService,
+        private entityLogoService: EntityLogoService,
     ) {
     }
 
     ngOnInit(): void {
-        // const data = this.localStorage.getCurrentUserData();
-        // this.userLanguageId = data.language;
-
         this.fetchUserTheme();
         this.loadUserDetails();
-        // this.fetchNotifications();
         this.initializeStaticLanguages();
+        this.subs.add(
+            this.entityLogoService.logo$.subscribe((base64Logo: string | null) => {
+                if (base64Logo) {
+                    this.entityLogo = this.imageService.toImageDataUrl(base64Logo);
+                    if (!this.entityLogo) {
+                        this.entityLogo = 'assets/media/White-Logo.png';
+                    }
+                } else {
+                    this.entityLogo = '';
+                }
+                this.ref.detectChanges();
+            })
+        );
+    }
+
+    ngOnDestroy(): void {
+        this.subs.unsubscribe();
     }
     loadUserDetails() {
         this.user = this.localStorage.getUserDetails() as IUserDetails;
@@ -104,11 +119,9 @@ export class AppTopbarComponent implements OnInit {
         this.accountSettings = this.localStorage.getAccountSettings() as IAccountSettings;
 
 
-        // Handle entity logo from localStorage (stored as base64)
         this.entityLogo = this.imageService.toImageDataUrl(this.entityDetails?.Logo);
         const isRegional = this.accountSettings?.Language !== 'English';
 
-        // Set entity name with regional language support
         if (this.entityDetails) {
             if (isRegional) {
                 const nameRegional = this.entityDetails.Name_Regional || '';
@@ -122,7 +135,6 @@ export class AppTopbarComponent implements OnInit {
             }
         }
 
-        // Set user name with regional language support
         if (this.user) {
             let regionalName = '';
             if (isRegional) {
@@ -154,19 +166,9 @@ export class AppTopbarComponent implements OnInit {
 
     fetchUserTheme() {
         const data = this.localStorageServ.getCurrentUserData();
-        // Get theme from localStorage, or fallback to layout service config, or default to 'light'
         this.userTheme = data?.theme || this.layoutService.config().colorScheme || 'light';
     }
 
-    fetchNotifications() {
-        const datas = this.localStorageServ.getCurrentUserData();
-        // this.subs.add(
-        //     this.notificationServ.getUserNotifications(datas.userId).subscribe((r) => {
-        //         this.notifications = this.processNotifications(r.data);
-        //         this.calculateUnreadCount();
-        //     })
-        // );
-    }
 
     initializeStaticLanguages() {
         this.languages = [

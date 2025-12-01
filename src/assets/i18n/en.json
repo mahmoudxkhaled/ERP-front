@@ -272,7 +272,10 @@
             "sharedDocuments": "Shared Documents",
             "companyDetails": "Company Details",
             "usersDetails": "Users Details",
-            "workflows": "Workflows"
+            "workflows": "Workflows",
+            "newEntity": "New Entity",
+            "entityDetails": "Entity Details",
+            "editEntity": "Edit Entity"
         },
         "app-layout": {
             "actions": {

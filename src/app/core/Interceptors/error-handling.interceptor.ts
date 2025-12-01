@@ -214,8 +214,6 @@ export class ErrorHandlingInterceptor implements HttpInterceptor {
             'ERP11040', // Access Token missing
             'ERP11041', // Access Token invalid
             'ERP11042', // Access Token expired
-            'ERP11060', // Error adding new Access Token
-            'ERP11061', // Error extending Access Token
             'ERP11062', // Error removing Access Token
             'ERP11063'  // Entity Deactivated (account's entity is inactive → login blocked)
         ];
@@ -252,6 +250,8 @@ export class ErrorHandlingInterceptor implements HttpInterceptor {
             'ERP11057': 'Internal routing error occurred. Please try again.',
             'ERP11058': 'Internal routing error - database issue. Please contact support.',
             'ERP11059': 'Internal routing error - IP issues. Please contact support.',
+            'ERP11060': 'Error adding new Access Token. Please try again.',
+            'ERP11061': 'Error extending Access Token. Please try again.',
             'ERP11068': 'Core database transaction error. Please try again.',
             'ERP11069': 'ERP database transaction error. Please try again.',
 

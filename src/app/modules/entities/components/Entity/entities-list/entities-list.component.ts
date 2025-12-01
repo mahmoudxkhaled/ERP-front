@@ -302,11 +302,11 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
                 icon: 'pi pi-eye',
                 command: () => this.currentEntity && this.viewDetails(this.currentEntity)
             },
-            {
-                label: 'Edit',
-                icon: 'pi pi-user-edit',
-                command: () => this.currentEntity && this.edit(this.currentEntity)
-            },
+            // {
+            //     label: 'Edit',
+            //     icon: 'pi pi-user-edit',
+            //     command: () => this.currentEntity && this.edit(this.currentEntity)
+            // },
             ...(canDeleteEntity ? [{
                 label: 'Delete',
                 icon: 'pi pi-trash',

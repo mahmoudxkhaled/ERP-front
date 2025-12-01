@@ -273,7 +273,10 @@
             "sharedDocuments": "المستندات المشتركة",
             "companyDetails": "تفاصيل الشركة",
             "usersDetails": "تفاصيل المستخدمين",
-            "workflows": "سير العمل"
+            "workflows": "سير العمل",
+            "newEntity": "شركة جديدة",
+            "entityDetails": "تفاصيل الشركة",
+            "editEntity": "تعديل الشركة"
         },
         "app-layout": {
             "actions": {

@@ -4,8 +4,9 @@ import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import { EntitiesService } from '../../../services/entities.service';
 import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
-import { IAccountSettings } from 'src/app/core/models/IAccountStatusResponse';
+import { IAccountSettings, IEntityDetails } from 'src/app/core/models/IAccountStatusResponse';
 import { FileUpload } from 'primeng/fileupload';
+import { EntityLogoService } from 'src/app/core/Services/entity-logo.service';
 
 
 @Component({
@@ -40,7 +41,8 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
         private router: Router,
         private entitiesService: EntitiesService,
         private messageService: MessageService,
-        private localStorageService: LocalStorageService
+        private localStorageService: LocalStorageService,
+        private entityLogoService: EntityLogoService
     ) {
         this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
         this.isRegional = this.accountSettings?.Language !== 'English';
@@ -104,26 +106,53 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
                     console.log('logoData', logoData);
                     // Response structure: { Image_Format: string, Image: string (base64) }
                     if (logoData?.Image && logoData.Image.trim() !== '') {
-                        // Convert base64 to byte array
-                        const binaryString = atob(logoData.Image);
-                        const byteArray = new Uint8Array(binaryString.length);
-                        for (let i = 0; i < binaryString.length; i++) {
-                            byteArray[i] = binaryString.charCodeAt(i);
-                        }
                         // Extract image format (default to png if not provided)
                         const imageFormat = logoData.Image_Format || 'png';
                         // Build data URL with correct format
                         this.entityLogo = `data:image/${imageFormat.toLowerCase()};base64,${logoData.Image}`;
                         this.hasLogo = true;
+
+                        // Extract base64 string (without data URL prefix) for localStorage
+                        const base64String = logoData.Image;
+
+                        // Update Entity_Details in localStorage with the logo
+                        const entityDetails = this.localStorageService.getEntityDetails() as IEntityDetails;
+                        if (entityDetails) {
+                            entityDetails.Logo = base64String;
+                            this.localStorageService.setItem('Entity_Details', entityDetails);
+                        }
+
+                        // Emit logo change through service to notify topbar
+                        this.entityLogoService.updateLogo(base64String);
                     } else {
                         // No logo available, use placeholder
                         this.entityLogo = 'assets/media/upload-photo.jpg';
                         this.hasLogo = false;
+
+                        // Clear logo from localStorage
+                        const entityDetails = this.localStorageService.getEntityDetails() as IEntityDetails;
+                        if (entityDetails) {
+                            entityDetails.Logo = '';
+                            this.localStorageService.setItem('Entity_Details', entityDetails);
+                        }
+
+                        // Emit null to notify topbar that logo was removed
+                        this.entityLogoService.updateLogo(null);
                     }
                 } else {
                     // No logo available, use placeholder
                     this.entityLogo = 'assets/media/upload-photo.jpg';
                     this.hasLogo = false;
+
+                    // Clear logo from localStorage
+                    const entityDetails = this.localStorageService.getEntityDetails() as IEntityDetails;
+                    if (entityDetails) {
+                        entityDetails.Logo = '';
+                        this.localStorageService.setItem('Entity_Details', entityDetails);
+                    }
+
+                    // Emit null to notify topbar that logo was removed
+                    this.entityLogoService.updateLogo(null);
                 }
                 this.loadingLogo = false;
             },
@@ -168,9 +197,7 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
         return this.entityDetails.Code || this.entityDetails.code || '';
     }
 
-    /**
-     * Determine if the entity has a parent entity
-     */
+
     hasParentEntity(): boolean {
         const parentId = this.localStorageService.getParentEntityId();
         if (parentId === undefined || parentId === null) {
@@ -181,17 +208,11 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
         return normalized !== '' && normalized !== '0';
     }
 
-    /**
-     * Get a display label for the parent entity
-     */
     getParentEntityLabel(): string {
         const parentId = this.entityDetails.Parent_Entity_ID;
         return parentId ? ` ${parentId}` : 'Root Entity';
     }
 
-    /**
-     * Get entity status label
-     */
     getStatusLabel(): string {
         if (!this.entityDetails) return 'Unknown';
         const isActive = this.entityDetails.Is_Active !== undefined
@@ -200,9 +221,6 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
         return isActive ? 'Active' : 'Inactive';
     }
 
-    /**
-     * Get entity status severity
-     */
     getStatusSeverity(): 'success' | 'danger' {
         if (!this.entityDetails) return 'danger';
         const isActive = this.entityDetails.Is_Active !== undefined
@@ -211,9 +229,6 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
         return isActive ? 'success' : 'danger';
     }
 
-    /**
-     * Get entity type label
-     */
     getTypeLabel(): string {
         if (!this.entityDetails) return 'Organization';
         const isPersonal = this.entityDetails.Is_Personal !== undefined
@@ -222,9 +237,6 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
         return isPersonal ? 'Personal' : 'Organization';
     }
 
-    /**
-     * Get entity type severity
-     */
     getTypeSeverity(): 'warning' | 'info' {
         if (!this.entityDetails) return 'info';
         const isPersonal = this.entityDetails.Is_Personal !== undefined
@@ -233,31 +245,20 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
         return isPersonal ? 'warning' : 'info';
     }
 
-    /**
-     * Open edit entity dialog
-     */
     openEditEntityDialog(): void {
         this.editEntityDialogVisible = true;
     }
 
-    /**
-     * Reload entity details after dialog save
-     */
     handleEntityUpdated(): void {
         this.loadAllData();
     }
 
-
-    /**
-     * Handle file upload for logo
-     */
     onLogoUpload(event: any): void {
         const file = event.files?.[0];
         if (!file) {
             return;
         }
 
-        // Validate file type
         if (!file.type.startsWith('image/')) {
             this.messageService.add({
                 severity: 'error',
@@ -268,12 +269,10 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
             return;
         }
 
-        // File size constants
-        const RECOMMENDED_FILE_SIZE = 200 * 1024; // 200KB recommended
+        const RECOMMENDED_FILE_SIZE = 200 * 1024;
         const fileSizeInMB = (file.size / (1024 * 1024)).toFixed(2);
         const recommendedSizeInKB = (RECOMMENDED_FILE_SIZE / 1024).toFixed(0);
 
-        // Warn if file is larger than recommended but still allow
         if (file.size > RECOMMENDED_FILE_SIZE) {
             this.messageService.add({
                 severity: 'warn',
@@ -287,14 +286,12 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
 
         }
 
-        // Read file as ArrayBuffer to get actual bytes
         const reader = new FileReader();
         reader.onload = () => {
             const arrayBuffer = reader.result as ArrayBuffer;
             const byteArray = new Uint8Array(arrayBuffer);
             const imageFormat = file.type.split('/')[1] || 'png';
 
-            // Send byte array directly - packRequest will handle it
             this.uploadLogo(byteArray, imageFormat);
         };
         reader.onerror = () => {
@@ -308,9 +305,7 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
         reader.readAsArrayBuffer(file);
     }
 
-    /**
-     * Upload logo to server
-     */
+
     uploadLogo(byteArray: Uint8Array, imageFormat: string): void {
         this.loadingLogo = true;
 
@@ -346,10 +341,7 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
         this.subscriptions.push(sub);
     }
 
-    /**
-     * Allow clicking the logo area to trigger the file picker
-     * Works both when no logo exists and when logo exists (to upload another one)
-     */
+
     onLogoAreaClick(): void {
         if (this.loadingLogo) {
             return;
@@ -390,6 +382,17 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
                 // Use placeholder after removal
                 this.entityLogo = 'assets/media/upload-photo.jpg';
                 this.hasLogo = false;
+
+                // Clear logo from localStorage
+                const entityDetails = this.localStorageService.getEntityDetails() as IEntityDetails;
+                if (entityDetails) {
+                    entityDetails.Logo = '';
+                    this.localStorageService.setItem('Entity_Details', entityDetails);
+                }
+
+                // Emit null to notify topbar that logo was removed
+                this.entityLogoService.updateLogo(null);
+
                 this.loadingLogo = false;
             },
         });
