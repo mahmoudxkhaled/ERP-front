@@ -23,15 +23,12 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
     loadingLogo: boolean = false;
     activeTabIndex: number = 0;
 
-    // Entity Details
     entityDetails: any = null;
     entityLogo: string = 'assets/media/upload-photo.jpg';
     hasLogo: boolean = false;
 
     accountSettings: IAccountSettings;
     isRegional: boolean = false;
-
-    // Edit entity dialog
     editEntityDialogVisible: boolean = false;
 
     private subscriptions: Subscription[] = [];
@@ -67,15 +64,11 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
         this.subscriptions.forEach((sub) => sub.unsubscribe());
     }
 
-    /**
-     * Load all required data in parallel
-     */
     loadAllData(): void {
         this.loading = true;
         this.loadingDetails = true;
         this.loadingLogo = true;
 
-        // Load entity details
         const sub = this.entitiesService.getEntityDetails(this.entityId).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
@@ -83,81 +76,42 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
                     return;
                 }
                 this.entityDetails = response?.message || {};
-                console.log('entityDetails', this.entityDetails);
                 this.loadingDetails = false;
                 this.loading = false;
             }
         });
 
         this.subscriptions.push(sub);
-
-        // Load optional logo separately
         this.loadLogo();
     }
 
-    /**
-     * Load entity logo
-     */
     loadLogo(): void {
         const sub = this.entitiesService.getEntityLogo(this.entityId).subscribe({
             next: (response: any) => {
                 if (response?.success && response?.message) {
                     const logoData = response.message;
-                    console.log('logoData', logoData);
-                    // Response structure: { Image_Format: string, Image: string (base64) }
                     if (logoData?.Image && logoData.Image.trim() !== '') {
-                        // Extract image format (default to png if not provided)
                         const imageFormat = logoData.Image_Format || 'png';
-                        // Build data URL with correct format
                         this.entityLogo = `data:image/${imageFormat.toLowerCase()};base64,${logoData.Image}`;
                         this.hasLogo = true;
 
-                        // Extract base64 string (without data URL prefix) for localStorage
                         const base64String = logoData.Image;
-
-                        // Update Entity_Details in localStorage with the logo
                         const entityDetails = this.localStorageService.getEntityDetails() as IEntityDetails;
                         if (entityDetails) {
                             entityDetails.Logo = base64String;
                             this.localStorageService.setItem('Entity_Details', entityDetails);
                         }
 
-                        // Emit logo change through service to notify topbar
                         this.entityLogoService.updateLogo(base64String);
                     } else {
-                        // No logo available, use placeholder
-                        this.entityLogo = 'assets/media/upload-photo.jpg';
-                        this.hasLogo = false;
-
-                        // Clear logo from localStorage
-                        const entityDetails = this.localStorageService.getEntityDetails() as IEntityDetails;
-                        if (entityDetails) {
-                            entityDetails.Logo = '';
-                            this.localStorageService.setItem('Entity_Details', entityDetails);
-                        }
-
-                        // Emit null to notify topbar that logo was removed
-                        this.entityLogoService.updateLogo(null);
+                        this.setPlaceholderLogo();
                     }
                 } else {
-                    // No logo available, use placeholder
-                    this.entityLogo = 'assets/media/upload-photo.jpg';
-                    this.hasLogo = false;
-
-                    // Clear logo from localStorage
-                    const entityDetails = this.localStorageService.getEntityDetails() as IEntityDetails;
-                    if (entityDetails) {
-                        entityDetails.Logo = '';
-                        this.localStorageService.setItem('Entity_Details', entityDetails);
-                    }
-
-                    // Emit null to notify topbar that logo was removed
-                    this.entityLogoService.updateLogo(null);
+                    this.setPlaceholderLogo();
                 }
                 this.loadingLogo = false;
             },
             error: () => {
-                // Logo is optional, so we don't show error - use placeholder
                 this.entityLogo = 'assets/media/upload-photo.jpg';
                 this.hasLogo = false;
                 this.loadingLogo = false;
@@ -167,11 +121,19 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
         this.subscriptions.push(sub);
     }
 
+    private setPlaceholderLogo(): void {
+        this.entityLogo = 'assets/media/upload-photo.jpg';
+        this.hasLogo = false;
+        const entityDetails = this.localStorageService.getEntityDetails() as IEntityDetails;
+        if (entityDetails) {
+            entityDetails.Logo = '';
+            this.localStorageService.setItem('Entity_Details', entityDetails);
+        }
+        this.entityLogoService.updateLogo(null);
+    }
 
 
-    /**
-     * Get entity name (with regional support)
-     */
+
     getEntityName(): string {
         if (!this.entityDetails) return '';
         return this.isRegional
@@ -179,9 +141,6 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
             : (this.entityDetails.Name || this.entityDetails.name || '');
     }
 
-    /**
-     * Get entity description (with regional support)
-     */
     getEntityDescription(): string {
         if (!this.entityDetails) return '';
         return this.isRegional
@@ -189,9 +148,6 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
             : (this.entityDetails.Description || this.entityDetails.description || '');
     }
 
-    /**
-     * Get entity code with null safety
-     */
     getEntityCode(): string {
         if (!this.entityDetails) return '';
         return this.entityDetails.Code || this.entityDetails.code || '';
@@ -309,7 +265,6 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
     uploadLogo(byteArray: Uint8Array, imageFormat: string): void {
         this.loadingLogo = true;
 
-        // Convert byte array to base64 string
         const base64String = btoa(
             String.fromCharCode.apply(null, Array.from(byteArray))
         );
@@ -346,23 +301,15 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
         if (this.loadingLogo) {
             return;
         }
-
-        // Trigger the file uploader
         this.logoUploader?.choose();
     }
 
-    /**
-     * Support keyboard users when focusing the logo area
-     */
     onLogoAreaKeydown(event: KeyboardEvent | Event): void {
         event.preventDefault();
         this.onLogoAreaClick();
     }
 
 
-    /**
-     * Remove entity logo
-     */
     removeLogo(): void {
         this.loadingLogo = true;
         const sub = this.entitiesService.removeEntityLogo(this.entityId).subscribe({
@@ -379,20 +326,7 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
                     life: 3000
                 });
 
-                // Use placeholder after removal
-                this.entityLogo = 'assets/media/upload-photo.jpg';
-                this.hasLogo = false;
-
-                // Clear logo from localStorage
-                const entityDetails = this.localStorageService.getEntityDetails() as IEntityDetails;
-                if (entityDetails) {
-                    entityDetails.Logo = '';
-                    this.localStorageService.setItem('Entity_Details', entityDetails);
-                }
-
-                // Emit null to notify topbar that logo was removed
-                this.entityLogoService.updateLogo(null);
-
+                this.setPlaceholderLogo();
                 this.loadingLogo = false;
             },
         });
@@ -400,17 +334,10 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
         this.subscriptions.push(sub);
     }
 
-
-    /**
-     * Navigate back to entities list
-     */
     navigateBack(): void {
         this.router.navigate(['/company-administration/entities/list']);
     }
 
-    /**
-     * Handle business errors from API responses
-     */
     private handleBusinessError(context: string, response: any): void | null {
         const code = String(response?.message || '');
         const detail = this.getErrorMessage(context, code);
@@ -426,9 +353,6 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
     }
 
 
-    /**
-     * Get user-friendly error message based on error code
-     */
     private getErrorMessage(context: string, code: string): string | null {
         switch (code) {
             case 'ERP11260':
@@ -437,12 +361,10 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
                 return 'Invalid Account ID (issued if the Account ID does not exist in the database, or if an entity administrator tries to assign an account outside his entity tree)';
             case 'ERP11278':
                 return 'Invalid action. The Entity Admin account must be assigned directly to the entity (i.e. the Account\'s Entity_ID must be equal to the Entity_ID)';
-            // Assign_Entity_Logo error codes
             case 'ERP11281':
                 return 'Unknown image file format';
             case 'ERP11282':
                 return 'Empty contents for Image file';
-            // Delete_Entity_Admin error code
             case 'ERP11279':
                 return 'Invalid Account ID. Provided ID is not part of the Entity\'s admins';
             default:

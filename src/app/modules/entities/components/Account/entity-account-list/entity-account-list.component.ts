@@ -25,7 +25,7 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
   loadingAccounts: boolean = false;
   entityAccounts: EntityAccount[] = [];
 
-  // Pagination state properties
+  // Pagination
   first: number = 0;
   rows: number = 10;
   totalRecords: number = 0;
@@ -33,55 +33,43 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
   accountSettings: IAccountSettings;
   isRegional: boolean = false;
 
-  // Delete confirmation dialog
+  // Confirmation dialogs state
   deleteAccountDialog: boolean = false;
   accountToDelete?: EntityAccount;
-
-  // Activate account confirmation dialog
   activateAccountDialog: boolean = false;
   accountToActivate?: EntityAccount;
-
-  // Deactivate account confirmation dialog
   deactivateAccountDialog: boolean = false;
   accountToDeactivate?: EntityAccount;
-
-  // Assign admin confirmation dialog
   assignAdminDialog: boolean = false;
   accountToAssign?: EntityAccount;
 
-  // Menu items for accounts actions
+  // Context menu
   otherAccountsMenuItems: any[] = [];
   currentAccount?: EntityAccount;
 
-  // Filter options for accounts list
+  // Filters
   includeSubentities: boolean = false;
   activeOnly: boolean = false;
 
-  // Add account dialog
+  // Account creation form
   addAccountDialog: boolean = false;
-
-  // Form properties for creating account
   form!: FormGroup;
   loading: boolean = false;
   submitted: boolean = false;
   loadingEntity: boolean = false;
   entityName: string = '';
 
-  // Account management dialog properties
+  // Account management dialogs
   viewAccountDetailsDialog: boolean = false;
   updateAccountEmailDialog: boolean = false;
   updateAccountEntityDialog: boolean = false;
   selectedAccountForDetails?: EntityAccount;
-
-  // Form groups for account management (only for email and entity updates)
   updateEmailForm!: FormGroup;
   updateEntityForm!: FormGroup;
-
-  // Loading states for account management operations
   savingAccountEmail: boolean = false;
   savingAccountEntity: boolean = false;
 
-  // Entity and role options for update entity dialog
+  // Entity dropdown options
   entityOptions: any[] = [];
   entityRoleOptions: any[] = [];
   loadingEntityOptions: boolean = false;
@@ -100,7 +88,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
   }
 
   ngOnInit(): void {
-    // Initialize form on component init
     this.initForm();
     this.initAccountManagementForms();
 
@@ -111,7 +98,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    // Reload accounts when entityId changes
     if (changes['entityId'] && !changes['entityId'].firstChange && this.entityId) {
       this.loadAccounts();
       if (!this.entityName) {
@@ -124,9 +110,7 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     this.subscriptions.forEach((sub) => sub.unsubscribe());
   }
 
-  /**
-   * Load entity details to get entity name
-   */
+  /** Fetches the entity name from the API. */
   loadEntity(): void {
     if (!this.entityId) return;
 
@@ -137,7 +121,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
           this.handleBusinessError('entity', response);
           return;
         }
-        console.log('accounts entity response', response);
         const entity = response?.message || {};
         this.entityName = this.isRegional
           ? (entity?.Name_Regional || entity?.Name || '')
@@ -156,6 +139,7 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
   }
 
 
+  /** Fetches paginated accounts from the API. */
   reloadAccounts(): void {
     if (!this.entityId) {
       return;
@@ -163,14 +147,9 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
 
     this.loadingAccounts = true;
 
-    // Calculate page number from first and rows
-    // Mapping: -1 = page 1, -2 = page 2, -3 = page 3, etc.
-    // Examples:
-    //   first = 0,  rows = 10 -> page = (0/10) + 1 = 1 -> lastAccountId = -1 (page 1)
-    //   first = 10, rows = 10 -> page = (10/10) + 1 = 2 -> lastAccountId = -2 (page 2)
-    //   first = 20, rows = 10 -> page = (20/10) + 1 = 3 -> lastAccountId = -3 (page 3)
+    // API uses negative page numbers: -1 = page 1, -2 = page 2, etc.
     const currentPage = Math.floor(this.first / this.rows) + 1;
-    const lastAccountId = -currentPage; // Convert to negative: page 1 = -1, page 2 = -2, etc.
+    const lastAccountId = -currentPage;
 
     const sub = this.entitiesService.getEntityAccountsList(
       this.entityId,
@@ -185,7 +164,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
           return;
         }
 
-        console.log('accounts response', response);
         this.totalRecords = response.message.Total_Count;
         const accountsData = response?.message?.Accounts || {};
         this.mapAccountsData(accountsData);
@@ -198,11 +176,9 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
   }
 
   private mapAccountsData(accountsData: any): void {
-    console.log('accountsData11111111111', accountsData);
     const accounts = accountsData || {};
     const accountsArray = Array.isArray(accounts) ? accounts : Object.values(accounts);
 
-    // Map all accounts
     this.entityAccounts = accountsArray.map((account: any) => {
       const accountId = String(account?.Account_ID || '');
       const userId = account?.User_ID || 0;
@@ -226,7 +202,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
   }
 
   onFilterChange(): void {
-    // Reset to first page when filters change
     this.first = 0;
     this.reloadAccounts();
   }
@@ -247,18 +222,13 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     });
   }
 
-  /**
-   * Initialize forms for account management operations
-   */
   initAccountManagementForms(): void {
-    // Form for updating account email
     this.updateEmailForm = this.fb.group({
       accountId: [{ value: '', disabled: true }],
       currentEmail: [{ value: '', disabled: true }],
       newEmail: ['', [Validators.required, Validators.email]]
     });
 
-    // Form for updating account entity
     this.updateEntityForm = this.fb.group({
       email: [{ value: '', disabled: true }],
       entityId: [0, [Validators.required]],
@@ -280,7 +250,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
   }
 
   navigateToAddAccount(): void {
-    // Reset form and ensure it's initialized
     if (!this.form) {
       this.initForm();
     } else {
@@ -296,10 +265,10 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     this.submitted = false;
   }
 
+  /** Creates a new account with role and assigns it to the entity. */
   submit(): void {
     this.submitted = true;
 
-    // Check if form is valid
     if (this.form.invalid || this.loading) {
       if (this.form.invalid) {
         this.messageService.add({
@@ -311,13 +280,11 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
       return;
     }
 
-    // Get form values
     const email = this.form.value.email;
     const firstName = this.form.value.firstName;
     const lastName = this.form.value.lastName;
     const entityIdNum = parseInt(this.entityId, 10);
 
-    // Validate entity ID
     if (isNaN(entityIdNum)) {
       this.messageService.add({
         severity: 'error',
@@ -329,8 +296,7 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
 
     this.loading = true;
 
-    // Step 1: Create Entity Role
-    // Generate a random string (letters only) to ensure unique role title and avoid ERP11303 error
+    // Generate random suffix to ensure unique role title
     const generateRandomString = (length: number): string => {
       const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
       let result = '';
@@ -350,10 +316,7 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
           return throwError(() => roleResponse);
         }
 
-        // Extract Entity_Role_ID from response
         const entityRoleId = roleResponse.message.Entity_Role_ID;
-
-        // Step 2: Create Account
         return this.entitiesService.createAccount(email, firstName, lastName, entityIdNum, entityRoleId);
       })
     ).subscribe({
@@ -363,10 +326,8 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
           return;
         }
 
-        // Extract Account_ID from response
         const accountId = String(accountResponse?.message?.User_ID || '');
 
-        // Success - show success message
         this.messageService.add({
           severity: 'success',
           summary: 'Success',
@@ -374,48 +335,31 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
           life: 3000
         });
 
-        // Reset form
         this.form.reset();
         this.submitted = false;
         this.loading = false;
         this.addAccountDialog = false;
-
-        // Emit event to parent component with account ID
         this.accountCreated.emit(accountId);
         this.accountUpdated.emit();
-
-        // Reload accounts to show the newly created account
         this.reloadAccounts();
       },
-      error: (error: any) => {
-        // Error already handled in switchMap or handleCreateAccountError or handleCreateEntityRoleError
-        this.loading = false;
-      }
+      error: () => this.loading = false
     });
 
     this.subscriptions.push(sub);
   }
 
-  /**
-   * Show activate account confirmation dialog
-   */
   confirmActivateAccount(account: EntityAccount): void {
     this.accountToActivate = account;
     this.activateAccountDialog = true;
   }
 
-  /**
-   * Cancel activate account dialog
-   */
   onCancelActivateAccountDialog(): void {
     this.activateAccountDialog = false;
     this.accountToActivate = undefined;
   }
 
-  /**
-   * Activate an account
-   * Only available for SystemAdmin
-   */
+  /** Activates an account. Requires SystemAdmin role. */
   activateAccount(): void {
     if (!this.accountToActivate || !this.accountToActivate.email) {
       return;
@@ -438,8 +382,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
 
         this.activateAccountDialog = false;
         this.accountToActivate = undefined;
-
-        // Reload accounts
         this.reloadAccounts();
         this.accountUpdated.emit();
       },
@@ -450,26 +392,17 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     this.subscriptions.push(sub);
   }
 
-  /**
-   * Show deactivate account confirmation dialog
-   */
   confirmDeactivateAccount(account: EntityAccount): void {
     this.accountToDeactivate = account;
     this.deactivateAccountDialog = true;
   }
 
-  /**
-   * Cancel deactivate account dialog
-   */
   onCancelDeactivateAccountDialog(): void {
     this.deactivateAccountDialog = false;
     this.accountToDeactivate = undefined;
   }
 
-  /**
-   * Deactivate an account
-   * Available for SystemAdmin and EntityAdmin
-   */
+  /** Deactivates an account. Allowed for SystemAdmin and EntityAdmin. */
   deactivateAccount(): void {
     if (!this.accountToDeactivate || !this.accountToDeactivate.email) {
       return;
@@ -492,8 +425,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
 
         this.deactivateAccountDialog = false;
         this.accountToDeactivate = undefined;
-
-        // Reload accounts
         this.reloadAccounts();
         this.accountUpdated.emit();
       },
@@ -504,26 +435,17 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     this.subscriptions.push(sub);
   }
 
-  /**
-   * Show delete account confirmation dialog
-   */
   confirmDeleteAccount(account: EntityAccount): void {
     this.accountToDelete = account;
     this.deleteAccountDialog = true;
   }
 
-  /**
-   * Cancel delete account dialog
-   */
   onCancelDeleteAccountDialog(): void {
     this.deleteAccountDialog = false;
     this.accountToDelete = undefined;
   }
 
-  /**
-   * Delete an account
-   * Available for SystemAdmin and EntityAdmin
-   */
+  /** Deletes an account. Allowed for SystemAdmin and EntityAdmin. */
   deleteAccount(): void {
     if (!this.accountToDelete || !this.accountToDelete.accountId) {
       return;
@@ -548,8 +470,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
 
         this.deleteAccountDialog = false;
         this.accountToDelete = undefined;
-
-        // Reload accounts
         this.reloadAccounts();
         this.accountUpdated.emit();
       },
@@ -560,25 +480,17 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     this.subscriptions.push(sub);
   }
 
-  /**
-   * Show assign admin confirmation dialog
-   */
   confirmAssignAccountAsAdmin(account: EntityAccount): void {
     this.accountToAssign = account;
     this.assignAdminDialog = true;
   }
 
-  /**
-   * Cancel assign admin dialog
-   */
   onCancelAssignAdminDialog(): void {
     this.assignAdminDialog = false;
     this.accountToAssign = undefined;
   }
 
-  /**
-   * Assign selected account as entity admin
-   */
+  /** Promotes an account to entity administrator. */
   assignAccountAsAdmin(): void {
     if (!this.accountToAssign?.accountId || !this.entityId) {
       return;
@@ -601,8 +513,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
 
         this.assignAdminDialog = false;
         this.accountToAssign = undefined;
-
-        // Reload accounts to reflect new admin assignment
         this.reloadAccounts();
         this.accountUpdated.emit();
       },
@@ -613,9 +523,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     this.subscriptions.push(sub);
   }
 
-  /**
-   * Open menu for a specific account
-   */
   openOtherAccountMenu(menuRef: any, account: EntityAccount, event: Event): void {
     this.currentAccount = account;
     this.configureOtherAccountMenuItems(account);
@@ -623,10 +530,9 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
   }
 
   /**
-   * Configure menu items for accounts table
-   * Activate: SystemAdmin, Developer (when account is inactive)
-   * Deactivate: SystemAdmin, Developer, EntityAdmin (when account is active)
-   * Delete: SystemAdmin, Developer, EntityAdmin
+   * Builds the context menu based on user permissions.
+   * - Activate: SystemAdmin, Developer only (when inactive)
+   * - Deactivate/Delete: SystemAdmin, Developer, EntityAdmin
    */
   private configureOtherAccountMenuItems(account: EntityAccount): void {
     const menuItemsList: any[] = [];
@@ -639,7 +545,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     const canUpdateAccountEmail = this.permissionService.can('Update_Account_Email');
     const canUpdateAccountEntity = this.permissionService.can('Update_Account_Entity');
 
-    // View/Edit Account Details - Visible if user can get or update account details
     if (canGetAccountDetails || canUpdateAccountDetails) {
       menuItemsList.push({
         label: 'View/Edit Account Details',
@@ -648,7 +553,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
       });
     }
 
-    // Update Account Email
     if (canUpdateAccountEmail) {
       menuItemsList.push({
         label: 'Update Account Email',
@@ -657,7 +561,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
       });
     }
 
-    // Update Account Entity
     if (canUpdateAccountEntity) {
       menuItemsList.push({
         label: 'Update Account Entity',
@@ -666,7 +569,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
       });
     }
 
-    // Activate - For SystemAdmin and Developer when account is inactive (Account_State = 0)
     if (canActivateAccount && account.accountState === 0) {
       menuItemsList.push({
         label: 'Activate Account',
@@ -675,7 +577,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
       });
     }
 
-    // Deactivate - For SystemAdmin, Developer and EntityAdmin when account is active (Account_State = 1)
     if (canDeactivateAccount && account.accountState === 1) {
       menuItemsList.push({
         label: 'Deactivate Account',
@@ -684,7 +585,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
       });
     }
 
-    // Delete - For SystemAdmin, Developer and EntityAdmin
     if (canDeleteAccount) {
       menuItemsList.push({
         label: 'Delete Account',
@@ -693,7 +593,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
       });
     }
 
-    // Assign as Admin - available when account is not already admin
     if (canAssignAdmin && this.isEligibleForAdmin(account)) {
       menuItemsList.push({
         label: 'Assign as Admin',
@@ -705,23 +604,14 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     this.otherAccountsMenuItems = menuItemsList;
   }
 
-  /**
-   * Check if account can be promoted to admin
-   */
   private isEligibleForAdmin(account: EntityAccount): boolean {
     return account.systemRoleId !== 3;
   }
 
-  /**
-   * Get entity name for display
-   */
   getEntityName(): string {
     return this.entityName;
   }
 
-  /**
-   * Handle business errors from API responses
-   */
   private handleBusinessError(context: string, response: any): void {
     const code = String(response?.message || '');
     const detail = this.getErrorMessage(context, code);
@@ -735,9 +625,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     }
   }
 
-  /**
-   * Handle account operation errors
-   */
   private handleAccountError(operation: string, response: any): void {
     const code = String(response?.message || '');
     const detail = this.getAccountErrorMessage(operation, code);
@@ -753,9 +640,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     this.loading = false;
   }
 
-  /**
-   * Handle assign admin operation errors
-   */
   private handleAssignAdminError(response: any): void {
     const code = String(response?.message || '');
     const detail = this.getAssignAdminErrorMessage(code);
@@ -770,9 +654,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     this.loadingAccounts = false;
   }
 
-  /**
-   * Get user-friendly error message based on error code
-   */
   private getErrorMessage(context: string, code: string): string | null {
     switch (code) {
       case 'ERP11260':
@@ -791,11 +672,7 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     }
   }
 
-  /**
-   * Get error message for account operations
-   */
   private getAccountErrorMessage(operation: string, code: string): string | null {
-    // Common error codes for all account operations
     switch (code) {
       case 'ERP11260':
         return 'Invalid Entity ID';
@@ -805,7 +682,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
         return 'Account does not belong to this entity.';
     }
 
-    // Operation-specific error codes
     switch (operation) {
       case 'activate':
         switch (code) {
@@ -839,9 +715,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     }
   }
 
-  /**
-   * Get error message for assign admin operation
-   */
   private getAssignAdminErrorMessage(code: string): string | null {
     switch (code) {
       case 'ERP11260':
@@ -855,25 +728,16 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     }
   }
 
-  /**
-   * Open view account details dialog
-   */
   openViewAccountDetails(account: EntityAccount): void {
     this.selectedAccountForDetails = account;
     this.viewAccountDetailsDialog = true;
   }
 
-  /**
-   * Handle account details saved event
-   */
   onAccountDetailsSaved(): void {
     this.accountUpdated.emit();
     this.reloadAccounts();
   }
 
-  /**
-   * Open update account email dialog
-   */
   openUpdateAccountEmail(account: EntityAccount): void {
     this.selectedAccountForDetails = account;
     this.updateEmailForm.patchValue({
@@ -884,13 +748,9 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     this.updateAccountEmailDialog = true;
   }
 
-  /**
-   * Open update account entity dialog
-   */
   openUpdateAccountEntity(account: EntityAccount): void {
     this.selectedAccountForDetails = account;
     this.loadEntityOptions();
-    // Load account details first to get entityId and entityRoleId
     const sub = this.entitiesService.getAccountDetails(account.email).subscribe({
       next: (response: any) => {
         if (response?.success) {
@@ -901,7 +761,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
             entityRoleId: accountData.Entity_Role_ID || 0
           });
         } else {
-          // If loading fails, use default values
           this.updateEntityForm.patchValue({
             email: account.email,
             entityId: 0,
@@ -923,9 +782,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
   }
 
 
-  /**
-   * Save updated account email
-   */
   saveAccountEmail(): void {
     if (this.updateEmailForm.invalid || !this.selectedAccountForDetails) {
       this.updateEmailForm.markAllAsTouched();
@@ -962,9 +818,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     this.subscriptions.push(sub);
   }
 
-  /**
-   * Save updated account entity
-   */
   saveAccountEntity(): void {
     if (this.updateEntityForm.invalid || !this.selectedAccountForDetails) {
       this.updateEntityForm.markAllAsTouched();
@@ -1001,13 +854,9 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     this.subscriptions.push(sub);
   }
 
-  /**
-   * Load entity options for dropdown
-   */
   loadEntityOptions(): void {
-    console.log('loadEntityOptions');
     if (this.entityOptions.length > 0) {
-      return; // Already loaded
+      return;
     }
 
     this.loadingEntityOptions = true;
@@ -1015,16 +864,13 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
       next: (response: any) => {
         this.loadingEntityOptions = false;
         if (response?.success) {
-          console.log('entities response', response);
           const entities = response.message.Entities || {};
-
 
           this.entityOptions = Object.values(entities).map((item: any) => ({
             label: `${item?.Name || 'Entity'} (${item?.Code || 'N/A'})`,
             value: Number(item?.Entity_ID || item?.id || 0)
           })).filter((option: any) => !isNaN(option.value));
 
-          // Load entity roles if entity is selected
           if (this.updateEntityForm.value.entityId) {
             this.loadEntityRoles(Number(this.updateEntityForm.value.entityId));
           }
@@ -1038,21 +884,14 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     this.subscriptions.push(sub);
   }
 
-  /**
-   * Load entity roles for selected entity
-   */
   loadEntityRoles(entityId: number): void {
-    // TODO: Implement entity roles API when available
-    // For now, use default roles
+    // TODO: Replace with entity roles API when available
     this.entityRoleOptions = [
       { label: 'Role 1', value: 15 },
       { label: 'Role 2 ', value: 5 }
     ];
   }
 
-  /**
-   * Close dialogs
-   */
   onCloseUpdateAccountEmailDialog(): void {
     this.updateAccountEmailDialog = false;
     this.updateEmailForm.reset();
@@ -1063,9 +902,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     this.updateEntityForm.reset();
   }
 
-  /**
-   * Error handling methods
-   */
   private handleUpdateAccountEmailError(response: any): void {
     const code = String(response?.message || '');
     const detail = this.getUpdateAccountEmailErrorMessage(code);
@@ -1120,9 +956,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     }
   }
 
-  /**
-   * Handle create entity role errors
-   */
   private handleCreateEntityRoleError(response: any): void {
     const code = String(response?.message || '');
     const detail = this.getCreateEntityRoleErrorMessage(code);
@@ -1137,9 +970,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     this.loading = false;
   }
 
-  /**
-   * Get error message for create entity role
-   */
   private getCreateEntityRoleErrorMessage(code: string): string | null {
     switch (code) {
       case 'ERP11300':
@@ -1155,9 +985,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     }
   }
 
-  /**
-   * Handle create account errors
-   */
   private handleCreateAccountError(response: any): void {
     const code = String(response?.message || '');
     const detail = this.getCreateAccountErrorMessage(code);
@@ -1172,9 +999,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     this.loading = false;
   }
 
-  /**
-   * Get error message for create account
-   */
   private getCreateAccountErrorMessage(code: string): string | null {
     switch (code) {
       case 'ERP11130':
@@ -1194,9 +1018,7 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     }
   }
 
-  /**
-   * Check if date is before 2025 - if so, show "Never"
-   */
+  /** Returns true if the date is missing or before 2025 (used to display "Never"). */
   isDefaultDate(dateString: string | null | undefined): boolean {
     if (!dateString) {
       return true;

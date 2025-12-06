@@ -210,11 +210,8 @@ export class EditEntityDialogComponent implements OnInit, OnDestroy {
 
     private getErrorMessage(code: string): string | null {
         switch (code) {
-            // Get_Entity_Details error codes
             case 'ERP11260':
                 return 'Invalid Entity ID';
-
-            // Update_Entity_Details error codes
             case 'ERP11250':
                 return 'Invalid Parent Entity ID';
             case 'ERP11251':
@@ -225,7 +222,6 @@ export class EditEntityDialogComponent implements OnInit, OnDestroy {
                 return 'Invalid \'Description\' format';
             case 'ERP11254':
                 return 'The \'Code\' is not unique in the main root Entity tree. The administrator adding the entity should be notified to adjust the \'Code\' field';
-
             default:
                 return null;
         }

@@ -74,7 +74,6 @@ export class EntityContactComponent implements OnInit, OnDestroy {
 
 
     private mapContactsData(data: any): void {
-        console.log('data', data);
         this.contacts = {
             address: data?.Address || '',
             addressRegional: data?.Address_Regional || '',
@@ -119,21 +118,18 @@ export class EntityContactComponent implements OnInit, OnDestroy {
             emails: this.fb.array([])
         });
 
-        // Add existing phone numbers
         if (this.contacts?.phoneNumbers && this.contacts.phoneNumbers.length > 0) {
             this.contacts.phoneNumbers.forEach(phone => {
                 this.addPhoneNumber(phone);
             });
         }
 
-        // Add existing fax numbers
         if (this.contacts?.faxNumbers && this.contacts.faxNumbers.length > 0) {
             this.contacts.faxNumbers.forEach(fax => {
                 this.addFaxNumber(fax);
             });
         }
 
-        // Add existing emails
         if (this.contacts?.emails && this.contacts.emails.length > 0) {
             this.contacts.emails.forEach(email => {
                 this.addEmail(email);
@@ -178,31 +174,24 @@ export class EntityContactComponent implements OnInit, OnDestroy {
 
     addPhoneNumber(value: string = ''): void {
         const phoneNumbersArray = this.phoneNumbersFormArray;
-        // Phone numbers are optional, but if provided, must be valid format
         phoneNumbersArray.push(this.fb.control(value, [this.phoneNumberValidator]));
     }
-
 
     removePhoneNumber(index: number): void {
         this.phoneNumbersFormArray.removeAt(index);
     }
 
-
     addFaxNumber(value: string = ''): void {
         const faxNumbersArray = this.faxNumbersFormArray;
-        // Fax numbers are optional, but if provided, must be valid format
         faxNumbersArray.push(this.fb.control(value, [this.phoneNumberValidator]));
     }
-
 
     removeFaxNumber(index: number): void {
         this.faxNumbersFormArray.removeAt(index);
     }
 
-
     addEmail(value: string = ''): void {
         const emailsArray = this.emailsFormArray;
-        // Emails are optional, but if provided, must be valid email format
         emailsArray.push(this.fb.control(value, [this.emailValidator]));
     }
 
@@ -221,14 +210,11 @@ export class EntityContactComponent implements OnInit, OnDestroy {
         return digitsOnly ? null : { invalidFormat: true };
     }
 
-    /**
-     * Email validator - validates email format only if value exists
-     */
+    /** Validates email format only if value exists (optional field). */
     private emailValidator(control: any): { [key: string]: any } | null {
         if (!control.value) {
-            return null; // Empty is valid (optional field)
+            return null;
         }
-        // Use Angular's built-in email validator
         const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         return emailPattern.test(control.value) ? null : { email: true };
     }
@@ -244,7 +230,6 @@ export class EntityContactComponent implements OnInit, OnDestroy {
     submitUpdate(): void {
         this.submitted = true;
 
-        // Check if address is filled (required field)
         const addressValue = this.editForm.get('address')?.value?.trim() || '';
         if (!addressValue) {
             this.messageService.add({
@@ -255,7 +240,6 @@ export class EntityContactComponent implements OnInit, OnDestroy {
             return;
         }
 
-        // Check if form has validation errors (format errors in phone/fax/email)
         if (this.editForm.invalid || this.loading) {
             if (this.editForm.invalid) {
                 this.messageService.add({
@@ -309,8 +293,6 @@ export class EntityContactComponent implements OnInit, OnDestroy {
                 this.editDialog = false;
                 this.editForm.reset();
                 this.submitted = false;
-
-                // Reload contacts
                 this.loadContacts();
                 this.loading = false;
             }

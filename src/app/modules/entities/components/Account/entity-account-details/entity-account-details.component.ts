@@ -18,10 +18,9 @@ export class EntityAccountDetailsComponent implements OnInit, OnDestroy, OnChang
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() saved = new EventEmitter<void>();
 
-  // Form control for editable description
   descriptionFormControl: FormControl = new FormControl('');
 
-  // Account details properties (read-only)
+  // Account properties
   accountId: number = 0;
   email: string = '';
   userId: number = 0;
@@ -30,8 +29,6 @@ export class EntityAccountDetailsComponent implements OnInit, OnDestroy, OnChang
   accountState: number = 0;
   description: string = '';
   descriptionRegional: string = '';
-
-  // Track original description to detect changes
   originalDescription: string = '';
 
   loadingAccountDetails: boolean = false;
@@ -66,9 +63,7 @@ export class EntityAccountDetailsComponent implements OnInit, OnDestroy, OnChang
     }
   }
 
-  /**
-   * Load account details by email
-   */
+  /** Fetches account details from the API by email. */
   loadAccountDetails(email: string): void {
     this.loadingAccountDetails = true;
     const sub = this.entitiesService.getAccountDetails(email).subscribe({
@@ -78,11 +73,8 @@ export class EntityAccountDetailsComponent implements OnInit, OnDestroy, OnChang
           this.handleGetAccountDetailsError(response);
           return;
         }
-        console.log('account details response', response?.message);
 
         const accountData = response?.message || {};
-
-        // Populate all account details properties
         this.accountId = accountData.Account_ID || 0;
         this.email = accountData.Email || email;
         this.userId = accountData.User_ID || 0;
@@ -92,7 +84,6 @@ export class EntityAccountDetailsComponent implements OnInit, OnDestroy, OnChang
         this.description = accountData.Description || '';
         this.descriptionRegional = accountData.Description_Regional || '';
 
-        // Set description in form control based on regional setting
         const descriptionToShow = this.isRegional
           ? (this.descriptionRegional || this.description)
           : (this.description || this.descriptionRegional);
@@ -108,16 +99,11 @@ export class EntityAccountDetailsComponent implements OnInit, OnDestroy, OnChang
     this.subscriptions.push(sub);
   }
 
-  /**
-   * Check if description has been modified
-   */
   get isDescriptionModified(): boolean {
     return this.descriptionFormControl.value !== this.originalDescription;
   }
 
-  /**
-   * Save account details (only description)
-   */
+  /** Saves the account description to the API. */
   saveAccountDetails(): void {
     if (!this.account || !this.isDescriptionModified) {
       return;
@@ -140,7 +126,6 @@ export class EntityAccountDetailsComponent implements OnInit, OnDestroy, OnChang
           detail: 'Account description updated successfully.'
         });
 
-        // Update original description to reflect saved state
         this.originalDescription = description;
         this.saved.emit();
       },
@@ -155,22 +140,15 @@ export class EntityAccountDetailsComponent implements OnInit, OnDestroy, OnChang
   closeDialog(): void {
     this.visible = false;
     this.visibleChange.emit(false);
-    // Reset description to original value if not saved
     if (this.isDescriptionModified) {
       this.descriptionFormControl.setValue(this.originalDescription, { emitEvent: false });
     }
   }
 
-  /**
-   * Get account state display text
-   */
   getAccountStateText(): string {
     return this.accountState === 1 ? 'Active' : 'Inactive';
   }
 
-  /**
-   * Get account state severity for p-tag
-   */
   getAccountStateSeverity(): string {
     return this.accountState === 1 ? 'success' : 'danger';
   }
@@ -179,9 +157,6 @@ export class EntityAccountDetailsComponent implements OnInit, OnDestroy, OnChang
     this.closeDialog();
   }
 
-  /**
-   * Error handling methods
-   */
   private handleGetAccountDetailsError(response: any): void {
     const code = String(response?.message || '');
     const detail = this.getGetAccountDetailsErrorMessage(code);

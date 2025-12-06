@@ -31,10 +31,11 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
     deleteEntityDialog: boolean = false;
     currentEntityForDelete?: Entity;
 
-    // Pagination state properties
-    first: number = 0; // Current first record index
-    rows: number = 10; // Number of rows per page
-    totalRecords: number = 0; // Total number of entities
+    // Pagination
+    first: number = 0;
+    rows: number = 10;
+    totalRecords: number = 0;
+
     constructor(
         private entitiesService: EntitiesService,
         private router: Router,
@@ -63,44 +64,31 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
         const isRegional = this.accountSettings?.Language !== 'English';
         this.tableLoadingSpinner = true;
 
-        // Calculate page number from first and rows
-        // Mapping: -1 = page 1, -2 = page 2, -3 = page 3, etc.
-        // Examples:
-        //   first = 0,  rows = 10 -> page = (0/10) + 1 = 1 -> lastEntityId = -1 (page 1)
-        //   first = 10, rows = 10 -> page = (10/10) + 1 = 2 -> lastEntityId = -2 (page 2)
-        //   first = 20, rows = 10 -> page = (20/10) + 1 = 3 -> lastEntityId = -3 (page 3)
+        // API uses negative page numbers: -1 = page 1, -2 = page 2, etc.
         const currentPage = Math.floor(this.first / this.rows) + 1;
-        const lastEntityId = -currentPage; // Convert to negative: page 1 = -1, page 2 = -2, etc.
+        const lastEntityId = -currentPage;
 
-        // Call service with pagination parameters
         const sub = this.entitiesService.listEntities(lastEntityId, this.rows).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
                     this.handleBusinessError('list', response);
                     return;
                 }
-                console.log('response', response);
                 this.totalRecords = Number(response.message.Total_Count);
 
-
                 let entitiesData: any = {};
-                // Extract all keys except "0" which contains Total_Count
                 const messageData = response.message.Entities;
                 entitiesData = {};
                 Object.keys(messageData).forEach((key) => {
-                    // Skip key "0" (contains Total_Count) and only include entity objects
                     if (key !== "0") {
                         const item = messageData[key];
-                        console.log(`Checking key "${key}":`, item, 'Type:', typeof item, 'Has Entity_ID:', item?.Entity_ID !== undefined);
                         if (typeof item === 'object' && item !== null && item.Entity_ID !== undefined) {
                             entitiesData[key] = item;
-                            console.log(`Entity added from key "${key}"`);
                         }
                     }
                 });
 
                 this.entities = Object.values(entitiesData).map((item: any) => {
-                    console.log('Mapping item:', item);
                     return {
                         id: String(item?.Entity_ID || ''),
                         code: item?.Code || '',
@@ -292,8 +280,6 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
     }
 
     private configureMenuItems(): void {
-        // Check permissions using PermissionService
-        const canAddAccount = this.permissionService.can('Create_Account');
         const canDeleteEntity = this.permissionService.can('Delete_Entity');
 
         this.menuItems = [
@@ -302,11 +288,6 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
                 icon: 'pi pi-eye',
                 command: () => this.currentEntity && this.viewDetails(this.currentEntity)
             },
-            // {
-            //     label: 'Edit',
-            //     icon: 'pi pi-user-edit',
-            //     command: () => this.currentEntity && this.edit(this.currentEntity)
-            // },
             ...(canDeleteEntity ? [{
                 label: 'Delete',
                 icon: 'pi pi-trash',
@@ -317,7 +298,6 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
 
     private handleBusinessError(context: EntityActionContext, response: any): void | null {
         const code = String(response?.message || '');
-        console.log('code', code);
         let detail = '';
 
         switch (context) {

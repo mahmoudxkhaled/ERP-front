@@ -9,7 +9,6 @@ import { LocalStorageService } from 'src/app/core/Services/local-storage.service
 import { IAccountSettings } from 'src/app/core/models/IAccountStatusResponse';
 import { Roles } from 'src/app/core/models/system-roles';
 import { textFieldValidator, getTextFieldError } from 'src/app/core/Services/textFieldValidator';
-import { dE } from '@fullcalendar/core/internal-common';
 
 type EntityFormContext = 'create' | 'update' | 'details';
 
@@ -105,10 +104,7 @@ export class EntityFormComponent implements OnInit, OnDestroy {
         const sub = this.entitiesService.listEntities().subscribe({
             next: (res: any) => {
                 if (res?.success) {
-
-                    console.log('res', res);
-                    const entitiesData = res.message.Entities
-                        || {};
+                    const entitiesData = res.message.Entities || {};
                     const entities = Object.values(entitiesData).map((item: any) => ({
                         ID: item?.Entity_ID,
                         Name: item?.Name || '',
@@ -169,8 +165,6 @@ export class EntityFormComponent implements OnInit, OnDestroy {
                 }
 
                 const entity = response?.message ?? {};
-
-                // Convert parentEntityId to number and ensure 0 is used for root entity
                 const parentId = entity?.Parent_Entity_ID;
                 const parentEntityId = parentId === null || parentId === undefined || parentId === '' || parentId === '0'
                     ? 0
@@ -197,12 +191,10 @@ export class EntityFormComponent implements OnInit, OnDestroy {
     submit(): void {
         this.submitted = true;
 
-        // Validate form - check account fields only if account section is shown
         if (this.loading) {
             return;
         }
 
-        // Check if account fields are required and valid
         if (this.showAccountSection && !this.isEdit) {
             const accountFieldsValid = this.form.get('email')?.valid &&
                 this.form.get('firstName')?.valid &&
@@ -217,7 +209,6 @@ export class EntityFormComponent implements OnInit, OnDestroy {
             }
         }
 
-        // Check entity fields
         if (this.form.get('code')?.invalid || this.form.get('name')?.invalid || this.form.get('description')?.invalid) {
             this.messageService.add({
                 severity: 'warn',
@@ -233,7 +224,6 @@ export class EntityFormComponent implements OnInit, OnDestroy {
         this.loading = true;
         const { code, name, description, parentEntityId, isPersonal, email, firstName, lastName } = this.form.value;
 
-        // Handle edit mode (keep existing logic)
         if (this.isEdit) {
             const sub = this.entitiesService.updateEntityDetails(
                 this.entityId,
@@ -264,18 +254,14 @@ export class EntityFormComponent implements OnInit, OnDestroy {
             return;
         }
 
-        // Handle create mode
         const parentId = Number(parentEntityId) || 0;
         const isPersonalValue = isPersonal || false;
 
-        // For SystemAdministrator or Developer: Validate email first, then Create Entity → Create Entity Role → Create Account
+        // SystemAdmin/Developer: validate email, create entity, role, and account
         if (this.systemRole === Roles.SystemAdministrator || this.systemRole === Roles.Developer) {
-            // Step 0: Pre-validate email before creating entity
             this.validateEmailBeforeCreation(email, code, name, description, parentId, isPersonalValue, firstName, lastName);
             return;
-        }
-        // For EntityAdministrator: Create Entity only
-        else if (this.systemRole === Roles.EntityAdministrator) {
+        } else if (this.systemRole === Roles.EntityAdministrator) {
             const sub = this.entitiesService.addEntity(
                 code,
                 name,
@@ -376,7 +362,6 @@ export class EntityFormComponent implements OnInit, OnDestroy {
     }
 
     private getCreationErrorMessage(code: string): string | null {
-        console.log('code', code);
         switch (code) {
             case 'ERP11250':
                 return 'Invalid Parent Entity ID';
@@ -427,7 +412,6 @@ export class EntityFormComponent implements OnInit, OnDestroy {
         const detail = this.getCreateEntityRoleErrorMessage(code);
 
         if (detail) {
-
             this.messageService.add({
                 severity: 'error',
                 summary: 'Error',
@@ -485,11 +469,7 @@ export class EntityFormComponent implements OnInit, OnDestroy {
         }
     }
 
-    /**
-     * Pre-validate email before creating entity to prevent orphaned entities
-     * If email exists (API returns success), show error and prevent entity creation
-     * If email doesn't exist (error ERP11150), proceed with entity creation
-     */
+    /** Pre-validates email before entity creation to prevent orphaned entities. */
     private validateEmailBeforeCreation(
         email: string,
         code: string,
@@ -502,7 +482,6 @@ export class EntityFormComponent implements OnInit, OnDestroy {
     ): void {
         const sub = this.entitiesService.getAccountDetails(email).subscribe({
             next: (response: any) => {
-                // If API returns success, email already exists
                 if (response?.success) {
                     this.messageService.add({
                         severity: 'error',
@@ -513,16 +492,13 @@ export class EntityFormComponent implements OnInit, OnDestroy {
                     this.loading = false;
                     return;
                 }
-                // If not success, proceed with entity creation
                 this.proceedWithEntityCreation(code, name, description, parentId, isPersonalValue, email, firstName, lastName);
             },
             error: (error: any) => {
                 const errorCode = String(error?.message || '');
-                // If error is ERP11150, email doesn't exist - proceed with creation
                 if (errorCode === 'ERP11150') {
                     this.proceedWithEntityCreation(code, name, description, parentId, isPersonalValue, email, firstName, lastName);
                 } else {
-                    // Other error - show and stop
                     this.handleBusinessError('create', error);
                 }
             }
@@ -530,9 +506,7 @@ export class EntityFormComponent implements OnInit, OnDestroy {
         this.subscriptions.push(sub);
     }
 
-    /**
-     * Proceed with entity creation after email validation passes
-     */
+    /** Creates entity, role, and admin account after email validation. */
     private proceedWithEntityCreation(
         code: string,
         name: string,
@@ -556,13 +530,10 @@ export class EntityFormComponent implements OnInit, OnDestroy {
                     return throwError(() => entityResponse);
                 }
 
-                console.log('entityResponse', entityResponse);
-                // Extract Entity_ID from response
-                const entityId = entityResponse.message.Entity_ID; // int Entity_ID
-
-                // Step 2: Create Entity Role
+                const entityId = entityResponse.message.Entity_ID;
                 const roleTitle = `${name} Entity Administrator`;
                 const roleDescription = `Default Entity Administrator role for ${name}`;
+
                 return this.entitiesService.createEntityRole(entityId, roleTitle, roleDescription).pipe(
                     switchMap((roleResponse: any) => {
                         if (!roleResponse?.success) {
@@ -570,10 +541,7 @@ export class EntityFormComponent implements OnInit, OnDestroy {
                             return throwError(() => roleResponse);
                         }
 
-                        // Extract Entity_Role_ID from response
-                        const entityRoleId = roleResponse.message.Entity_Role_ID; // int Entity_Role_ID
-
-                        // Step 3: Create Account
+                        const entityRoleId = roleResponse.message.Entity_Role_ID;
                         return this.entitiesService.createAccount(email, firstName, lastName, entityId, entityRoleId);
                     })
                 );
@@ -592,10 +560,7 @@ export class EntityFormComponent implements OnInit, OnDestroy {
                 });
                 this.router.navigate(['/company-administration/entities/list']);
             },
-            error: (error: any) => {
-                // Error already handled in switchMap or handleCreateAccountError or handleCreateEntityRoleError
-                this.loading = false;
-            },
+            error: () => this.loading = false,
             complete: () => this.loading = false
         });
 

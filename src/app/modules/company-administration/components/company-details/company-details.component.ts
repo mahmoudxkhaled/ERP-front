@@ -1,7 +1,7 @@
-import { Component, forwardRef, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { TranslationService } from 'src/app/core/Services/translation.service';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { MessageService } from 'primeng/api';
+import { TranslationService } from 'src/app/core/Services/translation.service';
 
 interface IndustryOption {
     label: string;

@@ -62,9 +62,7 @@ export class EntityAccountUpdateDetailsComponent implements OnInit, OnDestroy, O
     });
   }
 
-  /**
-   * Load account details for update
-   */
+  /** Fetches account details from the API to populate the form. */
   loadAccountDetailsForUpdate(email: string): void {
     this.loadingAccountDetails = true;
     const sub = this.entitiesService.getAccountDetails(email).subscribe({
@@ -77,7 +75,6 @@ export class EntityAccountUpdateDetailsComponent implements OnInit, OnDestroy, O
             description: accountData.Description || accountData.Description_Regional || ''
           });
         } else {
-          // If loading fails, just use empty description
           this.updateDetailsForm.patchValue({
             email: email,
             description: ''
@@ -95,9 +92,7 @@ export class EntityAccountUpdateDetailsComponent implements OnInit, OnDestroy, O
     this.subscriptions.push(sub);
   }
 
-  /**
-   * Save updated account details
-   */
+  /** Saves the updated account details to the API. */
   saveUpdatedAccountDetails(): void {
     this.submitted = true;
     if (this.updateDetailsForm.invalid || !this.account) {
@@ -148,9 +143,6 @@ export class EntityAccountUpdateDetailsComponent implements OnInit, OnDestroy, O
     this.closeDialog();
   }
 
-  /**
-   * Error handling methods
-   */
   private handleUpdateAccountDetailsError(response: any): void {
     const code = String(response?.message || '');
     const detail = this.getUpdateAccountDetailsErrorMessage(code);
