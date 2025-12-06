@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MessageService, MenuItem } from 'primeng/api';
-import { TranslationService } from 'src/app/core/Services/translation.service';
+import { TranslationService } from 'src/app/core/services/translation.service';
 import { IUserModel } from '../../models/IUserModel';
 
 @Component({

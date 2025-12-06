@@ -3,7 +3,7 @@ import { ActivatedRouteSnapshot, NavigationEnd, Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { ChangeDetectorRef } from '@angular/core';
-import { TranslationService } from 'src/app/core/Services/translation.service';
+import { TranslationService } from 'src/app/core/services/translation.service';
 
 interface Breadcrumb {
     label: string;

@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { ExtraOptions, RouterModule, Routes } from '@angular/router';
 import { AppLayoutComponent } from './layout/app-layout/app.layout.component';
-import { AuthGuard } from './core/Guards/auth.guard';
+import { AuthGuard } from './core/guards/auth.guard';
 
 const routerOptions: ExtraOptions = {
     anchorScrolling: 'enabled',
@@ -64,15 +64,11 @@ const routes: Routes = [
     },
     {
         path: 'notfound',
-        loadChildren: () => import('./demo/components/notfound/notfound.module').then((m) => m.NotfoundModule),
-    },
-    {
-        path: 'notfound2',
-        loadChildren: () => import('./demo/components/notfound2/notfound2.module').then((m) => m.Notfound2Module),
+        loadChildren: () => import('./core/components/notfound/notfound.module').then((m) => m.NotfoundModule),
     },
     {
         path: 'landing',
-        loadChildren: () => import('./demo/components/landing/landing.module').then((m) => m.LandingModule),
+        loadChildren: () => import('./core/components/landing/landing.module').then((m) => m.LandingModule),
     },
     { path: '**', redirectTo: '/notfound' },
 ];

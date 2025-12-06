@@ -4,8 +4,8 @@ import { Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { LayoutService } from 'src/app/layout/app-services/app.layout.service';
 import { AuthService } from '../../services/auth.service';
-import { LanguageDIRService } from 'src/app/core/Services/LanguageDIR.service';
-import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
+import { LanguageDirService } from 'src/app/core/services/language-dir.service';
+import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 
 @Component({
     templateUrl: './login.component.html',
@@ -37,7 +37,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     constructor(
         private authService: AuthService,
         private router: Router,
-        private rtlService: LanguageDIRService,
+        private rtlService: LanguageDirService,
         private localStorageService: LocalStorageService
     ) {
         this.isLoading$ = this.authService.isLoadingSubject;

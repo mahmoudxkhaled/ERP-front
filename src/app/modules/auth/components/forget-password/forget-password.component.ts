@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
-import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
+import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { AuthService } from '../../services/auth.service';
 
 @Component({

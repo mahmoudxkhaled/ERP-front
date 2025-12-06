@@ -6,11 +6,13 @@ import { ReactiveFormsModule } from '@angular/forms';
 // Components
 import { UsersDetailsComponent } from './components/users-details/users-details.component';
 import { WorkflowsComponent } from './components/workflows/workflows.component';
+import { CompanyDetailsComponent } from './components/company-details/company-details.component';
 
 @NgModule({
     declarations: [
         UsersDetailsComponent,
-        WorkflowsComponent
+        WorkflowsComponent,
+        CompanyDetailsComponent
     ],
     imports: [
         CompanyAdministrationRoutingModule,

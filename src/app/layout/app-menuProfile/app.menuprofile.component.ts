@@ -3,12 +3,12 @@ import { Router } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { LayoutService } from '../app-services/app.layout.service';
 import { Subscription } from 'rxjs';
-import { LocalStorageService } from '../../core/Services/local-storage.service';
+import { LocalStorageService } from '../../core/services/local-storage.service';
 import { AuthService } from '../../modules/auth/services/auth.service';
-import { TranslationService } from 'src/app/core/Services/translation.service';
+import { TranslationService } from 'src/app/core/services/translation.service';
 import { LogoutComponent } from 'src/app/modules/auth/components/logout/logout.component';
 import { DialogService } from 'primeng/dynamicdialog';
-import { IAccountDetails, IAccountSettings, IUserDetails } from 'src/app/core/models/IAccountStatusResponse';
+import { IAccountDetails, IAccountSettings, IUserDetails } from 'src/app/core/models/account-status.model';
 import { switchMap } from 'rxjs';
 
 

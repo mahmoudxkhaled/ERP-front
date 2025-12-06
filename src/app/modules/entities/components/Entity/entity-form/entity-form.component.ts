@@ -5,10 +5,10 @@ import { MessageService } from 'primeng/api';
 import { Subscription, throwError } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { EntitiesService } from '../../../services/entities.service';
-import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
-import { IAccountSettings } from 'src/app/core/models/IAccountStatusResponse';
+import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { Roles } from 'src/app/core/models/system-roles';
-import { textFieldValidator, getTextFieldError } from 'src/app/core/Services/textFieldValidator';
+import { textFieldValidator, getTextFieldError } from 'src/app/core/validators/text-field.validator';
 
 type EntityFormContext = 'create' | 'update' | 'details';
 

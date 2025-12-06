@@ -4,11 +4,11 @@ import { Router } from '@angular/router';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Observable, Subscription } from 'rxjs';
 import { EntitiesService } from '../../../services/entities.service';
-import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
+import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { Entity, EntityBackend, EntitiesListResponse } from '../../../models/entities.model';
-import { IAccountSettings } from 'src/app/core/models/IAccountStatusResponse';
+import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { Roles } from 'src/app/core/models/system-roles';
-import { PermissionService } from 'src/app/core/Services/permission.service';
+import { PermissionService } from 'src/app/core/services/permission.service';
 
 type EntityActionContext = 'list' | 'activate' | 'deactivate' | 'delete';
 

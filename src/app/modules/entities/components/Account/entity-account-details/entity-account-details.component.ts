@@ -3,8 +3,8 @@ import { FormControl } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import { EntitiesService } from '../../../services/entities.service';
-import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
-import { IAccountSettings } from 'src/app/core/models/IAccountStatusResponse';
+import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { EntityAccount } from '../../../models/entities.model';
 
 @Component({

@@ -3,9 +3,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { EntitiesService } from '../../../services/entities.service';
-import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
-import { IAccountSettings } from 'src/app/core/models/IAccountStatusResponse';
-import { textFieldValidator, getTextFieldError } from 'src/app/core/Services/textFieldValidator';
+import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { IAccountSettings } from 'src/app/core/models/account-status.model';
+import { textFieldValidator, getTextFieldError } from 'src/app/core/validators/text-field.validator';
 
 interface ParentOption {
     label: string;

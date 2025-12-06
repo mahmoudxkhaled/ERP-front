@@ -2,9 +2,9 @@ import { Component, OnDestroy, OnInit, AfterViewInit, ElementRef, ViewChild } fr
 import { AuthService } from '../../services/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
+import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { Observable, Subscription } from 'rxjs';
-import { LanguageDIRService } from 'src/app/core/Services/LanguageDIR.service';
+import { LanguageDirService } from 'src/app/core/services/language-dir.service';
 
 @Component({
   selector: 'app-verify-2fa',
@@ -25,7 +25,7 @@ export class Verify2FAComponent implements OnInit, OnDestroy, AfterViewInit {
     private router: Router,
     private localStorageService: LocalStorageService,
     private route: ActivatedRoute,
-    private rtlService: LanguageDIRService
+    private rtlService: LanguageDirService
   ) {
     this.isLoading$ = this.apiService.isLoadingSubject;
   }

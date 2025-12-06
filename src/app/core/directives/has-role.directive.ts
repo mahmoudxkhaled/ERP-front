@@ -1,5 +1,5 @@
 import { Directive, Input, OnInit, TemplateRef, ViewContainerRef } from '@angular/core';
-import { PermissionService } from '../Services/permission.service';
+import { PermissionService } from '../services/permission.service';
 
 /**
  * Structural directive that conditionally renders elements based on user roles.

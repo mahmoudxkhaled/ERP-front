@@ -3,10 +3,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import { EntitiesService } from '../../../services/entities.service';
-import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
-import { IAccountSettings, IEntityDetails } from 'src/app/core/models/IAccountStatusResponse';
+import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { IAccountSettings, IEntityDetails } from 'src/app/core/models/account-status.model';
 import { FileUpload } from 'primeng/fileupload';
-import { EntityLogoService } from 'src/app/core/Services/entity-logo.service';
+import { EntityLogoService } from 'src/app/core/services/entity-logo.service';
 
 
 @Component({

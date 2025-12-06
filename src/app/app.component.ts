@@ -2,11 +2,11 @@ import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Chart } from 'chart.js';
 import { PrimeNGConfig } from 'primeng/api';
 import { Subscription } from 'rxjs';
-import { LanguageDIRService } from './core/Services/LanguageDIR.service';
-import { LocalStorageService } from './core/Services/local-storage.service';
-import { TranslationService } from './core/Services/translation.service';
+import { LanguageDirService } from './core/services/language-dir.service';
+import { LocalStorageService } from './core/services/local-storage.service';
+import { TranslationService } from './core/services/translation.service';
 import { LayoutService } from './layout/app-services/app.layout.service';
-import { NetworkStatusService } from './core/Services/network-status.service';
+import { NetworkStatusService } from './core/services/network-status.service';
 import { Router } from '@angular/router';
 import { AuthService } from './modules/auth/services/auth.service';
 
@@ -19,7 +19,7 @@ export class AppComponent implements OnInit, OnDestroy {
         private primengConfig: PrimeNGConfig,
         private localStorage: LocalStorageService,
         private translationService: TranslationService,
-        private rtlService: LanguageDIRService,
+        private rtlService: LanguageDirService,
         private layoutService: LayoutService,
         private ref: ChangeDetectorRef,
         private networkStatusService: NetworkStatusService,

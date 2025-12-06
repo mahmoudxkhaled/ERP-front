@@ -6,8 +6,8 @@ import { AppSidebarComponent } from '../app-sidebar/app.sidebar.component';
 import { AppTopbarComponent } from '../top-bar/app.topbar.component';
 import { LayoutService } from '../app-services/app.layout.service';
 import { MessageService } from 'primeng/api';
-import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
-import { NetworkStatusService } from 'src/app/core/Services/network-status.service';
+import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { NetworkStatusService } from 'src/app/core/services/network-status.service';
 
 @Component({
     selector: 'app-layout',

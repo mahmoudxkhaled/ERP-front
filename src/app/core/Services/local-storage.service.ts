@@ -1,13 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  IAccountStatusResponse,
-  IAccountDetails,
-  IUserDetails,
-  IEntityDetails,
-  IFunctionsDetails,
-  IModulesDetails,
-  IAccountSettings
-} from 'src/app/core/models/IAccountStatusResponse';
+import { IUserDetails, IAccountDetails, IEntityDetails, IFunctionsDetails, IModulesDetails, IAccountSettings, IAccountStatusResponse } from '../models/account-status.model';
 
 @Injectable({
   providedIn: 'root'

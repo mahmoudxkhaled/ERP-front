@@ -2,7 +2,7 @@ import { Component, Input, OnInit, signal } from '@angular/core';
 import { MenuService } from '../app-menu/app.menu.service';
 import { ColorScheme, LayoutService, MenuMode } from '../app-services/app.layout.service';
 import { MessageService } from 'primeng/api';
-import { TranslationService } from 'src/app/core/Services/translation.service';
+import { TranslationService } from 'src/app/core/services/translation.service';
 
 @Component({
     selector: 'app-config',

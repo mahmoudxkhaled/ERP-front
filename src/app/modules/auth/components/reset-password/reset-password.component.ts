@@ -3,7 +3,7 @@ import { AuthService } from '../../services/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { Observable, Subscription } from 'rxjs';
-import { passwordMatchValidator } from '../../../../core/Services/passwordMatchValidator';
+import { PasswordMatchValidator } from '../../../../core/validators/password-match.validator';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 
 export function passwordComplexityValidator(): ValidatorFn {
@@ -160,7 +160,7 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
                 cPassword: ['', Validators.compose([Validators.required])],
             },
             {
-                validator: passwordMatchValidator.MatchPassword,
+                validator: PasswordMatchValidator.MatchPassword,
             }
         );
     }

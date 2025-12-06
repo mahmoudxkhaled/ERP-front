@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
-import { TranslationService } from 'src/app/core/Services/translation.service';
+import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { TranslationService } from 'src/app/core/services/translation.service';
 import { AuthService } from '../auth/services/auth.service';
 import { LogoutComponent } from '../auth/components/logout/logout.component';
 import { DialogService } from 'primeng/dynamicdialog';

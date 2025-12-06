@@ -2,14 +2,14 @@ import { ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, Vie
 import { Router } from '@angular/router';
 import { ListboxChangeEvent } from 'primeng/listbox';
 import { Subscription } from 'rxjs';
-import { IAccountDetails, IAccountSettings, IEntityDetails, IUserDetails } from 'src/app/core/models/IAccountStatusResponse';
-import { EntityLogoService } from 'src/app/core/Services/entity-logo.service';
-import { ImageService } from 'src/app/core/Services/image.service';
-import { LanguageDIRService } from 'src/app/core/Services/LanguageDIR.service';
-import { TranslationService } from 'src/app/core/Services/translation.service';
+import { IAccountDetails, IAccountSettings, IEntityDetails, IUserDetails } from 'src/app/core/models/account-status.model';
+import { EntityLogoService } from 'src/app/core/services/entity-logo.service';
+import { ImageService } from 'src/app/core/services/image.service';
+import { LanguageDirService } from 'src/app/core/services/language-dir.service';
+import { TranslationService } from 'src/app/core/services/translation.service';
 import { AuthService } from 'src/app/modules/auth/services/auth.service';
 import { ILanguageModel } from 'src/app/modules/language/models/ILanguageModel';
-import { LocalStorageService } from '../../core/Services/local-storage.service';
+import { LocalStorageService } from '../../core/services/local-storage.service';
 import { LayoutService } from '../app-services/app.layout.service';
 enum NotificationTypeEnum {
     SendCampaignNotification = 1,
@@ -81,7 +81,7 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         private localStorageServ: LocalStorageService,
         private ref: ChangeDetectorRef,
         private localStorage: LocalStorageService,
-        private rtlService: LanguageDIRService,
+        private rtlService: LanguageDirService,
         private translate: TranslationService,
         private router: Router,
         private authService: AuthService,

@@ -1,13 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { TranslationService } from 'src/app/core/Services/translation.service';
+import { TranslationService } from 'src/app/core/services/translation.service';
 import { MessageService } from 'primeng/api';
 import { AuthService } from 'src/app/modules/auth/services/auth.service';
-import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
-import { IUserDetails, IAccountDetails, IEntityDetails, IAccountSettings } from 'src/app/core/models/IAccountStatusResponse';
-import { ProfileService } from './services/profile.service';
-import { ProfileOverview } from './models/profile.model';
+import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { IUserDetails, IAccountDetails, IEntityDetails, IAccountSettings } from 'src/app/core/models/account-status.model';
+import { ProfileOverview } from '../../models/profile.model';
 
 export function passwordComplexityValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -82,8 +81,7 @@ export class ProfileComponent implements OnInit {
         public translate: TranslationService,
         private messageService: MessageService,
         private authService: AuthService,
-        private localStorageService: LocalStorageService,
-        private profileService: ProfileService
+        private localStorageService: LocalStorageService
     ) { }
 
     ngOnInit(): void {

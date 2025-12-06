@@ -4,11 +4,11 @@ import { MessageService } from 'primeng/api';
 import { Subscription, throwError } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { EntitiesService } from '../../../services/entities.service';
-import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
-import { IAccountSettings } from 'src/app/core/models/IAccountStatusResponse';
+import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { EntityAccount } from '../../../models/entities.model';
-import { PermissionService } from 'src/app/core/Services/permission.service';
-import { textFieldValidator, getTextFieldError } from 'src/app/core/Services/textFieldValidator';
+import { PermissionService } from 'src/app/core/services/permission.service';
+import { textFieldValidator, getTextFieldError } from 'src/app/core/validators/text-field.validator';
 
 interface EntityAdmin {
     accountId: string;

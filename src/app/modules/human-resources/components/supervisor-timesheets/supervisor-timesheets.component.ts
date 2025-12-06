@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MessageService, MenuItem } from 'primeng/api';
-import { TranslationService } from 'src/app/core/Services/translation.service';
+import { TranslationService } from 'src/app/core/services/translation.service';
 import { IApprovalModel } from '../../models/IApprovalModel';
 
 @Component({

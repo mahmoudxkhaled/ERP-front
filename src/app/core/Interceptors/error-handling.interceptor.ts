@@ -6,7 +6,7 @@ import { MessageService } from 'primeng/api';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { AuthService } from 'src/app/modules/auth/services/auth.service';
-import { LocalStorageService } from '../Services/local-storage.service';
+import { LocalStorageService } from '../services/local-storage.service';
 import { SessionExpiredDialogComponent } from '../components/session-expired-dialog/session-expired-dialog.component';
 
 @Injectable()
@@ -272,3 +272,5 @@ export class ErrorHandlingInterceptor implements HttpInterceptor {
     }
 
 }
+
+

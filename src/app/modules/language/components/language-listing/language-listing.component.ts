@@ -5,7 +5,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ILanguageModel } from '../../models/ILanguageModel';
 import { LanguageService } from '../../services/language.service';
 import { MenuItem, MessageService } from 'primeng/api';
-import { TranslationService } from 'src/app/core/Services/translation.service';
+import { TranslationService } from 'src/app/core/services/translation.service';
 import { Router } from '@angular/router';
 import { IPaginationModel } from 'src/app/core/Dtos/IPaginationModel';
 

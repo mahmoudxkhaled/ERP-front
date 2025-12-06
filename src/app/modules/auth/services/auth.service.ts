@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, finalize, of, switchMap, tap } from 'rxjs';
-import { ApiServices } from 'src/app/core/API_Interface/ApiServices';
-import { LocalStorageService } from 'src/app/core/Services/local-storage.service';
-import { IAccountStatusResponse } from 'src/app/core/models/IAccountStatusResponse';
+import { ApiService } from 'src/app/core/api/api.service';
+import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { IAccountStatusResponse } from 'src/app/core/models/account-status.model';
 
 @Injectable({
     providedIn: 'root',
@@ -11,7 +11,7 @@ import { IAccountStatusResponse } from 'src/app/core/models/IAccountStatusRespon
 export class AuthService {
     isLoadingSubject = new BehaviorSubject<boolean>(false);
     constructor(
-        private apiServices: ApiServices,
+        private apiServices: ApiService,
         private localStorageService: LocalStorageService,
         private router: Router,
     ) {

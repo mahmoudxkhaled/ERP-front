@@ -4,6 +4,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxIntlTelInputModule } from '@justin-s/ngx-intl-tel-input';
 import { TranslateModule } from '@ngx-translate/core';
 import { NgxEditorModule } from 'ngx-editor';
+
+// PrimeNG Modules (alphabetically ordered)
 import { AccordionModule } from 'primeng/accordion';
 import { AnimateOnScrollModule } from 'primeng/animateonscroll';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -31,6 +33,7 @@ import { ImageModule } from 'primeng/image';
 import { InplaceModule } from 'primeng/inplace';
 import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
+import { InputMaskModule } from 'primeng/inputmask';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { InputTextModule } from 'primeng/inputtext';
@@ -67,105 +70,111 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
 import { TreeModule } from 'primeng/tree';
 import { TreeTableModule } from 'primeng/treetable';
+
+// App modules and components
 import { AppConfigModule } from 'src/app/layout/config/app.config.module';
+import { HasRoleDirective } from 'src/app/core/directives/has-role.directive';
 import { ColorScemaSettingsComponent } from '../components/color-scema-settings/color-scema-settings.component';
 import { ERPInfoComponent } from '../components/erp-info/erp-info.component';
 import { ERPVariablesComponent } from '../components/erp-variables/erp-variables.component';
 import { TableLoadingSpinnerComponent } from '../components/table-loading-spinner/table-loading-spinner/table-loading-spinner.component';
-import { ComingSoonComponent } from 'src/app/demo/components/pages/coming-soon/coming-soon.component';
-import { InputMaskModule } from 'primeng/inputmask';
+import { ComingSoonComponent } from 'src/app/core/components/coming-soon/coming-soon.component';
 import { SessionExpiredDialogComponent } from 'src/app/core/components/session-expired-dialog/session-expired-dialog.component';
 import { LogoutComponent } from 'src/app/modules/auth/components/logout/logout.component';
-import { HasRoleDirective } from 'src/app/core/directives/has-role.directive';
+
+// Components to declare in this module
 const components = [
-    ComingSoonComponent,
     ColorScemaSettingsComponent,
-    TableLoadingSpinnerComponent,
-    LogoutComponent,
+    ComingSoonComponent,
     ERPInfoComponent,
     ERPVariablesComponent,
+    LogoutComponent,
     SessionExpiredDialogComponent,
+    TableLoadingSpinnerComponent,
 ];
 
+// Modules to import and re-export (deduplicated and alphabetically ordered)
 const imports = [
-    HasRoleDirective,
-    InputMaskModule,
-    SkeletonModule,
-    TableModule,
-    FormsModule,
-    ButtonModule,
-    DropdownModule,
-    FileUploadModule,
-    InputTextareaModule,
-    InputGroupModule,
-    InputGroupAddonModule,
-    MultiSelectModule,
-    DialogModule,
-    ToolbarModule,
-    ToastModule,
-    CheckboxModule,
-    RatingModule,
-    RadioButtonModule,
-    InputNumberModule,
-    InputSwitchModule,
-    MessagesModule,
-    CalendarModule,
-    MessageModule,
-    EditorModule,
-    DividerModule,
-    GalleriaModule,
-    AppConfigModule,
-    TableModule,
-    ProgressBarModule,
+    // Angular modules
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    ButtonModule,
-    TabViewModule,
-    RippleModule,
-    InputTextModule,
-    ConfirmDialogModule,
-    DropdownModule,
-    FileUploadModule,
-    ColorPickerModule,
-    ImageModule,
-    StepsModule,
-    CardModule,
-    PickListModule,
-    TreeModule,
+
+    // Third-party modules
     NgxEditorModule,
-    TabMenuModule,
-    ListboxModule,
-    TreeTableModule,
-    ToggleButtonModule,
-    ToggleButtonModule,
-    DataViewModule,
-    SpeedDialModule,
-    PanelModule,
-    MenuModule,
-    InplaceModule,
-    ProgressSpinnerModule,
-    FieldsetModule,
-    TooltipModule,
-    SidebarModule,
-    OverlayPanelModule,
-    AvatarModule,
-    ChartModule,
-    ScrollPanelModule,
-    PasswordModule,
-    TranslateModule,
-    CarouselModule,
-    TagModule,
-    SplitterModule,
     NgxIntlTelInputModule,
-    AnimateOnScrollModule,
-    ListboxModule,
-    DeferModule,
-    SelectButtonModule,
-    ChipModule,
-    AutoCompleteModule,
+    TranslateModule,
+
+    // App modules
+    AppConfigModule,
+
+    // Directives
+    HasRoleDirective,
+
+    // PrimeNG modules (alphabetically ordered)
     AccordionModule,
-    PaginatorModule
+    AnimateOnScrollModule,
+    AutoCompleteModule,
+    AvatarModule,
+    ButtonModule,
+    CalendarModule,
+    CardModule,
+    CarouselModule,
+    ChartModule,
+    CheckboxModule,
+    ChipModule,
+    ColorPickerModule,
+    ConfirmDialogModule,
+    DataViewModule,
+    DeferModule,
+    DialogModule,
+    DividerModule,
+    DropdownModule,
+    EditorModule,
+    FieldsetModule,
+    FileUploadModule,
+    GalleriaModule,
+    ImageModule,
+    InplaceModule,
+    InputGroupAddonModule,
+    InputGroupModule,
+    InputMaskModule,
+    InputNumberModule,
+    InputSwitchModule,
+    InputTextareaModule,
+    InputTextModule,
+    ListboxModule,
+    MenuModule,
+    MessageModule,
+    MessagesModule,
+    MultiSelectModule,
+    OverlayPanelModule,
+    PaginatorModule,
+    PanelModule,
+    PasswordModule,
+    PickListModule,
+    ProgressBarModule,
+    ProgressSpinnerModule,
+    RadioButtonModule,
+    RatingModule,
+    RippleModule,
+    ScrollPanelModule,
+    SelectButtonModule,
+    SidebarModule,
+    SkeletonModule,
+    SpeedDialModule,
+    SplitterModule,
+    StepsModule,
+    TableModule,
+    TabMenuModule,
+    TabViewModule,
+    TagModule,
+    ToastModule,
+    ToggleButtonModule,
+    ToolbarModule,
+    TooltipModule,
+    TreeModule,
+    TreeTableModule,
 ];
 
 const providers = [ConfirmationService, MessageService];
