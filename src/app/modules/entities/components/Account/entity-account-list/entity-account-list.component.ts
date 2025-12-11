@@ -50,6 +50,7 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
   // Filters
   includeSubentities: boolean = false;
   activeOnly: boolean = false;
+  textFilter: string = '';
 
   // Account creation form
   addAccountDialog: boolean = false;
@@ -156,7 +157,8 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
       this.includeSubentities,
       this.activeOnly,
       lastAccountId,
-      this.rows
+      this.rows,
+      this.textFilter
     ).subscribe({
       next: (response: any) => {
         if (!response?.success) {
@@ -203,6 +205,14 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
 
   onFilterChange(): void {
     this.first = 0;
+    this.reloadAccounts();
+  }
+
+  onSearchInput(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const searchValue = target?.value || '';
+    this.textFilter = searchValue;
+    this.first = 0; // Reset to first page when filter changes
     this.reloadAccounts();
   }
 

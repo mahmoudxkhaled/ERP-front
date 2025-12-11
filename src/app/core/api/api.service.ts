@@ -34,21 +34,22 @@ export class ApiService {
     bytesArray = newCombined;
 
     // Loop through all parameters and append each with a separator before it
-    for (const str of parameters)
-      if (str != "") {
-        const strBytes = encoder.encode(str);
+    for (const str of parameters) {
+      const strBytes = str != "" ? encoder.encode(str) : new Uint8Array(0);
 
-        // Create new array = existing + delimiter + parameter
-        const newCombined = new Uint8Array(
-          bytesArray.length + delimiter.length + strBytes.length
-        );
+      // Create new array = existing + delimiter + parameter (or just delimiter if empty)
+      const newCombined = new Uint8Array(
+        bytesArray.length + delimiter.length + strBytes.length
+      );
 
-        newCombined.set(bytesArray, 0);
-        newCombined.set(delimiter, bytesArray.length);
+      newCombined.set(bytesArray, 0);
+      newCombined.set(delimiter, bytesArray.length);
+      if (strBytes.length > 0) {
         newCombined.set(strBytes, bytesArray.length + delimiter.length);
-
-        bytesArray = newCombined;
       }
+
+      bytesArray = newCombined;
+    }
 
     return bytesArray;
   }
