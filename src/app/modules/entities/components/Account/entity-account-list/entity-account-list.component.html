@@ -9,15 +9,15 @@
             </span>
         </div>
         <div class="flex gap-4 align-items-center">
-            <div class="flex align-items-center gap-2">
-                <label for="includeSubentities" class="text-600">Include Sub-entities:</label>
-                <p-inputSwitch id="includeSubentities" [(ngModel)]="includeSubentities" (onChange)="onFilterChange()"
-                    [disabled]="loadingAccounts"></p-inputSwitch>
-            </div>
-            <div class="flex align-items-center gap-2">
-                <label for="activeOnly" class="text-600">Active Only:</label>
-                <p-inputSwitch id="activeOnly" [(ngModel)]="activeOnly" (onChange)="onFilterChange()"
-                    [disabled]="loadingAccounts"></p-inputSwitch>
+        <div class="flex align-items-center gap-2">
+            <label for="includeSubentities" class="text-600">Include Sub-entities:</label>
+            <p-inputSwitch id="includeSubentities" [(ngModel)]="includeSubentities" (onChange)="onFilterChange()"
+                [disabled]="loadingAccounts"></p-inputSwitch>
+        </div>
+        <div class="flex align-items-center gap-2">
+            <label for="activeOnly" class="text-600">Active Only:</label>
+            <p-inputSwitch id="activeOnly" [(ngModel)]="activeOnly" (onChange)="onFilterChange()"
+                [disabled]="loadingAccounts"></p-inputSwitch>
             </div>
         </div>
     </div>

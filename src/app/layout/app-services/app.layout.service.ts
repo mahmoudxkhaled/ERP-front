@@ -328,7 +328,8 @@ export class LayoutService {
         this.changeTheme();
         // Save defaults to localStorage
         this.saveConfigToStorage();
-        window.location.reload();
+        // Note: No reload here - let the user stay on the same tab
+        // Only saveChanges() should reload the page
     }
 
 }

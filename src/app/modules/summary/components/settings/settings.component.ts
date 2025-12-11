@@ -1,8 +1,36 @@
 import { Component, OnInit } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { TranslationService } from 'src/app/core/services/translation.service';
-import { SettingsService } from '../../services/settings.service';
-import { UserSettings } from '../../models/settings.model';
+import { AuthService } from 'src/app/modules/auth/services/auth.service';
+import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+
+export function passwordComplexityValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+        const value = control.value;
+        if (!value) return null;
+
+        // Check if password starts with a letter (uppercase or lowercase)
+        const startsWithLetter = /^[A-Za-z]/.test(value);
+        // Check for at least one lowercase letter
+        const hasLowercase = /[a-z]/.test(value);
+        // Check for at least one uppercase letter
+        const hasUppercase = /[A-Z]/.test(value);
+        // Check for at least one digit
+        const hasNumber = /[0-9]/.test(value);
+        // Check for at least one special character (non-alphanumeric)
+        const hasSpecialChar = /[^A-Za-z0-9]/.test(value);
+
+        const errors: ValidationErrors = {};
+        if (!startsWithLetter) errors['doesNotStartWithLetter'] = true;
+        if (!hasLowercase) errors['missingLowercase'] = true;
+        if (!hasUppercase) errors['missingUppercase'] = true;
+        if (!hasNumber) errors['missingNumber'] = true;
+        if (!hasSpecialChar) errors['missingSpecialChar'] = true;
+
+        return Object.keys(errors).length ? errors : null;
+    };
+}
 
 @Component({
     selector: 'app-settings',
@@ -12,173 +40,326 @@ import { UserSettings } from '../../models/settings.model';
 })
 export class SettingsComponent implements OnInit {
 
-    // General Settings
-    selectedLanguage: string = 'en';
-    selectedTheme: string = 'light';
-    selectedTimezone: string = 'UTC';
+    // Tab Index
+    activeTabIndex: number = 0;
 
-    // Notifications
-    emailNotifications: boolean = true;
-    pushNotifications: boolean = true;
-    smsNotifications: boolean = false;
+    // Password Form
+    changePasswordForm!: FormGroup;
+    showChangePasswordDialog: boolean = false;
+    isChangingPassword: boolean = false;
+    showOldPassword: boolean = false;
+    showNewPassword: boolean = false;
+    showConfirmPassword: boolean = false;
 
-    // Security
-    twoFactorAuth: boolean = false;
-    selectedSessionTimeout: string = '30';
-    autoLogout: boolean = true;
-
-    // Privacy
-    profileVisibility: boolean = true;
-    analyticsTracking: boolean = true;
-    selectedDataRetention: string = '1year';
-
-    // Options
-    languageOptions = [
-        { label: 'English', value: 'en' },
-        { label: 'العربية', value: 'ar' }
-    ];
-
-    themeOptions = [
-        { label: 'Light', value: 'light' },
-        { label: 'Dark', value: 'dark' }
-    ];
-
-    timezoneOptions = [
-        { label: 'UTC', value: 'UTC' },
-        { label: 'GMT+1 (Europe/London)', value: 'GMT+1' },
-        { label: 'GMT+2 (Europe/Berlin)', value: 'GMT+2' },
-        { label: 'GMT+3 (Asia/Dubai)', value: 'GMT+3' },
-        { label: 'GMT-5 (America/New_York)', value: 'GMT-5' }
-    ];
-
-    sessionTimeoutOptions = [
-        { label: '15 minutes', value: '15' },
-        { label: '30 minutes', value: '30' },
-        { label: '1 hour', value: '60' },
-        { label: '2 hours', value: '120' },
-        { label: '4 hours', value: '240' }
-    ];
-
-    dataRetentionOptions = [
-        { label: '6 months', value: '6months' },
-        { label: '1 year', value: '1year' },
-        { label: '2 years', value: '2years' },
-        { label: '5 years', value: '5years' },
-        { label: 'Indefinitely', value: 'indefinite' }
-    ];
+    // 2FA Settings
+    twoFactorEnabled: boolean = false;
+    show2FADialog: boolean = false;
+    isToggling2FA: boolean = false;
 
     constructor(
+        private fb: FormBuilder,
         public translate: TranslationService,
-        private messageService: MessageService
+        private messageService: MessageService,
+        private authService: AuthService,
+        private localStorageService: LocalStorageService
     ) { }
 
     ngOnInit(): void {
-        this.loadSettings();
+        this.initPasswordForm();
+        this.load2FAStatus();
     }
 
-    loadSettings(): void {
-        // Load settings from localStorage or API
-        const savedSettings = localStorage.getItem('userSettings');
-        if (savedSettings) {
-            const settings = JSON.parse(savedSettings);
-            this.selectedLanguage = settings.language || 'en';
-            this.selectedTheme = settings.theme || 'light';
-            this.selectedTimezone = settings.timezone || 'UTC';
-            this.emailNotifications = settings.emailNotifications !== false;
-            this.pushNotifications = settings.pushNotifications !== false;
-            this.smsNotifications = settings.smsNotifications || false;
-            this.twoFactorAuth = settings.twoFactorAuth || false;
-            this.selectedSessionTimeout = settings.sessionTimeout || '30';
-            this.autoLogout = settings.autoLogout !== false;
-            this.profileVisibility = settings.profileVisibility !== false;
-            this.analyticsTracking = settings.analyticsTracking !== false;
-            this.selectedDataRetention = settings.dataRetention || '1year';
+    initPasswordForm(): void {
+        this.changePasswordForm = this.fb.group({
+            oldPassword: ['', [Validators.required]],
+            newPassword: [
+                '',
+                Validators.compose([
+                    Validators.required,
+                    Validators.minLength(8),
+                    Validators.maxLength(15),
+                    passwordComplexityValidator(),
+                ])
+            ],
+            confirmPassword: ['', [Validators.required]]
+        }, {
+            validator: this.passwordMatchValidator
+        });
+    }
+
+    private passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
+        const newPassword = control.get('newPassword')?.value;
+        const confirmPassword = control.get('confirmPassword')?.value;
+
+        if (newPassword && confirmPassword && newPassword !== confirmPassword) {
+            control.get('confirmPassword')?.setErrors({ passwordMismatch: true });
+            return { passwordMismatch: true };
+        }
+        return null;
+    }
+
+    load2FAStatus(): void {
+        this.twoFactorEnabled = this.localStorageService.get2FaStatus();
+    }
+
+    // Password Methods
+    onChangePassword(): void {
+        if (this.changePasswordForm.invalid) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Validation Error',
+                detail: 'Please fill all fields correctly.'
+            });
+            return;
+        }
+
+        // Show confirmation dialog before proceeding
+        this.showChangePasswordDialog = true;
+    }
+
+    confirmChangePassword(): void {
+        this.showChangePasswordDialog = false;
+        this.isChangingPassword = true;
+
+        const oldPassword = this.changePasswordForm.get('oldPassword')?.value;
+        const newPassword = this.changePasswordForm.get('newPassword')?.value;
+
+        this.authService.changePassword(oldPassword, newPassword).subscribe({
+            next: (response: any) => {
+                if (response?.success === true) {
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Success',
+                        detail: 'Password changed successfully! This change will take effect on your next login.'
+                    });
+                    this.changePasswordForm.reset();
+                } else {
+                    this.handlePasswordChangeError(response);
+                }
+                this.isChangingPassword = false;
+            },
+            error: (error: any) => {
+                this.handlePasswordChangeError(error);
+                this.isChangingPassword = false;
+            }
+        });
+    }
+
+    cancelChangePassword(): void {
+        this.showChangePasswordDialog = false;
+    }
+
+    togglePasswordVisibility(field: 'old' | 'new' | 'confirm'): void {
+        if (field === 'old') {
+            this.showOldPassword = !this.showOldPassword;
+        } else if (field === 'new') {
+            this.showNewPassword = !this.showNewPassword;
+        } else if (field === 'confirm') {
+            this.showConfirmPassword = !this.showConfirmPassword;
         }
     }
 
-    saveSettings(): void {
-        const settings = {
-            language: this.selectedLanguage,
-            theme: this.selectedTheme,
-            timezone: this.selectedTimezone,
-            emailNotifications: this.emailNotifications,
-            pushNotifications: this.pushNotifications,
-            smsNotifications: this.smsNotifications,
-            twoFactorAuth: this.twoFactorAuth,
-            sessionTimeout: this.selectedSessionTimeout,
-            autoLogout: this.autoLogout,
-            profileVisibility: this.profileVisibility,
-            analyticsTracking: this.analyticsTracking,
-            dataRetention: this.selectedDataRetention
-        };
+    validateAllPasswordFields(): void {
+        const oldPasswordControl = this.changePasswordForm.get('oldPassword');
+        const newPasswordControl = this.changePasswordForm.get('newPassword');
+        const confirmPasswordControl = this.changePasswordForm.get('confirmPassword');
 
-        // Save to localStorage
-        localStorage.setItem('userSettings', JSON.stringify(settings));
+        // Mark all fields as touched to show errors
+        oldPasswordControl?.markAsTouched();
+        newPasswordControl?.markAsTouched();
+        confirmPasswordControl?.markAsTouched();
 
-        // Show success message
-        this.messageService.add({
-            severity: 'success',
-            summary: this.translate.getInstant('shared.messages.success'),
-            detail: this.translate.getInstant('settings.messages.saveSuccess'),
-            life: 3000
-        });
-
-        // Apply theme change immediately
-        this.applyTheme();
+        // Update validity for all fields
+        oldPasswordControl?.updateValueAndValidity();
+        newPasswordControl?.updateValueAndValidity();
+        confirmPasswordControl?.updateValueAndValidity();
     }
 
-    resetSettings(): void {
-        // Reset to default values
-        this.selectedLanguage = 'en';
-        this.selectedTheme = 'light';
-        this.selectedTimezone = 'UTC';
-        this.emailNotifications = true;
-        this.pushNotifications = true;
-        this.smsNotifications = false;
-        this.twoFactorAuth = false;
-        this.selectedSessionTimeout = '30';
-        this.autoLogout = true;
-        this.profileVisibility = true;
-        this.analyticsTracking = true;
-        this.selectedDataRetention = '1year';
-
-        this.messageService.add({
-            severity: 'info',
-            summary: this.translate.getInstant('settings.actions.reset'),
-            detail: this.translate.getInstant('settings.messages.resetInfo'),
-            life: 3000
-        });
+    getPasswordLength(): number {
+        const password = this.changePasswordForm.get('newPassword')?.value || '';
+        return password.length;
     }
 
-    cancelChanges(): void {
-        // Reload settings from storage
-        this.loadSettings();
-
-        this.messageService.add({
-            severity: 'info',
-            summary: this.translate.getInstant('settings.actions.cancel'),
-            detail: this.translate.getInstant('settings.messages.cancelInfo'),
-            life: 3000
-        });
+    checkPasswordLength(): boolean {
+        const password = this.changePasswordForm.get('newPassword')?.value || '';
+        return password.length >= 8 && password.length <= 15;
     }
 
-    applyTheme(): void {
-        // Apply theme change to the application
-        const body = document.body;
-        if (this.selectedTheme === 'dark') {
-            body.classList.add('dark-theme');
+    checkStartsWithLetter(): boolean {
+        const password = this.changePasswordForm.get('newPassword')?.value || '';
+        return /^[A-Za-z]/.test(password);
+    }
+
+    checkHasUppercaseAndLowercase(): boolean {
+        const password = this.changePasswordForm.get('newPassword')?.value || '';
+        const hasLowercase = /[a-z]/.test(password);
+        const hasUppercase = /[A-Z]/.test(password);
+        return hasLowercase && hasUppercase;
+    }
+
+    checkHasNumber(): boolean {
+        const password = this.changePasswordForm.get('newPassword')?.value || '';
+        return /[0-9]/.test(password);
+    }
+
+    checkHasSpecialChar(): boolean {
+        const password = this.changePasswordForm.get('newPassword')?.value || '';
+        return /[^A-Za-z0-9]/.test(password);
+    }
+
+    private handlePasswordChangeError(error: any): void {
+        const errorCode = String(error?.message || '');
+        const errorInfo = this.getPasswordChangeErrorMessage(errorCode);
+
+        // Set form control errors if needed
+        if (errorInfo.controlName && errorInfo.errorKey) {
+            const control = this.changePasswordForm.get(errorInfo.controlName);
+            if (control) {
+                const currentErrors = control.errors || {};
+                control.setErrors({ ...currentErrors, [errorInfo.errorKey]: true });
+                control.markAsTouched();
+            }
+        }
+
+        // Show error message
+        if (errorInfo.detail) {
+            this.messageService.add({
+                severity: 'error',
+                summary: errorInfo.summary || 'Error',
+                detail: errorInfo.detail
+            });
+        }
+    }
+
+    private getPasswordChangeErrorMessage(code: string): {
+        detail: string | null;
+        summary?: string;
+        controlName?: string;
+        errorKey?: string
+    } {
+        switch (code) {
+            case 'ERP11104':
+                // Old Password is Wrong
+                return {
+                    detail: 'The old password you entered is incorrect. Please try again.',
+                    summary: 'Invalid Old Password',
+                    controlName: 'oldPassword',
+                    errorKey: 'oldPasswordWrong'
+                };
+
+            case 'ERP11125':
+                // Same as Old Password
+                return {
+                    detail: 'New password cannot be the same as your old password.',
+                    summary: 'Invalid Password',
+                    controlName: 'newPassword',
+                    errorKey: 'passwordSameAsOld'
+                };
+
+            case 'ERP11126':
+                // Format is incompliant
+                return {
+                    detail: 'Password format is incompliant. Please check the password requirements.',
+                    summary: 'Invalid Password Format',
+                    controlName: 'newPassword',
+                    errorKey: 'passwordFormatIncompliant'
+                };
+
+            default:
+                return {
+                    detail: 'Password change failed. Please try again.',
+                    summary: 'Error'
+                };
+        }
+    }
+
+    // 2FA Methods
+    toggle2FA(): void {
+        // Show confirmation dialog before proceeding
+        this.show2FADialog = true;
+    }
+
+    confirmToggle2FA(): void {
+        this.isToggling2FA = true;
+
+        if (!this.twoFactorEnabled) {
+            // Enabling 2FA
+            this.authService.set2FA(true).subscribe({
+                next: (response: any) => {
+                    if (response?.success === true) {
+                        this.twoFactorEnabled = true;
+                        // Update localStorage with new 2FA status
+                        const accountDetails = this.localStorageService.getAccountDetails();
+                        if (accountDetails) {
+                            accountDetails.Two_FA = true;
+                            this.localStorageService.setItem('Account_Details', accountDetails);
+                        }
+                        this.messageService.add({
+                            severity: 'success',
+                            summary: '2FA Enabled',
+                            detail: 'Two-factor authentication has been enabled successfully. You will be required to verify with a code on your next login.'
+                        });
+                        this.show2FADialog = false;
+                    } else {
+                        this.messageService.add({
+                            severity: 'error',
+                            summary: 'Error',
+                            detail: response?.message || 'Failed to enable 2FA.'
+                        });
+                    }
+                    this.isToggling2FA = false;
+                },
+                error: (error: any) => {
+                    const errorMessage = error?.message || 'Failed to enable 2FA. Please try again.';
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Error',
+                        detail: errorMessage
+                    });
+                    this.isToggling2FA = false;
+                }
+            });
         } else {
-            body.classList.remove('dark-theme');
+            // Disabling 2FA
+            this.authService.set2FA(false).subscribe({
+                next: (response: any) => {
+                    if (response?.success === true) {
+                        this.twoFactorEnabled = false;
+                        // Update localStorage with new 2FA status
+                        const accountDetails = this.localStorageService.getAccountDetails();
+                        if (accountDetails) {
+                            accountDetails.Two_FA = false;
+                            this.localStorageService.setItem('Account_Details', accountDetails);
+                        }
+                        this.messageService.add({
+                            severity: 'success',
+                            summary: '2FA Disabled',
+                            detail: 'Two-factor authentication has been disabled successfully.'
+                        });
+                        this.show2FADialog = false;
+                    } else {
+                        this.messageService.add({
+                            severity: 'error',
+                            summary: 'Error',
+                            detail: response?.message || 'Failed to disable 2FA.'
+                        });
+                    }
+                    this.isToggling2FA = false;
+                },
+                error: (error: any) => {
+                    const errorMessage = error?.message || 'Failed to disable 2FA. Please try again.';
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Error',
+                        detail: errorMessage
+                    });
+                    this.isToggling2FA = false;
+                }
+            });
         }
     }
 
-    onLanguageChange(): void {
-        // Handle language change
-        this.translate.useLanguage(this.selectedLanguage);
-    }
-
-    onThemeChange(): void {
-        // Apply theme immediately
-        this.applyTheme();
+    cancelToggle2FA(): void {
+        this.show2FADialog = false;
     }
 }

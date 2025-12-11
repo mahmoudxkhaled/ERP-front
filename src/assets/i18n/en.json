@@ -79,7 +79,9 @@
         "title": "Settings",
         "description": "Manage your application settings",
         "tabs": {
+            "accountSettings": "Account Settings",
             "layoutTheme": "Layout & Theme Settings",
+            "dashboard": "Dashboard Settings",
             "incoming": "Incoming Settings"
         },
         "sections": {
@@ -315,7 +317,8 @@
             "saveChanges": "Save Changes",
             "resetToDefaults": "Reset to Defaults",
             "unsavedChangesWarning": "You have unsaved changes. Click \"Save Changes\" to persist them.",
-            "settingsSavedSuccess": "Settings saved successfully"
+            "settingsSavedSuccess": "Settings saved successfully",
+            "settingsResetSuccess": "Settings reset successfully"
         },
         "support-tabmenu": {
             "taps": {

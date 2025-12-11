@@ -79,7 +79,9 @@
         "title": "الإعدادات",
         "description": "إدارة إعدادات التطبيق",
         "tabs": {
+            "accountSettings": "إعدادات الحساب",
             "layoutTheme": "إعدادات التخطيط والسمة",
+            "dashboard": "إعدادات لوحة التحكم",
             "incoming": "الإعدادات القادمة"
         },
         "sections": {
@@ -316,7 +318,8 @@
             "saveChanges": "حفظ التغييرات",
             "resetToDefaults": "إعادة تعيين إلى الافتراضي",
             "unsavedChangesWarning": "لديك تغييرات غير محفوظة. انقر على \"حفظ التغييرات\" لحفظها.",
-            "settingsSavedSuccess": "تم حفظ الإعدادات بنجاح"
+            "settingsSavedSuccess": "تم حفظ الإعدادات بنجاح",
+            "settingsResetSuccess": "تم إعادة تعيين الإعدادات بنجاح"
         }
     },
 

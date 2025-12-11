@@ -627,11 +627,11 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     const detail = this.getErrorMessage(context, code);
 
     if (detail) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail
-      });
+    this.messageService.add({
+      severity: 'error',
+      summary: 'Error',
+      detail
+    });
     }
   }
 
@@ -640,11 +640,11 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     const detail = this.getAccountErrorMessage(operation, code);
 
     if (detail) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail
-      });
+    this.messageService.add({
+      severity: 'error',
+      summary: 'Error',
+      detail
+    });
     }
     this.loadingAccounts = false;
     this.loading = false;
@@ -655,11 +655,11 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     const detail = this.getAssignAdminErrorMessage(code);
 
     if (detail) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail
-      });
+    this.messageService.add({
+      severity: 'error',
+      summary: 'Error',
+      detail
+    });
     }
     this.loadingAccounts = false;
   }
@@ -883,8 +883,8 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
 
           if (this.updateEntityForm.value.entityId) {
             this.loadEntityRoles(Number(this.updateEntityForm.value.entityId));
-          }
-        }
+    }
+  }
       },
       error: () => {
         this.loadingEntityOptions = false;
@@ -971,11 +971,11 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     const detail = this.getCreateEntityRoleErrorMessage(code);
 
     if (detail) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail
-      });
+    this.messageService.add({
+      severity: 'error',
+      summary: 'Error',
+      detail
+    });
     }
     this.loading = false;
   }
@@ -1000,11 +1000,11 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     const detail = this.getCreateAccountErrorMessage(code);
 
     if (detail) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail
-      });
+    this.messageService.add({
+      severity: 'error',
+      summary: 'Error',
+      detail
+    });
     }
     this.loading = false;
   }
