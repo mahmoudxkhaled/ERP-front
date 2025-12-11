@@ -1,4 +1,7 @@
 <div class="body">
+    <div class="wave"></div>
+    <div class="wave"></div>
+    <div class="wave"></div>
     <div class="forgot-container">
         <!-- Inactive Case -->
         <div *ngIf="isInactive">
@@ -6,23 +9,18 @@
             <p>Your account has been deactivated. Please contact the administrator.</p>
 
             <div class="warning-message">
-                <i class="pi pi-exclamation-triangle" style="margin-right: 10px; color: #ffb6b6;"></i>
+                <i class="pi pi-exclamation-triangle" style="margin-right: 10px; color: #f44336;"></i>
                 <span>Please contact your system administrator or support team to reactivate your account.</span>
             </div>
-
-            <!-- <button class="reset-btn" (click)="contactSupport()" style="margin-bottom: 15px;">
-                <i class="pi pi-envelope" style="margin-right: 8px;"></i>
-                Contact Support
-            </button> -->
         </div>
 
         <!-- Locked Case -->
         <div *ngIf="!isInactive">
             <h2>Account Locked</h2>
-            <p>Your account has been locked due to multiple failed login attempts. </p>
+            <p>Your account has been locked due to multiple failed login attempts.</p>
 
             <div class="info-message">
-                <i class="pi pi-info-circle" style="margin-right: 10px; color: #90EE90;"></i>
+                <i class="pi pi-info-circle" style="margin-right: 10px; color: #003366;"></i>
                 <span>Please check your email for the password reset link to unlock your account.</span>
             </div>
         </div>

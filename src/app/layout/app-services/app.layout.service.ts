@@ -39,7 +39,7 @@ export class LayoutService {
     _config: AppConfig = {
         ripple: true,
         inputStyle: 'outlined',
-        menuMode: 'reveal',
+        menuMode: 'slim-plus',
         colorScheme: 'light',
         componentTheme: 'purple',
         scale: 14,
@@ -73,6 +73,9 @@ export class LayoutService {
     menuProfileOpen$ = this.menuProfileOpen.asObservable();
 
     constructor() {
+        // Load saved configuration from localStorage on initialization
+        this.loadConfigFromStorage();
+
         effect(() => {
             const config = this.config();
             if (this.updateStyle(config)) {
@@ -311,7 +314,7 @@ export class LayoutService {
         const defaultConfig: AppConfig = {
             ripple: true,
             inputStyle: 'outlined',
-            menuMode: 'reveal',
+            menuMode: 'slim-plus',
             colorScheme: 'light',
             componentTheme: 'purple',
             scale: 14,
