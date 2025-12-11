@@ -71,13 +71,16 @@ export class SettingsComponent implements OnInit, OnDestroy {
     entityTimeFormat: string = '24h';
     entityCurrency: string = 'USD';
 
-    // System Settings
+    // System Settings - Actual Fields from API
     loadingSystemSettings: boolean = false;
     savingSystemSettings: boolean = false;
     systemSettings: Record<string, string> = {};
+    sessionValidity: number = 900; // Session_Validity (in seconds, convert to minutes for display)
+    resetPasswordTokenValidity: number = 900; // Reset_Password_Token_Validity (in seconds, convert to minutes for display)
+
+    // System Settings - Recommended Fields (not in API yet)
     tokenExpiryMinutes: number = 60;
     otpExpiryMinutes: number = 5;
-    sessionTimeoutMinutes: number = 30;
     maxLoginAttempts: number = 5;
     passwordMinLength: number = 8;
     passwordRequireUppercase: boolean = true;
@@ -459,6 +462,15 @@ export class SettingsComponent implements OnInit, OnDestroy {
         return roleId === Roles.Developer || roleId === Roles.SystemAdministrator || roleId === Roles.EntityAdministrator;
     }
 
+    // Helper methods for template
+    getEntitySettingsKeys(): string[] {
+        return Object.keys(this.entitySettings);
+    }
+
+    hasEntitySettings(): boolean {
+        return Object.keys(this.entitySettings).length > 0;
+    }
+
     // Entity Settings Methods
     loadEntitySettings(): void {
         const entityId = this.localStorageService.getEntityId();
@@ -479,13 +491,20 @@ export class SettingsComponent implements OnInit, OnDestroy {
                 const settingsDict = response?.message || {};
                 this.entitySettings = settingsDict;
 
-                // Map Dictionary values to form fields
-                this.entityDefaultLanguage = settingsDict['Entity.DefaultLanguage'] || 'en';
-                this.entityLayoutPreference = settingsDict['Entity.LayoutPreference'] || 'spacious';
-                this.entityAppearanceTheme = settingsDict['Entity.AppearanceTheme'] || 'light';
-                this.entityDateFormat = settingsDict['Entity.DateFormat'] || 'dd/MM/yyyy';
-                this.entityTimeFormat = settingsDict['Entity.TimeFormat'] || '24h';
-                this.entityCurrency = settingsDict['Entity.Currency'] || 'USD';
+                // Console log to see actual fields from API
+                console.log('=== Get_Entity_Settings Response ===');
+                console.log('Full Response:', response);
+                console.log('Settings Dictionary:', settingsDict);
+                console.log('Dictionary Keys:', Object.keys(settingsDict));
+                console.log('Dictionary Entries:', Object.entries(settingsDict));
+                console.log('=====================================');
+
+                // Map actual Dictionary values to form fields (if any exist)
+                // Currently empty, so use defaults for recommended fields
+                if (Object.keys(settingsDict).length > 0) {
+                    // If API returns actual fields, map them here
+                    // Example: this.entityDefaultLanguage = settingsDict['DefaultLanguage'] || 'en';
+                }
             },
             error: (error: any) => {
                 this.loadingEntitySettings = false;
@@ -583,16 +602,22 @@ export class SettingsComponent implements OnInit, OnDestroy {
                 const settingsDict = response?.message || {};
                 this.systemSettings = settingsDict;
 
-                // Map Dictionary values to form fields
-                this.tokenExpiryMinutes = parseInt(settingsDict['System.TokenExpiryMinutes'] || '60', 10);
-                this.otpExpiryMinutes = parseInt(settingsDict['System.OTPExpiryMinutes'] || '5', 10);
-                this.sessionTimeoutMinutes = parseInt(settingsDict['System.SessionTimeoutMinutes'] || '30', 10);
-                this.maxLoginAttempts = parseInt(settingsDict['System.MaxLoginAttempts'] || '5', 10);
-                this.passwordMinLength = parseInt(settingsDict['System.PasswordMinLength'] || '8', 10);
-                this.passwordRequireUppercase = settingsDict['System.PasswordRequireUppercase'] === 'true';
-                this.passwordRequireLowercase = settingsDict['System.PasswordRequireLowercase'] === 'true';
-                this.passwordRequireNumbers = settingsDict['System.PasswordRequireNumbers'] === 'true';
-                this.passwordRequireSpecialChars = settingsDict['System.PasswordRequireSpecialChars'] === 'true';
+                // Console log to see actual fields from API
+                console.log('=== Get_ERP_System_Settings Response ===');
+                console.log('Full Response:', response);
+                console.log('Settings Dictionary:', settingsDict);
+                console.log('Dictionary Keys:', Object.keys(settingsDict));
+                console.log('Dictionary Entries:', Object.entries(settingsDict));
+                console.log('==========================================');
+
+                // Map actual Dictionary values to form fields
+                // Session_Validity is in seconds, convert to minutes for display
+                const sessionValiditySeconds = parseInt(settingsDict['Session_Validity'] || '900', 10);
+                this.sessionValidity = Math.floor(sessionValiditySeconds / 60); // Convert seconds to minutes
+
+                // Reset_Password_Token_Validity is in seconds, convert to minutes for display
+                const resetPasswordTokenValiditySeconds = parseInt(settingsDict['Reset_Password_Token_Validity'] || '900', 10);
+                this.resetPasswordTokenValidity = Math.floor(resetPasswordTokenValiditySeconds / 60); // Convert seconds to minutes
             },
             error: (error: any) => {
                 this.loadingSystemSettings = false;
@@ -603,17 +628,11 @@ export class SettingsComponent implements OnInit, OnDestroy {
     }
 
     saveSystemSettings(): void {
-        // Build Dictionary from form fields
+        // Build Dictionary from actual form fields only
+        // Convert minutes to seconds for Session_Validity and Reset_Password_Token_Validity
         const settingsDict: Record<string, string> = {
-            'System.TokenExpiryMinutes': this.tokenExpiryMinutes.toString(),
-            'System.OTPExpiryMinutes': this.otpExpiryMinutes.toString(),
-            'System.SessionTimeoutMinutes': this.sessionTimeoutMinutes.toString(),
-            'System.MaxLoginAttempts': this.maxLoginAttempts.toString(),
-            'System.PasswordMinLength': this.passwordMinLength.toString(),
-            'System.PasswordRequireUppercase': this.passwordRequireUppercase.toString(),
-            'System.PasswordRequireLowercase': this.passwordRequireLowercase.toString(),
-            'System.PasswordRequireNumbers': this.passwordRequireNumbers.toString(),
-            'System.PasswordRequireSpecialChars': this.passwordRequireSpecialChars.toString()
+            'Session_Validity': (this.sessionValidity * 60).toString(), // Convert minutes to seconds
+            'Reset_Password_Token_Validity': (this.resetPasswordTokenValidity * 60).toString() // Convert minutes to seconds
         };
 
         this.savingSystemSettings = true;

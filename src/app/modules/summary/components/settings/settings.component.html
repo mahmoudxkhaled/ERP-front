@@ -230,83 +230,126 @@
             </div>
 
             <div *ngIf="!loadingEntitySettings">
-                <p-panel [header]="translate.getInstant('settings.entitySettings.title')" class="mb-4">
+                <!-- Actual Entity Settings from API -->
+                <p-panel [header]="translate.getInstant('settings.entitySettings.title')" class="mb-4"
+                    *ngIf="hasEntitySettings()">
+                    <div class="grid">
+                        <!-- Dynamic fields based on API response -->
+                        <div class="col-12" *ngFor="let key of getEntitySettingsKeys()">
+                            <label class="block text-sm font-medium mb-2">
+                                <i class="pi pi-cog mr-2 text-blue-500"></i>
+                                {{ key }}
+                            </label>
+                            <input pInputText [value]="entitySettings[key]" class="w-full" readonly>
+                        </div>
+                    </div>
+                </p-panel>
+
+                <!-- Empty State -->
+                <div *ngIf="!hasEntitySettings()" class="mb-4 p-4 surface-100 border-round text-center">
+                    <i class="pi pi-info-circle text-4xl text-gray-400 mb-3"></i>
+                    <p class="text-lg font-semibold text-gray-600 mb-2">
+                        {{ translate.getInstant('settings.entitySettings.noSettings') }}
+                    </p>
+                    <p class="text-sm text-gray-500">
+                        {{ translate.getInstant('settings.entitySettings.noSettingsNote') }}
+                    </p>
+                </div>
+
+                <!-- Divider -->
+                <p-divider *ngIf="!hasEntitySettings()">
+                    <span class="text-gray-500 text-sm">
+                        <i class="pi pi-info-circle mr-2"></i>
+                        {{ translate.getInstant('settings.entitySettings.recommendedSettings') }}
+                    </span>
+                </p-divider>
+
+                <!-- Recommended Settings (Not in API yet) -->
+                <p-panel [header]="translate.getInstant('settings.entitySettings.recommendedSettings')"
+                    class="mb-4 mt-4">
+                    <div class="mb-3 p-3 surface-100 border-round">
+                        <p class="text-sm text-gray-600 m-0">
+                            <i class="pi pi-info-circle mr-2"></i>
+                            {{ translate.getInstant('settings.entitySettings.recommendedSettingsNote') }}
+                        </p>
+                    </div>
+
                     <div class="grid">
                         <!-- Default Language -->
                         <div class="col-12 md:col-6">
                             <label class="block text-sm font-medium mb-2">
-                                <i class="pi pi-globe mr-2 text-blue-500"></i>
+                                <i class="pi pi-globe mr-2 text-gray-400"></i>
                                 {{ translate.getInstant('settings.entitySettings.defaultLanguage') }}
                             </label>
                             <p-dropdown [options]="entityLanguageOptions" [(ngModel)]="entityDefaultLanguage"
                                 optionLabel="label" optionValue="value"
                                 [placeholder]="translate.getInstant('settings.entitySettings.selectLanguage')"
-                                class="w-full p-fluid">
+                                class="w-full p-fluid" [disabled]="true">
                             </p-dropdown>
                         </div>
 
                         <!-- Layout Preference -->
                         <div class="col-12 md:col-6">
                             <label class="block text-sm font-medium mb-2">
-                                <i class="pi pi-th-large mr-2 text-blue-500"></i>
+                                <i class="pi pi-th-large mr-2 text-gray-400"></i>
                                 {{ translate.getInstant('settings.entitySettings.layoutPreference') }}
                             </label>
                             <p-dropdown [options]="entityLayoutOptions" [(ngModel)]="entityLayoutPreference"
                                 optionLabel="label" optionValue="value"
                                 [placeholder]="translate.getInstant('settings.entitySettings.selectLayout')"
-                                class="w-full p-fluid">
+                                class="w-full p-fluid" [disabled]="true">
                             </p-dropdown>
                         </div>
 
                         <!-- Appearance Theme -->
                         <div class="col-12 md:col-6">
                             <label class="block text-sm font-medium mb-2">
-                                <i class="pi pi-palette mr-2 text-blue-500"></i>
+                                <i class="pi pi-palette mr-2 text-gray-400"></i>
                                 {{ translate.getInstant('settings.entitySettings.appearanceTheme') }}
                             </label>
                             <p-dropdown [options]="entityAppearanceOptions" [(ngModel)]="entityAppearanceTheme"
                                 optionLabel="label" optionValue="value"
                                 [placeholder]="translate.getInstant('settings.entitySettings.selectTheme')"
-                                class="w-full p-fluid">
+                                class="w-full p-fluid" [disabled]="true">
                             </p-dropdown>
                         </div>
 
                         <!-- Date Format -->
                         <div class="col-12 md:col-6">
                             <label class="block text-sm font-medium mb-2">
-                                <i class="pi pi-calendar mr-2 text-blue-500"></i>
+                                <i class="pi pi-calendar mr-2 text-gray-400"></i>
                                 {{ translate.getInstant('settings.entitySettings.dateFormat') }}
                             </label>
                             <p-dropdown [options]="entityDateFormatOptions" [(ngModel)]="entityDateFormat"
                                 optionLabel="label" optionValue="value"
                                 [placeholder]="translate.getInstant('settings.entitySettings.selectDateFormat')"
-                                class="w-full p-fluid">
+                                class="w-full p-fluid" [disabled]="true">
                             </p-dropdown>
                         </div>
 
                         <!-- Time Format -->
                         <div class="col-12 md:col-6">
                             <label class="block text-sm font-medium mb-2">
-                                <i class="pi pi-clock mr-2 text-blue-500"></i>
+                                <i class="pi pi-clock mr-2 text-gray-400"></i>
                                 {{ translate.getInstant('settings.entitySettings.timeFormat') }}
                             </label>
                             <p-dropdown [options]="entityTimeFormatOptions" [(ngModel)]="entityTimeFormat"
                                 optionLabel="label" optionValue="value"
                                 [placeholder]="translate.getInstant('settings.entitySettings.selectTimeFormat')"
-                                class="w-full p-fluid">
+                                class="w-full p-fluid" [disabled]="true">
                             </p-dropdown>
                         </div>
 
                         <!-- Currency -->
                         <div class="col-12 md:col-6">
                             <label class="block text-sm font-medium mb-2">
-                                <i class="pi pi-dollar mr-2 text-blue-500"></i>
+                                <i class="pi pi-dollar mr-2 text-gray-400"></i>
                                 {{ translate.getInstant('settings.entitySettings.currency') }}
                             </label>
                             <p-dropdown [options]="entityCurrencyOptions" [(ngModel)]="entityCurrency"
                                 optionLabel="label" optionValue="value"
                                 [placeholder]="translate.getInstant('settings.entitySettings.selectCurrency')"
-                                class="w-full p-fluid   ">
+                                class="w-full p-fluid" [disabled]="true">
                             </p-dropdown>
                         </div>
                     </div>
@@ -331,103 +374,136 @@
             </div>
 
             <div *ngIf="!loadingSystemSettings">
-                <!-- Security Settings -->
+                <!-- Actual System Settings from API -->
                 <p-panel [header]="translate.getInstant('settings.systemSettings.securitySettings')" class="mb-4">
+                    <div class="grid">
+                        <!-- Session Validity -->
+                        <div class="col-12 md:col-6">
+                            <label class="block text-sm font-medium mb-2">
+                                <i class="pi pi-clock mr-2 text-blue-500"></i>
+                                {{ translate.getInstant('settings.systemSettings.sessionValidity') }}
+                            </label>
+                            <p-inputNumber [(ngModel)]="sessionValidity" [min]="1" [max]="1440" [suffix]="' minutes'"
+                                class="w-full p-fluid">
+                            </p-inputNumber>
+                            <small class="text-gray-500">
+                                {{ translate.getInstant('settings.systemSettings.sessionValidityHint') }}
+                            </small>
+                        </div>
+
+                        <!-- Reset Password Token Validity -->
+                        <div class="col-12 md:col-6">
+                            <label class="block text-sm font-medium mb-2">
+                                <i class="pi pi-key mr-2 text-blue-500"></i>
+                                {{ translate.getInstant('settings.systemSettings.resetPasswordTokenValidity') }}
+                            </label>
+                            <p-inputNumber [(ngModel)]="resetPasswordTokenValidity" [min]="1" [max]="1440"
+                                [suffix]="' minutes'" class="w-full p-fluid">
+                            </p-inputNumber>
+                            <small class="text-gray-500">
+                                {{ translate.getInstant('settings.systemSettings.resetPasswordTokenValidityHint') }}
+                            </small>
+                        </div>
+                    </div>
+                </p-panel>
+
+                <!-- Divider -->
+                <p-divider>
+                    <span class="text-gray-500 text-sm">
+                        <i class="pi pi-info-circle mr-2"></i>
+                        {{ translate.getInstant('settings.systemSettings.recommendedSettings') }}
+                    </span>
+                </p-divider>
+
+                <!-- Recommended Settings (Not in API yet) -->
+                <p-panel [header]="translate.getInstant('settings.systemSettings.recommendedSettings')"
+                    class="mb-4 mt-4">
+                    <div class="mb-3 p-3 surface-100 border-round">
+                        <p class="text-sm text-gray-600 m-0">
+                            <i class="pi pi-info-circle mr-2"></i>
+                            {{ translate.getInstant('settings.systemSettings.recommendedSettingsNote') }}
+                        </p>
+                    </div>
+
                     <div class="grid">
                         <!-- Token Expiry -->
                         <div class="col-12 md:col-6">
                             <label class="block text-sm font-medium mb-2">
-                                <i class="pi pi-key mr-2 text-blue-500"></i>
+                                <i class="pi pi-key mr-2 text-gray-400"></i>
                                 {{ translate.getInstant('settings.systemSettings.tokenExpiry') }}
                             </label>
                             <p-inputNumber [(ngModel)]="tokenExpiryMinutes" [min]="1" [max]="1440" [suffix]="' minutes'"
-                                class="w-full p-fluid">
+                                class="w-full p-fluid" [disabled]="true">
                             </p-inputNumber>
                         </div>
 
                         <!-- OTP Expiry -->
                         <div class="col-12 md:col-6">
                             <label class="block text-sm font-medium mb-2">
-                                <i class="pi pi-shield mr-2 text-blue-500"></i>
+                                <i class="pi pi-shield mr-2 text-gray-400"></i>
                                 {{ translate.getInstant('settings.systemSettings.otpExpiry') }}
                             </label>
                             <p-inputNumber [(ngModel)]="otpExpiryMinutes" [min]="1" [max]="60" [suffix]="' minutes'"
-                                class="w-full p-fluid">
-                            </p-inputNumber>
-                        </div>
-
-                        <!-- Session Timeout -->
-                        <div class="col-12 md:col-6">
-                            <label class="block text-sm font-medium mb-2">
-                                <i class="pi pi-clock mr-2 text-blue-500"></i>
-                                {{ translate.getInstant('settings.systemSettings.sessionTimeout') }}
-                            </label>
-                            <p-inputNumber [(ngModel)]="sessionTimeoutMinutes" [min]="5" [max]="480"
-                                [suffix]="' minutes'" class="w-full p-fluid">
+                                class="w-full p-fluid" [disabled]="true">
                             </p-inputNumber>
                         </div>
 
                         <!-- Max Login Attempts -->
                         <div class="col-12 md:col-6">
                             <label class="block text-sm font-medium mb-2">
-                                <i class="pi pi-lock mr-2 text-blue-500"></i>
+                                <i class="pi pi-lock mr-2 text-gray-400"></i>
                                 {{ translate.getInstant('settings.systemSettings.maxLoginAttempts') }}
                             </label>
-                            <p-inputNumber [(ngModel)]="maxLoginAttempts" [min]="3" [max]="10" class="w-full p-fluid">
+                            <p-inputNumber [(ngModel)]="maxLoginAttempts" [min]="3" [max]="10" class="w-full p-fluid"
+                                [disabled]="true">
                             </p-inputNumber>
                         </div>
-                    </div>
-                </p-panel>
 
-                <hr>
-                <!-- Password Policy -->
-                <p-panel [header]="translate.getInstant('settings.systemSettings.passwordPolicy')" class="mb-4">
-                    <div class="grid">
-                        <!-- Min Length -->
+                        <!-- Password Min Length -->
                         <div class="col-12 md:col-6">
                             <label class="block text-sm font-medium mb-2">
-                                <i class="pi pi-sort-numeric-up mr-2 text-blue-500"></i>
+                                <i class="pi pi-sort-numeric-up mr-2 text-gray-400"></i>
                                 {{ translate.getInstant('settings.systemSettings.passwordMinLength') }}
                             </label>
-                            <p-inputNumber [(ngModel)]="passwordMinLength" [min]="6" [max]="20"
-                                class="w-full p-fluid   ">
+                            <p-inputNumber [(ngModel)]="passwordMinLength" [min]="6" [max]="20" class="w-full p-fluid"
+                                [disabled]="true">
                             </p-inputNumber>
                         </div>
 
                         <!-- Require Uppercase -->
                         <div class="col-12 md:col-6">
                             <label class="block text-sm font-medium mb-2">
-                                <i class="pi pi-check-circle mr-2 text-blue-500"></i>
+                                <i class="pi pi-check-circle mr-2 text-gray-400"></i>
                                 {{ translate.getInstant('settings.systemSettings.passwordRequireUppercase') }}
                             </label>
-                            <p-inputSwitch [(ngModel)]="passwordRequireUppercase"></p-inputSwitch>
+                            <p-inputSwitch [(ngModel)]="passwordRequireUppercase" [disabled]="true"></p-inputSwitch>
                         </div>
 
                         <!-- Require Lowercase -->
                         <div class="col-12 md:col-6">
                             <label class="block text-sm font-medium mb-2">
-                                <i class="pi pi-check-circle mr-2 text-blue-500"></i>
+                                <i class="pi pi-check-circle mr-2 text-gray-400"></i>
                                 {{ translate.getInstant('settings.systemSettings.passwordRequireLowercase') }}
                             </label>
-                            <p-inputSwitch [(ngModel)]="passwordRequireLowercase"></p-inputSwitch>
+                            <p-inputSwitch [(ngModel)]="passwordRequireLowercase" [disabled]="true"></p-inputSwitch>
                         </div>
 
                         <!-- Require Numbers -->
                         <div class="col-12 md:col-6">
                             <label class="block text-sm font-medium mb-2">
-                                <i class="pi pi-check-circle mr-2 text-blue-500"></i>
+                                <i class="pi pi-check-circle mr-2 text-gray-400"></i>
                                 {{ translate.getInstant('settings.systemSettings.passwordRequireNumbers') }}
                             </label>
-                            <p-inputSwitch [(ngModel)]="passwordRequireNumbers"></p-inputSwitch>
+                            <p-inputSwitch [(ngModel)]="passwordRequireNumbers" [disabled]="true"></p-inputSwitch>
                         </div>
 
                         <!-- Require Special Characters -->
                         <div class="col-12 md:col-6">
                             <label class="block text-sm font-medium mb-2">
-                                <i class="pi pi-check-circle mr-2 text-blue-500"></i>
+                                <i class="pi pi-check-circle mr-2 text-gray-400"></i>
                                 {{ translate.getInstant('settings.systemSettings.passwordRequireSpecialChars') }}
                             </label>
-                            <p-inputSwitch [(ngModel)]="passwordRequireSpecialChars"></p-inputSwitch>
+                            <p-inputSwitch [(ngModel)]="passwordRequireSpecialChars" [disabled]="true"></p-inputSwitch>
                         </div>
                     </div>
                 </p-panel>
