@@ -82,7 +82,9 @@
             "accountSettings": "إعدادات الحساب",
             "layoutTheme": "إعدادات التخطيط والسمة",
             "dashboard": "إعدادات لوحة التحكم",
-            "incoming": "الإعدادات القادمة"
+            "incoming": "الإعدادات القادمة",
+            "entitySettings": "إعدادات الكيان",
+            "systemSettings": "إعدادات النظام"
         },
         "sections": {
             "general": "الإعدادات العامة",
@@ -118,6 +120,37 @@
             "saveSuccess": "تم حفظ الإعدادات بنجاح",
             "resetInfo": "تم إعادة تعيين الإعدادات إلى القيم الافتراضية",
             "cancelInfo": "تم إرجاع الإعدادات إلى آخر حالة محفوظة"
+        },
+        "entitySettings": {
+            "title": "إعدادات الكيان",
+            "defaultLanguage": "اللغة الافتراضية",
+            "layoutPreference": "تفضيل التخطيط",
+            "appearanceTheme": "سمة المظهر",
+            "dateFormat": "تنسيق التاريخ",
+            "timeFormat": "تنسيق الوقت",
+            "currency": "العملة",
+            "selectLanguage": "اختر اللغة",
+            "selectLayout": "اختر التخطيط",
+            "selectTheme": "اختر السمة",
+            "selectDateFormat": "اختر تنسيق التاريخ",
+            "selectTimeFormat": "اختر تنسيق الوقت",
+            "selectCurrency": "اختر العملة",
+            "saveSuccess": "تم حفظ إعدادات الكيان بنجاح"
+        },
+        "systemSettings": {
+            "title": "إعدادات النظام",
+            "securitySettings": "إعدادات الأمان",
+            "passwordPolicy": "سياسة كلمة المرور",
+            "tokenExpiry": "انتهاء صلاحية الرمز المميز (بالدقائق)",
+            "otpExpiry": "انتهاء صلاحية OTP (بالدقائق)",
+            "sessionTimeout": "انتهاء الجلسة (بالدقائق)",
+            "maxLoginAttempts": "الحد الأقصى لمحاولات تسجيل الدخول",
+            "passwordMinLength": "الحد الأدنى لطول كلمة المرور",
+            "passwordRequireUppercase": "يتطلب أحرف كبيرة",
+            "passwordRequireLowercase": "يتطلب أحرف صغيرة",
+            "passwordRequireNumbers": "يتطلب أرقام",
+            "passwordRequireSpecialChars": "يتطلب أحرف خاصة",
+            "saveSuccess": "تم حفظ إعدادات النظام بنجاح"
         }
     },
     "profile": {

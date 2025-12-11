@@ -1,9 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { AuthService } from 'src/app/modules/auth/services/auth.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { SettingsApiService } from '../../services/settings-api.service';
+import { PermissionService } from 'src/app/core/services/permission.service';
+import { Roles } from 'src/app/core/models/system-roles';
+import { Subscription } from 'rxjs';
 
 export function passwordComplexityValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -38,7 +42,7 @@ export function passwordComplexityValidator(): ValidatorFn {
     styleUrls: ['./settings.component.scss'],
     providers: [MessageService]
 })
-export class SettingsComponent implements OnInit {
+export class SettingsComponent implements OnInit, OnDestroy {
 
     // Tab Index
     activeTabIndex: number = 0;
@@ -56,17 +60,98 @@ export class SettingsComponent implements OnInit {
     show2FADialog: boolean = false;
     isToggling2FA: boolean = false;
 
+    // Entity Settings
+    loadingEntitySettings: boolean = false;
+    savingEntitySettings: boolean = false;
+    entitySettings: Record<string, string> = {};
+    entityDefaultLanguage: string = 'en';
+    entityLayoutPreference: string = 'spacious';
+    entityAppearanceTheme: string = 'light';
+    entityDateFormat: string = 'dd/MM/yyyy';
+    entityTimeFormat: string = '24h';
+    entityCurrency: string = 'USD';
+
+    // System Settings
+    loadingSystemSettings: boolean = false;
+    savingSystemSettings: boolean = false;
+    systemSettings: Record<string, string> = {};
+    tokenExpiryMinutes: number = 60;
+    otpExpiryMinutes: number = 5;
+    sessionTimeoutMinutes: number = 30;
+    maxLoginAttempts: number = 5;
+    passwordMinLength: number = 8;
+    passwordRequireUppercase: boolean = true;
+    passwordRequireLowercase: boolean = true;
+    passwordRequireNumbers: boolean = true;
+    passwordRequireSpecialChars: boolean = true;
+
+    // Options arrays
+    entityLanguageOptions = [
+        { label: 'English', value: 'en' },
+        { label: 'العربية', value: 'ar' }
+    ];
+
+    entityLayoutOptions = [
+        { label: 'Compact', value: 'compact' },
+        { label: 'Spacious', value: 'spacious' },
+        { label: 'Standard', value: 'standard' }
+    ];
+
+    entityAppearanceOptions = [
+        { label: 'Light', value: 'light' },
+        { label: 'Dark', value: 'dark' },
+        { label: 'Auto', value: 'auto' }
+    ];
+
+    entityDateFormatOptions = [
+        { label: 'DD/MM/YYYY', value: 'dd/MM/yyyy' },
+        { label: 'MM/DD/YYYY', value: 'MM/dd/yyyy' },
+        { label: 'YYYY-MM-DD', value: 'yyyy-MM-dd' },
+        { label: 'DD-MM-YYYY', value: 'dd-MM-yyyy' }
+    ];
+
+    entityTimeFormatOptions = [
+        { label: '12 Hour', value: '12h' },
+        { label: '24 Hour', value: '24h' }
+    ];
+
+    entityCurrencyOptions = [
+        { label: 'USD - US Dollar', value: 'USD' },
+        { label: 'EUR - Euro', value: 'EUR' },
+        { label: 'SAR - Saudi Riyal', value: 'SAR' },
+        { label: 'AED - UAE Dirham', value: 'AED' },
+        { label: 'EGP - Egyptian Pound', value: 'EGP' }
+    ];
+
+    private subscriptions: Subscription[] = [];
+
     constructor(
         private fb: FormBuilder,
         public translate: TranslationService,
         private messageService: MessageService,
         private authService: AuthService,
-        private localStorageService: LocalStorageService
+        private localStorageService: LocalStorageService,
+        private settingsApiService: SettingsApiService,
+        private permissionService: PermissionService
     ) { }
 
     ngOnInit(): void {
         this.initPasswordForm();
         this.load2FAStatus();
+
+        // Load Entity Settings if user has access
+        if (this.canAccessEntitySettings()) {
+            this.loadEntitySettings();
+        }
+
+        // Load System Settings if user is System Admin
+        if (this.isSystemAdmin()) {
+            this.loadSystemSettings();
+        }
+    }
+
+    ngOnDestroy(): void {
+        this.subscriptions.forEach(sub => sub.unsubscribe());
     }
 
     initPasswordForm(): void {
@@ -361,5 +446,225 @@ export class SettingsComponent implements OnInit {
 
     cancelToggle2FA(): void {
         this.show2FADialog = false;
+    }
+
+    // Permission Methods
+    isSystemAdmin(): boolean {
+        const roleId = this.permissionService.getCurrentRoleId();
+        return roleId === Roles.Developer || roleId === Roles.SystemAdministrator;
+    }
+
+    canAccessEntitySettings(): boolean {
+        const roleId = this.permissionService.getCurrentRoleId();
+        return roleId === Roles.Developer || roleId === Roles.SystemAdministrator || roleId === Roles.EntityAdministrator;
+    }
+
+    // Entity Settings Methods
+    loadEntitySettings(): void {
+        const entityId = this.localStorageService.getEntityId();
+        if (!entityId) {
+            return;
+        }
+
+        this.loadingEntitySettings = true;
+        const sub = this.settingsApiService.getEntitySettings(entityId).subscribe({
+            next: (response: any) => {
+                this.loadingEntitySettings = false;
+                if (!response?.success) {
+                    this.handleEntitySettingsError(response);
+                    return;
+                }
+
+                // Parse Dictionary from API response
+                const settingsDict = response?.message || {};
+                this.entitySettings = settingsDict;
+
+                // Map Dictionary values to form fields
+                this.entityDefaultLanguage = settingsDict['Entity.DefaultLanguage'] || 'en';
+                this.entityLayoutPreference = settingsDict['Entity.LayoutPreference'] || 'spacious';
+                this.entityAppearanceTheme = settingsDict['Entity.AppearanceTheme'] || 'light';
+                this.entityDateFormat = settingsDict['Entity.DateFormat'] || 'dd/MM/yyyy';
+                this.entityTimeFormat = settingsDict['Entity.TimeFormat'] || '24h';
+                this.entityCurrency = settingsDict['Entity.Currency'] || 'USD';
+            },
+            error: (error: any) => {
+                this.loadingEntitySettings = false;
+                this.handleEntitySettingsError(error);
+            }
+        });
+        this.subscriptions.push(sub);
+    }
+
+    saveEntitySettings(): void {
+        const entityId = this.localStorageService.getEntityId();
+        if (!entityId) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Entity ID not found.'
+            });
+            return;
+        }
+
+        // Build Dictionary from form fields
+        const settingsDict: Record<string, string> = {
+            'Entity.DefaultLanguage': this.entityDefaultLanguage,
+            'Entity.LayoutPreference': this.entityLayoutPreference,
+            'Entity.AppearanceTheme': this.entityAppearanceTheme,
+            'Entity.DateFormat': this.entityDateFormat,
+            'Entity.TimeFormat': this.entityTimeFormat,
+            'Entity.Currency': this.entityCurrency
+        };
+
+        this.savingEntitySettings = true;
+        const sub = this.settingsApiService.setEntitySettings(entityId, settingsDict).subscribe({
+            next: (response: any) => {
+                this.savingEntitySettings = false;
+                if (!response?.success) {
+                    this.handleEntitySettingsError(response);
+                    return;
+                }
+
+                this.messageService.add({
+                    severity: 'success',
+                    summary: this.translate.getInstant('shared.messages.success'),
+                    detail: this.translate.getInstant('settings.entitySettings.saveSuccess'),
+                    life: 3000
+                });
+
+                // Update local settings
+                this.entitySettings = settingsDict;
+            },
+            error: (error: any) => {
+                this.savingEntitySettings = false;
+                this.handleEntitySettingsError(error);
+            }
+        });
+        this.subscriptions.push(sub);
+    }
+
+    private handleEntitySettingsError(response: any): void {
+        const errorCode = String(response?.message || '');
+        let errorMessage = '';
+
+        switch (errorCode) {
+            case 'ERP11426':
+                errorMessage = 'Invalid Entity ID';
+                break;
+            case 'ERP11420':
+                errorMessage = 'Invalid Setting key → Empty';
+                break;
+            case 'ERP11421':
+                errorMessage = 'Invalid Setting value → Empty';
+                break;
+            default:
+                errorMessage = 'Failed to save entity settings. Please try again.';
+        }
+
+        this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: errorMessage
+        });
+    }
+
+    // System Settings Methods
+    loadSystemSettings(): void {
+        this.loadingSystemSettings = true;
+        const sub = this.settingsApiService.getERPSystemSettings().subscribe({
+            next: (response: any) => {
+                this.loadingSystemSettings = false;
+                if (!response?.success) {
+                    this.handleSystemSettingsError(response);
+                    return;
+                }
+
+                // Parse Dictionary from API response
+                const settingsDict = response?.message || {};
+                this.systemSettings = settingsDict;
+
+                // Map Dictionary values to form fields
+                this.tokenExpiryMinutes = parseInt(settingsDict['System.TokenExpiryMinutes'] || '60', 10);
+                this.otpExpiryMinutes = parseInt(settingsDict['System.OTPExpiryMinutes'] || '5', 10);
+                this.sessionTimeoutMinutes = parseInt(settingsDict['System.SessionTimeoutMinutes'] || '30', 10);
+                this.maxLoginAttempts = parseInt(settingsDict['System.MaxLoginAttempts'] || '5', 10);
+                this.passwordMinLength = parseInt(settingsDict['System.PasswordMinLength'] || '8', 10);
+                this.passwordRequireUppercase = settingsDict['System.PasswordRequireUppercase'] === 'true';
+                this.passwordRequireLowercase = settingsDict['System.PasswordRequireLowercase'] === 'true';
+                this.passwordRequireNumbers = settingsDict['System.PasswordRequireNumbers'] === 'true';
+                this.passwordRequireSpecialChars = settingsDict['System.PasswordRequireSpecialChars'] === 'true';
+            },
+            error: (error: any) => {
+                this.loadingSystemSettings = false;
+                this.handleSystemSettingsError(error);
+            }
+        });
+        this.subscriptions.push(sub);
+    }
+
+    saveSystemSettings(): void {
+        // Build Dictionary from form fields
+        const settingsDict: Record<string, string> = {
+            'System.TokenExpiryMinutes': this.tokenExpiryMinutes.toString(),
+            'System.OTPExpiryMinutes': this.otpExpiryMinutes.toString(),
+            'System.SessionTimeoutMinutes': this.sessionTimeoutMinutes.toString(),
+            'System.MaxLoginAttempts': this.maxLoginAttempts.toString(),
+            'System.PasswordMinLength': this.passwordMinLength.toString(),
+            'System.PasswordRequireUppercase': this.passwordRequireUppercase.toString(),
+            'System.PasswordRequireLowercase': this.passwordRequireLowercase.toString(),
+            'System.PasswordRequireNumbers': this.passwordRequireNumbers.toString(),
+            'System.PasswordRequireSpecialChars': this.passwordRequireSpecialChars.toString()
+        };
+
+        this.savingSystemSettings = true;
+        const sub = this.settingsApiService.setERPSystemSettings(settingsDict).subscribe({
+            next: (response: any) => {
+                this.savingSystemSettings = false;
+                if (!response?.success) {
+                    this.handleSystemSettingsError(response);
+                    return;
+                }
+
+                this.messageService.add({
+                    severity: 'success',
+                    summary: this.translate.getInstant('shared.messages.success'),
+                    detail: this.translate.getInstant('settings.systemSettings.saveSuccess'),
+                    life: 3000
+                });
+
+                // Update local settings
+                this.systemSettings = settingsDict;
+            },
+            error: (error: any) => {
+                this.savingSystemSettings = false;
+                this.handleSystemSettingsError(error);
+            }
+        });
+        this.subscriptions.push(sub);
+    }
+
+    private handleSystemSettingsError(response: any): void {
+        const errorCode = String(response?.message || '');
+        let errorMessage = '';
+
+        switch (errorCode) {
+            case 'ERP11420':
+                errorMessage = 'Invalid Setting key → Empty';
+                break;
+            case 'ERP11421':
+                errorMessage = 'Invalid Setting value → Empty';
+                break;
+            case 'ERP11422':
+                errorMessage = 'Invalid Setting title → Not found';
+                break;
+            default:
+                errorMessage = 'Failed to save system settings. Please try again.';
+        }
+
+        this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: errorMessage
+        });
     }
 }
