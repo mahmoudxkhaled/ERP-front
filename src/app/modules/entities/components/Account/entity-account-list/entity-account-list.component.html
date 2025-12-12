@@ -9,15 +9,15 @@
             </span>
         </div>
         <div class="flex gap-4 align-items-center">
-        <div class="flex align-items-center gap-2">
-            <label for="includeSubentities" class="text-600">Include Sub-entities:</label>
-            <p-inputSwitch id="includeSubentities" [(ngModel)]="includeSubentities" (onChange)="onFilterChange()"
-                [disabled]="loadingAccounts"></p-inputSwitch>
-        </div>
-        <div class="flex align-items-center gap-2">
-            <label for="activeOnly" class="text-600">Active Only:</label>
-            <p-inputSwitch id="activeOnly" [(ngModel)]="activeOnly" (onChange)="onFilterChange()"
-                [disabled]="loadingAccounts"></p-inputSwitch>
+            <div class="flex align-items-center gap-2">
+                <label for="includeSubentities" class="text-600">Include Sub-entities:</label>
+                <p-inputSwitch id="includeSubentities" [(ngModel)]="includeSubentities" (onChange)="onFilterChange()"
+                    [disabled]="loadingAccounts"></p-inputSwitch>
+            </div>
+            <div class="flex align-items-center gap-2">
+                <label for="activeOnly" class="text-600">Active Only:</label>
+                <p-inputSwitch id="activeOnly" [(ngModel)]="activeOnly" (onChange)="onFilterChange()"
+                    [disabled]="loadingAccounts"></p-inputSwitch>
             </div>
         </div>
     </div>
@@ -321,58 +321,10 @@
     </form>
 </p-dialog>
 
-<!-- Update Account Entity Dialog -->
-<p-dialog [(visible)]="updateAccountEntityDialog" [modal]="true" [style]="{ width: '700px' , height: '500px' }"
-    [closable]="true" [draggable]="false" [resizable]="false" (onHide)="onCloseUpdateAccountEntityDialog()">
-    <ng-template pTemplate="header">
-        <h3>Update Account Entity</h3>
-    </ng-template>
-    <form *ngIf="updateEntityForm" [formGroup]="updateEntityForm" (ngSubmit)="saveAccountEntity()">
-        <div class="flex flex-column gap-3">
-            <!-- Email Field (Read-only) -->
-            <div class="field p-fluid">
-                <label for="entityEmail">Email</label>
-                <input id="entityEmail" type="email" pInputText formControlName="email" readonly />
-            </div>
-
-            <!-- Entity ID Field -->
-            <div class="field p-fluid">
-                <label for="entityId">Entity <span class="text-red-500">*</span></label>
-                <p-dropdown id="entityId" formControlName="entityId" [options]="entityOptions" optionLabel="label"
-                    optionValue="value" placeholder="Select Entity" [disabled]="loadingEntityOptions"
-                    (onChange)="loadEntityRoles($event.value)">
-                </p-dropdown>
-                <small class="p-error"
-                    *ngIf="updateEntityForm.get('entityId')?.invalid && updateEntityForm.get('entityId')?.touched">
-                    Entity is required.
-                </small>
-            </div>
-
-            <!-- Entity Role ID Field -->
-            <div class="field p-fluid">
-                <label for="entityRoleId">Entity Role <span class="text-red-500">*</span></label>
-                <p-dropdown id="entityRoleId" formControlName="entityRoleId" [options]="entityRoleOptions"
-                    optionLabel="label" optionValue="value" placeholder="Select Entity Role">
-                </p-dropdown>
-                <small class="p-error"
-                    *ngIf="updateEntityForm.get('entityRoleId')?.invalid && updateEntityForm.get('entityRoleId')?.touched">
-                    Entity Role is required.
-                </small>
-            </div>
-        </div>
-    </form>
-
-    <!-- Action Buttons -->
-    <ng-template pTemplate="footer">
-        <div class="flex justify-content-end gap-2">
-            <p-button label="Cancel" icon="pi pi-times" class="p-button-text"
-                (onClick)="onCloseUpdateAccountEntityDialog()" [disabled]="savingAccountEntity">
-            </p-button>
-            <p-button label="Update Entity" icon="pi pi-check" (onClick)="saveAccountEntity()"
-                [loading]="savingAccountEntity" [disabled]="savingAccountEntity || updateEntityForm.invalid">
-            </p-button>
-        </div>
-    </ng-template>
-</p-dialog>
+<!-- Update Account Entity Dialog (Shared Component) -->
+<app-entity-account-update [visible]="updateAccountEntityDialogVisible" [accountEmail]="accountEmailForUpdate"
+    (onSave)="onAccountEntityUpdateSave($event)" (onCancel)="onAccountEntityUpdateCancel()"
+    (onClose)="onAccountEntityUpdateCancel()">
+</app-entity-account-update>
 
 <p-toast></p-toast>

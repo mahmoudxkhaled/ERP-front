@@ -4,15 +4,15 @@ import { SharedModule } from 'src/app/Shared/shared/shared.module';
 import { EntitiesRoutingModule } from './entities-routing.module';
 
 // Components
-import { EditEntityDialogComponent } from './components/Entity/edit-entity-dialog/edit-entity-dialog.component';
-import { EntitiesListComponent } from './components/Entity/entities-list/entities-list.component';
 import { EntityAccountAdminListComponent } from './components/Account/entity-account-admin-list/entity-account-admin-list.component';
 import { EntityAccountDetailsComponent } from './components/Account/entity-account-details/entity-account-details.component';
 import { EntityAccountListComponent } from './components/Account/entity-account-list/entity-account-list.component';
-import { EntityAccountUpdateDetailsComponent } from './components/Account/entity-account-update-details/entity-account-update-details.component';
+import { EditEntityDialogComponent } from './components/Entity/edit-entity-dialog/edit-entity-dialog.component';
+import { EntitiesListComponent } from './components/Entity/entities-list/entities-list.component';
 import { EntityContactComponent } from './components/Entity/entity-contact/entity-contact.component';
 import { EntityDetailsComponent } from './components/Entity/entity-details/entity-details.component';
 import { EntityFormComponent } from './components/Entity/entity-form/entity-form.component';
+import { EntityAccountUpdateComponent } from './components/Account/entity-account-update/entity-account-update.component';
 
 @NgModule({
     declarations: [
@@ -24,7 +24,7 @@ import { EntityFormComponent } from './components/Entity/entity-form/entity-form
         EntityAccountListComponent,
         EntityAccountAdminListComponent,
         EntityAccountDetailsComponent,
-        EntityAccountUpdateDetailsComponent
+        EntityAccountUpdateComponent,
     ],
     imports: [
         EntitiesRoutingModule,

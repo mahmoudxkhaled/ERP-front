@@ -6,7 +6,7 @@ import { switchMap } from 'rxjs/operators';
 import { EntitiesService } from '../../../services/entities.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
-import { EntityAccount } from '../../../models/entities.model';
+import { EntityAccount, Entity } from '../../../models/entities.model';
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { textFieldValidator, getTextFieldError } from 'src/app/core/validators/text-field.validator';
 
@@ -63,17 +63,11 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
   // Account management dialogs
   viewAccountDetailsDialog: boolean = false;
   updateAccountEmailDialog: boolean = false;
-  updateAccountEntityDialog: boolean = false;
+  updateAccountEntityDialogVisible: boolean = false;
+  accountEmailForUpdate: string = '';
   selectedAccountForDetails?: EntityAccount;
   updateEmailForm!: FormGroup;
-  updateEntityForm!: FormGroup;
   savingAccountEmail: boolean = false;
-  savingAccountEntity: boolean = false;
-
-  // Entity dropdown options
-  entityOptions: any[] = [];
-  entityRoleOptions: any[] = [];
-  loadingEntityOptions: boolean = false;
 
   private subscriptions: Subscription[] = [];
 
@@ -237,12 +231,6 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
       accountId: [{ value: '', disabled: true }],
       currentEmail: [{ value: '', disabled: true }],
       newEmail: ['', [Validators.required, Validators.email]]
-    });
-
-    this.updateEntityForm = this.fb.group({
-      email: [{ value: '', disabled: true }],
-      entityId: [0, [Validators.required]],
-      entityRoleId: [0, [Validators.required]]
     });
   }
 
@@ -627,11 +615,11 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     const detail = this.getErrorMessage(context, code);
 
     if (detail) {
-    this.messageService.add({
-      severity: 'error',
-      summary: 'Error',
-      detail
-    });
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail
+      });
     }
   }
 
@@ -640,11 +628,11 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     const detail = this.getAccountErrorMessage(operation, code);
 
     if (detail) {
-    this.messageService.add({
-      severity: 'error',
-      summary: 'Error',
-      detail
-    });
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail
+      });
     }
     this.loadingAccounts = false;
     this.loading = false;
@@ -655,11 +643,11 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     const detail = this.getAssignAdminErrorMessage(code);
 
     if (detail) {
-    this.messageService.add({
-      severity: 'error',
-      summary: 'Error',
-      detail
-    });
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail
+      });
     }
     this.loadingAccounts = false;
   }
@@ -760,35 +748,8 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
 
   openUpdateAccountEntity(account: EntityAccount): void {
     this.selectedAccountForDetails = account;
-    this.loadEntityOptions();
-    const sub = this.entitiesService.getAccountDetails(account.email).subscribe({
-      next: (response: any) => {
-        if (response?.success) {
-          const accountData = response?.message || {};
-          this.updateEntityForm.patchValue({
-            email: account.email,
-            entityId: accountData.Entity_ID || 0,
-            entityRoleId: accountData.Entity_Role_ID || 0
-          });
-        } else {
-          this.updateEntityForm.patchValue({
-            email: account.email,
-            entityId: 0,
-            entityRoleId: 0
-          });
-        }
-        this.updateAccountEntityDialog = true;
-      },
-      error: () => {
-        this.updateEntityForm.patchValue({
-          email: account.email,
-          entityId: 0,
-          entityRoleId: 0
-        });
-        this.updateAccountEntityDialog = true;
-      }
-    });
-    this.subscriptions.push(sub);
+    this.accountEmailForUpdate = account.email;
+    this.updateAccountEntityDialogVisible = true;
   }
 
 
@@ -828,18 +789,9 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     this.subscriptions.push(sub);
   }
 
-  saveAccountEntity(): void {
-    if (this.updateEntityForm.invalid || !this.selectedAccountForDetails) {
-      this.updateEntityForm.markAllAsTouched();
-      return;
-    }
-
-    const { email, entityId, entityRoleId } = this.updateEntityForm.value;
-    this.savingAccountEntity = true;
-
-    const sub = this.entitiesService.updateAccountEntity(email, Number(entityId), Number(entityRoleId)).subscribe({
+  onAccountEntityUpdateSave(data: { email: string; entityId: number; entityRoleId: number }): void {
+    const sub = this.entitiesService.updateAccountEntity(data.email, data.entityId, data.entityRoleId).subscribe({
       next: (response: any) => {
-        this.savingAccountEntity = false;
         if (!response?.success) {
           this.handleUpdateAccountEntityError(response);
           return;
@@ -851,65 +803,25 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
           detail: 'Account entity updated successfully.'
         });
 
-        this.updateAccountEntityDialog = false;
-        this.updateEntityForm.reset();
+        this.updateAccountEntityDialogVisible = false;
         this.accountUpdated.emit();
         this.reloadAccounts();
       },
       error: () => {
-        this.savingAccountEntity = false;
+        // Error handled by handleUpdateAccountEntityError
       }
     });
 
     this.subscriptions.push(sub);
   }
 
-  loadEntityOptions(): void {
-    if (this.entityOptions.length > 0) {
-      return;
-    }
-
-    this.loadingEntityOptions = true;
-    const sub = this.entitiesService.listEntities(0, 100).subscribe({
-      next: (response: any) => {
-        this.loadingEntityOptions = false;
-        if (response?.success) {
-          const entities = response.message.Entities || {};
-
-          this.entityOptions = Object.values(entities).map((item: any) => ({
-            label: `${item?.Name || 'Entity'} (${item?.Code || 'N/A'})`,
-            value: Number(item?.Entity_ID || item?.id || 0)
-          })).filter((option: any) => !isNaN(option.value));
-
-          if (this.updateEntityForm.value.entityId) {
-            this.loadEntityRoles(Number(this.updateEntityForm.value.entityId));
-    }
-  }
-      },
-      error: () => {
-        this.loadingEntityOptions = false;
-      }
-    });
-
-    this.subscriptions.push(sub);
-  }
-
-  loadEntityRoles(entityId: number): void {
-    // TODO: Replace with entity roles API when available
-    this.entityRoleOptions = [
-      { label: 'Role 1', value: 15 },
-      { label: 'Role 2 ', value: 5 }
-    ];
+  onAccountEntityUpdateCancel(): void {
+    this.updateAccountEntityDialogVisible = false;
   }
 
   onCloseUpdateAccountEmailDialog(): void {
     this.updateAccountEmailDialog = false;
     this.updateEmailForm.reset();
-  }
-
-  onCloseUpdateAccountEntityDialog(): void {
-    this.updateAccountEntityDialog = false;
-    this.updateEntityForm.reset();
   }
 
   private handleUpdateAccountEmailError(response: any): void {
@@ -971,11 +883,11 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     const detail = this.getCreateEntityRoleErrorMessage(code);
 
     if (detail) {
-    this.messageService.add({
-      severity: 'error',
-      summary: 'Error',
-      detail
-    });
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail
+      });
     }
     this.loading = false;
   }
@@ -1000,11 +912,11 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     const detail = this.getCreateAccountErrorMessage(code);
 
     if (detail) {
-    this.messageService.add({
-      severity: 'error',
-      summary: 'Error',
-      detail
-    });
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail
+      });
     }
     this.loading = false;
   }
