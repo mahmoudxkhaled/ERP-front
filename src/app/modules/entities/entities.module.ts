@@ -7,7 +7,6 @@ import { EntitiesRoutingModule } from './entities-routing.module';
 import { EntityAccountAdminListComponent } from './components/Account/entity-account-admin-list/entity-account-admin-list.component';
 import { EntityAccountDetailsComponent } from './components/Account/entity-account-details/entity-account-details.component';
 import { EntityAccountListComponent } from './components/Account/entity-account-list/entity-account-list.component';
-import { EditEntityDialogComponent } from './components/Entity/edit-entity-dialog/edit-entity-dialog.component';
 import { EntitiesListComponent } from './components/Entity/entities-list/entities-list.component';
 import { EntityContactComponent } from './components/Entity/entity-contact/entity-contact.component';
 import { EntityDetailsComponent } from './components/Entity/entity-details/entity-details.component';
@@ -20,7 +19,6 @@ import { EntityAccountUpdateComponent } from './components/Account/entity-accoun
         EntityFormComponent,
         EntityDetailsComponent,
         EntityContactComponent,
-        EditEntityDialogComponent,
         EntityAccountListComponent,
         EntityAccountAdminListComponent,
         EntityAccountDetailsComponent,

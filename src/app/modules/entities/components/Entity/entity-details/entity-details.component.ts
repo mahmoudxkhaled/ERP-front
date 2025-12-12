@@ -29,7 +29,6 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
 
     accountSettings: IAccountSettings;
     isRegional: boolean = false;
-    editEntityDialogVisible: boolean = false;
 
     private subscriptions: Subscription[] = [];
 
@@ -202,7 +201,9 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
     }
 
     openEditEntityDialog(): void {
-        this.editEntityDialogVisible = true;
+        if (this.entityId) {
+            this.router.navigate(['/company-administration/entities', this.entityId, 'edit']);
+        }
     }
 
     handleEntityUpdated(): void {

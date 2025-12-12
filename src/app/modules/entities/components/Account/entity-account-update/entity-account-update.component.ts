@@ -28,6 +28,7 @@ export class EntityAccountUpdateComponent implements OnInit, OnChanges, OnDestro
   entityTableTotalRecords: number = 0;
   entityTableTextFilter: string = '';
   loadingEntitiesTable: boolean = false;
+  entitySelectionDialogVisible: boolean = false;
 
   // Entity Role dropdown options
   entityRoleOptions: any[] = [];
@@ -96,9 +97,7 @@ export class EntityAccountUpdateComponent implements OnInit, OnChanges, OnDestro
     this.selectedEntityForUpdate = undefined;
     this.entityTableTextFilter = '';
     this.entityTableFirst = 0;
-
-    // Load entities table
-    this.loadEntitiesForSelection();
+    // Don't auto-load entities table - only load when dialog opens
 
     // Load account details
     const sub = this.entitiesService.getAccountDetails(this.accountEmail).subscribe({
@@ -112,13 +111,7 @@ export class EntityAccountUpdateComponent implements OnInit, OnChanges, OnDestro
             entityRoleId: accountData.Entity_Role_ID || 0
           });
 
-          // If entity ID exists, try to find and select it in table
-          if (currentEntityId) {
-            // Use setTimeout to ensure table is loaded first
-            setTimeout(() => {
-              this.selectEntityById(String(currentEntityId));
-            }, 500);
-          }
+          // Entity selection will happen when user opens the selection dialog
         } else {
           this.updateEntityForm.patchValue({
             email: this.accountEmail,
@@ -236,6 +229,42 @@ export class EntityAccountUpdateComponent implements OnInit, OnChanges, OnDestro
 
   isEntitySelected(entity: Entity): boolean {
     return this.selectedEntityForUpdate?.id === entity.id;
+  }
+
+  // Entity Selection Dialog Methods
+  openEntitySelectionDialog(): void {
+    this.entitySelectionDialogVisible = true;
+    this.entityTableTextFilter = '';
+    this.entityTableFirst = 0;
+    this.loadEntitiesForSelection(true);
+
+    // Try to select current entity if one is set
+    const currentEntityId = this.updateEntityForm.get('entityId')?.value;
+    if (currentEntityId && currentEntityId !== 0) {
+      // Use setTimeout to ensure table is loaded first
+      setTimeout(() => {
+        this.selectEntityById(String(currentEntityId));
+      }, 500);
+    }
+  }
+
+  closeEntitySelectionDialog(): void {
+    this.entitySelectionDialogVisible = false;
+  }
+
+  getSelectedEntityDisplayText(): string {
+    if (this.selectedEntityForUpdate) {
+      return `${this.selectedEntityForUpdate.name} (${this.selectedEntityForUpdate.code})`;
+    }
+    // Try to find in current selection list
+    const entityId = this.updateEntityForm.get('entityId')?.value;
+    if (entityId && entityId !== 0) {
+      const entity = this.entitiesForSelection.find(e => e.id === String(entityId));
+      if (entity) {
+        return `${entity.name} (${entity.code})`;
+      }
+    }
+    return 'Select entity';
   }
 
   saveAccountEntity(): void {
