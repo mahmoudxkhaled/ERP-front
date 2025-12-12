@@ -8,7 +8,7 @@ import { LocalStorageService } from 'src/app/core/services/local-storage.service
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { EntityAccount, Entity } from '../../../models/entities.model';
 import { PermissionService } from 'src/app/core/services/permission.service';
-import { textFieldValidator, getTextFieldError } from 'src/app/core/validators/text-field.validator';
+import { textFieldValidator, getTextFieldError, nameFieldValidator, getNameFieldError } from 'src/app/core/validators/text-field.validator';
 
 
 
@@ -221,8 +221,8 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
   initForm(): void {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      firstName: ['', [Validators.required, textFieldValidator()]],
-      lastName: ['', [Validators.required, textFieldValidator()]]
+      firstName: ['', [Validators.required, nameFieldValidator()]],
+      lastName: ['', [Validators.required, nameFieldValidator()]]
     });
   }
 
@@ -240,11 +240,11 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
   }
 
   get firstNameError(): string {
-    return getTextFieldError(this.f['firstName'], 'First name', this.submitted);
+    return getNameFieldError(this.f['firstName'], 'First name', this.submitted);
   }
 
   get lastNameError(): string {
-    return getTextFieldError(this.f['lastName'], 'Last name', this.submitted);
+    return getNameFieldError(this.f['lastName'], 'Last name', this.submitted);
   }
 
   navigateToAddAccount(): void {

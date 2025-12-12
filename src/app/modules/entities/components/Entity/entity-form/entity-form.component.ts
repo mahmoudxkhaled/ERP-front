@@ -8,7 +8,7 @@ import { EntitiesService } from '../../../services/entities.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { Roles } from 'src/app/core/models/system-roles';
-import { textFieldValidator, getTextFieldError } from 'src/app/core/validators/text-field.validator';
+import { textFieldValidator, getTextFieldError, nameFieldValidator, getNameFieldError } from 'src/app/core/validators/text-field.validator';
 import { Entity } from '../../../models/entities.model';
 
 type EntityFormContext = 'create' | 'update' | 'details';
@@ -107,8 +107,8 @@ export class EntityFormComponent implements OnInit, OnDestroy {
             parentEntityId: [0],
             isPersonal: [false],
             email: ['', [Validators.required, Validators.email]],
-            firstName: ['', [Validators.required, textFieldValidator()]],
-            lastName: ['', [Validators.required, textFieldValidator()]]
+            firstName: ['', [Validators.required, nameFieldValidator()]],
+            lastName: ['', [Validators.required, nameFieldValidator()]]
         });
     }
 
@@ -422,14 +422,14 @@ export class EntityFormComponent implements OnInit, OnDestroy {
         if (!this.showAccountSection) {
             return '';
         }
-        return getTextFieldError(this.f['firstName'], 'First name', this.submitted);
+        return getNameFieldError(this.f['firstName'], 'First name', this.submitted);
     }
 
     get lastNameError(): string {
         if (!this.showAccountSection) {
             return '';
         }
-        return getTextFieldError(this.f['lastName'], 'Last name', this.submitted);
+        return getNameFieldError(this.f['lastName'], 'Last name', this.submitted);
     }
 
     private handleBusinessError(context: EntityFormContext, response: any): void | null {

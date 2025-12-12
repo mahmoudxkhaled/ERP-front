@@ -1,15 +1,23 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
 /**
- * Regex pattern for validating text fields (Code, Name, Description)
- * Allows: letters (A–Z, a–z, any language letters), space, hyphen, apostrophe, dot, underscore
+ * Regex pattern for validating general text fields (Code, Description, etc.)
+ * Allows: letters (A–Z, a–z, any language letters), digits, space, hyphen, apostrophe, dot, underscore
  */
-export const TEXT_FIELD_PATTERN = /^[\p{L}\s'\-._]+$/u;
+export const TEXT_FIELD_PATTERN = /^[\p{L}\d\s'\-._]+$/u;
 
 /**
- * Standard error message for invalid format
+ * Regex pattern for validating name fields (First/Middle/Last)
+ * Allows: letters (A–Z, a–z, any language letters), space, hyphen, apostrophe, dot, underscore
+ * (Digits are NOT allowed here)
  */
-export const INVALID_FORMAT_MESSAGE = 'Only letters, spaces, hyphens (-), apostrophes (\'), dots (.), and underscores (_) are allowed.';
+export const NAME_FIELD_PATTERN = /^[\p{L}\s'\-._]+$/u;
+
+/**
+ * Standard error messages for invalid formats
+ */
+export const INVALID_FORMAT_MESSAGE = 'Only letters, numbers, spaces, hyphens (-), apostrophes (\'), dots (.), and underscores (_) are allowed.';
+export const NAME_INVALID_FORMAT_MESSAGE = 'Only letters, spaces, hyphens (-), apostrophes (\'), dots (.), and underscores (_) are allowed.';
 
 /**
  * Gets the regex pattern for text field validation
@@ -20,8 +28,8 @@ export function getTextFieldPattern(): RegExp {
 }
 
 /**
- * Validator function for text fields (Code, Name, Description, First Name, Last Name, etc.)
- * Allows: letters (A–Z, a–z, any language letters), space, hyphen, apostrophe, dot, underscore
+ * Validator function for general text fields (Code, Description, etc.)
+ * Allows: letters (A–Z, a–z, any language letters), digits, space, hyphen, apostrophe, dot, underscore
  * 
  * @returns ValidatorFn that returns null if valid, or { invalidFormat: true } if invalid
  * 
@@ -41,6 +49,24 @@ export function textFieldValidator(): ValidatorFn {
         }
 
         const isValid = TEXT_FIELD_PATTERN.test(control.value);
+        return isValid ? null : { invalidFormat: true };
+    };
+}
+
+/**
+ * Validator function for name fields (First, Middle, Last)
+ * Allows: letters (A–Z, a–z, any language letters), space, hyphen, apostrophe, dot, underscore
+ * (Digits are NOT allowed)
+ * 
+ * @returns ValidatorFn that returns null if valid, or { invalidFormat: true } if invalid
+ */
+export function nameFieldValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+        if (!control.value) {
+            return null;
+        }
+
+        const isValid = NAME_FIELD_PATTERN.test(control.value);
         return isValid ? null : { invalidFormat: true };
     };
 }
@@ -78,6 +104,30 @@ export function getTextFieldError(
     // Check for invalid format error
     if (control.errors?.['invalidFormat']) {
         return INVALID_FORMAT_MESSAGE;
+    }
+
+    return '';
+}
+
+/**
+ * Utility function to get validation error messages for name fields
+ * Handles both 'required' and 'invalidFormat' errors
+ */
+export function getNameFieldError(
+    control: AbstractControl | null | undefined,
+    fieldName: string,
+    showError: boolean
+): string {
+    if (!control || !showError) {
+        return '';
+    }
+
+    if (control.errors?.['required']) {
+        return `${fieldName} is required.`;
+    }
+
+    if (control.errors?.['invalidFormat']) {
+        return NAME_INVALID_FORMAT_MESSAGE;
     }
 
     return '';
