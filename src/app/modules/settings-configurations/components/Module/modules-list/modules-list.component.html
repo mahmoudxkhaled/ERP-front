@@ -1,0 +1,118 @@
+<div class="card">
+    <div class="flex justify-content-between align-items-center mb-4">
+        <h2>Manage Modules</h2>
+        <p-button (onClick)="navigateToNew()" [disabled]="!!(isLoading$ | async)">
+            <ng-container *ngIf="isLoading$ | async">
+                <span class="indicator-progress" [style.display]="'block'">
+                    Please wait
+                    <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
+                </span>
+            </ng-container>
+            <ng-container *ngIf="(isLoading$ | async) === false">
+                <span>Add New Module</span>
+            </ng-container>
+        </p-button>
+    </div>
+
+    <div #modulesTableContainer style="position: relative;">
+        <app-table-loading-spinner *ngIf="tableLoadingSpinner"></app-table-loading-spinner>
+        <p-table #modulesTable [value]="modules" [paginator]="true" [first]="first" [rows]="rows"
+            [rowsPerPageOptions]="[10, 25, 50, 100]" [showCurrentPageReport]="true" responsiveLayout="scroll"
+            [lazy]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            [loading]="!!(isLoading$ | async)" (onLazyLoad)="onPageChange($event)">
+
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Id</th>
+                    <th style="width: 100px;">Code</th>
+                    <th style="width: 200px;">Name</th>
+                    <th style="width: 200px;">Function</th>
+                    <th style="width: 100px;">Default Order</th>
+                    <th style="width: 200px;">URL</th>
+                    <th style="text-align: center !important;">Status</th>
+                    <th style="width: 150px; text-align: start !important;">Actions</th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-moduleItem>
+                <tr>
+                    <td>
+                        <p-tag [value]="'#' + moduleItem.id" severity="info"></p-tag>
+                    </td>
+                    <td>
+                        <span class="font-semibold text-lg">{{ moduleItem.code }}</span>
+                    </td>
+                    <td>
+                        <span style="cursor: pointer;" class="font-semibold"
+                            routerLink="/company-administration/settings-configurations/modules/{{ moduleItem.id }}">
+                            {{ moduleItem.name }}</span>
+                    </td>
+                    <td>
+                        <span class="text-600">{{ getFunctionName(moduleItem.functionId) }}</span>
+                    </td>
+                    <td>
+                        <span class="text-600">{{ moduleItem.defaultOrder || '—' }}</span>
+                    </td>
+                    <td>
+                        <span class="text-600">{{ moduleItem.url || '—' }}</span>
+                    </td>
+                    <td class="text-center">
+                        <p-tag [value]="moduleItem.isActive ? 'Active' : 'Inactive'"
+                            [severity]="moduleItem.isActive ? 'success' : 'danger'"></p-tag>
+                    </td>
+                    <td class="text-start">
+                        <button pButton pRipple type="button" icon="pi pi-ellipsis-v"
+                            class="p-button-rounded p-button-text p-button-plain"
+                            (click)="openMenu(rowMenu, moduleItem, $event)">
+                        </button>
+                        <p-menu #rowMenu [model]="menuItems" [popup]="true" [appendTo]="'body'"></p-menu>
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="8" class="text-center">No modules found</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+<p-toast></p-toast>
+
+<p-dialog [(visible)]="activateModuleDialog" [modal]="true" [style]="{ width: '500px' }" [closable]="true"
+    [draggable]="false" [resizable]="false">
+    <ng-template pTemplate="header">
+        <h3>{{ currentModuleForActivation?.isActive ? 'Deactivate Module' : 'Activate Module' }}</h3>
+    </ng-template>
+    <div class="flex flex-column gap-3">
+        <p>
+            Are you sure you want to <strong>{{ currentModuleForActivation?.isActive ? 'deactivate' : 'activate'
+                }}</strong>
+            <strong>{{ currentModuleForActivation?.name }}</strong>?
+        </p>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="onCancelActivationDialog()"
+            [disabled]="!!(isLoading$ | async)">
+        </p-button>
+        <p-button [severity]="currentModuleForActivation?.isActive ? 'danger' : 'success'"
+            (onClick)="activation(!currentModuleForActivation?.isActive)" [disabled]="!!(isLoading$ | async)">
+            <ng-container *ngIf="isLoading$ | async">
+                <span class="indicator-progress" [style.display]="'block'">
+                    Please wait
+                    <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
+                </span>
+            </ng-container>
+            <ng-container *ngIf="(isLoading$ | async) === false">
+                <span>{{ currentModuleForActivation?.isActive ? 'Deactivate' : 'Activate' }}</span>
+            </ng-container>
+        </p-button>
+    </ng-template>
+</p-dialog>
+
+<!-- Module Logo Dialog -->
+<app-module-logo [(visible)]="logoDialogVisible" [moduleId]="currentModuleForLogo?.id || 0"
+    [moduleName]="currentModuleForLogo?.name || ''" (logoUpdated)="onLogoUpdated()">
+</app-module-logo>

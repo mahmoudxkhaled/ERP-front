@@ -77,3 +77,61 @@ export interface Module {
     url?: string;
     isActive?: boolean;
 }
+
+/**
+ * Backend API Response Structure for Function Details
+ */
+export interface FunctionDetailsResponse {
+    success: boolean;
+    message?: FunctionBackend;
+}
+
+/**
+ * Backend API Response Structure for Function Create
+ */
+export interface FunctionCreateResponse {
+    success: boolean;
+    message?: {
+        Function_ID: number;
+    };
+}
+
+/**
+ * Backend API Response Structure for Function Logo
+ */
+export interface FunctionLogoResponse {
+    success: boolean;
+    message?: {
+        Image_Format: string;
+        Logo_Image: string; // base64 encoded
+    };
+}
+
+/**
+ * Backend API Response Structure for Module Details
+ */
+export interface ModuleDetailsResponse {
+    success: boolean;
+    message?: ModuleBackend;
+}
+
+/**
+ * Backend API Response Structure for Module Create
+ */
+export interface ModuleCreateResponse {
+    success: boolean;
+    message?: {
+        Module_ID: number;
+    };
+}
+
+/**
+ * Backend API Response Structure for Module Logo
+ */
+export interface ModuleLogoResponse {
+    success: boolean;
+    message?: {
+        Image_Format: string;
+        Logo_Image: string; // base64 encoded
+    };
+}
