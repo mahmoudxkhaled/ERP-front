@@ -339,6 +339,10 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
         this.router.navigate(['/company-administration/entities/list']);
     }
 
+    getEntityIdAsNumber(): number {
+        return Number(this.entityId) || 0;
+    }
+
     private handleBusinessError(context: string, response: any): void | null {
         const code = String(response?.message || '');
         const detail = this.getErrorMessage(context, code);

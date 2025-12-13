@@ -32,9 +32,9 @@
             <!-- Entity Role ID Field -->
             <div class="field p-fluid">
                 <label for="entityRoleId">Entity Role <span class="text-red-500">*</span></label>
-                <p-dropdown id="entityRoleId" formControlName="entityRoleId" [options]="entityRoleOptions"
-                    optionLabel="label" optionValue="value" placeholder="Select Entity Role"
-                    [disabled]="!selectedEntityForUpdate">
+                <p-dropdown appendTo="body" id="entityRoleId" formControlName="entityRoleId"
+                    [options]="entityRoleOptions" optionLabel="label" optionValue="value"
+                    placeholder="Select Entity Role" [disabled]="!selectedEntityForUpdate || loadingRoles">
                 </p-dropdown>
                 <small class="p-error"
                     *ngIf="updateEntityForm.get('entityRoleId')?.invalid && updateEntityForm.get('entityRoleId')?.touched">
@@ -42,6 +42,9 @@
                 </small>
                 <small class="text-500" *ngIf="!selectedEntityForUpdate">
                     Please select an entity first.
+                </small>
+                <small class="text-500" *ngIf="selectedEntityForUpdate && loadingRoles">
+                    Loading roles...
                 </small>
             </div>
         </div>

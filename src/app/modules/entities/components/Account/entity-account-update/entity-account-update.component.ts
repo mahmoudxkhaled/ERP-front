@@ -5,6 +5,7 @@ import { EntitiesService } from '../../../services/entities.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { Entity } from '../../../models/entities.model';
+import { RolesService } from 'src/app/modules/roles/services/roles.service';
 
 @Component({
   selector: 'app-entity-account-update',
@@ -32,6 +33,7 @@ export class EntityAccountUpdateComponent implements OnInit, OnChanges, OnDestro
 
   // Entity Role dropdown options
   entityRoleOptions: any[] = [];
+  loadingRoles: boolean = false;
 
   savingAccountEntity: boolean = false;
   accountSettings: IAccountSettings;
@@ -42,7 +44,8 @@ export class EntityAccountUpdateComponent implements OnInit, OnChanges, OnDestro
   constructor(
     private fb: FormBuilder,
     private entitiesService: EntitiesService,
-    private localStorageService: LocalStorageService
+    private localStorageService: LocalStorageService,
+    private rolesService: RolesService
   ) {
     this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
     this.isRegional = this.accountSettings?.Language !== 'English';
@@ -111,7 +114,10 @@ export class EntityAccountUpdateComponent implements OnInit, OnChanges, OnDestro
             entityRoleId: accountData.Entity_Role_ID || 0
           });
 
-          // Entity selection will happen when user opens the selection dialog
+          // Load roles for the current entity if entityId exists
+          if (currentEntityId && currentEntityId > 0) {
+            this.loadEntityRoles(currentEntityId);
+          }
         } else {
           this.updateEntityForm.patchValue({
             email: this.accountEmail,
@@ -201,7 +207,8 @@ export class EntityAccountUpdateComponent implements OnInit, OnChanges, OnDestro
   selectEntityForUpdate(entity: Entity): void {
     this.selectedEntityForUpdate = entity;
     this.updateEntityForm.patchValue({
-      entityId: Number(entity.id)
+      entityId: Number(entity.id),
+      entityRoleId: 0 // Clear role selection when entity changes
     });
     this.loadEntityRoles(Number(entity.id));
   }
@@ -220,11 +227,32 @@ export class EntityAccountUpdateComponent implements OnInit, OnChanges, OnDestro
   }
 
   loadEntityRoles(entityId: number): void {
-    // TODO: Replace with entity roles API when available
-    this.entityRoleOptions = [
-      { label: 'Entity Administrator', value: 15 },
-      { label: 'System User', value: 5 }
-    ];
+    if (!entityId || entityId === 0) {
+      this.entityRoleOptions = [];
+      return;
+    }
+
+    this.loadingRoles = true;
+    const sub = this.rolesService.listEntityRoles(entityId, 0, 100).subscribe({
+      next: (response: any) => {
+        if (response?.success) {
+          const rolesData = response?.message?.Entity_Roles || {};
+          this.entityRoleOptions = Object.values(rolesData).map((item: any) => ({
+            label: this.isRegional ? (item?.Title_Regional || item?.Title || '') : (item?.Title || ''),
+            value: item?.Entity_Role_ID || 0
+          }));
+        } else {
+          this.entityRoleOptions = [];
+        }
+        this.loadingRoles = false;
+      },
+      error: () => {
+        this.entityRoleOptions = [];
+        this.loadingRoles = false;
+      }
+    });
+
+    this.subscriptions.push(sub);
   }
 
   isEntitySelected(entity: Entity): boolean {

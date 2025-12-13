@@ -56,7 +56,6 @@ export class ApiService {
 
   // Call API function with bytes array in a JSON object
   callAPI(requestCode: number, accessToken: string, parameters: any[]): Observable<ApiResult> {
-    console.log('parameters', parameters);
     return this.callAPI_Array(this.packRequest(requestCode, accessToken, parameters));
   }
   callAPI_Array(bytes: Uint8Array): Observable<ApiResult> {

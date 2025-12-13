@@ -12,6 +12,7 @@
         "settings": "Settings",
         "logout": "Logout",
         "companyAdministration": "Company Administration",
+        "roles&Permissions": "Roles & Permissions",
         "companyDetails": "Company Details",
         "usersDetails": "Users Details",
         "workflows": "Workflows",
@@ -43,6 +44,14 @@
         "invoices": "Invoices"
     },
     "companyAdministration": {
+        "roles&Permissions": {
+            "title": "Roles & Permissions",
+            "actions": {
+                "add": "Add Role",
+                "edit": "Edit Role",
+                "delete": "Delete Role"
+            }
+        },
         "usersDetails": {
             "title": "Users Management",
             "actions": {
@@ -316,6 +325,7 @@
             "invoices": "Invoices",
             "sharedDocuments": "Shared Documents",
             "companyDetails": "Company Details",
+            "roles&Permissions": "Roles & Permissions",
             "usersDetails": "Users Details",
             "workflows": "Workflows",
             "newEntity": "New Entity",

@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { SharedModule } from 'src/app/Shared/shared/shared.module';
 import { EntitiesRoutingModule } from './entities-routing.module';
+import { RolesModule } from '../roles/roles.module';
 
 // Components
 import { EntityAccountAdminListComponent } from './components/Account/entity-account-admin-list/entity-account-admin-list.component';
@@ -27,6 +28,7 @@ import { EntityAccountUpdateComponent } from './components/Account/entity-accoun
     imports: [
         EntitiesRoutingModule,
         SharedModule,
+        RolesModule,
     ],
     providers: [MessageService]
 })

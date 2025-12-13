@@ -12,6 +12,7 @@
         "settings": "الإعدادات",
         "logout": "تسجيل الخروج",
         "companyAdministration": "إدارة الشركة",
+        "roles&Permissions": "الأدوار والصلاحيات",
         "companyDetails": "تفاصيل الشركة",
         "usersDetails": "تفاصيل المستخدمين",
         "workflows": "سير العمل",
@@ -43,6 +44,14 @@
         "invoices": "الفواتير"
     },
     "companyAdministration": {
+        "roles&Permissions": {
+            "title": "الأدوار والصلاحيات",
+            "actions": {
+                "add": "إضافة الدور",
+                "edit": "تعديل الدور",
+                "delete": "حذف الدور"
+            }
+        },
         "usersDetails": {
             "title": "إدارة المستخدمين",
             "actions": {
@@ -309,6 +318,7 @@
             "humanResources": "الموارد البشرية",
             "financials": "المالية",
             "companyAdministration": "إدارة الشركة",
+            "roles&Permissions": "الأدوار والصلاحيات",
             "actions": "الإجراءات",
             "settings": "الإعدادات",
             "logout": "تسجيل الخروج",

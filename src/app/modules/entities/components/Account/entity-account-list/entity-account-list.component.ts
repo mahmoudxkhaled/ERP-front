@@ -159,7 +159,7 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
           this.handleBusinessError('accounts', response);
           return;
         }
-
+        console.log(response);
         this.totalRecords = response.message.Total_Count;
         const accountsData = response?.message?.Accounts || {};
         this.mapAccountsData(accountsData);
