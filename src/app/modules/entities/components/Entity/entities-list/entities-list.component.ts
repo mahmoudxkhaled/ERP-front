@@ -36,6 +36,9 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
     rows: number = 10;
     totalRecords: number = 0;
 
+    // Text filter for server-side search
+    textFilter: string = '';
+
     constructor(
         private entitiesService: EntitiesService,
         private router: Router,
@@ -68,7 +71,7 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
         const currentPage = Math.floor(this.first / this.rows) + 1;
         const lastEntityId = -currentPage;
 
-        const sub = this.entitiesService.listEntities(lastEntityId, this.rows).subscribe({
+        const sub = this.entitiesService.listEntities(lastEntityId, this.rows, this.textFilter).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
                     this.handleBusinessError('list', response);
@@ -80,11 +83,9 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
                 const messageData = response.message.Entities;
                 entitiesData = {};
                 Object.keys(messageData).forEach((key) => {
-                    if (key !== "0") {
-                        const item = messageData[key];
-                        if (typeof item === 'object' && item !== null && item.Entity_ID !== undefined) {
-                            entitiesData[key] = item;
-                        }
+                    const item = messageData[key];
+                    if (typeof item === 'object' && item !== null && item.Entity_ID !== undefined) {
+                        entitiesData[key] = item;
                     }
                 });
 
@@ -246,10 +247,12 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
         this.router.navigate(['/company-administration/entities/new']);
     }
 
-    onSearchInput(event: Event, table: any): void {
+    onSearchInput(event: Event): void {
         const target = event.target as HTMLInputElement;
         const searchValue = target?.value || '';
-        table.filterGlobal(searchValue, 'contains');
+        this.textFilter = searchValue;
+        this.first = 0; // Reset to first page when filter changes
+        this.loadEntities(true);
     }
 
     getTypeLabel(entity: Entity): string {

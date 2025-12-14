@@ -29,7 +29,6 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
 
     accountSettings: IAccountSettings;
     isRegional: boolean = false;
-    editEntityDialogVisible: boolean = false;
 
     private subscriptions: Subscription[] = [];
 
@@ -202,7 +201,9 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
     }
 
     openEditEntityDialog(): void {
-        this.editEntityDialogVisible = true;
+        if (this.entityId) {
+            this.router.navigate(['/company-administration/entities', this.entityId, 'edit']);
+        }
     }
 
     handleEntityUpdated(): void {
@@ -336,6 +337,10 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
 
     navigateBack(): void {
         this.router.navigate(['/company-administration/entities/list']);
+    }
+
+    getEntityIdAsNumber(): number {
+        return Number(this.entityId) || 0;
     }
 
     private handleBusinessError(context: string, response: any): void | null {

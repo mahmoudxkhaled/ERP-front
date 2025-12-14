@@ -12,6 +12,7 @@
         "settings": "الإعدادات",
         "logout": "تسجيل الخروج",
         "companyAdministration": "إدارة الشركة",
+        "roles&Permissions": "الأدوار والصلاحيات",
         "companyDetails": "تفاصيل الشركة",
         "usersDetails": "تفاصيل المستخدمين",
         "workflows": "سير العمل",
@@ -43,6 +44,14 @@
         "invoices": "الفواتير"
     },
     "companyAdministration": {
+        "roles&Permissions": {
+            "title": "الأدوار والصلاحيات",
+            "actions": {
+                "add": "إضافة الدور",
+                "edit": "تعديل الدور",
+                "delete": "حذف الدور"
+            }
+        },
         "usersDetails": {
             "title": "إدارة المستخدمين",
             "actions": {
@@ -79,8 +88,12 @@
         "title": "الإعدادات",
         "description": "إدارة إعدادات التطبيق",
         "tabs": {
+            "accountSettings": "إعدادات الحساب",
             "layoutTheme": "إعدادات التخطيط والسمة",
-            "incoming": "الإعدادات القادمة"
+            "dashboard": "إعدادات لوحة التحكم",
+            "incoming": "الإعدادات القادمة",
+            "entitySettings": "إعدادات الكيان",
+            "systemSettings": "إعدادات النظام"
         },
         "sections": {
             "general": "الإعدادات العامة",
@@ -116,6 +129,47 @@
             "saveSuccess": "تم حفظ الإعدادات بنجاح",
             "resetInfo": "تم إعادة تعيين الإعدادات إلى القيم الافتراضية",
             "cancelInfo": "تم إرجاع الإعدادات إلى آخر حالة محفوظة"
+        },
+        "entitySettings": {
+            "title": "إعدادات الكيان",
+            "noSettings": "لا توجد إعدادات كيان",
+            "noSettingsNote": "لا توجد إعدادات كيان مُكوّنة بعد. استخدم الإعدادات المقترحة أدناه كمرجع.",
+            "recommendedSettings": "الإعدادات المقترحة",
+            "recommendedSettingsNote": "هذه الإعدادات مقترحة ولكن لم يتم تنفيذها في الـ API بعد. معطلة حالياً.",
+            "defaultLanguage": "اللغة الافتراضية",
+            "layoutPreference": "تفضيل التخطيط",
+            "appearanceTheme": "سمة المظهر",
+            "dateFormat": "تنسيق التاريخ",
+            "timeFormat": "تنسيق الوقت",
+            "currency": "العملة",
+            "selectLanguage": "اختر اللغة",
+            "selectLayout": "اختر التخطيط",
+            "selectTheme": "اختر السمة",
+            "selectDateFormat": "اختر تنسيق التاريخ",
+            "selectTimeFormat": "اختر تنسيق الوقت",
+            "selectCurrency": "اختر العملة",
+            "saveSuccess": "تم حفظ إعدادات الكيان بنجاح"
+        },
+        "systemSettings": {
+            "title": "إعدادات النظام",
+            "securitySettings": "إعدادات الأمان",
+            "passwordPolicy": "سياسة كلمة المرور",
+            "sessionValidity": "صلاحية الجلسة (بالدقائق)",
+            "sessionValidityHint": "فترة صلاحية الجلسة بالدقائق",
+            "resetPasswordTokenValidity": "صلاحية رمز إعادة تعيين كلمة المرور (بالدقائق)",
+            "resetPasswordTokenValidityHint": "فترة صلاحية رمز إعادة تعيين كلمة المرور بالدقائق",
+            "recommendedSettings": "الإعدادات المقترحة",
+            "recommendedSettingsNote": "هذه الإعدادات مقترحة ولكن لم يتم تنفيذها في الـ API بعد. معطلة حالياً.",
+            "tokenExpiry": "انتهاء صلاحية الرمز المميز (بالدقائق)",
+            "otpExpiry": "انتهاء صلاحية OTP (بالدقائق)",
+            "sessionTimeout": "انتهاء الجلسة (بالدقائق)",
+            "maxLoginAttempts": "الحد الأقصى لمحاولات تسجيل الدخول",
+            "passwordMinLength": "الحد الأدنى لطول كلمة المرور",
+            "passwordRequireUppercase": "يتطلب أحرف كبيرة",
+            "passwordRequireLowercase": "يتطلب أحرف صغيرة",
+            "passwordRequireNumbers": "يتطلب أرقام",
+            "passwordRequireSpecialChars": "يتطلب أحرف خاصة",
+            "saveSuccess": "تم حفظ إعدادات النظام بنجاح"
         }
     },
     "profile": {
@@ -264,6 +318,7 @@
             "humanResources": "الموارد البشرية",
             "financials": "المالية",
             "companyAdministration": "إدارة الشركة",
+            "roles&Permissions": "الأدوار والصلاحيات",
             "actions": "الإجراءات",
             "settings": "الإعدادات",
             "logout": "تسجيل الخروج",
@@ -316,7 +371,8 @@
             "saveChanges": "حفظ التغييرات",
             "resetToDefaults": "إعادة تعيين إلى الافتراضي",
             "unsavedChangesWarning": "لديك تغييرات غير محفوظة. انقر على \"حفظ التغييرات\" لحفظها.",
-            "settingsSavedSuccess": "تم حفظ الإعدادات بنجاح"
+            "settingsSavedSuccess": "تم حفظ الإعدادات بنجاح",
+            "settingsResetSuccess": "تم إعادة تعيين الإعدادات بنجاح"
         }
     },
 

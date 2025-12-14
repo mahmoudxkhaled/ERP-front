@@ -149,11 +149,13 @@
                 <app-entity-account-admin-list [entityId]="entityId" (adminCreated)="handleEntityUpdated()"
                     (adminUpdated)="handleEntityUpdated()"></app-entity-account-admin-list>
             </p-tabPanel>
+
+            <!-- Tab 4: Roles & Permissions -->
+            <p-tabPanel header="Roles & Permissions">
+                <app-roles-list [entityId]="getEntityIdAsNumber()"></app-roles-list>
+            </p-tabPanel>
         </p-tabView>
     </div>
 </div>
-
-<app-edit-entity-dialog [entityId]="entityId" [entityName]="getEntityName()" [(visible)]="editEntityDialogVisible"
-    (saved)="handleEntityUpdated()"></app-edit-entity-dialog>
 
 <p-toast></p-toast>

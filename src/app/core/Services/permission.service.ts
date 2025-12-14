@@ -45,6 +45,18 @@ const PERMISSION_MATRIX = {
     Update_Account_Details: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator, Roles.SystemUser],
     Update_Account_Email: [Roles.Developer, Roles.SystemAdministrator],
     Update_Account_Entity: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator],
+
+    // Entity Settings APIs (780-784)
+    Set_Default_Entity_Settings: [Roles.Developer, Roles.SystemAdministrator],
+    Get_Default_Entity_Settings: [Roles.Developer, Roles.SystemAdministrator],
+    Set_Entity_Settings: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator],
+    Get_Entity_Settings: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator],
+    Remove_Entity_Setting: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator],
+
+    // System Settings APIs (730-732)
+    Set_ERP_System_Settings: [Roles.Developer, Roles.SystemAdministrator],
+    Get_ERP_System_Settings: [Roles.Developer, Roles.SystemAdministrator],
+    Remove_ERP_System_Setting: [Roles.Developer, Roles.SystemAdministrator],
 } as const;
 
 export type PermissionAction = keyof typeof PERMISSION_MATRIX;

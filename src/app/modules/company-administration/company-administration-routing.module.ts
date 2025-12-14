@@ -11,6 +11,14 @@ const routes: Routes = [
         path: 'entities',
         loadChildren: () => import('../entities/entities.module').then((m) => m.EntitiesModule)
     },
+    {
+        path: 'roles',
+        loadChildren: () => import('../roles/roles.module').then((m) => m.RolesModule)
+    },
+    {
+        path: 'settings-configurations',
+        loadChildren: () => import('../settings-configurations/settings-configurations.module').then((m) => m.SettingsConfigurationsModule)
+    },
     { path: 'users-details', component: UsersDetailsComponent, data: { breadcrumb: 'usersDetails' } },
     { path: 'workflows', component: WorkflowsComponent, data: { breadcrumb: 'workflows' } }
 ];

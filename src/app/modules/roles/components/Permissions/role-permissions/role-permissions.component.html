@@ -1,0 +1,159 @@
+<p-dialog [(visible)]="visible" [modal]="true" [closable]="true" [draggable]="false" [resizable]="false"
+    (onClose)="closeDialog()" [style]="{ width: '900px' }">
+    <ng-template pTemplate="header">
+        <div class="dialog-header">
+            <i class="pi pi-cog mr-2 text-primary"></i>
+            <div>
+                <div class="title">Manage Permissions</div>
+                <small class="subtitle">{{ roleTitle || 'Current Role' }}</small>
+            </div>
+        </div>
+    </ng-template>
+
+    <div class="permissions-content" *ngIf="!loading">
+        <div class="grid">
+            <!-- Functions Section -->
+            <div class="col-12 md:col-6">
+                <p-panel header="Functions" [toggleable]="false">
+                    <div class="flex flex-column gap-3">
+                        <!-- Wildcard Toggle -->
+                        <div class="flex align-items-center gap-2">
+                            <p-inputSwitch [(ngModel)]="functionsWildcard" (onChange)="toggleFunctionsWildcard()"
+                                [disabled]="saving"></p-inputSwitch>
+                            <label class="font-medium">
+                                Allow All Functions
+                                <small class="text-500 block">(Wildcard Mode)</small>
+                            </label>
+                        </div>
+
+                        <!-- Info Message -->
+                        <div *ngIf="functionsWildcard" class="p-3 border-round surface-border"
+                            style="background: var(--blue-50); border-left: 4px solid var(--blue-500);">
+                            <div class="flex align-items-start gap-2">
+                                <i class="pi pi-info-circle text-blue-500 mt-1"></i>
+                                <div>
+                                    <p class="text-blue-700 font-semibold m-0 mb-1">Wildcard Mode Active</p>
+                                    <p class="text-blue-600 m-0 text-sm">
+                                        All functions are allowed. Select functions below to create exceptions (deny
+                                        specific functions).
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Functions Multi-Select -->
+                        <div class="field">
+                            <label>{{ functionsWildcard ? 'Exceptions (Deny These)' : 'Allowed Functions' }}</label>
+                            <p-multiSelect [options]="availableFunctions" [(ngModel)]="selectedFunctions" optionLabel=""
+                                [disabled]="saving" [showClear]="true" [filter]="true" placeholder="Select functions"
+                                display="chip">
+                                <ng-template let-option pTemplate="item">
+                                    Function #{{ option }}
+                                </ng-template>
+                                <ng-template let-option pTemplate="selectedItem">
+                                    #{{ option }}
+                                </ng-template>
+                            </p-multiSelect>
+                        </div>
+
+                        <!-- Selected Functions Display -->
+                        <div *ngIf="selectedFunctions.length > 0" class="selected-items">
+                            <small class="text-500 block mb-2">
+                                {{ functionsWildcard ? 'Exceptions' : 'Selected' }} ({{ selectedFunctions.length }})
+                            </small>
+                            <div class="flex flex-wrap gap-2">
+                                <p-tag *ngFor="let funcId of selectedFunctions" [value]="'#' + funcId"
+                                    [severity]="functionsWildcard ? 'danger' : 'info'"></p-tag>
+                            </div>
+                        </div>
+                    </div>
+                </p-panel>
+            </div>
+
+            <!-- Modules Section -->
+            <div class="col-12 md:col-6">
+                <p-panel header="Modules" [toggleable]="false">
+                    <div class="flex flex-column gap-3">
+                        <!-- Wildcard Toggle -->
+                        <div class="flex align-items-center gap-2">
+                            <p-inputSwitch [(ngModel)]="modulesWildcard" (onChange)="toggleModulesWildcard()"
+                                [disabled]="saving"></p-inputSwitch>
+                            <label class="font-medium">
+                                Allow All Modules
+                                <small class="text-500 block">(Wildcard Mode)</small>
+                            </label>
+                        </div>
+
+                        <!-- Info Message -->
+                        <div *ngIf="modulesWildcard" class="p-3 border-round surface-border"
+                            style="background: var(--blue-50); border-left: 4px solid var(--blue-500);">
+                            <div class="flex align-items-start gap-2">
+                                <i class="pi pi-info-circle text-blue-500 mt-1"></i>
+                                <div>
+                                    <p class="text-blue-700 font-semibold m-0 mb-1">Wildcard Mode Active</p>
+                                    <p class="text-blue-600 m-0 text-sm">
+                                        All modules are allowed. Select modules below to create exceptions (deny
+                                        specific
+                                        modules).
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modules Multi-Select -->
+                        <div class="field">
+                            <label>{{ modulesWildcard ? 'Exceptions (Deny These)' : 'Allowed Modules' }}</label>
+                            <p-multiSelect [options]="availableModules" [(ngModel)]="selectedModules" optionLabel=""
+                                [disabled]="saving" [showClear]="true" [filter]="true" placeholder="Select modules"
+                                display="chip">
+                                <ng-template let-option pTemplate="item">
+                                    Module #{{ option }}
+                                </ng-template>
+                                <ng-template let-option pTemplate="selectedItem">
+                                    #{{ option }}
+                                </ng-template>
+                            </p-multiSelect>
+                        </div>
+
+                        <!-- Selected Modules Display -->
+                        <div *ngIf="selectedModules.length > 0" class="selected-items">
+                            <small class="text-500 block mb-2">
+                                {{ modulesWildcard ? 'Exceptions' : 'Selected' }} ({{ selectedModules.length }})
+                            </small>
+                            <div class="flex flex-wrap gap-2">
+                                <p-tag *ngFor="let moduleId of selectedModules" [value]="'#' + moduleId"
+                                    [severity]="modulesWildcard ? 'danger' : 'success'"></p-tag>
+                            </div>
+                        </div>
+                    </div>
+                </p-panel>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="flex justify-content-center align-items-center" style="min-height: 300px;">
+        <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <div class="dialog-footer">
+            <p-button label="Cancel" icon="pi pi-times" styleClass="p-button-text" (onClick)="closeDialog()"
+                [disabled]="saving"></p-button>
+            <p-button type="submit" [disabled]="saving" (onClick)="savePermissions()">
+                <ng-container *ngIf="saving">
+                    <span class="indicator-progress" [style.display]="'block'">
+                        <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
+                        Saving...
+                    </span>
+                </ng-container>
+                <ng-container *ngIf="saving === false">
+                    <i class="pi pi-check mx-1" style="font-size: 1rem"></i>
+                    <span>Save Permissions</span>
+                </ng-container>
+            </p-button>
+        </div>
+    </ng-template>
+</p-dialog>
+
+<p-toast></p-toast>

@@ -12,6 +12,7 @@
         "settings": "Settings",
         "logout": "Logout",
         "companyAdministration": "Company Administration",
+        "roles&Permissions": "Roles & Permissions",
         "companyDetails": "Company Details",
         "usersDetails": "Users Details",
         "workflows": "Workflows",
@@ -43,6 +44,14 @@
         "invoices": "Invoices"
     },
     "companyAdministration": {
+        "roles&Permissions": {
+            "title": "Roles & Permissions",
+            "actions": {
+                "add": "Add Role",
+                "edit": "Edit Role",
+                "delete": "Delete Role"
+            }
+        },
         "usersDetails": {
             "title": "Users Management",
             "actions": {
@@ -79,8 +88,12 @@
         "title": "Settings",
         "description": "Manage your application settings",
         "tabs": {
+            "accountSettings": "Account Settings",
             "layoutTheme": "Layout & Theme Settings",
-            "incoming": "Incoming Settings"
+            "dashboard": "Dashboard Settings",
+            "incoming": "Incoming Settings",
+            "entitySettings": "Entity Settings",
+            "systemSettings": "System Settings"
         },
         "sections": {
             "general": "General Settings",
@@ -116,6 +129,47 @@
             "saveSuccess": "Settings saved successfully",
             "resetInfo": "Settings have been reset to default values",
             "cancelInfo": "Settings have been reverted to last saved state"
+        },
+        "entitySettings": {
+            "title": "Entity Settings",
+            "noSettings": "No Entity Settings Found",
+            "noSettingsNote": "There are no entity settings configured yet. Use the recommended settings below as a reference.",
+            "recommendedSettings": "Recommended Settings",
+            "recommendedSettingsNote": "These settings are recommended but not yet implemented in the API. They are disabled for now.",
+            "defaultLanguage": "Default Language",
+            "layoutPreference": "Layout Preference",
+            "appearanceTheme": "Appearance Theme",
+            "dateFormat": "Date Format",
+            "timeFormat": "Time Format",
+            "currency": "Currency",
+            "selectLanguage": "Select Language",
+            "selectLayout": "Select Layout",
+            "selectTheme": "Select Theme",
+            "selectDateFormat": "Select Date Format",
+            "selectTimeFormat": "Select Time Format",
+            "selectCurrency": "Select Currency",
+            "saveSuccess": "Entity settings saved successfully"
+        },
+        "systemSettings": {
+            "title": "System Settings",
+            "securitySettings": "Security Settings",
+            "passwordPolicy": "Password Policy",
+            "sessionValidity": "Session Validity (minutes)",
+            "sessionValidityHint": "Session validity period in minutes",
+            "resetPasswordTokenValidity": "Reset Password Token Validity (minutes)",
+            "resetPasswordTokenValidityHint": "Reset password token validity period in minutes",
+            "recommendedSettings": "Recommended Settings",
+            "recommendedSettingsNote": "These settings are recommended but not yet implemented in the API. They are disabled for now.",
+            "tokenExpiry": "Token Expiry (minutes)",
+            "otpExpiry": "OTP Expiry (minutes)",
+            "sessionTimeout": "Session Timeout (minutes)",
+            "maxLoginAttempts": "Max Login Attempts",
+            "passwordMinLength": "Password Minimum Length",
+            "passwordRequireUppercase": "Require Uppercase Letters",
+            "passwordRequireLowercase": "Require Lowercase Letters",
+            "passwordRequireNumbers": "Require Numbers",
+            "passwordRequireSpecialChars": "Require Special Characters",
+            "saveSuccess": "System settings saved successfully"
         }
     },
     "profile": {
@@ -271,6 +325,7 @@
             "invoices": "Invoices",
             "sharedDocuments": "Shared Documents",
             "companyDetails": "Company Details",
+            "roles&Permissions": "Roles & Permissions",
             "usersDetails": "Users Details",
             "workflows": "Workflows",
             "newEntity": "New Entity",
@@ -315,7 +370,8 @@
             "saveChanges": "Save Changes",
             "resetToDefaults": "Reset to Defaults",
             "unsavedChangesWarning": "You have unsaved changes. Click \"Save Changes\" to persist them.",
-            "settingsSavedSuccess": "Settings saved successfully"
+            "settingsSavedSuccess": "Settings saved successfully",
+            "settingsResetSuccess": "Settings reset successfully"
         },
         "support-tabmenu": {
             "taps": {

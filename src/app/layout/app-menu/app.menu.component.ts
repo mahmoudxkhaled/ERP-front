@@ -95,6 +95,25 @@ export class AppMenuComponent implements OnInit {
                         icon: 'fa fa-sync-alt',
                         routerLink: ['/company-administration/workflows']
                     },
+                    {
+                        label: 'Settings & Configurations',
+                        hasPermession: true,
+                        icon: 'fa fa-cog',
+                        items: [
+                            {
+                                label: 'ERP Functions',
+                                hasPermession: true,
+                                icon: 'fa fa-puzzle-piece',
+                                routerLink: ['/company-administration/settings-configurations/functions/list']
+                            },
+                            {
+                                label: 'ERP Modules',
+                                hasPermession: true,
+                                icon: 'fa fa-cubes',
+                                routerLink: ['/company-administration/settings-configurations/modules/list']
+                            }
+                        ]
+                    },
                 ],
             },
             {

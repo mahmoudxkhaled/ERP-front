@@ -1,0 +1,106 @@
+<div class="card">
+    <div class="flex justify-content-between align-items-center mb-4">
+        <h2>Manage Roles</h2>
+        <p-button (onClick)="navigateToNew()" [disabled]="!!(isLoading$ | async)">
+            <ng-container *ngIf="isLoading$ | async">
+                <span class="indicator-progress" [style.display]="'block'">
+                    Please wait
+                    <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
+                </span>
+            </ng-container>
+            <ng-container *ngIf="(isLoading$ | async) === false">
+                <span>Add New Role</span>
+            </ng-container>
+        </p-button>
+    </div>
+
+    <div class=" " style="position: relative;">
+        <app-table-loading-spinner *ngIf="tableLoadingSpinner"></app-table-loading-spinner>
+        <p-table #rolesTable [value]="roles" [paginator]="true" [first]="first" [rows]="rows"
+            [rowsPerPageOptions]="[10, 25, 50, 100]" [totalRecords]="totalRecords" [showCurrentPageReport]="true"
+            responsiveLayout="scroll" [lazy]="true"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            [loading]="!!(isLoading$ | async)" (onLazyLoad)="onPageChange($event)">
+
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Id</th>
+                    <th style="width: 200px;">Title</th>
+                    <th style="width: 300px;">Description</th>
+                    <th style="width: 150px; text-align: start !important;">Actions</th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-role>
+                <tr>
+                    <td>
+                        <div>
+                            <p-tag [value]="'#' + role.id" severity="info"></p-tag>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="flex flex-column">
+                            <span style="cursor: pointer;" class="font-semibold name-text"
+                                routerLink="/company-administration/roles/{{ role.id }}">
+                                {{ role.title }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="text-600 line-height-3 description-text">{{ role.description || 'No description
+                            provided.' }}</span>
+                    </td>
+                    <td class="text-start">
+                        <button pButton pRipple type="button" icon="pi pi-ellipsis-v"
+                            class="p-button-rounded p-button-text p-button-plain"
+                            (click)="openMenu(rowMenu, role, $event)" [disabled]="menuItems.length === 0">
+                        </button>
+                        <p-menu #rowMenu [model]="menuItems" [popup]="true" [appendTo]="'body'"></p-menu>
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="4" class="text-center">No roles found</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+<p-toast></p-toast>
+
+<p-dialog [(visible)]="deleteRoleDialog" [modal]="true" [style]="{ width: '450px' }" [closable]="true"
+    [draggable]="false" [resizable]="false">
+    <ng-template pTemplate="header">
+        <h3>Delete Role</h3>
+    </ng-template>
+    <div class="flex flex-column gap-3">
+        <p>
+            Are you sure you want to delete <strong>{{ currentRoleForDelete?.title }}</strong>?
+        </p>
+        <p class="text-red-500 font-semibold">This action cannot be undone.</p>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="onCancelDeleteDialog()"
+            [disabled]="!!(isLoading$ | async)">
+        </p-button>
+        <p-button class="p-button-danger" (onClick)="deleteRole()" [disabled]="!!(isLoading$ | async)">
+            <ng-container *ngIf="isLoading$ | async">
+                <span class="indicator-progress" [style.display]="'block'">
+                    Please wait
+                    <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
+                </span>
+            </ng-container>
+            <ng-container *ngIf="(isLoading$ | async) === false">
+                <span>Delete</span>
+            </ng-container>
+        </p-button>
+    </ng-template>
+</p-dialog>
+
+<!-- Assign Role to Account Dialog -->
+<app-assign-role-to-account [(visible)]="assignToAccountDialogVisible" [roleId]="currentRoleForAssignment?.id || ''"
+    [roleTitle]="currentRoleForAssignment?.title || ''" [entityId]="entityIdForTemplate" (assigned)="onRoleAssigned()"
+    (visibleChange)="onAssignDialogClose()">
+</app-assign-role-to-account>

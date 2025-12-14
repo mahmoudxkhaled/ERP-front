@@ -352,16 +352,24 @@ export class AppConfigComponent implements OnInit {
             detail: this.translate.getInstant('layout.config.settingsSavedSuccess'),
             life: 3000
         });
+        this.isSaving = false;
 
         // Wait a bit to show the spinner and message, then reload
-        setTimeout(() => {
-            window.location.reload();
-        }, 1500);
+        // setTimeout(() => {
+        //     window.location.reload();
+        // }, 1500);
     }
 
     resetToDefaults() {
         // Reset to default configuration using LayoutService
         this.layoutService.resetConfigToDefaults();
         this.hasUnsavedChanges = false; // Reset after resetting
+
+        this.messageService.add({
+            severity: 'success',
+            summary: this.translate.getInstant('shared.messages.success'),
+            detail: this.translate.getInstant('layout.config.settingsResetSuccess'),
+            life: 3000
+        });
     }
 }

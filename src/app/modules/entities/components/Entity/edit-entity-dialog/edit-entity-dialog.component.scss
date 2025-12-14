@@ -35,3 +35,12 @@
     gap: 0.5rem;
 }
 
+// Selected row highlight for parent entity selection
+::ng-deep .selected-row {
+    background-color: var(--primary-50) !important;
+}
+
+::ng-deep .selected-row:hover {
+    background-color: var(--primary-100) !important;
+}
+
