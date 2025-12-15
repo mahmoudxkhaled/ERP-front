@@ -23,7 +23,8 @@
 
             <ng-template pTemplate="header">
                 <tr>
-                    <th>Id</th>
+                    <th style="width: 40px;">Id</th>
+
                     <th style="width: 100px;">Code</th>
                     <th style="width: 200px;">Name</th>
                     <th style="width: 100px;">Default Order</th>
@@ -53,8 +54,9 @@
                         <span class="text-600">{{ functionItem.url || '—' }}</span>
                     </td>
                     <td class="text-center">
-                        <p-tag [value]="functionItem.isActive ? 'Active' : 'Inactive'"
-                            [severity]="functionItem.isActive ? 'success' : 'danger'"></p-tag>
+                        <p-inputSwitch [formControl]="activationControls[functionItem.id]"
+                            (onChange)="onStatusToggle(functionItem)">
+                        </p-inputSwitch>
                     </td>
                     <td class="text-start">
                         <button pButton pRipple type="button" icon="pi pi-ellipsis-v"
@@ -83,11 +85,21 @@
         <h3>{{ currentFunctionForActivation?.isActive ? 'Deactivate Function' : 'Activate Function' }}</h3>
     </ng-template>
     <div class="flex flex-column gap-3">
-        <p>
-            Are you sure you want to <strong>{{ currentFunctionForActivation?.isActive ? 'deactivate' : 'activate'
-                }}</strong>
-            <strong>{{ currentFunctionForActivation?.name }}</strong>?
-        </p>
+        <!-- Activation Message -->
+        <ng-container *ngIf="!currentFunctionForActivation?.isActive">
+            <p>
+                Are you sure you want to <strong>activate</strong> <strong>{{ currentFunctionForActivation?.name
+                    }}</strong>?
+            </p>
+        </ng-container>
+
+        <!-- Deactivation Message -->
+        <ng-container *ngIf="currentFunctionForActivation?.isActive">
+            <p>
+                Are you sure you want to <strong>deactivate</strong> <strong>{{ currentFunctionForActivation?.name
+                    }}</strong>?
+            </p>
+        </ng-container>
     </div>
     <ng-template pTemplate="footer">
         <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="onCancelActivationDialog()"

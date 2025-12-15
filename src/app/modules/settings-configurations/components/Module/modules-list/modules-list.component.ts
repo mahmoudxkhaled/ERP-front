@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Observable, Subscription } from 'rxjs';
@@ -29,6 +30,7 @@ export class ModulesListComponent implements OnInit, OnDestroy {
     currentModuleForActivation?: Module;
     logoDialogVisible: boolean = false;
     currentModuleForLogo?: Module;
+    activationControls: Record<number, FormControl<boolean>> = {};
 
     // Pagination (handled by PrimeNG automatically)
     first: number = 0;
@@ -87,12 +89,22 @@ export class ModulesListComponent implements OnInit, OnDestroy {
 
                 // Parse modules list
                 this.modules = this.settingsConfigurationsService.parseModulesList(response, isRegional);
-                // totalRecords will be calculated by getFilteredModules().length in the template
+                this.buildActivationControls();
             },
             complete: () => this.resetLoadingFlags()
         });
 
         this.subscriptions.push(sub);
+    }
+
+    buildActivationControls(): void {
+        this.activationControls = {};
+        this.modules.forEach((moduleItem) => {
+            this.activationControls[moduleItem.id] = new FormControl<boolean>(
+                moduleItem.isActive ?? true,
+                { nonNullable: true }
+            );
+        });
     }
 
     onPageChange(event: any): void {
@@ -128,24 +140,36 @@ export class ModulesListComponent implements OnInit, OnDestroy {
         menuRef.toggle(event);
     }
 
-    confirmActivation(moduleItem: Module): void {
+    onStatusToggle(moduleItem: Module): void {
         this.currentModuleForActivation = moduleItem;
         this.activateModuleDialog = true;
     }
 
     onCancelActivationDialog(): void {
         this.activateModuleDialog = false;
+        if (this.currentModuleForActivation) {
+            const control = this.activationControls[this.currentModuleForActivation.id];
+            if (control) {
+                control.setValue(this.currentModuleForActivation.isActive ?? true, { emitEvent: false });
+            }
+        }
         this.currentModuleForActivation = undefined;
     }
 
-    activation(isActivate: boolean): void {
+    activation(value: boolean): void {
         if (!this.currentModuleForActivation) {
             return;
         }
 
         const moduleItem = this.currentModuleForActivation;
-        const action = isActivate ? 'activate' : 'deactivate';
-        const apiCall = isActivate
+        const control = this.activationControls[moduleItem.id];
+        if (!control) {
+            return;
+        }
+
+        control.disable();
+        const action = value ? 'activate' : 'deactivate';
+        const apiCall = value
             ? this.settingsConfigurationsService.activateModule(moduleItem.id)
             : this.settingsConfigurationsService.deactivateModule(moduleItem.id);
 
@@ -153,6 +177,7 @@ export class ModulesListComponent implements OnInit, OnDestroy {
             next: (response: any) => {
                 if (!response?.success) {
                     this.handleBusinessError(action, response);
+                    control.setValue(!value, { emitEvent: false });
                     this.activateModuleDialog = false;
                     return;
                 }
@@ -160,13 +185,15 @@ export class ModulesListComponent implements OnInit, OnDestroy {
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Success',
-                    detail: `Module "${moduleItem.name}" ${isActivate ? 'activated' : 'deactivated'} successfully.`,
+                    detail: `Module "${moduleItem.name}" ${value ? 'activated' : 'deactivated'} successfully.`,
                     life: 3000
                 });
+                moduleItem.isActive = value;
                 this.activateModuleDialog = false;
                 this.loadModules(true);
             },
             complete: () => {
+                control.enable();
                 this.currentModuleForActivation = undefined;
             }
         });
@@ -214,11 +241,6 @@ export class ModulesListComponent implements OnInit, OnDestroy {
                 icon: 'pi pi-image',
                 command: () => this.currentModule && this.openLogoDialog(this.currentModule)
             },
-            {
-                label: 'Activate/Deactivate',
-                icon: 'pi pi-power-off',
-                command: () => this.currentModule && this.confirmActivation(this.currentModule)
-            }
         ];
     }
 
