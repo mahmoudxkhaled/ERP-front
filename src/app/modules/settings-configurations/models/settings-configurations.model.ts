@@ -103,7 +103,7 @@ export interface FunctionLogoResponse {
     success: boolean;
     message?: {
         Image_Format: string;
-        Logo_Image: string; // base64 encoded
+        Image: string; // base64 encoded
     };
 }
 
@@ -132,6 +132,6 @@ export interface ModuleLogoResponse {
     success: boolean;
     message?: {
         Image_Format: string;
-        Logo_Image: string; // base64 encoded
+        Image: string; // base64 encoded
     };
 }

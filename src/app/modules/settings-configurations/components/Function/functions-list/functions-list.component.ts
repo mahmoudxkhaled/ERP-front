@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Observable, Subscription } from 'rxjs';
@@ -28,6 +29,7 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
     currentFunctionForActivation?: Function;
     logoDialogVisible: boolean = false;
     currentFunctionForLogo?: Function;
+    activationControls: Record<number, FormControl<boolean>> = {};
 
     // Pagination (handled by PrimeNG automatically)
     first: number = 0;
@@ -69,11 +71,22 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
 
                 // Parse functions list
                 this.functions = this.settingsConfigurationsService.parseFunctionsList(response, isRegional);
+                this.buildActivationControls();
             },
             complete: () => this.resetLoadingFlags()
         });
 
         this.subscriptions.push(sub);
+    }
+
+    buildActivationControls(): void {
+        this.activationControls = {};
+        this.functions.forEach((functionItem) => {
+            this.activationControls[functionItem.id] = new FormControl<boolean>(
+                functionItem.isActive ?? true,
+                { nonNullable: true }
+            );
+        });
     }
 
     onPageChange(event: any): void {
@@ -109,24 +122,36 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
         menuRef.toggle(event);
     }
 
-    confirmActivation(functionItem: Function): void {
+    onStatusToggle(functionItem: Function): void {
         this.currentFunctionForActivation = functionItem;
         this.activateFunctionDialog = true;
     }
 
     onCancelActivationDialog(): void {
         this.activateFunctionDialog = false;
+        if (this.currentFunctionForActivation) {
+            const control = this.activationControls[this.currentFunctionForActivation.id];
+            if (control) {
+                control.setValue(this.currentFunctionForActivation.isActive ?? true, { emitEvent: false });
+            }
+        }
         this.currentFunctionForActivation = undefined;
     }
 
-    activation(isActivate: boolean): void {
+    activation(value: boolean): void {
         if (!this.currentFunctionForActivation) {
             return;
         }
 
         const functionItem = this.currentFunctionForActivation;
-        const action = isActivate ? 'activate' : 'deactivate';
-        const apiCall = isActivate
+        const control = this.activationControls[functionItem.id];
+        if (!control) {
+            return;
+        }
+
+        control.disable();
+        const action = value ? 'activate' : 'deactivate';
+        const apiCall = value
             ? this.settingsConfigurationsService.activateFunction(functionItem.id)
             : this.settingsConfigurationsService.deactivateFunction(functionItem.id);
 
@@ -134,6 +159,7 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
             next: (response: any) => {
                 if (!response?.success) {
                     this.handleBusinessError(action, response);
+                    control.setValue(!value, { emitEvent: false });
                     this.activateFunctionDialog = false;
                     return;
                 }
@@ -141,13 +167,15 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Success',
-                    detail: `Function "${functionItem.name}" ${isActivate ? 'activated' : 'deactivated'} successfully.`,
+                    detail: `Function "${functionItem.name}" ${value ? 'activated' : 'deactivated'} successfully.`,
                     life: 3000
                 });
+                functionItem.isActive = value;
                 this.activateFunctionDialog = false;
                 this.loadFunctions(true);
             },
             complete: () => {
+                control.enable();
                 this.currentFunctionForActivation = undefined;
             }
         });
@@ -190,11 +218,6 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
                 icon: 'pi pi-image',
                 command: () => this.currentFunction && this.openLogoDialog(this.currentFunction)
             },
-            {
-                label: 'Activate/Deactivate',
-                icon: 'pi pi-power-off',
-                command: () => this.currentFunction && this.confirmActivation(this.currentFunction)
-            }
         ];
     }
 

@@ -38,9 +38,6 @@ export class FunctionLogoComponent implements OnInit, OnDestroy {
 
     private subscriptions: Subscription[] = [];
 
-    // Allowed image formats for function/module logos
-    private readonly ALLOWED_FORMATS = ['png', 'jpg', 'jpe', 'jpeg', 'gif', 'bmp', 'tiff', 'tif', 'pict'];
-
     constructor(
         private settingsConfigurationsService: SettingsConfigurationsService,
         private messageService: MessageService
@@ -64,9 +61,9 @@ export class FunctionLogoComponent implements OnInit, OnDestroy {
             next: (response: any) => {
                 if (response?.success && response?.message) {
                     const logoData = response.message;
-                    if (logoData?.Logo_Image && logoData.Logo_Image.trim() !== '') {
+                    if (logoData?.Image && logoData.Image.trim() !== '') {
                         const imageFormat = logoData.Image_Format || 'png';
-                        this.functionLogo = `data:image/${imageFormat.toLowerCase()};base64,${logoData.Logo_Image}`;
+                        this.functionLogo = `data:image/${imageFormat.toLowerCase()};base64,${logoData.Image}`;
                         this.hasLogo = true;
                     } else {
                         this.setPlaceholderLogo();
@@ -96,13 +93,12 @@ export class FunctionLogoComponent implements OnInit, OnDestroy {
             return;
         }
 
-        // Validate file type
-        const fileExtension = file.name.split('.').pop()?.toLowerCase() || '';
-        if (!this.ALLOWED_FORMATS.includes(fileExtension)) {
+        // Validate file type by MIME type (matching entity logo pattern)
+        if (!file.type.startsWith('image/')) {
             this.messageService.add({
                 severity: 'error',
                 summary: 'Invalid File Type',
-                detail: `Please select an image file. Allowed formats: ${this.ALLOWED_FORMATS.join(', ').toUpperCase()}.`,
+                detail: 'Please select an image file (JPG, PNG, JPEG, WEBP).',
                 life: 5000
             });
             this.logoUploader?.clear();
@@ -120,6 +116,7 @@ export class FunctionLogoComponent implements OnInit, OnDestroy {
                 detail: `File size (${fileSizeInMB}MB) is larger than recommended (${recommendedSizeInKB}KB). Upload may take longer.`,
                 life: 5000
             });
+            this.loading = false;
             this.logoUploader?.clear();
             return;
         }
@@ -128,7 +125,8 @@ export class FunctionLogoComponent implements OnInit, OnDestroy {
         reader.onload = () => {
             const arrayBuffer = reader.result as ArrayBuffer;
             const byteArray = new Uint8Array(arrayBuffer);
-            const imageFormat = fileExtension;
+            // Extract format from MIME type (matching entity logo pattern)
+            const imageFormat = file.type.split('/')[1] || 'png';
 
             this.uploadLogo(byteArray, imageFormat);
         };
@@ -202,7 +200,7 @@ export class FunctionLogoComponent implements OnInit, OnDestroy {
         this.visibleChange.emit(value);
     }
 
-    private handleBusinessError(response: any): void {
+    private handleBusinessError(response: any): void | null {
         const code = String(response?.message || '');
         let detail = '';
 
@@ -217,7 +215,7 @@ export class FunctionLogoComponent implements OnInit, OnDestroy {
                 detail = 'Empty contents for logo file';
                 break;
             default:
-                detail = 'An error occurred while uploading the logo.';
+                return null;
         }
 
         if (detail) {
@@ -228,5 +226,6 @@ export class FunctionLogoComponent implements OnInit, OnDestroy {
             });
         }
         this.loading = false;
+        return null;
     }
 }

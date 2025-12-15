@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
@@ -25,7 +26,9 @@ export class FunctionDetailsComponent implements OnInit, OnDestroy {
     functionDetails: Function | null = null;
     functionLogo: string = 'assets/media/upload-photo.jpg';
     hasLogo: boolean = false;
-    logoDialogVisible: boolean = false;
+    uploadingLogo: boolean = false;
+    activationControl: FormControl<boolean> = new FormControl<boolean>(false, { nonNullable: true });
+    activateFunctionDialog: boolean = false;
 
     accountSettings: IAccountSettings;
     isRegional: boolean = false;
@@ -76,6 +79,7 @@ export class FunctionDetailsComponent implements OnInit, OnDestroy {
                 }
 
                 const functionData = response?.message || {};
+                const isActive = functionData.Is_Active ?? true;
                 this.functionDetails = {
                     id: functionData.Function_ID || 0,
                     code: functionData.Code || '',
@@ -83,8 +87,9 @@ export class FunctionDetailsComponent implements OnInit, OnDestroy {
                     nameRegional: functionData.Name_Regional || '',
                     defaultOrder: functionData.Default_Order,
                     url: functionData.URL || '',
-                    isActive: functionData.Is_Active ?? true
+                    isActive: isActive
                 };
+                this.activationControl.setValue(isActive, { emitEvent: false });
 
                 this.loadingDetails = false;
                 this.loading = false;
@@ -104,9 +109,9 @@ export class FunctionDetailsComponent implements OnInit, OnDestroy {
             next: (response: any) => {
                 if (response?.success && response?.message) {
                     const logoData = response.message;
-                    if (logoData?.Logo_Image && logoData.Logo_Image.trim() !== '') {
+                    if (logoData?.Image && logoData.Image.trim() !== '') {
                         const imageFormat = logoData.Image_Format || 'png';
-                        this.functionLogo = `data:image/${imageFormat.toLowerCase()};base64,${logoData.Logo_Image}`;
+                        this.functionLogo = `data:image/${imageFormat.toLowerCase()};base64,${logoData.Image}`;
                         this.hasLogo = true;
                     } else {
                         this.setPlaceholderLogo();
@@ -138,68 +143,193 @@ export class FunctionDetailsComponent implements OnInit, OnDestroy {
         this.router.navigate(['/company-administration/settings-configurations/functions', this.functionId, 'edit']);
     }
 
-    openLogoDialog(): void {
-        this.logoDialogVisible = true;
+    onLogoUpload(event: any): void {
+        const file = event.files?.[0];
+        if (!file) {
+            return;
+        }
+
+        // Validate file type by MIME type
+        if (!file.type.startsWith('image/')) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Invalid File Type',
+                detail: 'Please select an image file (JPG, PNG, JPEG, WEBP).',
+                life: 5000
+            });
+            this.logoUploader?.clear();
+            return;
+        }
+
+        const RECOMMENDED_FILE_SIZE = 200 * 1024;
+        const fileSizeInMB = (file.size / (1024 * 1024)).toFixed(2);
+        const recommendedSizeInKB = (RECOMMENDED_FILE_SIZE / 1024).toFixed(0);
+
+        if (file.size > RECOMMENDED_FILE_SIZE) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Large File Size',
+                detail: `File size (${fileSizeInMB}MB) is larger than recommended (${recommendedSizeInKB}KB). Upload may take longer.`,
+                life: 5000
+            });
+            this.uploadingLogo = false;
+            this.logoUploader?.clear();
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            const arrayBuffer = reader.result as ArrayBuffer;
+            const byteArray = new Uint8Array(arrayBuffer);
+            // Extract format from MIME type
+            const imageFormat = file.type.split('/')[1] || 'png';
+
+            this.uploadLogo(byteArray, imageFormat);
+        };
+        reader.onerror = () => {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Failed to read file. Please try again.',
+                life: 5000
+            });
+            this.uploadingLogo = false;
+        };
+        reader.readAsArrayBuffer(file);
     }
 
-    onLogoDialogClose(): void {
-        this.logoDialogVisible = false;
+    uploadLogo(byteArray: Uint8Array, imageFormat: string): void {
+        this.uploadingLogo = true;
+
+        const base64String = btoa(
+            String.fromCharCode.apply(null, Array.from(byteArray))
+        );
+
+        const sub = this.settingsConfigurationsService.setFunctionLogo(
+            this.functionId,
+            imageFormat,
+            base64String
+        ).subscribe({
+            next: (response: any) => {
+                if (!response?.success) {
+                    this.handleLogoUploadError(response);
+                    return;
+                }
+
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Success',
+                    detail: 'Logo uploaded successfully.',
+                    life: 3000
+                });
+
+                this.loadLogo();
+            },
+            complete: () => {
+                this.uploadingLogo = false;
+            }
+        });
+
+        this.subscriptions.push(sub);
     }
 
-    onLogoUpdated(): void {
-        this.loadLogo();
+    removeLogo(): void {
+        // Note: API documentation doesn't show a Remove_Function_Logo endpoint
+        // This might need to be implemented by uploading an empty logo or the API might support it
+        // For now, we'll show a message that removal is not supported
+        this.messageService.add({
+            severity: 'warn',
+            summary: 'Not Supported',
+            detail: 'Logo removal is not currently supported. Please contact support.',
+            life: 3000
+        });
+    }
+
+    private handleLogoUploadError(response: any): void | null {
+        const code = String(response?.message || '');
+        let detail = '';
+
+        switch (code) {
+            case 'ERP11400':
+                detail = 'Invalid Function ID';
+                break;
+            case 'ERP11408':
+                detail = 'Unknown image file format';
+                break;
+            case 'ERP11409':
+                detail = 'Empty contents for logo file';
+                break;
+            default:
+                return null;
+        }
+
+        if (detail) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail
+            });
+        }
+        this.uploadingLogo = false;
+        return null;
+    }
+
+    onStatusToggle(): void {
+        this.activateFunctionDialog = true;
+    }
+
+    onCancelActivationDialog(): void {
+        this.activateFunctionDialog = false;
+        if (this.functionDetails) {
+            this.activationControl.setValue(this.functionDetails.isActive ?? true, { emitEvent: false });
+        }
+    }
+
+    activation(value: boolean): void {
+        if (!this.functionDetails) {
+            return;
+        }
+
+        this.activationControl.disable();
+        const action = value ? 'activate' : 'deactivate';
+        const apiCall = value
+            ? this.settingsConfigurationsService.activateFunction(this.functionId)
+            : this.settingsConfigurationsService.deactivateFunction(this.functionId);
+
+        const sub = apiCall.subscribe({
+            next: (response: any) => {
+                if (!response?.success) {
+                    this.handleBusinessError(response);
+                    this.activationControl.setValue(!value, { emitEvent: false });
+                    this.activateFunctionDialog = false;
+                    return;
+                }
+
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Success',
+                    detail: `Function ${value ? 'activated' : 'deactivated'} successfully.`
+                });
+                if (this.functionDetails) {
+                    this.functionDetails.isActive = value;
+                }
+                this.activateFunctionDialog = false;
+                this.loadAllData();
+            },
+            complete: () => {
+                this.activationControl.enable();
+            }
+        });
+
+        this.subscriptions.push(sub);
     }
 
     activateFunction(): void {
-        if (!this.functionDetails) {
-            return;
-        }
-
-        this.loading = true;
-        const sub = this.settingsConfigurationsService.activateFunction(this.functionId).subscribe({
-            next: (response: any) => {
-                if (!response?.success) {
-                    this.handleBusinessError(response);
-                    return;
-                }
-
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Success',
-                    detail: 'Function activated successfully.'
-                });
-                this.loadAllData();
-            },
-            complete: () => this.loading = false
-        });
-
-        this.subscriptions.push(sub);
+        this.activation(true);
     }
 
     deactivateFunction(): void {
-        if (!this.functionDetails) {
-            return;
-        }
-
-        this.loading = true;
-        const sub = this.settingsConfigurationsService.deactivateFunction(this.functionId).subscribe({
-            next: (response: any) => {
-                if (!response?.success) {
-                    this.handleBusinessError(response);
-                    return;
-                }
-
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Success',
-                    detail: 'Function deactivated successfully.'
-                });
-                this.loadAllData();
-            },
-            complete: () => this.loading = false
-        });
-
-        this.subscriptions.push(sub);
+        this.activation(false);
     }
 
     getStatusLabel(): string {
@@ -212,7 +342,7 @@ export class FunctionDetailsComponent implements OnInit, OnDestroy {
         return this.functionDetails.isActive ? 'success' : 'danger';
     }
 
-    private handleBusinessError(response: any): void {
+    private handleBusinessError(response: any): void | null {
         const code = String(response?.message || '');
         let detail = '';
 
@@ -227,7 +357,7 @@ export class FunctionDetailsComponent implements OnInit, OnDestroy {
                 detail = 'Function already Inactive';
                 break;
             default:
-                detail = 'An error occurred while processing the request.';
+                return null;
         }
 
         if (detail) {
@@ -238,5 +368,6 @@ export class FunctionDetailsComponent implements OnInit, OnDestroy {
             });
         }
         this.loading = false;
+        return null;
     }
 }

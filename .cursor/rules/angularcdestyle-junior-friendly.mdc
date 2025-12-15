@@ -1,0 +1,59 @@
+---
+alwaysApply: true
+---
+
+When writing Angular code, always prioritize clarity and simplicity.
+
+Rules to follow:
+
+Write clean, readable code
+
+Use clear and meaningful variable, method, and component names
+
+Avoid abbreviations and clever tricks
+
+Keep it simple
+
+Do NOT use advanced or complex Angular patterns
+
+Avoid over-engineering
+
+Prefer basic Angular features (components, services, simple forms)
+
+Junior-friendly
+
+Code must be easy for a junior developer to understand
+
+If logic is not obvious, add a short comment explaining it
+
+Avoid RxJS complexity (no advanced operators unless absolutely necessary)
+
+Small and focused
+
+Keep components small and focused on one responsibility
+
+Methods should be short and do only one thing
+
+No unnecessary abstractions
+
+Do not introduce patterns, helpers, or utilities unless they are clearly needed
+
+Avoid advanced architecture concepts
+
+Simple Angular syntax
+
+Prefer template-driven or basic reactive forms
+
+Use straightforward HTML templates
+
+Avoid complex directives and pipes unless required
+
+Consistency
+
+Follow standard Angular structure and naming conventions
+
+Use consistent formatting
+
+Goal:
+
+Any junior Angular developer should be able to read and understand the code without confusion.

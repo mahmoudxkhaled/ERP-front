@@ -20,7 +20,7 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
     entityId: string = '';
     loading: boolean = false;
     loadingDetails: boolean = false;
-    loadingLogo: boolean = false;
+    loadingLogo: boolean = false
     activeTabIndex: number = 0;
 
     entityDetails: any = null;

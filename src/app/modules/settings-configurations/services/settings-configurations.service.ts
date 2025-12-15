@@ -104,12 +104,11 @@ export class SettingsConfigurationsService {
         this.isLoadingSubject.next(true);
         const params = [
             functionId.toString(),
-            functionId.toString(), // API expects it twice based on documentation
             code,
             name,
             isRegional.toString(),
             defaultOrder.toString(),
-            url
+            url.trim().toString()
         ];
         return this.apiServices.callAPI(702, this.getAccessToken(), params).pipe(
             finalize(() => this.isLoadingSubject.next(false))
@@ -152,7 +151,8 @@ export class SettingsConfigurationsService {
      */
     setFunctionLogo(functionId: number, imageFormat: string, logoImage: string): Observable<any> {
         this.isLoadingSubject.next(true);
-        const params = [functionId.toString(), imageFormat, logoImage];
+        const quotedBase64String = `"${logoImage}"`;
+        const params = [functionId.toString(), imageFormat, quotedBase64String];
         return this.apiServices.callAPI(706, this.getAccessToken(), params).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );
@@ -226,14 +226,14 @@ export class SettingsConfigurationsService {
         this.isLoadingSubject.next(true);
         const params = [
             moduleId.toString(),
-            moduleId.toString(), // API expects it twice based on documentation
             functionId.toString(),
             code,
             name,
             isRegional.toString(),
             defaultOrder.toString(),
-            url
+            url.trim().toString()
         ];
+        console.log('params', params);
         return this.apiServices.callAPI(712, this.getAccessToken(), params).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );
@@ -275,7 +275,8 @@ export class SettingsConfigurationsService {
      */
     setModuleLogo(moduleId: number, imageFormat: string, logoImage: string): Observable<any> {
         this.isLoadingSubject.next(true);
-        const params = [moduleId.toString(), imageFormat, logoImage];
+        const quotedBase64String = `"${logoImage}"`;
+        const params = [moduleId.toString(), imageFormat, quotedBase64String];
         return this.apiServices.callAPI(716, this.getAccessToken(), params).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );
