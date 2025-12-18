@@ -1,13 +1,13 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Chart } from 'chart.js';
 import { PrimeNGConfig } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import { LanguageDirService } from './core/services/language-dir.service';
 import { LocalStorageService } from './core/services/local-storage.service';
+import { NetworkStatusService } from './core/services/network-status.service';
 import { TranslationService } from './core/services/translation.service';
 import { LayoutService } from './layout/app-services/app.layout.service';
-import { NetworkStatusService } from './core/services/network-status.service';
-import { Router } from '@angular/router';
 import { AuthService } from './modules/auth/services/auth.service';
 
 @Component({
@@ -121,50 +121,3 @@ export class AppComponent implements OnInit, OnDestroy {
         this.languageSubscription.unsubscribe();
     }
 }
-
-//#region will be used later
-// arabicNumerals = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-// westernNumerals = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-// convertNumerals(text: string, isRtl: boolean): string {
-//     if (isRtl) {
-//         return text.replace(/\d/g, (match) => this.arabicNumerals[parseInt(match)]);
-//     } else {
-//         return text.replace(
-//             /[\u0660-\u0669]/g,
-//             (match) => this.westernNumerals[this.arabicNumerals.indexOf(match)]
-//         );
-//     }
-// }
-
-// replaceAllNumerals() {
-//     const bodyTextNodes = Array.from(document.body.childNodes).filter((node) => node.nodeType === Node.TEXT_NODE);
-
-//     bodyTextNodes.forEach((textNode) => {
-//         const textContent = textNode.textContent ?? '';
-//         textNode.textContent = this.convertNumerals(textContent, this.isRtl);
-//     });
-// }
-
-// changePaginator() {
-//     // this.replaceAllNumerals();
-
-//     const paginatorElements = document.querySelectorAll('.p-paginator-current');
-//     paginatorElements.forEach((element) => {
-//         if (this.isRtl) {
-//             // element.textContent = this.convertNumerals(element.textContent ?? '', this.isRtl);
-
-//             element.textContent = element.textContent?.replace('Showing ', ' عرض ') || 'عرض';
-//             element.textContent = element.textContent?.replace('entries', 'إدخالات') || 'إدخالات';
-//             element.textContent = element.textContent?.replace('to', 'إلى') || 'إلى';
-//             element.textContent = element.textContent?.replace('of ', ' من ') || 'من';
-//         } else {
-//             // element.textContent = this.convertNumerals(element.textContent ?? '', this.isRtl);
-
-//             element.textContent = element.textContent?.replace('عرض', 'Showing') || 'Showing';
-//             element.textContent = element.textContent?.replace('إدخالات', 'entries') || 'entries';
-//             element.textContent = element.textContent?.replace('إلى', 'to') || 'to';
-//             element.textContent = element.textContent?.replace(' من', 'of ') || 'of';
-//         }
-//     });
-// }
-//#endregion

@@ -58,6 +58,7 @@ export interface IFunctionDetail {
     Name: string;
     Name_Regional: string;
     Default_Order: number;
+    URL: string;
 }
 
 export interface IFunctionsDetails {
@@ -79,6 +80,7 @@ export interface IModuleDetail {
     Name: string;
     Name_Regional: string;
     Default_Order: number;
+    URL: string; // URL field from localStorage
 }
 
 export interface IModulesDetails {
@@ -100,5 +102,30 @@ export interface IAccountStatusResponse {
     Functions_Details: IFunctionsDetails;
     Modules_Details: IModulesDetails;
     Account_Settings: IAccountSettings;
+}
+
+/**
+ * Menu/Dashboard helper interfaces for dynamic UI generation
+ */
+export interface IMenuFunction {
+    code: string;
+    name: string;
+    nameRegional: string;
+    defaultOrder: number;
+    icon?: string; // Function logo URL (if available)
+    modules: IMenuModule[];
+    url: string; // Format: /{functionSlug}/{moduleSlug}/{nestedRoute}
+}
+
+export interface IMenuModule {
+    code: string;
+    name: string;
+    nameRegional: string;
+    defaultOrder: number;
+    url: string; // Format: /{functionSlug}/{moduleSlug}/{nestedRoute}
+    icon?: string; // Module logo URL (if available)
+    isImplemented: boolean;
+    moduleId: number;
+    functionCode: string; // Parent function code
 }
 

@@ -5,6 +5,8 @@ import { TranslationService } from '../../core/services/translation.service';
 import { AuthService } from '../../modules/auth/services/auth.service';
 import { LogoutComponent } from 'src/app/modules/auth/components/logout/logout.component';
 import { DialogService } from 'primeng/dynamicdialog';
+import { ModuleNavigationService } from '../../core/services/module-navigation.service';
+import { IMenuFunction, IMenuModule } from '../../core/models/account-status.model';
 
 @Component({
     selector: 'app-menu',
@@ -19,7 +21,8 @@ export class AppMenuComponent implements OnInit {
         private translate: TranslationService,
         private router: Router,
         private authService: AuthService,
-        private dialogService: DialogService
+        private dialogService: DialogService,
+        private moduleNavigationService: ModuleNavigationService
     ) {
     }
 
@@ -29,151 +32,87 @@ export class AppMenuComponent implements OnInit {
             this.onLangChange();
         });
     }
+
     onLangChange(): void {
         this.buildMenu();
     }
 
-    buildMenu() {
-        this.model = [
-            {
-                label: this.translate.getInstant('menu.summary'),
-                hasPermession: true,
-                icon: 'fa fa-chart-pie',
-                items: [
-                    {
-                        label: this.translate.getInstant('menu.actions'),
+    buildMenu(): void {
+        const functions = this.moduleNavigationService.getFunctionsWithModules();
+
+        this.model = functions.map(func => ({
+            label: this.getDisplayName(func),
+            hasPermession: true,
+            icon: func.icon || this.getDefaultFunctionIcon(func.code),
+            items: func.modules.map(module => {
+                // Special handling for logout module
+                if (module.code === 'LGOT') {
+                    return {
+                        label: this.getDisplayName(module),
                         hasPermession: true,
-                        icon: 'fa fa-bolt',
-                        routerLink: ['/summary/actions']
-                    },
-                    {
-                        label: this.translate.getInstant('menu.notifications'),
-                        hasPermession: true,
-                        icon: 'fa fa-bell',
-                        routerLink: ['/summary/notifications']
-                    },
-                    {
-                        label: this.translate.getInstant('menu.profile'),
-                        hasPermession: true,
-                        icon: 'fa fa-user',
-                        routerLink: ['/summary/profile']
-                    },
-                    {
-                        label: this.translate.getInstant('menu.settings'),
-                        hasPermession: true,
-                        icon: 'fa fa-cog',
-                        routerLink: ['/summary/settings']
-                    },
-                    {
-                        label: this.translate.getInstant('menu.logout'),
-                        hasPermession: true,
-                        icon: 'fa fa-sign-out-alt',
+                        icon: module.icon || 'fa fa-sign-out-alt',
                         command: () => this.logOut()
-                    },
-                ],
-            },
-            {
-                label: this.translate.getInstant('menu.companyAdministration'),
-                hasPermession: true,
-                icon: 'fa fa-building',
-                items: [
-                    {
-                        label: this.translate.getInstant('menu.companyDetails'),
-                        hasPermession: true,
-                        icon: 'fa fa-building',
-                        routerLink: ['/company-administration/entities/list']
-                    },
-                    {
-                        label: this.translate.getInstant('menu.usersDetails'),
-                        hasPermession: true,
-                        icon: 'fa fa-users',
-                        routerLink: ['/company-administration/users-details']
-                    },
-                    {
-                        label: this.translate.getInstant('menu.workflows'),
-                        hasPermession: true,
-                        icon: 'fa fa-sync-alt',
-                        routerLink: ['/company-administration/workflows']
-                    },
-                    {
-                        label: 'Settings & Configurations',
-                        hasPermession: true,
-                        icon: 'fa fa-cog',
-                        items: [
-                            {
-                                label: 'ERP Functions',
-                                hasPermession: true,
-                                icon: 'fa fa-puzzle-piece',
-                                routerLink: ['/company-administration/settings-configurations/functions/list']
-                            },
-                            {
-                                label: 'ERP Modules',
-                                hasPermession: true,
-                                icon: 'fa fa-cubes',
-                                routerLink: ['/company-administration/settings-configurations/modules/list']
-                            }
-                        ]
-                    },
-                ],
-            },
-            {
-                label: this.translate.getInstant('menu.documentControl'),
-                hasPermession: true,
-                icon: 'fa fa-file-alt',
-                items: [
-                    {
-                        label: this.translate.getInstant('menu.sharedDocuments'),
-                        hasPermession: true,
-                        icon: 'fa fa-file-alt',
-                        routerLink: ['/document-control']
-                    },
-                ],
-            },
-            {
-                label: this.translate.getInstant('menu.humanResources'),
-                hasPermession: true,
-                icon: 'fa fa-user-tie',
-                items: [
-                    {
-                        label: 'My Timesheets',
-                        hasPermession: true,
-                        icon: 'fa fa-clock',
-                        routerLink: ['/human-resources/timesheets']
-                    },
-                    {
-                        label: 'Approvals',
-                        hasPermession: true,
-                        icon: 'fa fa-check-circle',
-                        routerLink: ['/human-resources/supervisor-timesheets']
-                    },
-                    {
-                        label: 'Reports',
-                        hasPermession: true,
-                        icon: 'fa fa-chart-line',
-                        routerLink: ['/human-resources/admin-timesheets']
-                    },
-                    {
-                        label: this.translate.getInstant('menu.contract'),
-                        hasPermession: true,
-                        icon: 'fa fa-file-contract',
-                        routerLink: ['/human-resources/contract']
-                    },
-                ],
-            },
-            {
-                label: this.translate.getInstant('menu.financials'),
-                hasPermession: true,
-                icon: 'fa fa-receipt',
-                items: [
-                    {
-                        label: this.translate.getInstant('menu.invoices'),
-                        hasPermession: true,
-                        icon: 'fa fa-receipt',
-                        routerLink: ['/financials']
-                    },
-                ],
-            },
-        ];
+                    };
+                }
+
+                // Regular module items
+                return {
+                    label: this.getDisplayName(module),
+                    hasPermession: true,
+                    icon: module.icon || this.getDefaultModuleIcon(module.code),
+                    routerLink: module.isImplemented && module.url ? [module.url] : null,
+                    disabled: !module.isImplemented || !module.url
+                };
+            })
+        }));
+    }
+
+    /**
+     * Get display name for function or module (respects regional settings)
+     */
+    private getDisplayName(item: IMenuFunction | IMenuModule): string {
+        // Use name (already filtered by regional in service)
+        return item.name || '';
+    }
+
+    /**
+     * Get default icon for function based on code
+     */
+    private getDefaultFunctionIcon(functionCode: string): string {
+        const iconMap: Record<string, string> = {
+            'DBS': 'fa fa-chart-pie',
+            'SysAdm': 'fa fa-cog',
+            'EntAdm': 'fa fa-building',
+            'DC': 'fa fa-file-alt',
+            'FIN': 'fa fa-receipt',
+            'HR': 'fa fa-user-tie',
+            'CRM': 'fa fa-handshake',
+            'SCM': 'fa fa-truck',
+            'PC': 'fa fa-project-diagram'
+        };
+        return iconMap[functionCode] || 'fa fa-folder';
+    }
+
+    /**
+     * Get default icon for module based on code
+     */
+    private getDefaultModuleIcon(moduleCode: string): string {
+        const iconMap: Record<string, string> = {
+            'ACT': 'fa fa-bolt',
+            'NOT': 'fa fa-bell',
+            'PRF': 'fa fa-user',
+            'SET': 'fa fa-cog',
+            'LGOT': 'fa fa-sign-out-alt',
+            'SDB': 'fa fa-chart-line',
+            'ERPF': 'fa fa-puzzle-piece',
+            'ERPM': 'fa fa-cubes',
+            'ENTDT': 'fa fa-building',
+            'USRACC': 'fa fa-users',
+            'WF': 'fa fa-sync-alt',
+            'TS': 'fa fa-clock',
+            'FCOA': 'fa fa-book'
+        };
+        return iconMap[moduleCode] || 'fa fa-file';
     }
 
     hassPermession(pageName: string): boolean {

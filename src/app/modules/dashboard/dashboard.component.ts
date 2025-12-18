@@ -5,6 +5,8 @@ import { TranslationService } from 'src/app/core/services/translation.service';
 import { AuthService } from '../auth/services/auth.service';
 import { LogoutComponent } from '../auth/components/logout/logout.component';
 import { DialogService } from 'primeng/dynamicdialog';
+import { IMenuFunction, IMenuModule } from 'src/app/core/models/account-status.model';
+import { ModuleNavigationService } from 'src/app/core/services/module-navigation.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -16,17 +18,20 @@ export class DashboardComponent implements OnInit {
     userRole: string = '';
     userName: string = '';
     showLogoutDialog: boolean = false; // Track logout dialog visibility
+    dashboardCategories: IMenuFunction[] = [];
 
     constructor(
         private localStorageService: LocalStorageService,
         private router: Router,
         public translate: TranslationService,
         private dialogService: DialogService,
-        private authService: AuthService
+        private authService: AuthService,
+        private moduleNavigationService: ModuleNavigationService
     ) { }
 
     ngOnInit(): void {
         this.loadUserData();
+        this.loadDashboardCategories();
     }
 
     loadUserData(): void {
@@ -41,57 +46,81 @@ export class DashboardComponent implements OnInit {
         return role.replace('-', ' ').toUpperCase();
     }
 
-    getDashboardCategories(): any[] {
-        // Show all categories for now - role-based filtering will be implemented later
-        return [
-            {
-                title: this.translate.getInstant('dashboard.summary'),
-                items: [
-                    { icon: '⚡', label: this.translate.getInstant('dashboard.actions'), route: '/summary/actions' },
-                    { icon: '🔔', label: this.translate.getInstant('dashboard.notifications'), route: '/summary/notifications' },
-                    { icon: '👤', label: this.translate.getInstant('dashboard.profile'), route: '/summary/profile' },
-                    { icon: '⚙️', label: this.translate.getInstant('dashboard.settings'), route: '/summary/settings' },
-                    { icon: '🚪', label: this.translate.getInstant('dashboard.logout'), route: '/summary/logout' }
-                ]
-            },
-            {
-                title: this.translate.getInstant('dashboard.companyAdministration'),
-                items: [
-                    { icon: '🏢', label: this.translate.getInstant('dashboard.companyDetails'), route: '/company-administration/entities/list' },
-                    { icon: '👥', label: this.translate.getInstant('dashboard.usersDetails'), route: '/company-administration/users-details' },
-                    { icon: '🔄', label: this.translate.getInstant('dashboard.workflows'), route: '/company-administration/workflows' }
-                ]
-            },
-            {
-                title: this.translate.getInstant('dashboard.documentControl'),
-                items: [
-                    { icon: '📄', label: this.translate.getInstant('dashboard.sharedDocuments'), route: '/document-control' }
-                ]
-            },
-            {
-                title: this.translate.getInstant('dashboard.humanResources'),
-                items: [
-                    { icon: '🧑‍💼', label: 'My Timesheets', route: '/human-resources/timesheets' },
-                    { icon: '🧾', label: 'Approvals', route: '/human-resources/supervisor-timesheets' },
-                    { icon: '📈', label: 'Reports', route: '/human-resources/admin-timesheets' },
-                    { icon: '📝', label: this.translate.getInstant('dashboard.contract'), route: '/human-resources/contract' }
-                ]
-            },
-            {
-                title: this.translate.getInstant('dashboard.financials'),
-                items: [
-                    { icon: '🧾', label: this.translate.getInstant('dashboard.invoices'), route: '/financials' }
-                ]
-            }
-        ];
+    loadDashboardCategories(): void {
+        this.dashboardCategories = this.moduleNavigationService.getFunctionsWithModules();
     }
 
-    navigateToRoute(route: string): void {
-        if (route === '/summary/logout') {
-            // Show logout confirmation dialog
-            this.showLogoutDialog = true;
-        } else {
-            this.router.navigate([route]);
+    getDashboardCategories(): IMenuFunction[] {
+        return this.dashboardCategories;
+    }
+
+    /**
+     * Get default icon for module (fallback when logo not available)
+     */
+    getModuleIcon(module: IMenuModule): string {
+        if (module.icon) {
+            return module.icon;
+        }
+        return this.getDefaultModuleIcon(module.code);
+    }
+
+    /**
+     * Get default icon for module based on code
+     */
+    private getDefaultModuleIcon(moduleCode: string): string {
+        const iconMap: Record<string, string> = {
+            'ACT': '⚡',
+            'NOT': '🔔',
+            'PRF': '👤',
+            'SET': '⚙️',
+            'LGOT': '🚪',
+            'SDB': '📊',
+            'ERPF': '🧩',
+            'ERPM': '📦',
+            'ENTDT': '🏢',
+            'USRACC': '👥',
+            'WF': '🔄',
+            'EACC': '💼',
+            'SHDOC': '📄',
+            'FCOA': '📚',
+            'AP': '💰',
+            'AR': '💵',
+            'GL': '📖',
+            'OC': '🏛️',
+            'PRSN': '👔',
+            'TS': '⏰',
+            'CLNT': '🤝',
+            'EST': '📊',
+            'TND': '📋',
+            'MC': '📝',
+            'CINV': '🧾',
+            'VND': '🚚',
+            'PO': '🛒',
+            'SC': '📄',
+            'VINV': '🧾',
+            'WBS': '📐',
+            'CBS': '📊',
+            'QS': '📏',
+            'BUDG': '💵',
+            'CRPT': '📈',
+            'PRPT': '📊'
+        };
+        return iconMap[moduleCode] || '📁';
+    }
+
+    /**
+     * Handle module click - navigate to module route
+     */
+    onModuleClick(module: IMenuModule): void {
+        // Special handling for logout
+        if (module.code === 'LGOT') {
+            this.logOut();
+            return;
+        }
+
+        // Navigate if module has a valid route and is implemented
+        if (module.url && module.isImplemented) {
+            this.router.navigateByUrl(module.url);
         }
     }
 
