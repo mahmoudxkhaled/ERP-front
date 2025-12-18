@@ -60,13 +60,14 @@ export class RolesListComponent implements OnInit, OnDestroy, OnChanges {
         this.loadRoles();
     }
 
+
     ngOnChanges(changes: SimpleChanges): void {
         // If entityId input changes, update and reload
         if (changes['entityId'] && !changes['entityId'].firstChange) {
             if (this.entityId && this.entityId > 0) {
                 this._entityId = this.entityId;
                 this.first = 0; // Reset pagination
-                this.loadRoles(true);
+                this.loadRoles();
             }
         }
     }
@@ -75,10 +76,7 @@ export class RolesListComponent implements OnInit, OnDestroy, OnChanges {
         this.subscriptions.forEach((sub) => sub.unsubscribe());
     }
 
-    loadRoles(forceReload: boolean = false): void {
-        if (this.rolesService.isLoadingSubject.value && !forceReload) {
-            return;
-        }
+    loadRoles(): void {
 
         if (!this._entityId || this._entityId === 0) {
             this.messageService.add({
@@ -137,7 +135,7 @@ export class RolesListComponent implements OnInit, OnDestroy, OnChanges {
     onPageChange(event: any): void {
         this.first = event.first;
         this.rows = event.rows;
-        this.loadRoles(true);
+        this.loadRoles();
     }
 
     edit(role: EntityRole): void {
@@ -199,7 +197,7 @@ export class RolesListComponent implements OnInit, OnDestroy, OnChanges {
                     life: 3000
                 });
                 this.deleteRoleDialog = false;
-                this.loadRoles(true);
+                this.loadRoles();
             },
             complete: () => {
                 this.currentRoleForDelete = undefined;
