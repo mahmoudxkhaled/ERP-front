@@ -62,12 +62,10 @@ export interface IFunctionDetail {
 }
 
 export interface IFunctionsDetails {
-    DBS: IFunctionDetail;
     SysAdm: IFunctionDetail;
     EntAdm: IFunctionDetail;
     DC: IFunctionDetail;
     FIN: IFunctionDetail;
-    HR: IFunctionDetail;
     CRM: IFunctionDetail;
     SCM: IFunctionDetail;
     PC: IFunctionDetail;

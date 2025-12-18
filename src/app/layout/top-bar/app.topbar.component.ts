@@ -8,7 +8,6 @@ import { ImageService } from 'src/app/core/services/image.service';
 import { LanguageDirService } from 'src/app/core/services/language-dir.service';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { AuthService } from 'src/app/modules/auth/services/auth.service';
-import { ILanguageModel } from 'src/app/modules/language/models/ILanguageModel';
 import { LocalStorageService } from '../../core/services/local-storage.service';
 import { LayoutService } from '../app-services/app.layout.service';
 enum NotificationTypeEnum {
@@ -60,7 +59,7 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
     userTheme: string;
     userLanguageCode: string;
     userLanguageId: string;
-    languages: ILanguageModel[] = [];
+    languages: any[] = [];
     isRtl: boolean = false;
     themeLoading: boolean = false;
     langLoading: boolean = false;

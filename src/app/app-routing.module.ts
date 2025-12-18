@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { ExtraOptions, RouterModule, Routes } from '@angular/router';
 import { AppLayoutComponent } from './layout/app-layout/app.layout.component';
-import { AuthGuard } from './core/guards/auth.guard';
+import { AuthGuard } from './core/Guards/auth.guard';
 
 const routerOptions: ExtraOptions = {
     anchorScrolling: 'enabled',
@@ -17,13 +17,7 @@ const routes: Routes = [
                 path: '',
                 canActivate: [AuthGuard],
                 data: { breadcrumb: 'dashboard' },
-                loadChildren: () => import('./modules/dashboard/dashboard.module').then((m) => m.DashboardModule),
-            },
-            {
-                path: 'summary',
-                canActivate: [AuthGuard],
-                data: { breadcrumb: 'summary' },
-                loadChildren: () => import('./modules/summary/summary.module').then((m) => m.SummaryModule),
+                loadChildren: () => import('./modules/system-administration/dashboard/dashboard.module').then((m) => m.DashboardModule),
             },
             {
                 path: 'company-administration',
@@ -35,19 +29,13 @@ const routes: Routes = [
                 path: 'document-control',
                 canActivate: [AuthGuard],
                 data: { breadcrumb: 'documentControl' },
-                loadChildren: () => import('./modules/document-control/document-control.module').then((m) => m.DocumentControlModule),
-            },
-            {
-                path: 'human-resources',
-                canActivate: [AuthGuard],
-                data: { breadcrumb: 'humanResources' },
-                loadChildren: () => import('./modules/human-resources/human-resources.module').then((m) => m.HumanResourcesModule),
+                loadChildren: () => import('./modules/document-control/shared-documents/shared-documents.module').then((m) => m.SharedDocumentsModule),
             },
             {
                 path: 'financials',
                 canActivate: [AuthGuard],
                 data: { breadcrumb: 'financials' },
-                loadChildren: () => import('./modules/financials/financials.module').then((m) => m.FinancialsModule),
+                loadChildren: () => import('./modules/finance-accounting/financials.module').then((m) => m.FinancialsModule),
             },
 
         ],

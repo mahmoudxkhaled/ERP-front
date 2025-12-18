@@ -9,11 +9,11 @@ const routes: Routes = [
     { path: '', redirectTo: 'entities/list', pathMatch: 'full' },
     {
         path: 'entities',
-        loadChildren: () => import('../entities/entities.module').then((m) => m.EntitiesModule)
+        loadChildren: () => import('../entity-administration/entities/entities.module').then((m) => m.EntitiesModule)
     },
     {
         path: 'roles',
-        loadChildren: () => import('../roles/roles.module').then((m) => m.RolesModule)
+        loadChildren: () => import('../entity-administration/roles/roles.module').then((m) => m.RolesModule)
     },
     {
         path: 'settings-configurations',

@@ -1,0 +1,126 @@
+<div class="card">
+    <div class="flex justify-content-between align-items-center mb-4">
+        <h2>Manage Functions</h2>
+        <p-button (onClick)="navigateToNew()" [disabled]="!!(isLoading$ | async)">
+            <ng-container *ngIf="isLoading$ | async">
+                <span class="indicator-progress" [style.display]="'block'">
+                    Please wait
+                    <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
+                </span>
+            </ng-container>
+            <ng-container *ngIf="(isLoading$ | async) === false">
+                <span>Add New Function</span>
+            </ng-container>
+        </p-button>
+    </div>
+
+    <div #functionsTableContainer style="position: relative;">
+        <app-table-loading-spinner *ngIf="tableLoadingSpinner"></app-table-loading-spinner>
+        <p-table #functionsTable [value]="functions" [paginator]="true" [first]="first" [rows]="rows"
+            [rowsPerPageOptions]="[10, 25, 50, 100]" [showCurrentPageReport]="true" responsiveLayout="scroll"
+            [lazy]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            [loading]="!!(isLoading$ | async)" (onLazyLoad)="onPageChange($event)">
+
+            <ng-template pTemplate="header">
+                <tr>
+                    <th style="width: 40px;">Id</th>
+
+                    <th style="width: 100px;">Code</th>
+                    <th style="width: 200px;">Name</th>
+                    <th style="width: 100px;">Default Order</th>
+                    <th style="width: 200px;">URL</th>
+                    <th style="text-align: center !important;">Status</th>
+                    <th style="width: 150px; text-align: start !important;">Actions</th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-functionItem>
+                <tr>
+                    <td>
+                        <p-tag [value]="'#' + functionItem.id" severity="info"></p-tag>
+                    </td>
+                    <td>
+                        <span class="font-semibold text-lg">{{ functionItem.code }}</span>
+                    </td>
+                    <td>
+                        <span style="cursor: pointer;" class="font-semibold"
+                            routerLink="/company-administration/settings-configurations/functions/{{ functionItem.id }}">
+                            {{ functionItem.name }}</span>
+                    </td>
+                    <td>
+                        <span class="text-600">{{ functionItem.defaultOrder || '—' }}</span>
+                    </td>
+                    <td>
+                        <span class="text-600">{{ functionItem.url || '—' }}</span>
+                    </td>
+                    <td class="text-center">
+                        <p-inputSwitch [formControl]="activationControls[functionItem.id]"
+                            (onChange)="onStatusToggle(functionItem)">
+                        </p-inputSwitch>
+                    </td>
+                    <td class="text-start">
+                        <button pButton pRipple type="button" icon="pi pi-ellipsis-v"
+                            class="p-button-rounded p-button-text p-button-plain"
+                            (click)="openMenu(rowMenu, functionItem, $event)">
+                        </button>
+                        <p-menu #rowMenu [model]="menuItems" [popup]="true" [appendTo]="'body'"></p-menu>
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="7" class="text-center">No functions found</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+<p-toast></p-toast>
+
+<p-dialog [(visible)]="activateFunctionDialog" [modal]="true" [style]="{ width: '500px' }" [closable]="true"
+    [draggable]="false" [resizable]="false">
+    <ng-template pTemplate="header">
+        <h3>{{ currentFunctionForActivation?.isActive ? 'Deactivate Function' : 'Activate Function' }}</h3>
+    </ng-template>
+    <div class="flex flex-column gap-3">
+        <!-- Activation Message -->
+        <ng-container *ngIf="!currentFunctionForActivation?.isActive">
+            <p>
+                Are you sure you want to <strong>activate</strong> <strong>{{ currentFunctionForActivation?.name
+                    }}</strong>?
+            </p>
+        </ng-container>
+
+        <!-- Deactivation Message -->
+        <ng-container *ngIf="currentFunctionForActivation?.isActive">
+            <p>
+                Are you sure you want to <strong>deactivate</strong> <strong>{{ currentFunctionForActivation?.name
+                    }}</strong>?
+            </p>
+        </ng-container>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="onCancelActivationDialog()"
+            [disabled]="!!(isLoading$ | async)">
+        </p-button>
+        <p-button [severity]="currentFunctionForActivation?.isActive ? 'danger' : 'success'"
+            (onClick)="activation(!currentFunctionForActivation?.isActive)" [disabled]="!!(isLoading$ | async)">
+            <ng-container *ngIf="isLoading$ | async">
+                <span class="indicator-progress" [style.display]="'block'">
+                    Please wait
+                    <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
+                </span>
+            </ng-container>
+            <ng-container *ngIf="(isLoading$ | async) === false">
+                <span>{{ currentFunctionForActivation?.isActive ? 'Deactivate' : 'Activate' }}</span>
+            </ng-container>
+        </p-button>
+    </ng-template>
+</p-dialog>
+
+<!-- Function Logo Dialog -->
+<app-function-logo [(visible)]="logoDialogVisible" [functionId]="currentFunctionForLogo?.id || 0"
+    [functionName]="currentFunctionForLogo?.name || ''" (logoUpdated)="onLogoUpdated()">
+</app-function-logo>
