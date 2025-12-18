@@ -3,11 +3,11 @@ import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
-import { SettingsConfigurationsService } from '../../../services/settings-configurations.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
-import { Module, Function } from '../../../models/settings-configurations.model';
 import { FileUpload } from 'primeng/fileupload';
+import { SettingsConfigurationsService } from '../../../erp-functions/services/settings-configurations.service';
+import { Function, Module } from 'src/app/modules/system-administration/settings-configurations.model';
 
 @Component({
     selector: 'app-module-details',
@@ -56,7 +56,7 @@ export class ModuleDetailsComponent implements OnInit, OnDestroy {
                 summary: 'Error',
                 detail: 'Invalid module ID.'
             });
-            this.router.navigate(['/company-administration/settings-configurations/modules/list']);
+            this.router.navigate(['/system-administration/erp-modules/list']);
             return;
         }
 
@@ -163,11 +163,11 @@ export class ModuleDetailsComponent implements OnInit, OnDestroy {
     }
 
     navigateBack(): void {
-        this.router.navigate(['/company-administration/settings-configurations/modules/list']);
+        this.router.navigate(['/system-administration/erp-modules/list']);
     }
 
     editModule(): void {
-        this.router.navigate(['/company-administration/settings-configurations/modules', this.moduleId, 'edit']);
+        this.router.navigate(['/system-administration/erp-modules', this.moduleId, 'edit']);
     }
 
     onLogoUpload(event: any): void {
@@ -261,15 +261,52 @@ export class ModuleDetailsComponent implements OnInit, OnDestroy {
     }
 
     removeLogo(): void {
-        // Note: API documentation doesn't show a Remove_Module_Logo endpoint
-        // This might need to be implemented by uploading an empty logo or the API might support it
-        // For now, we'll show a message that removal is not supported
-        this.messageService.add({
-            severity: 'warn',
-            summary: 'Not Supported',
-            detail: 'Logo removal is not currently supported. Please contact support.',
-            life: 3000
+        if (!this.moduleId || this.moduleId === 0) {
+            return;
+        }
+
+        this.uploadingLogo = true;
+
+        // Send empty string to remove the logo
+        const sub = this.settingsConfigurationsService.setModuleLogo(
+            this.moduleId,
+            'png',
+            ''
+        ).subscribe({
+            next: (response: any) => {
+                if (!response?.success) {
+                    // Check if error is ERP11409 (empty contents) - this is expected for removal
+                    const errorCode = String(response?.message || '');
+                    if (errorCode === 'ERP11409') {
+                        // API accepted empty string as removal
+                        this.messageService.add({
+                            severity: 'success',
+                            summary: 'Success',
+                            detail: 'Logo removed successfully.',
+                            life: 3000
+                        });
+                        this.loadLogo();
+                    } else {
+                        this.handleLogoUploadError(response);
+                    }
+                    return;
+                }
+
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Success',
+                    detail: 'Logo removed successfully.',
+                    life: 3000
+                });
+
+                this.loadLogo();
+            },
+            complete: () => {
+                this.uploadingLogo = false;
+            }
         });
+
+        this.subscriptions.push(sub);
     }
 
     private handleLogoUploadError(response: any): void | null {

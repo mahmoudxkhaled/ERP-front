@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
-import { SettingsConfigurationsService } from '../../../services/settings-configurations.service';
+import { SettingsConfigurationsService } from '../../services/settings-configurations.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { textFieldValidator, getTextFieldError } from 'src/app/core/validators/text-field.validator';
@@ -131,7 +131,7 @@ export class FunctionFormComponent implements OnInit, OnDestroy {
                         summary: 'Success',
                         detail: 'Function updated successfully.'
                     });
-                    this.router.navigate(['/company-administration/settings-configurations/functions', this.functionId]);
+                    this.router.navigate(['/system-administration/erp-functions', this.functionId]);
                 },
                 complete: () => this.loading = false
             });
@@ -155,9 +155,9 @@ export class FunctionFormComponent implements OnInit, OnDestroy {
                     detail: 'Function created successfully.'
                 });
                 if (newFunctionId) {
-                    this.router.navigate(['/company-administration/settings-configurations/functions', newFunctionId]);
+                    this.router.navigate(['/system-administration/erp-functions', newFunctionId]);
                 } else {
-                    this.router.navigate(['/company-administration/settings-configurations/functions/list']);
+                    this.router.navigate(['/system-administration/erp-functions/list']);
                 }
             },
             complete: () => this.loading = false
@@ -167,7 +167,7 @@ export class FunctionFormComponent implements OnInit, OnDestroy {
     }
 
     cancel(): void {
-        this.router.navigate(['/company-administration/settings-configurations/functions/list']);
+        this.router.navigate(['/system-administration/erp-functions/list']);
     }
 
     get f() {

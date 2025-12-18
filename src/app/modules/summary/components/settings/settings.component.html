@@ -1,0 +1,586 @@
+<p-toast></p-toast>
+
+<p-tabView [(activeIndex)]="activeTabIndex">
+    <!-- Account Settings Tab (Password + 2FA) -->
+    <p-tabPanel [header]="translate.getInstant('settings.tabs.accountSettings')">
+        <div class="p-4">
+            <!-- Change Password Section -->
+            <p-panel [header]="translate.getInstant('profile.password.changePassword')" class="mb-4">
+                <form [formGroup]="changePasswordForm" (ngSubmit)="onChangePassword()">
+                    <div class="grid">
+                        <!-- Old Password -->
+                        <div class="col-12 md:col-4">
+                            <label class="block text-sm font-medium mb-2">
+                                <i class="pi pi-lock mr-2 text-blue-500"></i>
+                                {{ translate.getInstant('profile.password.oldPassword') }}
+                            </label>
+                            <div class="p-input-icon-right"
+                                style="position: relative; display: flex; align-items: center;">
+                                <input pInputText [type]="showOldPassword ? 'text' : 'password'"
+                                    formControlName="oldPassword"
+                                    [placeholder]="translate.getInstant('profile.password.enterOldPassword')"
+                                    class="w-full" style="padding-right: 40px;" (keyup)="validateAllPasswordFields()"
+                                    [ngClass]="{'ng-invalid ng-dirty': changePasswordForm.get('oldPassword')?.invalid && changePasswordForm.get('oldPassword')?.touched}">
+                                <i [class]="showOldPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"
+                                    (click)="togglePasswordVisibility('old')"
+                                    style="cursor: pointer; position: absolute; right: 12px; color: #6c757d; font-size: 1rem;">
+                                </i>
+                            </div>
+                            <small class="p-error"
+                                *ngIf="changePasswordForm.get('oldPassword')?.errors?.['required'] && changePasswordForm.get('oldPassword')?.touched">
+                                {{ translate.getInstant('profile.password.errors.oldPasswordRequired') }}
+                            </small>
+                            <small class="p-error"
+                                *ngIf="changePasswordForm.get('oldPassword')?.errors?.['oldPasswordWrong'] && changePasswordForm.get('oldPassword')?.touched">
+                                {{ translate.getInstant('profile.password.errors.oldPasswordWrong') }}
+                            </small>
+                        </div>
+
+                        <!-- New Password -->
+                        <div class="col-12 md:col-4">
+                            <label class="block text-sm font-medium mb-2">
+                                <i class="pi pi-key mr-2 text-blue-500"></i>
+                                {{ translate.getInstant('profile.password.newPassword') }}
+                            </label>
+                            <div class="p-input-icon-right"
+                                style="position: relative; display: flex; align-items: center;">
+                                <input pInputText [type]="showNewPassword ? 'text' : 'password'"
+                                    formControlName="newPassword"
+                                    [placeholder]="translate.getInstant('profile.password.enterNewPassword')"
+                                    class="w-full" style="padding-right: 40px;" (keyup)="validateAllPasswordFields()"
+                                    [ngClass]="{'ng-invalid ng-dirty': changePasswordForm.get('newPassword')?.invalid && changePasswordForm.get('newPassword')?.touched}">
+                                <i [class]="showNewPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"
+                                    (click)="togglePasswordVisibility('new')"
+                                    style="cursor: pointer; position: absolute; right: 12px; color: #6c757d; font-size: 1rem;">
+                                </i>
+                            </div>
+
+                            <!-- Password Length Indicator -->
+                            <div *ngIf="getPasswordLength() > 0" style="margin-top: 0.5rem; margin-bottom: 0.75rem;">
+                                <span [style.color]="checkPasswordLength() ? '#22c55e' : '#6b7280'"
+                                    [style.font-weight]="checkPasswordLength() ? '600' : '400'"
+                                    [style.font-size]="'1rem'">
+                                    {{ getPasswordLength() }}
+                                </span>
+                            </div>
+
+                            <!-- Real-time Password Validation Rules -->
+                            <div *ngIf="changePasswordForm.get('newPassword')?.value" style="margin-top: 0.5rem;">
+                                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                    <i [class]="checkPasswordLength() ? 'pi pi-check-circle' : 'pi pi-circle'"
+                                        [style.color]="checkPasswordLength() ? '#22c55e' : '#6b7280'"
+                                        style="font-size: 1rem;"></i>
+                                    <span [style.color]="checkPasswordLength() ? '#22c55e' : '#6b7280'"
+                                        style="font-size: 0.875rem;">
+                                        {{ translate.getInstant('profile.password.requirements.between8to15') }}
+                                    </span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                    <i [class]="checkStartsWithLetter() ? 'pi pi-check-circle' : 'pi pi-circle'"
+                                        [style.color]="checkStartsWithLetter() ? '#22c55e' : '#6b7280'"
+                                        style="font-size: 1rem;"></i>
+                                    <span [style.color]="checkStartsWithLetter() ? '#22c55e' : '#6b7280'"
+                                        style="font-size: 0.875rem;">
+                                        {{ translate.getInstant('profile.password.requirements.startsWithLetter') }}
+                                    </span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                    <i [class]="checkHasUppercaseAndLowercase() ? 'pi pi-check-circle' : 'pi pi-circle'"
+                                        [style.color]="checkHasUppercaseAndLowercase() ? '#22c55e' : '#6b7280'"
+                                        style="font-size: 1rem;"></i>
+                                    <span [style.color]="checkHasUppercaseAndLowercase() ? '#22c55e' : '#6b7280'"
+                                        style="font-size: 0.875rem;">
+                                        {{ translate.getInstant('profile.password.requirements.uppercaseAndLowercase')
+                                        }}
+                                    </span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                    <i [class]="checkHasNumber() ? 'pi pi-check-circle' : 'pi pi-circle'"
+                                        [style.color]="checkHasNumber() ? '#22c55e' : '#6b7280'"
+                                        style="font-size: 1rem;"></i>
+                                    <span [style.color]="checkHasNumber() ? '#22c55e' : '#6b7280'"
+                                        style="font-size: 0.875rem;">
+                                        {{ translate.getInstant('profile.password.requirements.atLeastOneNumber') }}
+                                    </span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                    <i [class]="checkHasSpecialChar() ? 'pi pi-check-circle' : 'pi pi-circle'"
+                                        [style.color]="checkHasSpecialChar() ? '#22c55e' : '#6b7280'"
+                                        style="font-size: 1rem;"></i>
+                                    <span [style.color]="checkHasSpecialChar() ? '#22c55e' : '#6b7280'"
+                                        style="font-size: 0.875rem;">
+                                        {{ translate.getInstant('profile.password.requirements.atLeastOneSpecial') }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Error Messages for other validations -->
+                            <div class="validation-messages mt-2"
+                                *ngIf="changePasswordForm.get('newPassword')?.invalid && (changePasswordForm.get('newPassword')?.dirty || changePasswordForm.get('newPassword')?.touched)">
+                                <small class="p-error block"
+                                    *ngIf="changePasswordForm.get('newPassword')?.errors?.['required']">
+                                    {{ translate.getInstant('profile.password.errors.newPasswordRequired') }}
+                                </small>
+                                <small class="p-error block"
+                                    *ngIf="changePasswordForm.get('newPassword')?.errors?.['passwordSameAsOld']">
+                                    {{ translate.getInstant('profile.password.errors.passwordSameAsOld') }}
+                                </small>
+                                <small class="p-error block"
+                                    *ngIf="changePasswordForm.get('newPassword')?.errors?.['passwordFormatIncompliant']">
+                                    {{ translate.getInstant('profile.password.errors.passwordFormatIncompliant') }}
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="col-12 md:col-4">
+                            <label class="block text-sm font-medium mb-2">
+                                <i class="pi pi-check-circle mr-2 text-blue-500"></i>
+                                {{ translate.getInstant('profile.password.confirmPassword') }}
+                            </label>
+                            <div class="p-input-icon-right"
+                                style="position: relative; display: flex; align-items: center;">
+                                <input pInputText [type]="showConfirmPassword ? 'text' : 'password'"
+                                    formControlName="confirmPassword"
+                                    [placeholder]="translate.getInstant('profile.password.confirmNewPassword')"
+                                    class="w-full" style="padding-right: 40px;" (keyup)="validateAllPasswordFields()"
+                                    [ngClass]="{'ng-invalid ng-dirty': changePasswordForm.get('confirmPassword')?.invalid && changePasswordForm.get('confirmPassword')?.touched}">
+                                <i [class]="showConfirmPassword ? 'pi pi-eye-slash' : 'pi pi-eye'"
+                                    (click)="togglePasswordVisibility('confirm')"
+                                    style="cursor: pointer; position: absolute; right: 12px; color: #6c757d; font-size: 1rem;">
+                                </i>
+                            </div>
+                            <small class="p-error"
+                                *ngIf="changePasswordForm.get('confirmPassword')?.errors?.['passwordMismatch'] && changePasswordForm.get('confirmPassword')?.touched">
+                                {{ translate.getInstant('profile.password.errors.passwordsMismatch') }}
+                            </small>
+                            <small class="p-error"
+                                *ngIf="changePasswordForm.get('confirmPassword')?.errors?.['required'] && changePasswordForm.get('confirmPassword')?.touched">
+                                {{ translate.getInstant('profile.password.errors.confirmPasswordRequired') }}
+                            </small>
+                        </div>
+                    </div>
+                    <div class="flex justify-content-end mt-3">
+                        <p-button severity="success" type="submit"
+                            [disabled]="changePasswordForm.invalid || isChangingPassword">
+                            <ng-container *ngIf="isChangingPassword">
+                                <span class="indicator-progress" [style.display]="'block'">
+                                    Please wait
+                                    <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
+                                </span>
+                            </ng-container>
+                            <ng-container *ngIf="!isChangingPassword">
+                                <span>
+                                    <i class="pi pi-save mr-2"></i>
+                                    {{ translate.getInstant('profile.password.changePassword') }}
+                                </span>
+                            </ng-container>
+                        </p-button>
+                    </div>
+                </form>
+            </p-panel>
+
+
+            <hr>
+            <!-- 2FA Settings Section -->
+            <p-panel [header]="translate.getInstant('profile.twoFactor.title')" class="mb-4">
+                <div class="flex align-items-center justify-content-between mb-3">
+                    <div>
+                        <h3 class="text-lg font-semibold mb-2">{{ translate.getInstant('profile.twoFactor.status') }}
+                        </h3>
+                        <p class="text-gray-600">
+                            {{ twoFactorEnabled ? translate.getInstant('profile.twoFactor.enabled') :
+                            translate.getInstant('profile.twoFactor.disabled') }}
+                        </p>
+                    </div>
+                    <p-button [severity]="twoFactorEnabled ? 'danger' : 'success'" (onClick)="toggle2FA()"
+                        [disabled]="isToggling2FA">
+                        <ng-container *ngIf="isToggling2FA">
+                            <span class="indicator-progress" [style.display]="'block'">
+                                Please wait
+                                <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
+                            </span>
+                        </ng-container>
+                        <ng-container *ngIf="!isToggling2FA">
+                            <span>
+                                <i [class]="twoFactorEnabled ? 'pi pi-times mr-2' : 'pi pi-shield mr-2'"></i>
+                                {{ twoFactorEnabled ? translate.getInstant('profile.twoFactor.disable') :
+                                translate.getInstant('profile.twoFactor.enable') }}
+                            </span>
+                        </ng-container>
+                    </p-button>
+                </div>
+            </p-panel>
+        </div>
+    </p-tabPanel>
+
+    <!-- Layout & Theme Tab -->
+    <p-tabPanel [header]="translate.getInstant('settings.tabs.layoutTheme')">
+        <app-config></app-config>
+    </p-tabPanel>
+
+
+
+    <!-- Entity Settings Tab -->
+    <p-tabPanel [header]="translate.getInstant('settings.tabs.entitySettings')" *appHasRole="[1, 2, 3]">
+        <div class="p-4">
+            <div *ngIf="loadingEntitySettings" class="flex justify-content-center align-items-center"
+                style="min-height: 300px;">
+                <p-progressSpinner></p-progressSpinner>
+            </div>
+
+            <div *ngIf="!loadingEntitySettings">
+                <!-- Actual Entity Settings from API -->
+                <p-panel [header]="translate.getInstant('settings.entitySettings.title')" class="mb-4"
+                    *ngIf="hasEntitySettings()">
+                    <div class="grid">
+                        <!-- Dynamic fields based on API response -->
+                        <div class="col-12" *ngFor="let key of getEntitySettingsKeys()">
+                            <label class="block text-sm font-medium mb-2">
+                                <i class="pi pi-cog mr-2 text-blue-500"></i>
+                                {{ key }}
+                            </label>
+                            <input pInputText [value]="entitySettings[key]" class="w-full" readonly>
+                        </div>
+                    </div>
+                </p-panel>
+
+                <!-- Empty State -->
+                <div *ngIf="!hasEntitySettings()" class="mb-4 p-4 surface-100 border-round text-center">
+                    <i class="pi pi-info-circle text-4xl text-gray-400 mb-3"></i>
+                    <p class="text-lg font-semibold text-gray-600 mb-2">
+                        {{ translate.getInstant('settings.entitySettings.noSettings') }}
+                    </p>
+                    <p class="text-sm text-gray-500">
+                        {{ translate.getInstant('settings.entitySettings.noSettingsNote') }}
+                    </p>
+                </div>
+
+                <!-- Divider -->
+                <p-divider *ngIf="!hasEntitySettings()">
+                    <span class="text-gray-500 text-sm">
+                        <i class="pi pi-info-circle mr-2"></i>
+                        {{ translate.getInstant('settings.entitySettings.recommendedSettings') }}
+                    </span>
+                </p-divider>
+
+                <!-- Recommended Settings (Not in API yet) -->
+                <p-panel [header]="translate.getInstant('settings.entitySettings.recommendedSettings')"
+                    class="mb-4 mt-4">
+                    <div class="mb-3 p-3 surface-100 border-round">
+                        <p class="text-sm text-gray-600 m-0">
+                            <i class="pi pi-info-circle mr-2"></i>
+                            {{ translate.getInstant('settings.entitySettings.recommendedSettingsNote') }}
+                        </p>
+                    </div>
+
+                    <div class="grid">
+                        <!-- Default Language -->
+                        <div class="col-12 md:col-6">
+                            <label class="block text-sm font-medium mb-2">
+                                <i class="pi pi-globe mr-2 text-gray-400"></i>
+                                {{ translate.getInstant('settings.entitySettings.defaultLanguage') }}
+                            </label>
+                            <p-dropdown [options]="entityLanguageOptions" [(ngModel)]="entityDefaultLanguage"
+                                optionLabel="label" optionValue="value"
+                                [placeholder]="translate.getInstant('settings.entitySettings.selectLanguage')"
+                                class="w-full p-fluid" [disabled]="true">
+                            </p-dropdown>
+                        </div>
+
+                        <!-- Layout Preference -->
+                        <div class="col-12 md:col-6">
+                            <label class="block text-sm font-medium mb-2">
+                                <i class="pi pi-th-large mr-2 text-gray-400"></i>
+                                {{ translate.getInstant('settings.entitySettings.layoutPreference') }}
+                            </label>
+                            <p-dropdown [options]="entityLayoutOptions" [(ngModel)]="entityLayoutPreference"
+                                optionLabel="label" optionValue="value"
+                                [placeholder]="translate.getInstant('settings.entitySettings.selectLayout')"
+                                class="w-full p-fluid" [disabled]="true">
+                            </p-dropdown>
+                        </div>
+
+                        <!-- Appearance Theme -->
+                        <div class="col-12 md:col-6">
+                            <label class="block text-sm font-medium mb-2">
+                                <i class="pi pi-palette mr-2 text-gray-400"></i>
+                                {{ translate.getInstant('settings.entitySettings.appearanceTheme') }}
+                            </label>
+                            <p-dropdown [options]="entityAppearanceOptions" [(ngModel)]="entityAppearanceTheme"
+                                optionLabel="label" optionValue="value"
+                                [placeholder]="translate.getInstant('settings.entitySettings.selectTheme')"
+                                class="w-full p-fluid" [disabled]="true">
+                            </p-dropdown>
+                        </div>
+
+                        <!-- Date Format -->
+                        <div class="col-12 md:col-6">
+                            <label class="block text-sm font-medium mb-2">
+                                <i class="pi pi-calendar mr-2 text-gray-400"></i>
+                                {{ translate.getInstant('settings.entitySettings.dateFormat') }}
+                            </label>
+                            <p-dropdown [options]="entityDateFormatOptions" [(ngModel)]="entityDateFormat"
+                                optionLabel="label" optionValue="value"
+                                [placeholder]="translate.getInstant('settings.entitySettings.selectDateFormat')"
+                                class="w-full p-fluid" [disabled]="true">
+                            </p-dropdown>
+                        </div>
+
+                        <!-- Time Format -->
+                        <div class="col-12 md:col-6">
+                            <label class="block text-sm font-medium mb-2">
+                                <i class="pi pi-clock mr-2 text-gray-400"></i>
+                                {{ translate.getInstant('settings.entitySettings.timeFormat') }}
+                            </label>
+                            <p-dropdown [options]="entityTimeFormatOptions" [(ngModel)]="entityTimeFormat"
+                                optionLabel="label" optionValue="value"
+                                [placeholder]="translate.getInstant('settings.entitySettings.selectTimeFormat')"
+                                class="w-full p-fluid" [disabled]="true">
+                            </p-dropdown>
+                        </div>
+
+                        <!-- Currency -->
+                        <div class="col-12 md:col-6">
+                            <label class="block text-sm font-medium mb-2">
+                                <i class="pi pi-dollar mr-2 text-gray-400"></i>
+                                {{ translate.getInstant('settings.entitySettings.currency') }}
+                            </label>
+                            <p-dropdown [options]="entityCurrencyOptions" [(ngModel)]="entityCurrency"
+                                optionLabel="label" optionValue="value"
+                                [placeholder]="translate.getInstant('settings.entitySettings.selectCurrency')"
+                                class="w-full p-fluid" [disabled]="true">
+                            </p-dropdown>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-content-end mt-4">
+                        <p-button [label]="translate.getInstant('shared.actions.save')" icon="pi pi-save"
+                            severity="success" (onClick)="saveEntitySettings()" [loading]="savingEntitySettings"
+                            [disabled]="savingEntitySettings">
+                        </p-button>
+                    </div>
+                </p-panel>
+            </div>
+        </div>
+    </p-tabPanel>
+
+    <!-- System Settings Tab -->
+    <p-tabPanel [header]="translate.getInstant('settings.tabs.systemSettings')" *appHasRole="[1, 2]">
+        <div class="p-4">
+            <div *ngIf="loadingSystemSettings" class="flex justify-content-center align-items-center"
+                style="min-height: 300px;">
+                <p-progressSpinner></p-progressSpinner>
+            </div>
+
+            <div *ngIf="!loadingSystemSettings">
+                <!-- Actual System Settings from API -->
+                <p-panel [header]="translate.getInstant('settings.systemSettings.securitySettings')" class="mb-4">
+                    <div class="grid">
+                        <!-- Session Validity -->
+                        <div class="col-12 md:col-6">
+                            <label class="block text-sm font-medium mb-2">
+                                <i class="pi pi-clock mr-2 text-blue-500"></i>
+                                {{ translate.getInstant('settings.systemSettings.sessionValidity') }}
+                            </label>
+                            <p-inputNumber [(ngModel)]="sessionValidity" [min]="1" [max]="1440" [suffix]="' minutes'"
+                                class="w-full p-fluid">
+                            </p-inputNumber>
+                            <small class="text-gray-500">
+                                {{ translate.getInstant('settings.systemSettings.sessionValidityHint') }}
+                            </small>
+                        </div>
+
+                        <!-- Reset Password Token Validity -->
+                        <div class="col-12 md:col-6">
+                            <label class="block text-sm font-medium mb-2">
+                                <i class="pi pi-key mr-2 text-blue-500"></i>
+                                {{ translate.getInstant('settings.systemSettings.resetPasswordTokenValidity') }}
+                            </label>
+                            <p-inputNumber [(ngModel)]="resetPasswordTokenValidity" [min]="1" [max]="1440"
+                                [suffix]="' minutes'" class="w-full p-fluid">
+                            </p-inputNumber>
+                            <small class="text-gray-500">
+                                {{ translate.getInstant('settings.systemSettings.resetPasswordTokenValidityHint') }}
+                            </small>
+                        </div>
+                    </div>
+                </p-panel>
+
+                <!-- Divider -->
+                <p-divider>
+                    <span class="text-gray-500 text-sm">
+                        <i class="pi pi-info-circle mr-2"></i>
+                        {{ translate.getInstant('settings.systemSettings.recommendedSettings') }}
+                    </span>
+                </p-divider>
+
+                <!-- Recommended Settings (Not in API yet) -->
+                <p-panel [header]="translate.getInstant('settings.systemSettings.recommendedSettings')"
+                    class="mb-4 mt-4">
+                    <div class="mb-3 p-3 surface-100 border-round">
+                        <p class="text-sm text-gray-600 m-0">
+                            <i class="pi pi-info-circle mr-2"></i>
+                            {{ translate.getInstant('settings.systemSettings.recommendedSettingsNote') }}
+                        </p>
+                    </div>
+
+                    <div class="grid">
+                        <!-- Token Expiry -->
+                        <div class="col-12 md:col-6">
+                            <label class="block text-sm font-medium mb-2">
+                                <i class="pi pi-key mr-2 text-gray-400"></i>
+                                {{ translate.getInstant('settings.systemSettings.tokenExpiry') }}
+                            </label>
+                            <p-inputNumber [(ngModel)]="tokenExpiryMinutes" [min]="1" [max]="1440" [suffix]="' minutes'"
+                                class="w-full p-fluid" [disabled]="true">
+                            </p-inputNumber>
+                        </div>
+
+                        <!-- OTP Expiry -->
+                        <div class="col-12 md:col-6">
+                            <label class="block text-sm font-medium mb-2">
+                                <i class="pi pi-shield mr-2 text-gray-400"></i>
+                                {{ translate.getInstant('settings.systemSettings.otpExpiry') }}
+                            </label>
+                            <p-inputNumber [(ngModel)]="otpExpiryMinutes" [min]="1" [max]="60" [suffix]="' minutes'"
+                                class="w-full p-fluid" [disabled]="true">
+                            </p-inputNumber>
+                        </div>
+
+                        <!-- Max Login Attempts -->
+                        <div class="col-12 md:col-6">
+                            <label class="block text-sm font-medium mb-2">
+                                <i class="pi pi-lock mr-2 text-gray-400"></i>
+                                {{ translate.getInstant('settings.systemSettings.maxLoginAttempts') }}
+                            </label>
+                            <p-inputNumber [(ngModel)]="maxLoginAttempts" [min]="3" [max]="10" class="w-full p-fluid"
+                                [disabled]="true">
+                            </p-inputNumber>
+                        </div>
+
+                        <!-- Password Min Length -->
+                        <div class="col-12 md:col-6">
+                            <label class="block text-sm font-medium mb-2">
+                                <i class="pi pi-sort-numeric-up mr-2 text-gray-400"></i>
+                                {{ translate.getInstant('settings.systemSettings.passwordMinLength') }}
+                            </label>
+                            <p-inputNumber [(ngModel)]="passwordMinLength" [min]="6" [max]="20" class="w-full p-fluid"
+                                [disabled]="true">
+                            </p-inputNumber>
+                        </div>
+
+                        <!-- Require Uppercase -->
+                        <div class="col-12 md:col-6">
+                            <label class="block text-sm font-medium mb-2">
+                                <i class="pi pi-check-circle mr-2 text-gray-400"></i>
+                                {{ translate.getInstant('settings.systemSettings.passwordRequireUppercase') }}
+                            </label>
+                            <p-inputSwitch [(ngModel)]="passwordRequireUppercase" [disabled]="true"></p-inputSwitch>
+                        </div>
+
+                        <!-- Require Lowercase -->
+                        <div class="col-12 md:col-6">
+                            <label class="block text-sm font-medium mb-2">
+                                <i class="pi pi-check-circle mr-2 text-gray-400"></i>
+                                {{ translate.getInstant('settings.systemSettings.passwordRequireLowercase') }}
+                            </label>
+                            <p-inputSwitch [(ngModel)]="passwordRequireLowercase" [disabled]="true"></p-inputSwitch>
+                        </div>
+
+                        <!-- Require Numbers -->
+                        <div class="col-12 md:col-6">
+                            <label class="block text-sm font-medium mb-2">
+                                <i class="pi pi-check-circle mr-2 text-gray-400"></i>
+                                {{ translate.getInstant('settings.systemSettings.passwordRequireNumbers') }}
+                            </label>
+                            <p-inputSwitch [(ngModel)]="passwordRequireNumbers" [disabled]="true"></p-inputSwitch>
+                        </div>
+
+                        <!-- Require Special Characters -->
+                        <div class="col-12 md:col-6">
+                            <label class="block text-sm font-medium mb-2">
+                                <i class="pi pi-check-circle mr-2 text-gray-400"></i>
+                                {{ translate.getInstant('settings.systemSettings.passwordRequireSpecialChars') }}
+                            </label>
+                            <p-inputSwitch [(ngModel)]="passwordRequireSpecialChars" [disabled]="true"></p-inputSwitch>
+                        </div>
+                    </div>
+                </p-panel>
+
+                <div class="flex justify-content-end mt-4">
+                    <p-button [label]="translate.getInstant('shared.actions.save')" icon="pi pi-save" severity="success"
+                        (onClick)="saveSystemSettings()" [loading]="savingSystemSettings"
+                        [disabled]="savingSystemSettings">
+                    </p-button>
+                </div>
+            </div>
+        </div>
+    </p-tabPanel>
+
+    <!-- Dashboard Settings Tab -->
+    <p-tabPanel [header]="translate.getInstant('settings.tabs.dashboard')">
+        <app-coming-soon></app-coming-soon>
+    </p-tabPanel>
+</p-tabView>
+
+<!-- Change Password Confirmation Dialog -->
+<p-dialog [(visible)]="showChangePasswordDialog" [modal]="true" [style]="{ width: '500px' }"
+    [header]="translate.getInstant('profile.password.dialog.title')">
+    <div class="flex flex-column align-items-center gap-3">
+        <i class="pi pi-key" style="font-size: 3rem; color: var(--primary-color);"></i>
+        <div class="text-center">
+            <p class="text-lg font-semibold mb-2">
+                {{ translate.getInstant('profile.password.dialog.question') }}
+            </p>
+            <p class="text-gray-600 mb-2">
+                {{ translate.getInstant('profile.password.dialog.message') }}
+            </p>
+            <p class="text-gray-600 mb-2">
+                <strong>{{ translate.getInstant('profile.password.dialog.important') }}</strong> {{
+                translate.getInstant('profile.password.dialog.importantMessage') }}
+            </p>
+        </div>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button [label]="translate.getInstant('profile.password.dialog.cancel')" icon="pi pi-times"
+            severity="secondary" (onClick)="cancelChangePassword()" class="p-button-text"></p-button>
+        <p-button [label]="translate.getInstant('profile.password.dialog.confirm')" icon="pi pi-check"
+            severity="success" (onClick)="confirmChangePassword()"></p-button>
+    </ng-template>
+</p-dialog>
+
+<!-- 2FA Confirmation Dialog -->
+<p-dialog [(visible)]="show2FADialog" [modal]="true" [style]="{ width: '500px' }"
+    [header]="twoFactorEnabled ? translate.getInstant('profile.twoFactor.dialog.disableTitle') : translate.getInstant('profile.twoFactor.dialog.enableTitle')">
+    <div class="flex flex-column align-items-center gap-3">
+        <i [class]="twoFactorEnabled ? 'pi pi-exclamation-triangle' : 'pi pi-shield'"
+            style="font-size: 3rem; color: var(--primary-color);"></i>
+        <div class="text-center">
+            <p class="text-lg font-semibold mb-2">
+                {{ twoFactorEnabled ? translate.getInstant('profile.twoFactor.dialog.disableTitle') :
+                translate.getInstant('profile.twoFactor.dialog.enableTitle') }}
+            </p>
+            <p class="text-gray-600 mb-2">
+                {{ twoFactorEnabled
+                ? translate.getInstant('profile.twoFactor.dialog.disableMessage')
+                : translate.getInstant('profile.twoFactor.dialog.enableMessage') }}
+            </p>
+            <p class="text-gray-600 mb-2">
+                <strong>{{ translate.getInstant('profile.twoFactor.dialog.important') }}</strong> {{
+                translate.getInstant('profile.twoFactor.dialog.importantMessage') }}
+            </p>
+        </div>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button [label]="translate.getInstant('profile.twoFactor.dialog.cancel')" icon="pi pi-times"
+            severity="secondary" (onClick)="cancelToggle2FA()" class="p-button-text"
+            [disabled]="isToggling2FA"></p-button>
+        <p-button
+            [label]="twoFactorEnabled ? translate.getInstant('profile.twoFactor.dialog.confirmDisable') : translate.getInstant('profile.twoFactor.dialog.confirmEnable')"
+            [icon]="twoFactorEnabled ? 'pi pi-times' : 'pi pi-check'"
+            [severity]="twoFactorEnabled ? 'danger' : 'success'" (onClick)="confirmToggle2FA()"
+            [disabled]="isToggling2FA">
+        </p-button>
+    </ng-template>
+</p-dialog>

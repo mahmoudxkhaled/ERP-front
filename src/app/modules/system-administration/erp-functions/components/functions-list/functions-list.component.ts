@@ -3,9 +3,9 @@ import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Observable, Subscription } from 'rxjs';
-import { SettingsConfigurationsService } from '../../../services/settings-configurations.service';
+import { SettingsConfigurationsService } from '../../services/settings-configurations.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
-import { Function } from '../../../models/settings-configurations.model';
+import { Function } from '../../models/settings-configurations.model';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
 
 type FunctionActionContext = 'list' | 'activate' | 'deactivate';
@@ -107,13 +107,13 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
 
     edit(functionItem: Function): void {
         if (functionItem.id) {
-            this.router.navigate(['/company-administration/settings-configurations/functions', functionItem.id, 'edit']);
+            this.router.navigate(['/system-administration/erp-functions', functionItem.id, 'edit']);
         }
     }
 
     viewDetails(functionItem: Function): void {
         if (functionItem.id) {
-            this.router.navigate(['/company-administration/settings-configurations/functions', functionItem.id]);
+            this.router.navigate(['/system-administration/erp-functions', functionItem.id]);
         }
     }
 
@@ -198,7 +198,7 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
     }
 
     navigateToNew(): void {
-        this.router.navigate(['/company-administration/settings-configurations/functions/new']);
+        this.router.navigate(['/system-administration/erp-functions/new']);
     }
 
     private configureMenuItems(): void {

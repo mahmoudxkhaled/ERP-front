@@ -3,11 +3,11 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
-import { SettingsConfigurationsService } from '../../../services/settings-configurations.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { textFieldValidator, getTextFieldError } from 'src/app/core/validators/text-field.validator';
-import { Function } from '../../../models/settings-configurations.model';
+import { SettingsConfigurationsService } from 'src/app/modules/system-administration/settings-configurations.service';
+import { Function } from '../../../erp-functions/models/settings-configurations.model';
 
 type ModuleFormContext = 'create' | 'update' | 'details';
 
@@ -164,7 +164,7 @@ export class ModuleFormComponent implements OnInit, OnDestroy {
                         summary: 'Success',
                         detail: 'Module updated successfully.'
                     });
-                    this.router.navigate(['/company-administration/settings-configurations/modules', this.moduleId]);
+                    this.router.navigate(['/system-administration/erp-modules', this.moduleId]);
                 },
                 complete: () => this.loading = false
             });
@@ -192,9 +192,9 @@ export class ModuleFormComponent implements OnInit, OnDestroy {
                     detail: 'Module created successfully.'
                 });
                 if (newModuleId) {
-                    this.router.navigate(['/company-administration/settings-configurations/modules', newModuleId]);
+                    this.router.navigate(['/system-administration/erp-modules', newModuleId]);
                 } else {
-                    this.router.navigate(['/company-administration/settings-configurations/modules/list']);
+                    this.router.navigate(['/system-administration/erp-modules/list']);
                 }
             },
             complete: () => this.loading = false
@@ -204,7 +204,7 @@ export class ModuleFormComponent implements OnInit, OnDestroy {
     }
 
     cancel(): void {
-        this.router.navigate(['/company-administration/settings-configurations/modules/list']);
+        this.router.navigate(['/system-administration/erp-modules/list']);
     }
 
     // Function Selection Methods

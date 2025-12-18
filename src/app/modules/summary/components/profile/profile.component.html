@@ -1,0 +1,170 @@
+<div class="p-4 card">
+    <p-toast></p-toast>
+
+    <!-- Page Header -->
+    <div class="mb-4">
+        <h1 class="text-3xl font-bold  mb-2">{{ translate.getInstant('dashboard.profile') }}</h1>
+        <p class="text-gray-600">{{ translate.getInstant('profile.description') }}</p>
+    </div>
+
+    <!-- Profile Overview Card -->
+    <p-card [style]="{'border-radius': '16px', 'box-shadow': '0 4px 20px rgba(0,0,0,0.08)'}" class="mb-4">
+        <ng-template pTemplate="header">
+            <div class="p-4 surface-ground border-round-top">
+                <h2 class="  m-0 text-2xl font-bold">
+                    <i class="pi pi-user mr-2"></i>
+                    {{ translate.getInstant('profile.overview') }}
+                </h2>
+            </div>
+        </ng-template>
+        <div class="p-4">
+            <div class="flex flex-column md:flex-row align-items-start md:align-items-center gap-4">
+                <!-- Avatar Section -->
+                <div class="flex-shrink-0">
+                    <p-avatar [image]="profilePictureUrl || 'assets/media/avatar.png'"
+                        [icon]="!profilePictureUrl ? 'pi pi-user' : ''" size="xlarge" shape="circle"
+                        styleClass="border-3 border-white shadow-4" [style]="{'width': '120px', 'height': '120px'}">
+                    </p-avatar>
+                </div>
+
+                <!-- Profile Information -->
+                <div class="flex-1 w-full">
+                    <h3 class="text-3xl font-bold m-0 mb-3 text-900">
+                        {{ profileForm.get('Prefix')?.value }} {{ profileForm.get('First_Name')?.value }}
+                        {{ profileForm.get('Middle_Name')?.value }} {{ profileForm.get('Last_Name')?.value }}
+                    </h3>
+
+                    <!-- Email -->
+                    <div class="flex align-items-center gap-2 mb-3 p-3 surface-100 border-round"
+                        style="background: var(--surface-50);">
+                        <div class="flex align-items-center justify-content-center border-circle bg-primary"
+                            style="width: 40px; height: 40px; min-width: 40px;">
+                            <i class="pi pi-envelope text-white text-lg"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm text-color-secondary m-0 font-medium">{{
+                                translate.getInstant('profile.labels.emailAddress') }}</p>
+                            <p class="text-lg font-semibold m-0 text-900">{{ profileForm.get('Email')?.value }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-3 p-3 surface-100 border-round" *ngIf="profileForm.get('Description')?.value"
+                        style="background: var(--surface-50);">
+                        <div class="flex align-items-start gap-2">
+                            <div class="flex align-items-center justify-content-center border-circle bg-primary"
+                                style="width: 40px; height: 40px; min-width: 40px;">
+                                <i class="pi pi-info-circle text-white text-lg"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm text-color-secondary m-0 mb-1 font-medium">{{
+                                    translate.getInstant('profile.labels.account') }}</p>
+                                <p class="text-base m-0 text-900 line-height-3">{{ profileForm.get('Description')?.value
+                                    }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Company -->
+                    <div class="p-3 surface-100 border-round" *ngIf="profileForm.get('Entity_Name')?.value"
+                        style="background: var(--surface-50);">
+                        <div class="flex align-items-center gap-2">
+                            <div class="flex align-items-center justify-content-center border-circle bg-primary"
+                                style="width: 40px; height: 40px; min-width: 40px;">
+                                <i class="pi pi-building text-white text-lg"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-color-secondary m-0 font-medium">{{
+                                    translate.getInstant('profile.labels.company') }}</p>
+                                <p class="text-lg font-semibold m-0 text-900">{{ profileForm.get('Entity_Name')?.value
+                                    }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </p-card>
+
+    <!-- Profile Form -->
+    <form [formGroup]="profileForm" (ngSubmit)="saveProfileInfo()" *ngIf="profileForm">
+        <div class="grid mt-4">
+            <!-- Personal Information Panel -->
+            <div class="col-12">
+                <p-panel [header]="translate.getInstant('profile.personalInfo')" class="h-full">
+                    <div class="grid">
+                        <!-- Prefix -->
+                        <div class="col-12 md:col-6">
+                            <label class="block text-sm font-medium  mb-2">
+                                <i class="pi pi-user mr-2 text-blue-500"></i>
+                                {{ translate.getInstant('profile.fields.prefix') }}
+                            </label>
+                            <input pInputText formControlName="Prefix"
+                                [placeholder]="translate.getInstant('profile.placeholders.prefix')" class="w-full">
+                        </div>
+
+                        <!-- First Name -->
+                        <div class="col-12 md:col-6">
+                            <label class="block text-sm font-medium  mb-2">
+                                <i class="pi pi-user mr-2 text-blue-500"></i>
+                                {{ translate.getInstant('profile.fields.firstName') }}
+                            </label>
+                            <input pInputText formControlName="First_Name"
+                                [placeholder]="translate.getInstant('profile.placeholders.firstName')" class="w-full">
+                        </div>
+
+                        <!-- Middle Name -->
+                        <div class="col-12 md:col-6">
+                            <label class="block text-sm font-medium  mb-2">
+                                <i class="pi pi-user mr-2 text-blue-500"></i>
+                                {{ translate.getInstant('profile.fields.middleName') }}
+                            </label>
+                            <input pInputText formControlName="Middle_Name"
+                                [placeholder]="translate.getInstant('profile.placeholders.middleName')" class="w-full">
+                        </div>
+
+                        <!-- Last Name -->
+                        <div class="col-12 md:col-6">
+                            <label class="block text-sm font-medium  mb-2">
+                                <i class="pi pi-user mr-2 text-blue-500"></i>
+                                {{ translate.getInstant('profile.fields.lastName') }}
+                            </label>
+                            <input pInputText formControlName="Last_Name"
+                                [placeholder]="translate.getInstant('profile.placeholders.lastName')" class="w-full">
+                        </div>
+
+                        <!-- Email -->
+                        <div class="col-12 md:col-6">
+                            <label class="block text-sm font-medium  mb-2">
+                                <i class="pi pi-envelope mr-2 text-blue-500"></i>
+                                {{ translate.getInstant('profile.fields.email') }}
+                            </label>
+                            <input pInputText formControlName="Email"
+                                [placeholder]="translate.getInstant('profile.placeholders.email')" class="w-full">
+                        </div>
+
+                        <!-- Gender -->
+                        <div class="col-12 md:col-6">
+                            <label class="block text-sm font-medium  mb-2">
+                                <i class="pi pi-users mr-2 text-blue-500"></i>
+                                {{ translate.getInstant('profile.fields.gender') }}
+                            </label>
+                            <p-dropdown [options]="genderOptions" formControlName="Gender" optionLabel="label"
+                                optionValue="value"
+                                [placeholder]="translate.getInstant('profile.placeholders.selectGender')"
+                                class="w-full">
+                            </p-dropdown>
+                        </div>
+
+                        <div class="col-12 md:col-6">
+                            <div class="flex justify-content-start gap-3 my-4">
+                                <p-button [label]="translate.getInstant('profile.actions.save')" icon="pi pi-save"
+                                    severity="success" (onClick)="saveProfileInfo()"></p-button>
+                            </div>
+                        </div>
+                    </div>
+                </p-panel>
+            </div>
+        </div>
+    </form>
+</div>

@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MessageService } from 'primeng/api';
-import { SettingsConfigurationsService } from '../../../services/settings-configurations.service';
 import { FileUpload } from 'primeng/fileupload';
+import { SettingsConfigurationsService } from 'src/app/modules/system-administration/settings-configurations.service';
 
 @Component({
     selector: 'app-module-logo',
@@ -176,15 +176,52 @@ export class ModuleLogoComponent implements OnInit, OnDestroy {
     }
 
     removeLogo(): void {
-        // Note: API documentation doesn't show a Remove_Module_Logo endpoint
-        // This might need to be implemented by uploading an empty logo or the API might support it
-        // For now, we'll show a message that removal is not supported
-        this.messageService.add({
-            severity: 'warn',
-            summary: 'Not Supported',
-            detail: 'Logo removal is not currently supported. Please contact support.',
-            life: 3000
+        if (!this.moduleId || this.moduleId === 0) {
+            return;
+        }
+
+        this.loading = true;
+
+        // Send empty string to remove the logo
+        const sub = this.settingsConfigurationsService.setModuleLogo(
+            this.moduleId,
+            'png',
+            ''
+        ).subscribe({
+            next: (response: any) => {
+                if (!response?.success) {
+                    // Check if error is ERP11409 (empty contents) - this is expected for removal
+                    const errorCode = String(response?.message || '');
+                    if (errorCode === 'ERP11409') {
+                        // API accepted empty string as removal
+                        this.messageService.add({
+                            severity: 'success',
+                            summary: 'Success',
+                            detail: 'Logo removed successfully.',
+                            life: 3000
+                        });
+                        this.logoUpdated.emit();
+                        this.loadLogo();
+                    } else {
+                        this.handleBusinessError(response);
+                    }
+                    return;
+                }
+
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Success',
+                    detail: 'Logo removed successfully.',
+                    life: 3000
+                });
+
+                this.logoUpdated.emit();
+                this.loadLogo();
+            },
+            complete: () => this.loading = false
         });
+
+        this.subscriptions.push(sub);
     }
 
     closeDialog(): void {

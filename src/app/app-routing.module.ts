@@ -17,7 +17,19 @@ const routes: Routes = [
                 path: '',
                 canActivate: [AuthGuard],
                 data: { breadcrumb: 'dashboard' },
-                loadChildren: () => import('./modules/system-administration/dashboard/dashboard.module').then((m) => m.DashboardModule),
+                loadChildren: () => import('./modules/dashboard/dashboard.module').then((m) => m.DashboardModule),
+            },
+            {
+                path: 'summary',
+                canActivate: [AuthGuard],
+                data: { breadcrumb: 'summary' },
+                loadChildren: () => import('./modules/summary/summary.module').then((m) => m.SummaryModule),
+            },
+            {
+                path: 'system-administration',
+                canActivate: [AuthGuard],
+                data: { breadcrumb: 'systemAdministration' },
+                loadChildren: () => import('./modules/system-administration/system-administration.module').then((m) => m.SystemAdministrationModule),
             },
             {
                 path: 'company-administration',

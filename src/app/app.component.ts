@@ -1,5 +1,4 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { Chart } from 'chart.js';
 import { PrimeNGConfig } from 'primeng/api';
 import { Subscription } from 'rxjs';
@@ -24,7 +23,6 @@ export class AppComponent implements OnInit, OnDestroy {
         private ref: ChangeDetectorRef,
         private networkStatusService: NetworkStatusService,
         private translate: TranslationService,
-        private router: Router,
         private authService: AuthService
     ) {
         this.refreshLoginDataPackage();

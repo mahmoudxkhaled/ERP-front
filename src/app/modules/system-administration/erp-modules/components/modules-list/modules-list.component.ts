@@ -3,10 +3,11 @@ import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Observable, Subscription } from 'rxjs';
-import { SettingsConfigurationsService } from '../../../services/settings-configurations.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
-import { Module, Function } from '../../../models/settings-configurations.model';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
+import { SettingsConfigurationsService } from 'src/app/modules/system-administration/settings-configurations.service';
+import { Function, Module } from '../../../erp-functions/models/settings-configurations.model';
+
 
 type ModuleActionContext = 'list' | 'activate' | 'deactivate';
 
@@ -125,13 +126,13 @@ export class ModulesListComponent implements OnInit, OnDestroy {
 
     edit(moduleItem: Module): void {
         if (moduleItem.id) {
-            this.router.navigate(['/company-administration/settings-configurations/modules', moduleItem.id, 'edit']);
+            this.router.navigate(['/system-administration/erp-modules', moduleItem.id, 'edit']);
         }
     }
 
     viewDetails(moduleItem: Module): void {
         if (moduleItem.id) {
-            this.router.navigate(['/company-administration/settings-configurations/modules', moduleItem.id]);
+            this.router.navigate(['/system-administration/erp-modules', moduleItem.id]);
         }
     }
 
@@ -216,7 +217,7 @@ export class ModulesListComponent implements OnInit, OnDestroy {
     }
 
     navigateToNew(): void {
-        this.router.navigate(['/company-administration/settings-configurations/modules/new']);
+        this.router.navigate(['/system-administration/erp-modules/new']);
     }
 
     getFunctionName(functionId: number): string {
