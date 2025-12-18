@@ -243,7 +243,7 @@ export class FunctionDetailsComponent implements OnInit, OnDestroy {
         // Send empty string to remove the logo
         const sub = this.settingsConfigurationsService.setFunctionLogo(
             this.functionId,
-            'png',
+            '',
             ''
         ).subscribe({
             next: (response: any) => {

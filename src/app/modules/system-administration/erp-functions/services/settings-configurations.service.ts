@@ -277,6 +277,7 @@ export class SettingsConfigurationsService {
         this.isLoadingSubject.next(true);
         const quotedBase64String = `"${logoImage}"`;
         const params = [moduleId.toString(), imageFormat, quotedBase64String];
+        console.log('params', params);
         return this.apiServices.callAPI(716, this.getAccessToken(), params).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );

@@ -270,7 +270,7 @@ export class ModuleDetailsComponent implements OnInit, OnDestroy {
         // Send empty string to remove the logo
         const sub = this.settingsConfigurationsService.setModuleLogo(
             this.moduleId,
-            'png',
+            '',
             ''
         ).subscribe({
             next: (response: any) => {

@@ -9,6 +9,7 @@ import { PermissionService } from 'src/app/core/services/permission.service';
 import { textFieldValidator, getTextFieldError, nameFieldValidator, getNameFieldError } from 'src/app/core/validators/text-field.validator';
 import { EntityAccount } from '../../../entities/models/entities.model';
 import { EntitiesService } from '../../../entities/services/entities.service';
+import { RolesService } from '../../../roles/services/roles.service';
 
 
 
@@ -32,6 +33,9 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
 
   accountSettings: IAccountSettings;
   isRegional: boolean = false;
+
+  // Entity roles map for lookup
+  entityRolesMap: Map<number, string> = new Map();
 
   // Confirmation dialogs state
   deleteAccountDialog: boolean = false;
@@ -76,7 +80,8 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     private messageService: MessageService,
     private localStorageService: LocalStorageService,
     private permissionService: PermissionService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private rolesService: RolesService
   ) {
     this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
     this.isRegional = this.accountSettings?.Language !== 'English';
@@ -94,6 +99,8 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['entityId'] && !changes['entityId'].firstChange && this.entityId) {
+      // Clear roles map when entity changes
+      this.entityRolesMap.clear();
       this.loadAccounts();
       if (!this.entityName) {
         this.loadEntity();
@@ -128,8 +135,47 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     this.subscriptions.push(sub);
   }
 
+  /** Fetches entity roles and creates a lookup map. */
+  loadEntityRoles(): void {
+    if (!this.entityId) {
+      return;
+    }
+
+    const entityIdNum = parseInt(this.entityId, 10);
+    if (isNaN(entityIdNum)) {
+      return;
+    }
+
+    const sub = this.rolesService.listEntityRoles(entityIdNum, 0, 100).subscribe({
+      next: (response: any) => {
+        if (response?.success) {
+          const rolesData = response?.message?.Entity_Roles || {};
+          this.entityRolesMap.clear();
+
+          // Create lookup map: Entity_Role_ID -> Role Name
+          Object.values(rolesData).forEach((item: any) => {
+            const roleId = item?.Entity_Role_ID || 0;
+            const roleName = this.isRegional
+              ? (item?.Title_Regional || item?.Title || '')
+              : (item?.Title || '');
+            if (roleId > 0) {
+              this.entityRolesMap.set(roleId, roleName);
+            }
+          });
+        }
+      },
+      error: () => {
+        // If error occurs, clear the map
+        this.entityRolesMap.clear();
+      }
+    });
+
+    this.subscriptions.push(sub);
+  }
 
   loadAccounts(): void {
+    // Load entity roles first, then reload accounts
+    this.loadEntityRoles();
     this.reloadAccounts();
   }
 
@@ -159,7 +205,7 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
           this.handleBusinessError('accounts', response);
           return;
         }
-        console.log(response);
+        console.log('reloadAccounts response', response);
         this.totalRecords = response.message.Total_Count;
         const accountsData = response?.message?.Accounts || {};
         this.mapAccountsData(accountsData);
@@ -184,12 +230,21 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
       const roleName = this.permissionService.getRoleName(systemRoleId);
       const twoFA = account?.Two_FA || false;
       const lastLogin = account?.Last_Login || null;
+
+      // Extract entity role ID and look up role name
+      const entityRoleId = account?.Entity_Role_ID || 0;
+      const entityRoleName = entityRoleId > 0 && this.entityRolesMap.has(entityRoleId)
+        ? this.entityRolesMap.get(entityRoleId) || 'N/A'
+        : 'N/A';
+
       return {
         accountId,
         userId,
         email,
         systemRoleId,
         roleName,
+        entityRoleId,
+        entityRoleName,
         accountState,
         Two_FA: twoFA,
         Last_Login: lastLogin

@@ -47,6 +47,8 @@ export interface EntityAccount {
     email: string;
     systemRoleId: number;
     roleName: string;
+    entityRoleId: number;
+    entityRoleName: string;
     accountState: number; // 1 = Active, 0 = Inactive
     Two_FA: boolean;
     Last_Login: string;
