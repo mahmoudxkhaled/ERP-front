@@ -3,12 +3,12 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { Subscription, throwError } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { EntitiesService } from '../../../services/entities.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
-import { EntityAccount, Entity } from '../../../models/entities.model';
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { textFieldValidator, getTextFieldError, nameFieldValidator, getNameFieldError } from 'src/app/core/validators/text-field.validator';
+import { EntityAccount } from '../../../entities/models/entities.model';
+import { EntitiesService } from '../../../entities/services/entities.service';
 
 
 

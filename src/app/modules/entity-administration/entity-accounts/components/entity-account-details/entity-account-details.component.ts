@@ -2,10 +2,10 @@ import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, S
 import { FormControl } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
-import { EntitiesService } from '../../../services/entities.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
-import { EntityAccount } from '../../../models/entities.model';
+import { EntityAccount } from '../../../entities/models/entities.model';
+import { EntitiesService } from '../../../entities/services/entities.service';
 
 @Component({
   selector: 'app-entity-account-details',

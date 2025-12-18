@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { EntitiesService } from '../../../services/entities.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
-import { Entity } from '../../../models/entities.model';
-import { RolesService } from 'src/app/modules/entity-administration/roles/services/roles.service';
+import { Entity } from '../../../entities/models/entities.model';
+import { EntitiesService } from '../../../entities/services/entities.service';
+import { RolesService } from '../../../roles/services/roles.service';
 
 @Component({
   selector: 'app-entity-account-update',
