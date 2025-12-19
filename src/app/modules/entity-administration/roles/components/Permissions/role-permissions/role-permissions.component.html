@@ -1,5 +1,5 @@
 <p-dialog [(visible)]="visible" [modal]="true" [closable]="true" [draggable]="false" [resizable]="false"
-    (onClose)="closeDialog()" [style]="{ width: '900px' }">
+    (onClose)="closeDialog()" (onHide)="onDialogHide()" [style]="{ width: '1200px' , height: '100vh' }">
     <ng-template pTemplate="header">
         <div class="dialog-header">
             <i class="pi pi-cog mr-2 text-primary"></i>
@@ -27,11 +27,11 @@
                         </div>
 
                         <!-- Info Message -->
-                        <div *ngIf="functionsWildcard" class="p-3 border-round surface-border"
+                        <div *ngIf="functionsWildcard" class="p-3 border-round surface-border mb-3"
                             style="background: var(--blue-50); border-left: 4px solid var(--blue-500);">
                             <div class="flex align-items-start gap-2">
-                                <i class="pi pi-info-circle text-blue-500 mt-1"></i>
-                                <div>
+                                <i class="pi pi-info-circle text-blue-500 mt-1" style="font-size: 1.2rem;"></i>
+                                <div class="flex-1">
                                     <p class="text-blue-700 font-semibold m-0 mb-1">Wildcard Mode Active</p>
                                     <p class="text-blue-600 m-0 text-sm">
                                         All functions are allowed. Select functions below to create exceptions (deny
@@ -42,27 +42,22 @@
                         </div>
 
                         <!-- Functions Multi-Select -->
-                        <div class="field">
+                        <div class="field p-fluid">
                             <label>{{ functionsWildcard ? 'Exceptions (Deny These)' : 'Allowed Functions' }}</label>
-                            <p-multiSelect [options]="availableFunctions" [(ngModel)]="selectedFunctions" optionLabel=""
-                                [disabled]="saving" [showClear]="true" [filter]="true" placeholder="Select functions"
-                                display="chip">
-                                <ng-template let-option pTemplate="item">
-                                    Function #{{ option }}
-                                </ng-template>
-                                <ng-template let-option pTemplate="selectedItem">
-                                    #{{ option }}
-                                </ng-template>
+                            <p-multiSelect appendTo="body" [options]="availableFunctions"
+                                [(ngModel)]="selectedFunctions" optionLabel="name" optionValue="id"
+                                [showToggleAll]="false" [disabled]="saving" [filter]="true"
+                                placeholder="Select functions" [maxSelectedLabels]="3" class="w-full">
                             </p-multiSelect>
                         </div>
 
                         <!-- Selected Functions Display -->
-                        <div *ngIf="selectedFunctions.length > 0" class="selected-items">
+                        <div *ngIf="selectedFunctions && selectedFunctions.length > 0" class="selected-items">
                             <small class="text-500 block mb-2">
                                 {{ functionsWildcard ? 'Exceptions' : 'Selected' }} ({{ selectedFunctions.length }})
                             </small>
                             <div class="flex flex-wrap gap-2">
-                                <p-tag *ngFor="let funcId of selectedFunctions" [value]="'#' + funcId"
+                                <p-tag *ngFor="let funcId of selectedFunctions" [value]="getFunctionName(funcId)"
                                     [severity]="functionsWildcard ? 'danger' : 'info'"></p-tag>
                             </div>
                         </div>
@@ -85,11 +80,11 @@
                         </div>
 
                         <!-- Info Message -->
-                        <div *ngIf="modulesWildcard" class="p-3 border-round surface-border"
+                        <div *ngIf="modulesWildcard" class="p-3 border-round surface-border mb-3"
                             style="background: var(--blue-50); border-left: 4px solid var(--blue-500);">
                             <div class="flex align-items-start gap-2">
-                                <i class="pi pi-info-circle text-blue-500 mt-1"></i>
-                                <div>
+                                <i class="pi pi-info-circle text-blue-500 mt-1" style="font-size: 1.2rem;"></i>
+                                <div class="flex-1">
                                     <p class="text-blue-700 font-semibold m-0 mb-1">Wildcard Mode Active</p>
                                     <p class="text-blue-600 m-0 text-sm">
                                         All modules are allowed. Select modules below to create exceptions (deny
@@ -101,27 +96,22 @@
                         </div>
 
                         <!-- Modules Multi-Select -->
-                        <div class="field">
+                        <div class="field p-fluid">
                             <label>{{ modulesWildcard ? 'Exceptions (Deny These)' : 'Allowed Modules' }}</label>
-                            <p-multiSelect [options]="availableModules" [(ngModel)]="selectedModules" optionLabel=""
-                                [disabled]="saving" [showClear]="true" [filter]="true" placeholder="Select modules"
-                                display="chip">
-                                <ng-template let-option pTemplate="item">
-                                    Module #{{ option }}
-                                </ng-template>
-                                <ng-template let-option pTemplate="selectedItem">
-                                    #{{ option }}
-                                </ng-template>
+                            <p-multiSelect appendTo="body" [options]="availableModules" [(ngModel)]="selectedModules"
+                                optionLabel="name" optionValue="id" [showToggleAll]="false" [disabled]="saving"
+                                [showClear]="false" [filter]="true" placeholder="Select modules" [maxSelectedLabels]="3"
+                                class="w-full">
                             </p-multiSelect>
                         </div>
 
                         <!-- Selected Modules Display -->
-                        <div *ngIf="selectedModules.length > 0" class="selected-items">
+                        <div *ngIf="selectedModules && selectedModules.length > 0" class="selected-items">
                             <small class="text-500 block mb-2">
                                 {{ modulesWildcard ? 'Exceptions' : 'Selected' }} ({{ selectedModules.length }})
                             </small>
                             <div class="flex flex-wrap gap-2">
-                                <p-tag *ngFor="let moduleId of selectedModules" [value]="'#' + moduleId"
+                                <p-tag *ngFor="let moduleId of selectedModules" [value]="getModuleName(moduleId)"
                                     [severity]="modulesWildcard ? 'danger' : 'success'"></p-tag>
                             </div>
                         </div>

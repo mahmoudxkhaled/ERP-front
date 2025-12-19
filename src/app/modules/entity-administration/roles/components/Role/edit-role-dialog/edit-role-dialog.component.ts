@@ -144,6 +144,10 @@ export class EditRoleDialogComponent implements OnInit, OnDestroy {
     }
 
     onDialogHide(): void {
+        // Reset form when dialog is hidden (cancel or close)
+        this.form.reset();
+        this.loadingDetails = false;
+        this.saving = false;
         this.onVisibleChange(false);
     }
 

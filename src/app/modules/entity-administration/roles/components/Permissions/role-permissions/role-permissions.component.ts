@@ -21,6 +21,11 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
     set visible(value: boolean) {
         this._visible = value;
         if (value) {
+            // Reset state when opening dialog
+            this.loading = false;
+            this.saving = false;
+            this.loadingFunctions = false;
+            this.loadingModules = false;
             this.prepareDialog();
         }
     }
@@ -38,15 +43,15 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
 
     // Functions
     functions: number[] = [];
-    availableFunctions: number[] = [];
-    selectedFunctions: number[] = [];
+    availableFunctions: any[] = []; // Store full objects with id and name
+    selectedFunctions: number[] = []; // Store IDs for selected items
     functionsWildcard: boolean = false;
     functionsExceptions: number[] = [];
 
     // Modules
     modules: number[] = [];
-    availableModules: number[] = [];
-    selectedModules: number[] = [];
+    availableModules: any[] = []; // Store full objects with id and name
+    selectedModules: number[] = []; // Store IDs for selected items
     modulesWildcard: boolean = false;
     modulesExceptions: number[] = [];
 
@@ -69,14 +74,21 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
     }
 
     private loadAvailableFunctionsAndModules(): void {
+        // Ensure arrays are initialized
+        this.availableFunctions = this.availableFunctions || [];
+        this.availableModules = this.availableModules || [];
+        this.selectedFunctions = this.selectedFunctions || [];
+        this.selectedModules = this.selectedModules || [];
+
         // Load available functions
         const functionsSub = this.settingsConfigurationsService.getFunctionsList().subscribe({
             next: (response) => {
                 if (response?.success) {
-                    const functions = this.settingsConfigurationsService.parseFunctionsList(response, this.isRegional);
-                    // Extract IDs for the multi-select dropdown
-                    this.availableFunctions = functions.map(f => f.id);
+                    // Store full objects with id and name for display
+                    const parsedFunctions = this.settingsConfigurationsService.parseFunctionsList(response, this.isRegional);
+                    this.availableFunctions = parsedFunctions || [];
                 } else {
+                    this.availableFunctions = [];
                     this.messageService.add({
                         severity: 'warn',
                         summary: 'Warning',
@@ -85,6 +97,7 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
                 }
             },
             error: () => {
+                this.availableFunctions = [];
                 this.messageService.add({
                     severity: 'error',
                     summary: 'Error',
@@ -97,10 +110,11 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
         const modulesSub = this.settingsConfigurationsService.getModulesList().subscribe({
             next: (response) => {
                 if (response?.success) {
-                    const modules = this.settingsConfigurationsService.parseModulesList(response, this.isRegional);
-                    // Extract IDs for the multi-select dropdown
-                    this.availableModules = modules.map(m => m.id);
+                    // Store full objects with id and name for display
+                    const parsedModules = this.settingsConfigurationsService.parseModulesList(response, this.isRegional);
+                    this.availableModules = parsedModules || [];
                 } else {
+                    this.availableModules = [];
                     this.messageService.add({
                         severity: 'warn',
                         summary: 'Warning',
@@ -109,6 +123,7 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
                 }
             },
             error: () => {
+                this.availableModules = [];
                 this.messageService.add({
                     severity: 'error',
                     summary: 'Error',
@@ -128,6 +143,13 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
         if (!this.roleId) {
             return;
         }
+        // Ensure arrays are initialized
+        this.selectedFunctions = this.selectedFunctions || [];
+        this.selectedModules = this.selectedModules || [];
+        this.availableFunctions = this.availableFunctions || [];
+        this.availableModules = this.availableModules || [];
+        this.functionsExceptions = this.functionsExceptions || [];
+        this.modulesExceptions = this.modulesExceptions || [];
         this.loadPermissions();
     }
 
@@ -144,20 +166,24 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
         const functionsSub = this.rolesService.getRoleFunctions(Number(this.roleId)).subscribe({
             next: (response: any) => {
                 if (response?.success) {
-                    // Backend now returns full objects, but we need to check the structure
-                    // It might be an array of IDs or an object with Functions property
                     let functionsList: number[] = [];
+
                     if (Array.isArray(response.message)) {
-                        // Direct array of IDs
-                        functionsList = response.message;
+                        // Check if it's an array of objects or array of IDs
+                        if (response.message.length > 0 && typeof response.message[0] === 'object') {
+                            // Array of function objects - extract functionID from each
+                            functionsList = response.message
+                                .map((func: any) => func.functionID || func.Function_ID || func.id)
+                                .filter((id: any) => id !== undefined && id !== null);
+                        } else {
+                            // Array of IDs (numbers)
+                            functionsList = response.message;
+                        }
                     } else if (response.message?.Functions && Array.isArray(response.message.Functions)) {
                         // Nested Functions array
                         functionsList = response.message.Functions;
-                    } else if (response.message && typeof response.message === 'object') {
-                        // If it's an object, we need to extract IDs - but this shouldn't happen for permissions
-                        // Permissions should be arrays of IDs (with wildcard/exception logic)
-                        functionsList = [];
                     }
+
                     this.parsePermissionList(functionsList, 'functions');
                 }
                 this.loadingFunctions = false;
@@ -173,20 +199,24 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
         const modulesSub = this.rolesService.getRoleModules(Number(this.roleId)).subscribe({
             next: (response: any) => {
                 if (response?.success) {
-                    // Backend now returns full objects, but we need to check the structure
-                    // It might be an array of IDs or an object with Modules property
                     let modulesList: number[] = [];
+
                     if (Array.isArray(response.message)) {
-                        // Direct array of IDs
-                        modulesList = response.message;
+                        // Check if it's an array of objects or array of IDs
+                        if (response.message.length > 0 && typeof response.message[0] === 'object') {
+                            // Array of module objects - extract moduleID from each
+                            modulesList = response.message
+                                .map((module: any) => module.moduleID || module.Module_ID || module.id)
+                                .filter((id: any) => id !== undefined && id !== null);
+                        } else {
+                            // Array of IDs (numbers)
+                            modulesList = response.message;
+                        }
                     } else if (response.message?.Modules && Array.isArray(response.message.Modules)) {
                         // Nested Modules array
                         modulesList = response.message.Modules;
-                    } else if (response.message && typeof response.message === 'object') {
-                        // If it's an object, we need to extract IDs - but this shouldn't happen for permissions
-                        // Permissions should be arrays of IDs (with wildcard/exception logic)
-                        modulesList = [];
                     }
+
                     this.parsePermissionList(modulesList, 'modules');
                 }
                 this.loadingModules = false;
@@ -245,24 +275,40 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
     }
 
     toggleFunctionsWildcard(): void {
-        this.functionsWildcard = !this.functionsWildcard;
+        // Note: functionsWildcard is already toggled by two-way binding, so check the NEW state
         if (this.functionsWildcard) {
-            // Switch to wildcard mode: clear selected functions, show exceptions
-            this.selectedFunctions = [...this.functionsExceptions];
+            // Just switched TO wildcard mode (all functions allowed)
+            // Clear all selections - user can then select exceptions if needed
+            this.selectedFunctions = [];
+            this.functionsExceptions = [];
         } else {
-            // Switch to normal mode: use current selected functions
-            this.selectedFunctions = this.functions.filter(id => id > 0);
+            // Just switched FROM wildcard mode (back to normal selection)
+            // Save current exceptions for reference
+            if (this.selectedFunctions.length > 0) {
+                this.functionsExceptions = [...this.selectedFunctions];
+            }
+            // In normal mode, selected items represent allowed functions
+            // Start with empty list - user needs to select which functions are allowed
+            this.selectedFunctions = [];
         }
     }
 
     toggleModulesWildcard(): void {
-        this.modulesWildcard = !this.modulesWildcard;
+        // Note: modulesWildcard is already toggled by two-way binding, so check the NEW state
         if (this.modulesWildcard) {
-            // Switch to wildcard mode: clear selected modules, show exceptions
-            this.selectedModules = [...this.modulesExceptions];
+            // Just switched TO wildcard mode (all modules allowed)
+            // Clear all selections - user can then select exceptions if needed
+            this.selectedModules = [];
+            this.modulesExceptions = [];
         } else {
-            // Switch to normal mode: use current selected modules
-            this.selectedModules = this.modules.filter(id => id > 0);
+            // Just switched FROM wildcard mode (back to normal selection)
+            // Save current exceptions for reference
+            if (this.selectedModules.length > 0) {
+                this.modulesExceptions = [...this.selectedModules];
+            }
+            // In normal mode, selected items represent allowed modules
+            // Start with empty list - user needs to select which modules are allowed
+            this.selectedModules = [];
         }
     }
 
@@ -332,11 +378,45 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
         this.subscriptions.push(modulesSub);
     }
 
+    /**
+     * Get function name by ID
+     */
+    getFunctionName(functionId: number): string {
+        if (!this.availableFunctions || !Array.isArray(this.availableFunctions)) {
+            return `Function #${functionId}`;
+        }
+        const functionObj = this.availableFunctions.find(f => f && f.id === functionId);
+        return functionObj && functionObj.name ? functionObj.name : `Function #${functionId}`;
+    }
+
+    /**
+     * Get module name by ID
+     */
+    getModuleName(moduleId: number): string {
+        if (!this.availableModules || !Array.isArray(this.availableModules)) {
+            return `Module #${moduleId}`;
+        }
+        const moduleObj = this.availableModules.find(m => m && m.id === moduleId);
+        return moduleObj && moduleObj.name ? moduleObj.name : `Module #${moduleId}`;
+    }
+
     closeDialog(): void {
         this.onVisibleChange(false);
     }
 
     onDialogHide(): void {
+        // Reset all state when dialog is hidden
+        this.loading = false;
+        this.saving = false;
+        this.loadingFunctions = false;
+        this.loadingModules = false;
+        // Ensure arrays are never null
+        this.selectedFunctions = this.selectedFunctions || [];
+        this.selectedModules = this.selectedModules || [];
+        this.availableFunctions = this.availableFunctions || [];
+        this.availableModules = this.availableModules || [];
+        this.functionsExceptions = this.functionsExceptions || [];
+        this.modulesExceptions = this.modulesExceptions || [];
         this.onVisibleChange(false);
     }
 

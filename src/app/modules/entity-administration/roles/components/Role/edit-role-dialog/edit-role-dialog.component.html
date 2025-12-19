@@ -1,5 +1,5 @@
 <p-dialog [(visible)]="visible" [modal]="true" [closable]="true" [draggable]="false" [resizable]="false"
-    (onClose)="closeDialog()" [style]="{ width: '520px' }">
+    (onClose)="closeDialog()" (onHide)="onDialogHide()" [style]="{ width: '520px' }">
     <ng-template pTemplate="header">
         <div class="dialog-header">
             <i class="pi pi-pencil mr-2 text-primary"></i>

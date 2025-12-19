@@ -175,6 +175,7 @@ export class RolesService {
         this.isLoadingSubject.next(true);
         const modulesString = this.formatIntegerList(modules);
         const params = [roleId.toString(), modulesString];
+        console.log('params setRoleModules', params);
         return this.apiServices.callAPI(612, this.getAccessToken(), params).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );

@@ -28,6 +28,7 @@ export class RoleDetailsComponent implements OnInit, OnDestroy {
     functionsList: Function[] = [];
     modulesList: Module[] = [];
     permissionsDialogVisible: boolean = false;
+    editRoleDialogVisible: boolean = false;
 
     accountSettings: IAccountSettings;
     isRegional: boolean = false;
@@ -77,6 +78,8 @@ export class RoleDetailsComponent implements OnInit, OnDestroy {
                     return;
                 }
 
+
+
                 const role = response?.message || {};
                 this.roleDetails = {
                     id: String(role?.Entity_Role_ID || ''),
@@ -111,19 +114,34 @@ export class RoleDetailsComponent implements OnInit, OnDestroy {
     }
 
     loadFunctions(): void {
-        // Backend now returns full function objects directly
+        // Load role functions - API returns array of objects with functionID
         const sub = this.rolesService.getRoleFunctions(Number(this.roleId)).subscribe({
             next: (response: any) => {
                 if (response?.success) {
-                    // Parse the response to get function objects
-                    const functionsList = this.settingsConfigurationsService.parseFunctionsList(
-                        response,
-                        this.isRegional
-                    );
-                    this.functionsList = functionsList;
+                    let functionIds: number[] = [];
 
-                    // Extract IDs from the function objects
-                    this.functions = functionsList.map(f => f.id);
+                    // Handle new API response structure
+                    if (Array.isArray(response.message)) {
+                        if (response.message.length > 0 && typeof response.message[0] === 'object') {
+                            // Array of objects - extract functionID from each
+                            functionIds = response.message
+                                .map((item: any) => item.functionID || item.Function_ID || item.id)
+                                .filter((id: any) => id !== undefined && id !== null);
+                            // Get unique function IDs
+                            functionIds = [...new Set(functionIds)];
+                        } else {
+                            // Array of IDs (numbers)
+                            functionIds = [...new Set(response.message as number[])];
+                        }
+                    } else if (response.message?.Functions && Array.isArray(response.message.Functions)) {
+                        // Nested Functions array
+                        functionIds = [...new Set(response.message.Functions as number[])];
+                    }
+
+                    this.functions = functionIds;
+
+                    // Load full function details to get names
+                    this.loadFunctionDetails(functionIds);
 
                     if (this.roleDetails) {
                         this.roleDetails.functions = this.functions;
@@ -137,20 +155,52 @@ export class RoleDetailsComponent implements OnInit, OnDestroy {
         this.subscriptions.push(sub);
     }
 
-    loadModules(): void {
-        // Backend now returns full module objects directly
-        const sub = this.rolesService.getRoleModules(Number(this.roleId)).subscribe({
+    loadFunctionDetails(functionIds: number[]): void {
+        // Load all available functions to get names
+        const sub = this.settingsConfigurationsService.getFunctionsList().subscribe({
             next: (response: any) => {
                 if (response?.success) {
-                    // Parse the response to get module objects
-                    const modulesList = this.settingsConfigurationsService.parseModulesList(
+                    const allFunctions = this.settingsConfigurationsService.parseFunctionsList(
                         response,
                         this.isRegional
                     );
-                    this.modulesList = modulesList;
+                    // Filter to only include functions that are assigned to this role
+                    this.functionsList = allFunctions.filter((f: Function) => functionIds.includes(f.id)) as Function[];
+                }
+            }
+        });
+        this.subscriptions.push(sub);
+    }
 
-                    // Extract IDs from the module objects
-                    this.modules = modulesList.map(m => m.id);
+    loadModules(): void {
+        // Load role modules - API returns array of objects with moduleID
+        const sub = this.rolesService.getRoleModules(Number(this.roleId)).subscribe({
+            next: (response: any) => {
+                if (response?.success) {
+                    let moduleIds: number[] = [];
+
+                    // Handle new API response structure
+                    if (Array.isArray(response.message)) {
+                        if (response.message.length > 0 && typeof response.message[0] === 'object') {
+                            // Array of objects - extract moduleID from each
+                            moduleIds = response.message
+                                .map((item: any) => item.moduleID || item.Module_ID || item.id)
+                                .filter((id: any) => id !== undefined && id !== null);
+                            // Get unique module IDs
+                            moduleIds = [...new Set(moduleIds)];
+                        } else {
+                            // Array of IDs (numbers)
+                            moduleIds = [...new Set(response.message as number[])];
+                        }
+                    } else if (response.message?.Modules && Array.isArray(response.message.Modules)) {
+                        // Nested Modules array
+                        moduleIds = [...new Set(response.message.Modules as number[])];
+                    }
+
+                    this.modules = moduleIds;
+
+                    // Load full module details to get names
+                    this.loadModuleDetails(moduleIds);
 
                     if (this.roleDetails) {
                         this.roleDetails.modules = this.modules;
@@ -159,6 +209,23 @@ export class RoleDetailsComponent implements OnInit, OnDestroy {
             },
             error: () => {
                 // Handle error silently or show message if needed
+            }
+        });
+        this.subscriptions.push(sub);
+    }
+
+    loadModuleDetails(moduleIds: number[]): void {
+        // Load all available modules to get names
+        const sub = this.settingsConfigurationsService.getModulesList().subscribe({
+            next: (response: any) => {
+                if (response?.success) {
+                    const allModules = this.settingsConfigurationsService.parseModulesList(
+                        response,
+                        this.isRegional
+                    );
+                    // Filter to only include modules that are assigned to this role
+                    this.modulesList = allModules.filter((m: Module) => moduleIds.includes(m.id)) as Module[];
+                }
             }
         });
         this.subscriptions.push(sub);
@@ -190,16 +257,13 @@ export class RoleDetailsComponent implements OnInit, OnDestroy {
         }
     }
 
-    editRole(): void {
-        // Include entityId as query param if we have it
-        const queryParams: any = {};
-        const routeEntityId = this.route.snapshot.queryParams['entityId'];
-        if (routeEntityId) {
-            queryParams.entityId = routeEntityId;
-        } else if (this.roleDetails?.entityId) {
-            queryParams.entityId = this.roleDetails.entityId;
-        }
-        this.router.navigate(['/company-administration/roles', this.roleId, 'edit'], { queryParams });
+    openEditRoleDialog(): void {
+        this.editRoleDialogVisible = true;
+    }
+
+    handleRoleUpdated(): void {
+        // Reload role details after update
+        this.loadAllData();
     }
 
     openPermissionsDialog(): void {

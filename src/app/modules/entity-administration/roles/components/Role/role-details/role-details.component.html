@@ -25,41 +25,70 @@
                                 <span class="text-xl font-semibold">Role Profile</span>
                             </div>
                             <div class="flex gap-2">
-                                <p-button label="Manage Permissions" icon="pi pi-cog" size="small" severity="contrast"
-                                    (onClick)="openPermissionsDialog()" [disabled]="loading">
-                                </p-button>
                                 <p-button label="Edit Role" icon="pi pi-pencil" size="small" severity="contrast"
-                                    (onClick)="editRole()" [disabled]="loading">
+                                    (onClick)="openEditRoleDialog()" [disabled]="loading">
                                 </p-button>
                             </div>
                         </div>
                     </ng-template>
 
                     <div class="p-5">
-                        <div class="grid">
-                            <div class="col-12 md:col-6">
-                                <div class="flex flex-column gap-3">
-                                    <div>
-                                        <small class="text-500">Role ID</small>
-                                        <p class="mt-1 text-700 font-medium">#{{ roleDetails.id }}</p>
+                        <div class="role-profile-vertical">
+                            <!-- Role ID -->
+                            <div class="info-item">
+                                <div class="info-header">
+                                    <div class="info-icon">
+                                        <i class="pi pi-hashtag"></i>
                                     </div>
-                                    <div>
-                                        <small class="text-500">Title</small>
-                                        <p class="mt-1 text-700 font-medium text-lg">{{ roleDetails.title }}</p>
-                                    </div>
-                                    <div>
-                                        <small class="text-500">Entity</small>
-                                        <p class="mt-1 text-700 font-medium">{{ entityName || 'Loading...' }}</p>
-                                    </div>
+                                    <span class="info-label">Role ID</span>
                                 </div>
+                                <p class="info-value">#{{ roleDetails.id }}</p>
                             </div>
-                            <div class="col-12 md:col-6">
-                                <div>
-                                    <small class="text-500">Description</small>
-                                    <p class="mt-1 text-700 font-medium line-height-3">
-                                        {{ roleDetails.description || 'No description provided.' }}
-                                    </p>
+
+                            <!-- Title -->
+                            <div class="info-item">
+                                <div class="info-header">
+                                    <div class="info-icon">
+                                        <i class="pi pi-tag"></i>
+                                    </div>
+                                    <span class="info-label">Title</span>
                                 </div>
+                                <p class="info-value">{{ roleDetails.title }}</p>
+                            </div>
+
+                            <!-- Entity -->
+                            <div class="info-item">
+                                <div class="info-header">
+                                    <div class="info-icon">
+                                        <i class="pi pi-building"></i>
+                                    </div>
+                                    <span class="info-label">Entity</span>
+                                </div>
+                                <p class="info-value">{{ entityName || 'Loading...' }}</p>
+                            </div>
+
+                            <!-- Status -->
+                            <div class="info-item">
+                                <div class="info-header">
+                                    <div class="info-icon">
+                                        <i class="pi pi-check-circle"></i>
+                                    </div>
+                                    <span class="info-label">Status</span>
+                                </div>
+                                <p class="info-value">Active</p>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="info-item description-item">
+                                <div class="info-header">
+                                    <div class="info-icon">
+                                        <i class="pi pi-file-edit"></i>
+                                    </div>
+                                    <span class="info-label">Description</span>
+                                </div>
+                                <p class="info-value description-text">
+                                    {{ roleDetails.description || 'No description provided.' }}
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -68,27 +97,45 @@
 
             <!-- Tab 2: Permissions -->
             <p-tabPanel header="Permissions">
+                <div class="flex justify-content-end mb-3">
+                    <p-button label="Manage Permissions" icon="pi pi-cog" severity="contrast"
+                        (onClick)="openPermissionsDialog()" [disabled]="loading">
+                    </p-button>
+                </div>
                 <div class="grid">
                     <div class="col-12 md:col-6">
                         <p-panel header="Functions" [toggleable]="false">
-                            <div *ngIf="functionsList.length > 0; else noFunctions">
-                                <p-tag *ngFor="let func of functionsList" [value]="func.name + ' (#' + func.id + ')'"
-                                    severity="info" class="mr-2 mb-2"></p-tag>
+                            <div *ngIf="functionsList.length > 0; else noFunctions" class="functions-list">
+                                <ul class="list-none p-0 m-0">
+                                    <li *ngFor="let func of functionsList" class="list-item">
+                                        <div class="flex align-items-center gap-2 py-2 border-bottom-1 surface-border">
+                                            <i class="pi pi-circle-fill text-primary" style="font-size: 0.5rem;"></i>
+                                            <span class="font-medium">{{ func.name }}</span>
+                                            <span class="text-500 text-sm">(#{{ func.id }})</span>
+                                        </div>
+                                    </li>
+                                </ul>
                             </div>
                             <ng-template #noFunctions>
-                                <p class="text-500">No functions assigned.</p>
+                                <p class="text-500 m-0">No functions assigned.</p>
                             </ng-template>
                         </p-panel>
                     </div>
                     <div class="col-12 md:col-6">
                         <p-panel header="Modules" [toggleable]="false">
-                            <div *ngIf="modulesList.length > 0; else noModules">
-                                <p-tag *ngFor="let module of modulesList"
-                                    [value]="module.name + ' (#' + module.id + ')'" severity="success"
-                                    class="mr-2 mb-2"></p-tag>
+                            <div *ngIf="modulesList.length > 0; else noModules" class="modules-list">
+                                <ul class="list-none p-0 m-0">
+                                    <li *ngFor="let module of modulesList" class="list-item">
+                                        <div class="flex align-items-center gap-2 py-2 border-bottom-1 surface-border">
+                                            <i class="pi pi-circle-fill text-green-500" style="font-size: 0.5rem;"></i>
+                                            <span class="font-medium">{{ module.name }}</span>
+                                            <span class="text-500 text-sm">(#{{ module.id }})</span>
+                                        </div>
+                                    </li>
+                                </ul>
                             </div>
                             <ng-template #noModules>
-                                <p class="text-500">No modules assigned.</p>
+                                <p class="text-500 m-0">No modules assigned.</p>
                             </ng-template>
                         </p-panel>
                     </div>
@@ -107,5 +154,10 @@
 <app-role-permissions [(visible)]="permissionsDialogVisible" [roleId]="roleId" [roleTitle]="roleDetails?.title || ''"
     (permissionsUpdated)="handlePermissionsUpdated()">
 </app-role-permissions>
+
+<!-- Edit Role Dialog -->
+<app-edit-role-dialog [(visible)]="editRoleDialogVisible" [roleId]="roleId" [roleTitle]="roleDetails?.title || ''"
+    (saved)="handleRoleUpdated()">
+</app-edit-role-dialog>
 
 <p-toast></p-toast>
