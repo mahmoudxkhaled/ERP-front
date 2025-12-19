@@ -2,12 +2,16 @@
     <nav class="layout-breadcrumb">
         <ol>
             <li><a routerLink="/"><i class="pi pi-home"></i></a> </li>
-            <ng-template ngFor let-item let-last="last" [ngForOf]="breadcrumbs$ | async">
+            <ng-template ngFor let-item let-last="last" let-index="index" [ngForOf]="breadcrumbs$ | async">
                 <li><i class="pi pi-angle-right"></i></li>
                 <li>
-                    <a [routerLink]="item.url" (click)="onBreadcrumbClick($event, item.url || '')">
+                    <a *ngIf="!isBreadcrumbDisabled(index)" [routerLink]="item.url"
+                        (click)="onBreadcrumbClick($event, item.url || '')">
                         {{getTranslationItem(item.label)}}
                     </a>
+                    <span *ngIf="isBreadcrumbDisabled(index)" class="breadcrumb-disabled">
+                        {{getTranslationItem(item.label)}}
+                    </span>
                 </li>
             </ng-template>
         </ol>

@@ -57,6 +57,17 @@ export class AppBreadcrumbComponent {
     }
 
     /**
+     * Check if breadcrumb item should be disabled (2nd and 3rd items)
+     * Index 0 = 1st breadcrumb (first after home) - ACTIVE
+     * Index 1 = 2nd breadcrumb (second after home) - DISABLED
+     * Index 2 = 3rd breadcrumb (third after home) - DISABLED
+     */
+    isBreadcrumbDisabled(index: number): boolean {
+        // Disable 2nd and 3rd breadcrumb items (index 1 and 2)
+        return index === 1 || index === 2;
+    }
+
+    /**
      * Handle breadcrumb item click - check if it's a module and navigate to dashboard
      */
     onBreadcrumbClick(event: Event, breadcrumbUrl: string): void {
