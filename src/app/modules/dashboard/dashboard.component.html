@@ -1,24 +1,28 @@
-<div class="grid">
-    <!-- Dynamic Function Sections -->
-    <div class="col-12" *ngFor="let function of getDashboardCategories()">
-        <p-card [header]="function.name" styleClass="mb-3">
-            <div class="flex flex-wrap gap-3">
-                <!-- Dynamic Module Cards -->
-                <div *ngFor="let module of function.modules"
-                    class="surface-100 border-1 border-300 border-round p-3 flex flex-column align-items-center justify-content-center gap-2"
-                    [class.cursor-pointer]="module.isImplemented && module.code !== 'LGOT'"
-                    [class.opacity-60]="!module.isImplemented" [style.width]="'10rem'" [style.height]="'10rem'"
-                    (click)="onModuleClick(module)">
-                    <!-- Module Logo or Default Icon -->
-                    <span *ngIf="!module.icon" class="text-2xl">{{ getModuleIcon(module) }}</span>
-                    <img *ngIf="module.icon" [src]="module.icon" [alt]="module.name"
-                        style="width: 3rem; height: 3rem; object-fit: contain;">
-                    <span class="text-sm font-medium text-700 text-center">{{ module.name }}</span>
+<div class="dashboard-container p-4 card">
+    <div class="category-wrapper" *ngFor="let function of getDashboardCategories()">
+        <div class="category-label">
+            <span class="text-xs font-bold uppercase tracking-wider text-500">{{ function.name }}</span>
+            <div class="label-line"></div>
+        </div>
+
+        <div class="flex flex-wrap gap-4 mt-3 mb-6">
+            <div *ngFor="let module of function.modules" class="module-glass-card"
+                [class.is-locked]="!module.isImplemented" (click)="onModuleClick(module)">
+
+                <div class="card-glow"></div>
+
+                <div class="icon-section">
+                    <span *ngIf="!module.icon" class="emoji-icon">{{ getModuleIcon(module) }}</span>
+                    <img *ngIf="module.icon" [src]="module.icon" [alt]="module.name" class="img-icon">
                 </div>
+
+                <div class="name-section">
+                    <span class="module-text">{{ module.name }}</span>
+                    <span class="status-indicator" *ngIf="module.isImplemented">System Ready</span>
+                </div>
+
+                <div class="active-bar"></div>
             </div>
-        </p-card>
+        </div>
     </div>
 </div>
-
-<!-- Logout Confirmation Dialog -->
-<!-- <app-logout [(visible)]="showLogoutDialog" (onConfirm)="onLogoutConfirm()" (onCancel)="onLogoutCancel()"></app-logout> -->
