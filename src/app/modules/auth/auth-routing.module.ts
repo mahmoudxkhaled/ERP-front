@@ -9,26 +9,26 @@ import { AccountStatusComponent } from './components/account-status/account-stat
 import { Verify2FAComponent } from './components/verify-2fa/verify-2fa.component';
 
 const routes: Routes = [
-    { path: '', component: LoginComponent },
+    { path: '', component: LoginComponent, data: { breadcrumb: 'login' } },
 
-    { path: 'email-verified', component: EmailVerifiedComponent },
+    { path: 'email-verified', component: EmailVerifiedComponent, data: { breadcrumb: 'emailVerified' } },
 
-    { path: 'verify-email', component: VerificationEmailComponent },
+    { path: 'verify-email', component: VerificationEmailComponent, data: { breadcrumb: 'verifyEmail' } },
 
     {
         path: ':type/reset-password',
         component: ResetPasswordComponent,
-        data: { allowed: ['forgot-password', 'unlock-account', 'new-account'] }
+        data: { allowed: ['forgot-password', 'unlock-account', 'new-account'], breadcrumb: 'resetPassword' }
     },
     {
         path: 'change-password',
         component: ResetPasswordComponent,
-        data: { type: 'change-password' }
+        data: { type: 'change-password', breadcrumb: 'resetPassword' }
     },
-    { path: 'reset-password', component: ResetPasswordComponent },
-    { path: 'forget-password', component: ForgetPasswordComponent },
-    { path: 'verify-2fa/:email', component: Verify2FAComponent },
-    { path: 'account-status', component: AccountStatusComponent },
+    { path: 'reset-password', component: ResetPasswordComponent, data: { breadcrumb: 'resetPassword' } },
+    { path: 'forget-password', component: ForgetPasswordComponent, data: { breadcrumb: 'forgetPassword' } },
+    { path: 'verify-2fa/:email', component: Verify2FAComponent, data: { breadcrumb: 'verify2fa' } },
+    { path: 'account-status', component: AccountStatusComponent, data: { breadcrumb: 'accountStatus' } },
 ];
 
 @NgModule({

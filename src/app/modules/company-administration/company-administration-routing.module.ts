@@ -9,11 +9,13 @@ const routes: Routes = [
     { path: '', redirectTo: 'entities/list', pathMatch: 'full' },
     {
         path: 'entities',
-        loadChildren: () => import('../entity-administration/entities/entities.module').then((m) => m.EntitiesModule)
+        loadChildren: () => import('../entity-administration/entities/entities.module').then((m) => m.EntitiesModule),
+        data: { breadcrumb: 'companyDetails' }
     },
     {
         path: 'roles',
-        loadChildren: () => import('../entity-administration/roles/roles.module').then((m) => m.RolesModule)
+        loadChildren: () => import('../entity-administration/roles/roles.module').then((m) => m.RolesModule),
+        data: { breadcrumb: 'roles&Permissions' }
     },
 
     { path: 'users-details', component: UsersDetailsComponent, data: { breadcrumb: 'usersDetails' } },
