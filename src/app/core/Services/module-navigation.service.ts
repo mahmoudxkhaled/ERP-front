@@ -110,4 +110,45 @@ export class ModuleNavigationService {
         }
         return functionsDetails[functionCode as keyof IFunctionsDetails] || null;
     }
+
+    /**
+     * Find a module by URL (exact or partial match)
+     * @param url - The URL to search for
+     * @returns IMenuModule if found, null otherwise
+     */
+    findModuleByUrl(url: string): IMenuModule | null {
+        if (!url) {
+            return null;
+        }
+
+        const functionsWithModules = this.getFunctionsWithModules();
+
+        // Normalize URL for comparison (remove leading/trailing slashes)
+        const normalizedUrl = url.trim().replace(/^\/+|\/+$/g, '');
+
+        for (const functionItem of functionsWithModules) {
+            for (const module of functionItem.modules) {
+                if (!module.url) {
+                    continue;
+                }
+
+                // Normalize module URL
+                const normalizedModuleUrl = module.url.trim().replace(/^\/+|\/+$/g, '');
+
+                // Exact match
+                if (normalizedModuleUrl === normalizedUrl) {
+                    return module;
+                }
+
+                // Partial match - check if breadcrumb URL is a prefix of module URL
+                // e.g., '/company-administration/entities' matches '/company-administration/entities/list'
+                if (normalizedModuleUrl.startsWith(normalizedUrl + '/') ||
+                    normalizedUrl.startsWith(normalizedModuleUrl + '/')) {
+                    return module;
+                }
+            }
+        }
+
+        return null;
+    }
 }

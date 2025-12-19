@@ -6,8 +6,9 @@
         </div>
 
         <div class="flex flex-wrap gap-4 mt-3 mb-6">
-            <div *ngFor="let module of function.modules" class="module-glass-card"
-                [class.is-locked]="!module.isImplemented" (click)="onModuleClick(module)">
+            <div *ngFor="let module of function.modules" [id]="'module-card-' + module.code" class="module-glass-card"
+                [class.is-locked]="!module.isImplemented" [class.module-highlighted]="isModuleHighlighted(module.code)"
+                (click)="onModuleClick(module)">
 
                 <div class="card-glow"></div>
 

@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { AuthService } from '../auth/services/auth.service';
@@ -13,16 +13,18 @@ import { ModuleNavigationService } from 'src/app/core/services/module-navigation
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, AfterViewInit {
     currentUser: any = null;
     userRole: string = '';
     userName: string = '';
     showLogoutDialog: boolean = false; // Track logout dialog visibility
     dashboardCategories: IMenuFunction[] = [];
+    highlightedModuleCode: string | null = null;
 
     constructor(
         private localStorageService: LocalStorageService,
         private router: Router,
+        private route: ActivatedRoute,
         public translate: TranslationService,
         private dialogService: DialogService,
         private authService: AuthService,
@@ -32,6 +34,26 @@ export class DashboardComponent implements OnInit {
     ngOnInit(): void {
         this.loadUserData();
         this.loadDashboardCategories();
+
+        // Check for module URL query parameter
+        this.route.queryParams.subscribe(params => {
+            if (params['moduleUrl']) {
+                // Wait for view to initialize before scrolling
+                setTimeout(() => {
+                    this.scrollToModule(params['moduleUrl']);
+                }, 100);
+            }
+        });
+    }
+
+    ngAfterViewInit(): void {
+        // Check query params again after view init in case they were set before view loaded
+        const moduleUrl = this.route.snapshot.queryParams['moduleUrl'];
+        if (moduleUrl) {
+            setTimeout(() => {
+                this.scrollToModule(moduleUrl);
+            }, 200);
+        }
     }
 
     loadUserData(): void {
@@ -143,6 +165,76 @@ export class DashboardComponent implements OnInit {
             width: '30vw',
             closable: true,
         });
+    }
+
+    /**
+     * Find module by URL in dashboard categories
+     */
+    findModuleByUrl(url: string): IMenuModule | null {
+        for (const category of this.dashboardCategories) {
+            for (const module of category.modules) {
+                if (module.url === url) {
+                    return module;
+                }
+                // Handle partial matches
+                if (module.url && url) {
+                    const normalizedModuleUrl = module.url.trim().replace(/^\/+|\/+$/g, '');
+                    const normalizedUrl = url.trim().replace(/^\/+|\/+$/g, '');
+                    if (normalizedModuleUrl === normalizedUrl ||
+                        normalizedModuleUrl.startsWith(normalizedUrl + '/') ||
+                        normalizedUrl.startsWith(normalizedModuleUrl + '/')) {
+                        return module;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Scroll to module card and highlight it
+     */
+    scrollToModule(moduleUrl: string): void {
+        const module = this.findModuleByUrl(moduleUrl);
+        if (!module) {
+            return;
+        }
+
+        // Find the module card element by code
+        const moduleElement = document.getElementById(`module-card-${module.code}`);
+        if (moduleElement) {
+            // Scroll to element with offset for header
+            const offset = 100; // Adjust based on your header height
+            const elementPosition = moduleElement.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+            window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+            });
+
+            // Highlight the module
+            this.highlightedModuleCode = module.code;
+
+            // Remove highlight after animation
+            setTimeout(() => {
+                this.highlightedModuleCode = null;
+            }, 3000);
+
+            // Clear query parameter after scrolling
+            this.router.navigate([], {
+                relativeTo: this.route,
+                queryParams: {},
+                replaceUrl: true
+            });
+        }
+    }
+
+    /**
+     * Check if module is currently highlighted
+     */
+    isModuleHighlighted(moduleCode: string): boolean {
+        return this.highlightedModuleCode === moduleCode;
     }
 
 }

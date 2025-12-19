@@ -4,6 +4,7 @@ import { BehaviorSubject } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { ChangeDetectorRef } from '@angular/core';
 import { TranslationService } from 'src/app/core/services/translation.service';
+import { ModuleNavigationService } from 'src/app/core/services/module-navigation.service';
 
 interface Breadcrumb {
     label: string;
@@ -20,7 +21,11 @@ export class AppBreadcrumbComponent {
 
     readonly breadcrumbs$ = this._breadcrumbs$.asObservable();
 
-    constructor(private router: Router, private translate: TranslationService) {
+    constructor(
+        private router: Router,
+        private translate: TranslationService,
+        private moduleNavigationService: ModuleNavigationService
+    ) {
         this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(event => {
             const root = this.router.routerState.snapshot.root;
             const breadcrumbs: Breadcrumb[] = [];
@@ -49,5 +54,25 @@ export class AppBreadcrumbComponent {
 
     getTranslationItem(item: any): string {
         return this.translate.getInstant(`layout.app-breadcrumb.${item}`);
+    }
+
+    /**
+     * Handle breadcrumb item click - check if it's a module and navigate to dashboard
+     */
+    onBreadcrumbClick(event: Event, breadcrumbUrl: string): void {
+        // Check if this URL matches a module URL
+        const module = this.moduleNavigationService.findModuleByUrl(breadcrumbUrl);
+
+        if (module) {
+            // Prevent default navigation
+            event.preventDefault();
+            event.stopPropagation();
+
+            // Navigate to dashboard (root path) with module URL as query parameter
+            this.router.navigate(['/'], {
+                queryParams: { moduleUrl: breadcrumbUrl }
+            });
+        }
+        // If not a module, let default routerLink handle navigation
     }
 }
