@@ -99,8 +99,7 @@
     </ng-template>
 </p-dialog>
 
-<!-- Assign Role to Account Dialog -->
-<app-assign-role-to-account [(visible)]="assignToAccountDialogVisible" [roleId]="currentRoleForAssignment?.id || ''"
-    [roleTitle]="currentRoleForAssignment?.title || ''" [entityId]="entityIdForTemplate" (assigned)="onRoleAssigned()"
-    (visibleChange)="onAssignDialogClose()">
-</app-assign-role-to-account>
+<!-- Edit Role Dialog -->
+<app-edit-role-dialog [(visible)]="editRoleDialogVisible" [roleId]="currentRoleForEdit?.id || ''"
+    [roleTitle]="currentRoleForEdit?.title || ''" (saved)="handleRoleUpdated()">
+</app-edit-role-dialog>

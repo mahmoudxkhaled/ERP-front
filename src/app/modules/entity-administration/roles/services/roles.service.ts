@@ -192,4 +192,19 @@ export class RolesService {
             finalize(() => this.isLoadingSubject.next(false))
         );
     }
+
+    /**
+     * Get the list of accounts assigned to one or more roles
+     * API Code: 1280
+     * @param roleIds - Array of Entity Role IDs
+     * @param idsAndEmailsOnly - If true, returns Dictionary<int, string> (ID and email only). If false, returns List<Account> (full account objects)
+     */
+    getRoleAccountsList(roleIds: number[], idsAndEmailsOnly: boolean = false): Observable<any> {
+        this.isLoadingSubject.next(true);
+        const roleIdsString = this.formatIntegerList(roleIds);
+        const params = [roleIdsString, idsAndEmailsOnly.toString()];
+        return this.apiServices.callAPI(502, this.getAccessToken(), params).pipe(
+            finalize(() => this.isLoadingSubject.next(false))
+        );
+    }
 }

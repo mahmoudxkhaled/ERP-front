@@ -101,6 +101,7 @@ export class RolesListComponent implements OnInit, OnDestroy, OnChanges {
                     this.handleBusinessError('list', response);
                     return;
                 }
+                console.log('response listEntityRoles', response);
                 this.totalRecords = Number(response.message?.Total_Count || 0);
 
                 let rolesData: any = {};
@@ -138,15 +139,10 @@ export class RolesListComponent implements OnInit, OnDestroy, OnChanges {
         this.loadRoles();
     }
 
-    edit(role: EntityRole): void {
-        if (role.id) {
-            // Include entityId as query param if we have it
-            const queryParams: any = {};
-            if (this._entityId && this._entityId > 0) {
-                queryParams.entityId = this._entityId;
-            }
-            this.router.navigate(['/company-administration/roles', role.id, 'edit'], { queryParams });
-        }
+    openEditRoleDialog(role: EntityRole): void {
+        this.currentRoleForEdit = role;
+        console.log('currentRoleForEdit', this.currentRoleForEdit);
+        this.editRoleDialogVisible = true;
     }
 
     viewDetails(role: EntityRole): void {
@@ -216,22 +212,12 @@ export class RolesListComponent implements OnInit, OnDestroy, OnChanges {
         this.router.navigate(['/company-administration/roles/new'], { queryParams });
     }
 
-    assignToAccountDialogVisible: boolean = false;
-    currentRoleForAssignment?: EntityRole;
+    editRoleDialogVisible: boolean = false;
+    currentRoleForEdit?: EntityRole;
 
-    assignToAccount(role: EntityRole): void {
-        this.currentRoleForAssignment = role;
-        this.assignToAccountDialogVisible = true;
-    }
-
-    onAssignDialogClose(): void {
-        this.assignToAccountDialogVisible = false;
-        this.currentRoleForAssignment = undefined;
-    }
-
-    onRoleAssigned(): void {
-        // Optionally reload roles list
-        // this.loadRoles(true);
+    handleRoleUpdated(): void {
+        // Reload roles list after role is updated
+        this.loadRoles();
     }
 
     private configureMenuItems(): void {
@@ -247,12 +233,7 @@ export class RolesListComponent implements OnInit, OnDestroy, OnChanges {
             {
                 label: 'Edit',
                 icon: 'pi pi-pencil',
-                command: () => this.currentRole && this.edit(this.currentRole)
-            },
-            {
-                label: 'Assign to Account',
-                icon: 'pi pi-user-plus',
-                command: () => this.currentRole && this.assignToAccount(this.currentRole)
+                command: () => this.currentRole && this.openEditRoleDialog(this.currentRole)
             },
             {
                 label: 'Delete',

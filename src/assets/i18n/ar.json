@@ -269,7 +269,7 @@
     "layout": {
         "app-breadcrumb": {
             "dashboard": "لوحة تحكم ERP",
-            "entitiesList": "تفاصيل الشركة",
+            "entitiesList": "قائمة الكيانات",
 
             "uikit": "أدوات واجهة المستخدم",
             "utilities": "الأدوات المساعدة",

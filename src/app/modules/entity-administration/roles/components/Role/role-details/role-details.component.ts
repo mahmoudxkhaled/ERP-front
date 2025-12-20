@@ -27,6 +27,8 @@ export class RoleDetailsComponent implements OnInit, OnDestroy {
     modules: number[] = [];
     functionsList: Function[] = [];
     modulesList: Module[] = [];
+    accountsList: any[] = [];
+    loadingAccounts: boolean = false;
     permissionsDialogVisible: boolean = false;
     editRoleDialogVisible: boolean = false;
 
@@ -100,6 +102,8 @@ export class RoleDetailsComponent implements OnInit, OnDestroy {
                 // Load functions and modules separately
                 this.loadFunctions();
                 this.loadModules();
+                // Load assigned accounts
+                this.loadAssignedAccounts();
 
                 this.loadingDetails = false;
                 this.loading = false;
@@ -272,6 +276,59 @@ export class RoleDetailsComponent implements OnInit, OnDestroy {
 
     handlePermissionsUpdated(): void {
         this.loadAllData();
+    }
+
+    loadAssignedAccounts(): void {
+        if (!this.roleId) {
+            return;
+        }
+
+        this.loadingAccounts = true;
+        const sub = this.rolesService.getRoleAccountsList([Number(this.roleId)], false).subscribe({
+            next: (response: any) => {
+                if (response?.success) {
+                    let accounts: any[] = [];
+
+                    // Handle response format - can be List<Account> or Dictionary<int, string>
+                    if (Array.isArray(response.message)) {
+                        // List<Account> format - array of account objects
+                        accounts = response.message;
+                    } else if (response.message && typeof response.message === 'object') {
+                        // Dictionary<int, string> format - convert to array
+                        // Format: { "1": "email1@example.com", "2": "email2@example.com" }
+                        accounts = Object.keys(response.message).map((key: string) => {
+                            const accountId = parseInt(key, 10);
+                            const email = response.message[key];
+                            return {
+                                Account_ID: accountId,
+                                Email: email
+                            };
+                        });
+                    }
+
+                    // Map account properties - only ID, Email, and Status
+                    this.accountsList = accounts.map((account: any) => {
+                        return {
+                            accountId: account.Account_ID || 0,
+                            email: account.Email || '',
+                            accountState: account.Account_State !== undefined ? account.Account_State : 1
+                        };
+                    });
+                }
+                this.loadingAccounts = false;
+            },
+            error: () => {
+                this.loadingAccounts = false;
+                this.accountsList = [];
+            }
+        });
+
+        this.subscriptions.push(sub);
+    }
+
+    handleAccountsUpdated(): void {
+        // Reload accounts list after assignment/unassignment
+        this.loadAssignedAccounts();
     }
 
     private handleBusinessError(response: any): void {

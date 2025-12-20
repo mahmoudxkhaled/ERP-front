@@ -177,7 +177,7 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
                                 .filter((id: any) => id !== undefined && id !== null);
                         } else {
                             // Array of IDs (numbers)
-                            functionsList = response.message;
+                        functionsList = response.message;
                         }
                     } else if (response.message?.Functions && Array.isArray(response.message.Functions)) {
                         // Nested Functions array
@@ -210,7 +210,7 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
                                 .filter((id: any) => id !== undefined && id !== null);
                         } else {
                             // Array of IDs (numbers)
-                            modulesList = response.message;
+                        modulesList = response.message;
                         }
                     } else if (response.message?.Modules && Array.isArray(response.message.Modules)) {
                         // Nested Modules array
