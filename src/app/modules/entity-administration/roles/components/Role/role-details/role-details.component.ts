@@ -331,7 +331,7 @@ export class RoleDetailsComponent implements OnInit, OnDestroy {
         this.loadAssignedAccounts();
     }
 
-    private handleBusinessError(response: any): void {
+    private handleBusinessError(response: any): void | null {
         const code = String(response?.message || '');
         let detail = '';
 
@@ -343,7 +343,7 @@ export class RoleDetailsComponent implements OnInit, OnDestroy {
                 detail = 'Access Denied to Entity Roles';
                 break;
             default:
-                detail = 'An error occurred while loading role details.';
+                return null;
         }
 
         if (detail) {
@@ -354,5 +354,6 @@ export class RoleDetailsComponent implements OnInit, OnDestroy {
             });
         }
         this.loading = false;
+        return null;
     }
 }

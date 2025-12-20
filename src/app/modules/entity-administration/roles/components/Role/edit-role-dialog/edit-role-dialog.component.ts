@@ -156,7 +156,7 @@ export class EditRoleDialogComponent implements OnInit, OnDestroy {
         this.visibleChange.emit(value);
     }
 
-    private handleBusinessError(response: any): void {
+    private handleBusinessError(response: any): void | null {
         const code = String(response?.message || '');
         const detail = this.getErrorMessage(code);
 
@@ -167,6 +167,7 @@ export class EditRoleDialogComponent implements OnInit, OnDestroy {
                 detail
             });
         }
+        return null;
     }
 
     private getErrorMessage(code: string): string | null {

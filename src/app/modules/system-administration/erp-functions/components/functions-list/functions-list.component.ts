@@ -35,6 +35,10 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
     first: number = 0;
     rows: number = 10;
 
+    // Search functionality
+    searchText: string = '';
+    filteredFunctions: Function[] = [];
+
     constructor(
         private settingsConfigurationsService: SettingsConfigurationsService,
         private router: Router,
@@ -71,6 +75,7 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
 
                 // Parse functions list
                 this.functions = this.settingsConfigurationsService.parseFunctionsList(response, isRegional);
+                this.applySearchFilter();
                 this.buildActivationControls();
             },
             complete: () => this.resetLoadingFlags()
@@ -271,5 +276,36 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
 
     private resetLoadingFlags(): void {
         this.tableLoadingSpinner = false;
+    }
+
+    onSearchInput(event: Event): void {
+        const target = event.target as HTMLInputElement;
+        this.searchText = target?.value || '';
+        this.applySearchFilter();
+        // Reset to first page when searching
+        this.first = 0;
+    }
+
+    clearSearch(): void {
+        this.searchText = '';
+        this.applySearchFilter();
+        this.first = 0;
+    }
+
+    private applySearchFilter(): void {
+        if (!this.searchText || this.searchText.trim() === '') {
+            this.filteredFunctions = [...this.functions];
+            return;
+        }
+
+        const searchTerm = this.searchText.toLowerCase().trim();
+        this.filteredFunctions = this.functions.filter((functionItem) => {
+            const codeMatch = functionItem.code?.toLowerCase().includes(searchTerm) || false;
+            const nameMatch = functionItem.name?.toLowerCase().includes(searchTerm) || false;
+            const idMatch = String(functionItem.id).includes(searchTerm) || false;
+            const urlMatch = functionItem.url?.toLowerCase().includes(searchTerm) || false;
+
+            return codeMatch || nameMatch || idMatch || urlMatch;
+        });
     }
 }

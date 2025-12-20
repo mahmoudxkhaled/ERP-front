@@ -183,7 +183,7 @@ export class AssignRoleToAccountComponent implements OnInit, OnDestroy {
         }
     }
 
-    private handleBusinessError(response: any): void {
+    private handleBusinessError(response: any): void | null {
         const code = String(response?.message || '');
         let detail = '';
 
@@ -198,7 +198,7 @@ export class AssignRoleToAccountComponent implements OnInit, OnDestroy {
                 detail = 'Access Denied to Entity Roles';
                 break;
             default:
-                detail = 'An error occurred while assigning the role.';
+                return null;
         }
 
         if (detail) {
@@ -208,5 +208,6 @@ export class AssignRoleToAccountComponent implements OnInit, OnDestroy {
                 detail
             });
         }
+        return null;
     }
 }

@@ -37,6 +37,10 @@ export class ModulesListComponent implements OnInit, OnDestroy {
     first: number = 0;
     rows: number = 10;
 
+    // Search functionality
+    searchText: string = '';
+    filteredModules: Module[] = [];
+
     constructor(
         private settingsConfigurationsService: SettingsConfigurationsService,
         private router: Router,
@@ -90,6 +94,7 @@ export class ModulesListComponent implements OnInit, OnDestroy {
 
                 // Parse modules list
                 this.modules = this.settingsConfigurationsService.parseModulesList(response, isRegional);
+                this.applySearchFilter();
                 this.buildActivationControls();
             },
             complete: () => this.resetLoadingFlags()
@@ -295,5 +300,37 @@ export class ModulesListComponent implements OnInit, OnDestroy {
 
     private resetLoadingFlags(): void {
         this.tableLoadingSpinner = false;
+    }
+
+    onSearchInput(event: Event): void {
+        const target = event.target as HTMLInputElement;
+        this.searchText = target?.value || '';
+        this.applySearchFilter();
+        // Reset to first page when searching
+        this.first = 0;
+    }
+
+    clearSearch(): void {
+        this.searchText = '';
+        this.applySearchFilter();
+        this.first = 0;
+    }
+
+    private applySearchFilter(): void {
+        if (!this.searchText || this.searchText.trim() === '') {
+            this.filteredModules = [...this.modules];
+            return;
+        }
+
+        const searchTerm = this.searchText.toLowerCase().trim();
+        this.filteredModules = this.modules.filter((moduleItem) => {
+            const codeMatch = moduleItem.code?.toLowerCase().includes(searchTerm) || false;
+            const nameMatch = moduleItem.name?.toLowerCase().includes(searchTerm) || false;
+            const idMatch = String(moduleItem.id).includes(searchTerm) || false;
+            const urlMatch = moduleItem.url?.toLowerCase().includes(searchTerm) || false;
+            const functionNameMatch = this.getFunctionName(moduleItem.functionId).toLowerCase().includes(searchTerm) || false;
+            
+            return codeMatch || nameMatch || idMatch || urlMatch || functionNameMatch;
+        });
     }
 }
