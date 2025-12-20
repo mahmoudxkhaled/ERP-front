@@ -270,6 +270,12 @@
         "app-breadcrumb": {
             "dashboard": "ERP Dashboard",
             "entitiesList": "Entities List",
+            "usersList": "Users List",
+            "newUser": "New User",
+            "userDetails": "User Details",
+            "editUser": "Edit User",
+            "userContactInfo": "Contact Information",
+            "userAccounts": "User Accounts",
             "uikit": "UI Kit",
             "utilities": "Utilities",
             "pages": "Pages Management",

@@ -1,0 +1,178 @@
+<div class="card" *ngIf="userDetails">
+    <div class="flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>User Details</h2>
+            <p class="text-600 m-0">{{ getUserDisplayName() }}</p>
+        </div>
+        <div class="flex gap-2">
+            <p-button label="Edit User" icon="pi pi-pencil" (onClick)="navigateToEdit()"></p-button>
+        </div>
+    </div>
+
+    <p-tabView [(activeIndex)]="activeTabIndex">
+        <!-- Profile Tab -->
+        <p-tabPanel header="Profile">
+            <div class="grid" *ngIf="!loadingDetails">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="flex align-items-center gap-4 mb-4">
+                            <p-avatar [image]="profilePictureUrl || 'assets/media/avatar.png'"
+                                [icon]="!hasProfilePicture ? 'pi pi-user' : ''" size="xlarge" shape="circle"
+                                styleClass="border-3 border-white shadow-4">
+                            </p-avatar>
+                            <div>
+                                <h3 class="m-0">{{ getUserDisplayName() }}</h3>
+                                <p-tag [value]="getStatusLabel()" [severity]="getStatusSeverity()" class="mt-2"></p-tag>
+                            </div>
+                        </div>
+
+                        <div class="grid">
+                            <div class="col-12 md:col-6">
+                                <div class="field">
+                                    <label class="font-semibold text-900">User ID</label>
+                                    <p class="text-600 m-0">{{ userDetails.id }}</p>
+                                </div>
+                            </div>
+                            <div class="col-12 md:col-6">
+                                <div class="field">
+                                    <label class="font-semibold text-900">Prefix</label>
+                                    <p class="text-600 m-0">{{ userDetails.prefix || '—' }}</p>
+                                </div>
+                            </div>
+                            <div class="col-12 md:col-6">
+                                <div class="field">
+                                    <label class="font-semibold text-900">First Name</label>
+                                    <p class="text-600 m-0">{{ userDetails.firstName }}</p>
+                                </div>
+                            </div>
+                            <div class="col-12 md:col-6">
+                                <div class="field">
+                                    <label class="font-semibold text-900">Middle Name</label>
+                                    <p class="text-600 m-0">{{ userDetails.middleName || '—' }}</p>
+                                </div>
+                            </div>
+                            <div class="col-12 md:col-6">
+                                <div class="field">
+                                    <label class="font-semibold text-900">Last Name</label>
+                                    <p class="text-600 m-0">{{ userDetails.lastName }}</p>
+                                </div>
+                            </div>
+                            <div class="col-12 md:col-6">
+                                <div class="field">
+                                    <label class="font-semibold text-900">Gender</label>
+                                    <p class="text-600 m-0">{{ getGenderLabel() }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="loadingDetails" class="flex justify-content-center align-items-center"
+                style="min-height: 200px;">
+                <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+            </div>
+        </p-tabPanel>
+
+        <!-- Contact Info Tab -->
+        <p-tabPanel header="Contact Info">
+            <div class="grid" *ngIf="!loadingContactInfo && userContactInfo">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="flex justify-content-between align-items-center mb-4">
+                            <h3 class="m-0">Contact Information</h3>
+                            <p-button label="Edit Contact Info" icon="pi pi-pencil"
+                                (onClick)="navigateToContactInfo()"></p-button>
+                        </div>
+                        <div class="grid">
+                            <div class="col-12">
+                                <div class="field">
+                                    <label class="font-semibold text-900">Address</label>
+                                    <p class="text-600 m-0">{{ userContactInfo.address || '—' }}</p>
+                                </div>
+                            </div>
+                            <div class="col-12"
+                                *ngIf="userContactInfo.phoneNumbers && userContactInfo.phoneNumbers.length > 0">
+                                <div class="field">
+                                    <label class="font-semibold text-900">Phone Numbers</label>
+                                    <ul class="list-none p-0 m-0">
+                                        <li *ngFor="let phone of userContactInfo.phoneNumbers" class="text-600 mb-2">
+                                            <i class="pi pi-phone mr-2"></i>{{ phone }}
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-12 md:col-6" *ngIf="userContactInfo.linkedinPage">
+                                <div class="field">
+                                    <label class="font-semibold text-900">LinkedIn</label>
+                                    <p class="text-600 m-0">
+                                        <a [href]="userContactInfo.linkedinPage" target="_blank" class="text-primary">
+                                            {{ userContactInfo.linkedinPage }}
+                                        </a>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-12 md:col-6" *ngIf="userContactInfo.facebookPage">
+                                <div class="field">
+                                    <label class="font-semibold text-900">Facebook</label>
+                                    <p class="text-600 m-0">
+                                        <a [href]="userContactInfo.facebookPage" target="_blank" class="text-primary">
+                                            {{ userContactInfo.facebookPage }}
+                                        </a>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-12 md:col-6" *ngIf="userContactInfo.instagramPage">
+                                <div class="field">
+                                    <label class="font-semibold text-900">Instagram</label>
+                                    <p class="text-600 m-0">
+                                        <a [href]="userContactInfo.instagramPage" target="_blank" class="text-primary">
+                                            {{ userContactInfo.instagramPage }}
+                                        </a>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-12 md:col-6" *ngIf="userContactInfo.twitterPage">
+                                <div class="field">
+                                    <label class="font-semibold text-900">Twitter</label>
+                                    <p class="text-600 m-0">
+                                        <a [href]="userContactInfo.twitterPage" target="_blank" class="text-primary">
+                                            {{ userContactInfo.twitterPage }}
+                                        </a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="loadingContactInfo" class="flex justify-content-center align-items-center"
+                style="min-height: 200px;">
+                <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+            </div>
+        </p-tabPanel>
+
+        <!-- Preferences Tab -->
+        <p-tabPanel header="Preferences">
+            <div class="grid" *ngIf="!loadingPreferences">
+                <div class="col-12">
+                    <div class="card">
+                        <h3 class="m-0 mb-4">User Preferences</h3>
+                        <div *ngIf="getPreferenceKeys().length === 0" class="text-center text-600 p-4">
+                            No preferences set
+                        </div>
+                        <div *ngIf="getPreferenceKeys().length > 0" class="grid">
+                            <div class="col-12 md:col-6" *ngFor="let key of getPreferenceKeys()">
+                                <div class="field">
+                                    <label class="font-semibold text-900">{{ key }}</label>
+                                    <p class="text-600 m-0">{{ userPreferences[key] }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </p-tabPanel>
+    </p-tabView>
+</div>
+
+<p-toast></p-toast>

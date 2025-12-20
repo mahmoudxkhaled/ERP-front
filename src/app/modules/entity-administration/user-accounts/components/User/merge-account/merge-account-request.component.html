@@ -1,0 +1,41 @@
+<p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '500px' }" [closable]="true"
+    [draggable]="false" [resizable]="false" (onHide)="onDialogHide()">
+    <ng-template pTemplate="header">
+        <h3>Request Account Merge</h3>
+    </ng-template>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="flex flex-column gap-3">
+            <p>
+                Enter the email address of the account you want to merge with your current account.
+            </p>
+
+            <div class="field">
+                <label for="email" class="block text-sm font-medium mb-2">
+                    Email Address <span class="text-red-500">*</span>
+                </label>
+                <input id="email" type="email" pInputText formControlName="email"
+                    placeholder="Enter email address" class="w-full"
+                    [ngClass]="{'ng-invalid ng-dirty': form.get('email')?.invalid && form.get('email')?.touched}" />
+                <small class="p-error" *ngIf="submitted && emailError">{{ emailError }}</small>
+            </div>
+        </div>
+    </form>
+
+    <ng-template pTemplate="footer">
+        <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="closeDialog()"
+            [disabled]="loading">
+        </p-button>
+        <p-button label="Request Merge" icon="pi pi-check" (onClick)="submit()" [disabled]="loading">
+            <ng-container *ngIf="loading">
+                <span class="indicator-progress" [style.display]="'block'">
+                    Please wait
+                    <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
+                </span>
+            </ng-container>
+        </p-button>
+    </ng-template>
+</p-dialog>
+
+<p-toast></p-toast>
+

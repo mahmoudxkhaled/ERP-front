@@ -1,0 +1,53 @@
+<p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '500px' }" [closable]="true"
+    [draggable]="false" [resizable]="false" (onHide)="onDialogHide()">
+    <ng-template pTemplate="header">
+        <h3>Confirm Account Merge</h3>
+    </ng-template>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="flex flex-column gap-3">
+            <p>
+                Enter the OTP code you received via email to confirm the account merge.
+            </p>
+
+            <div class="field">
+                <label for="mergeOTP" class="block text-sm font-medium mb-2">
+                    OTP Code <span class="text-red-500">*</span>
+                </label>
+                <input id="mergeOTP" type="text" pInputText formControlName="mergeOTP"
+                    placeholder="Enter OTP code" class="w-full"
+                    [ngClass]="{'ng-invalid ng-dirty': form.get('mergeOTP')?.invalid && form.get('mergeOTP')?.touched}" />
+                <small class="p-error" *ngIf="submitted && mergeOTPError">{{ mergeOTPError }}</small>
+            </div>
+
+            <div class="field">
+                <div class="field-checkbox">
+                    <p-checkbox formControlName="mergeData" [binary]="true" inputId="mergeData"></p-checkbox>
+                    <label for="mergeData" class="ml-2">
+                        Merge data from both accounts
+                    </label>
+                </div>
+                <small class="text-600">
+                    If checked, data from both accounts will be merged. If unchecked, only the dominant account data will be kept.
+                </small>
+            </div>
+        </div>
+    </form>
+
+    <ng-template pTemplate="footer">
+        <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="closeDialog()"
+            [disabled]="loading">
+        </p-button>
+        <p-button label="Confirm Merge" icon="pi pi-check" (onClick)="submit()" [disabled]="loading">
+            <ng-container *ngIf="loading">
+                <span class="indicator-progress" [style.display]="'block'">
+                    Please wait
+                    <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
+                </span>
+            </ng-container>
+        </p-button>
+    </ng-template>
+</p-dialog>
+
+<p-toast></p-toast>
+

@@ -1,0 +1,116 @@
+<div class="card">
+    <div class="flex justify-content-between align-items-center mb-4">
+        <h2>Manage Users</h2>
+        <p-button (onClick)="navigateToNew()" [disabled]="!!(isLoading$ | async)">
+            <ng-container *ngIf="isLoading$ | async">
+                <span class="indicator-progress" [style.display]="'block'">
+                    Please wait
+                    <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
+                </span>
+            </ng-container>
+            <ng-container *ngIf="(isLoading$ | async) === false">
+                <span>Add New User</span>
+            </ng-container>
+        </p-button>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="mb-3">
+        <div class="p-inputgroup w-full">
+            <span class="p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input type="text" pInputText placeholder="Search by name or ID..." [value]="searchText"
+                    (input)="onSearchInput($event)" class="w-full" />
+            </span>
+            <button *ngIf="searchText" pButton pRipple type="button" icon="pi pi-times"
+                class="p-button-rounded p-button-text p-button-plain" (click)="clearSearch()" pTooltip="Clear search">
+            </button>
+        </div>
+    </div>
+
+    <div style="position: relative;">
+        <app-table-loading-spinner *ngIf="tableLoadingSpinner"></app-table-loading-spinner>
+        <p-table #usersTable [value]="filteredUsers" [paginator]="true" [rows]="10"
+            [rowsPerPageOptions]="[10, 25, 50, 100]" [showCurrentPageReport]="true" responsiveLayout="scroll"
+            [lazy]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            [loading]="!!(isLoading$ | async)">
+
+            <ng-template pTemplate="header">
+                <tr>
+                    <th style="width: 40px;">Id</th>
+                    <th style="width: 200px;">Name</th>
+                    <th style="width: 100px;">Gender</th>
+                    <th style="text-align: center !important;">Status</th>
+                    <th style="width: 150px; text-align: start !important;">Actions</th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-user>
+                <tr>
+                    <td>
+                        <p-tag [value]="'#' + user.id" severity="info"></p-tag>
+                    </td>
+                    <td>
+                        <span style="cursor: pointer;" class="font-semibold"
+                            routerLink="/company-administration/user-accounts/{{ user.id }}">
+                            {{ getUserDisplayName(user) }}
+                        </span>
+                    </td>
+                    <td>
+                        <p-tag [value]="getGenderLabel(user.gender)"
+                            [severity]="user.gender ? 'info' : 'warning'"></p-tag>
+                    </td>
+                    <td class="text-center">
+                        <p-tag [value]="getStatusLabel(user.isActive)"
+                            [severity]="getStatusSeverity(user.isActive)"></p-tag>
+                    </td>
+                    <td class="text-start">
+                        <button pButton pRipple type="button" icon="pi pi-ellipsis-v"
+                            class="p-button-rounded p-button-text p-button-plain"
+                            (click)="openMenu(rowMenu, user, $event)">
+                        </button>
+                        <p-menu #rowMenu [model]="menuItems" [popup]="true" [appendTo]="'body'"></p-menu>
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="5" class="text-center">No users found</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+<p-toast></p-toast>
+
+<p-dialog [(visible)]="deleteUserDialog" [modal]="true" [style]="{ width: '450px' }" [closable]="true"
+    [draggable]="false" [resizable]="false">
+    <ng-template pTemplate="header">
+        <h3>Delete User</h3>
+    </ng-template>
+    <div class="flex flex-column gap-3">
+        <p>
+            Are you sure you want to delete <strong>{{ currentUserForDelete ? getUserDisplayName(currentUserForDelete) :
+                '' }}</strong>?
+        </p>
+        <p class="text-red-500 font-semibold">This action cannot be undone.</p>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="onCancelDeleteDialog()"
+            [disabled]="!!(isLoading$ | async)">
+        </p-button>
+        <p-button class="p-button-danger" (onClick)="deleteUser()" [disabled]="!!(isLoading$ | async)">
+            <ng-container *ngIf="isLoading$ | async">
+                <span class="indicator-progress" [style.display]="'block'">
+                    Please wait
+                    <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
+                </span>
+            </ng-container>
+            <ng-container *ngIf="(isLoading$ | async) === false">
+                <span>Delete</span>
+            </ng-container>
+        </p-button>
+    </ng-template>
+</p-dialog>

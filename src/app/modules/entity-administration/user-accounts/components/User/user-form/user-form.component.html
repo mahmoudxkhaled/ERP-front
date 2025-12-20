@@ -1,0 +1,101 @@
+<div class="card">
+    <div class="flex justify-content-between align-items-center mb-4">
+        <h2>{{ isEdit ? 'Edit User' : 'Create New User' }}</h2>
+        <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="cancel()" [disabled]="loading">
+        </p-button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" *ngIf="!loading || isEdit">
+        <div class="grid">
+            <div class="col-12">
+                <p-panel header="User Information" class="h-full">
+                    <div class="grid">
+                        <!-- Prefix -->
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label for="prefix" class="block text-sm font-medium mb-2">
+                                    Prefix <span class="text-red-500">*</span>
+                                </label>
+                                <input id="prefix" type="text" pInputText formControlName="prefix"
+                                    placeholder="Enter prefix (max 10 characters)" class="w-full"
+                                    [ngClass]="{'ng-invalid ng-dirty': f['prefix']?.invalid && f['prefix']?.touched}" />
+                                <small class="p-error" *ngIf="submitted && prefixError">{{ prefixError }}</small>
+                            </div>
+                        </div>
+
+                        <!-- First Name -->
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label for="firstName" class="block text-sm font-medium mb-2">
+                                    First Name <span class="text-red-500">*</span>
+                                </label>
+                                <input id="firstName" type="text" pInputText formControlName="firstName"
+                                    placeholder="Enter first name" class="w-full"
+                                    [ngClass]="{'ng-invalid ng-dirty': f['firstName']?.invalid && f['firstName']?.touched}" />
+                                <small class="p-error" *ngIf="submitted && firstNameError">{{ firstNameError }}</small>
+                            </div>
+                        </div>
+
+                        <!-- Middle Name -->
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label for="middleName" class="block text-sm font-medium mb-2">
+                                    Middle Name
+                                </label>
+                                <input id="middleName" type="text" pInputText formControlName="middleName"
+                                    placeholder="Enter middle name" class="w-full"
+                                    [ngClass]="{'ng-invalid ng-dirty': f['middleName']?.invalid && f['middleName']?.touched}" />
+                                <small class="p-error" *ngIf="submitted && middleNameError">{{ middleNameError }}</small>
+                            </div>
+                        </div>
+
+                        <!-- Last Name -->
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label for="lastName" class="block text-sm font-medium mb-2">
+                                    Last Name <span class="text-red-500">*</span>
+                                </label>
+                                <input id="lastName" type="text" pInputText formControlName="lastName"
+                                    placeholder="Enter last name" class="w-full"
+                                    [ngClass]="{'ng-invalid ng-dirty': f['lastName']?.invalid && f['lastName']?.touched}" />
+                                <small class="p-error" *ngIf="submitted && lastNameError">{{ lastNameError }}</small>
+                            </div>
+                        </div>
+
+                        <!-- Gender -->
+                        <div class="col-12 md:col-6">
+                            <div class="field">
+                                <label for="gender" class="block text-sm font-medium mb-2">
+                                    Gender <span class="text-red-500">*</span>
+                                </label>
+                                <p-dropdown [options]="genderOptions" formControlName="gender" optionLabel="label"
+                                    optionValue="value" placeholder="Select Gender" class="w-full">
+                                </p-dropdown>
+                            </div>
+                        </div>
+                    </div>
+                </p-panel>
+            </div>
+        </div>
+
+        <div class="flex justify-content-end gap-2 mt-4">
+            <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="cancel()" [disabled]="loading">
+            </p-button>
+            <p-button [label]="isEdit ? 'Update' : 'Create'" icon="pi pi-check" type="submit" [disabled]="loading">
+                <ng-container *ngIf="loading">
+                    <span class="indicator-progress" [style.display]="'block'">
+                        Please wait
+                        <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
+                    </span>
+                </ng-container>
+            </p-button>
+        </div>
+    </form>
+
+    <div *ngIf="loading && !isEdit" class="flex justify-content-center align-items-center" style="min-height: 200px;">
+        <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+    </div>
+</div>
+
+<p-toast></p-toast>
+

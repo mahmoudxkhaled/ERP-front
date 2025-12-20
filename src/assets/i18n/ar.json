@@ -270,6 +270,12 @@
         "app-breadcrumb": {
             "dashboard": "لوحة تحكم ERP",
             "entitiesList": "قائمة الكيانات",
+            "usersList": "قائمة المستخدمين",
+            "newUser": "مستخدم جديد",
+            "userDetails": "تفاصيل المستخدم",
+            "editUser": "تعديل المستخدم",
+            "userContactInfo": "معلومات الاتصال",
+            "userAccounts": "حسابات المستخدمين",
 
             "uikit": "أدوات واجهة المستخدم",
             "utilities": "الأدوات المساعدة",
