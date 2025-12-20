@@ -1,9 +1,11 @@
-import { Component, ElementRef, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { LayoutService } from '../app-services/app.layout.service';
 import { Subscription } from 'rxjs';
 import { LocalStorageService } from '../../core/services/local-storage.service';
+import { ProfilePictureService } from '../../core/services/profile-picture.service';
+import { ImageService } from '../../core/services/image.service';
 import { AuthService } from '../../modules/auth/services/auth.service';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { LogoutComponent } from 'src/app/modules/auth/components/logout/logout.component';
@@ -32,7 +34,7 @@ import { switchMap } from 'rxjs';
         ]),
     ],
 })
-export class AppMenuProfileComponent implements OnInit {
+export class AppMenuProfileComponent implements OnInit, OnDestroy {
     isAdmin: boolean = false;
     userName: string = 'John Doe';
     imageUrl: string = '';
@@ -47,6 +49,8 @@ export class AppMenuProfileComponent implements OnInit {
         public layoutService: LayoutService,
         public el: ElementRef,
         private localStorage: LocalStorageService,
+        private profilePictureService: ProfilePictureService,
+        private imageService: ImageService,
         private translate: TranslationService,
         private authService: AuthService,
         private router: Router,
@@ -57,6 +61,27 @@ export class AppMenuProfileComponent implements OnInit {
 
     ngOnInit(): void {
         this.loadUserDetails();
+        // Subscribe to profile picture changes
+        this.subs.add(
+            this.profilePictureService.profilePicture$.subscribe((pictureUrl: string | null) => {
+                if (pictureUrl) {
+                    // Convert base64 to data URL only if it's base64 (not an asset path or already a data URL)
+                    this.imageUrl = this.convertProfilePictureUrl(pictureUrl);
+                } else {
+                    // Fallback to default based on gender
+                    this.gender = this.localStorage.getGender() || false;
+                    if (this.gender) {
+                        this.imageUrl = 'assets/media/avatar.png';
+                    } else {
+                        this.imageUrl = 'assets/media/female-avatar.png';
+                    }
+                }
+            })
+        );
+    }
+
+    ngOnDestroy(): void {
+        this.subs.unsubscribe();
     }
 
     loadUserDetails() {
@@ -94,7 +119,34 @@ export class AppMenuProfileComponent implements OnInit {
             } else {
                 this.imageUrl = this.account.Profile_Picture || 'assets/media/female-avatar.png';
             }
+
+            // Convert base64 to data URL only if it's base64 (not an asset path or already a data URL)
+            this.imageUrl = this.convertProfilePictureUrl(this.imageUrl);
+
+            // Initialize the profile picture service with current value from localStorage
+            // This ensures all components start with the same picture
+            if (this.imageUrl) {
+                this.profilePictureService.updateProfilePicture(this.imageUrl);
+            }
         }
+    }
+
+    /**
+     * Convert profile picture URL to proper format
+     * - If it's already a data URL (starts with 'data:image'), return as-is
+     * - If it's an asset path (starts with 'assets/'), return as-is
+     * - If it's base64, convert to data URL
+     */
+    private convertProfilePictureUrl(pictureUrl: string): string {
+        if (!pictureUrl) {
+            return pictureUrl;
+        }
+        // If it's already a data URL or an asset path, return as-is
+        if (pictureUrl.startsWith('data:image') || pictureUrl.startsWith('assets/')) {
+            return pictureUrl;
+        }
+        // Otherwise, it's base64 - convert to data URL
+        return this.imageService.toImageDataUrl(pictureUrl);
     }
 
     toggleMenu() {

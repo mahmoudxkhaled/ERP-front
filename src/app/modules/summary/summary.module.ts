@@ -6,14 +6,16 @@ import { SharedModule } from 'src/app/Shared/shared/shared.module';
 // Components
 import { ActionsComponent } from './components/actions/actions.component';
 import { NotificationsComponent } from './components/notifications/notifications.component';
-import { ProfileComponent } from './components/profile/profile.component';
+import { ProfileOverviewComponent } from './components/profile/profile-overview/profile-overview.component';
+import { ProfileEditComponent } from './components/profile/profile-edit/profile-edit.component';
 import { SettingsComponent } from './components/settings/settings.component';
 
 @NgModule({
     declarations: [
         ActionsComponent,
         NotificationsComponent,
-        ProfileComponent,
+        ProfileOverviewComponent,
+        ProfileEditComponent,
         SettingsComponent,
     ],
     imports: [

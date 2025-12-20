@@ -7,6 +7,7 @@ import { EntityLogoService } from 'src/app/core/services/entity-logo.service';
 import { ImageService } from 'src/app/core/services/image.service';
 import { LanguageDirService } from 'src/app/core/services/language-dir.service';
 import { TranslationService } from 'src/app/core/services/translation.service';
+import { ProfilePictureService } from 'src/app/core/services/profile-picture.service';
 import { AuthService } from 'src/app/modules/auth/services/auth.service';
 import { LocalStorageService } from '../../core/services/local-storage.service';
 import { LayoutService } from '../app-services/app.layout.service';
@@ -86,6 +87,7 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         private authService: AuthService,
         private imageService: ImageService,
         private entityLogoService: EntityLogoService,
+        private profilePictureService: ProfilePictureService,
     ) {
     }
 
@@ -102,6 +104,24 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
                     }
                 } else {
                     this.entityLogo = '';
+                }
+                this.ref.detectChanges();
+            })
+        );
+        // Subscribe to profile picture changes
+        this.subs.add(
+            this.profilePictureService.profilePicture$.subscribe((pictureUrl: string | null) => {
+                if (pictureUrl) {
+                    // Convert base64 to data URL only if it's base64 (not an asset path or already a data URL)
+                    this.profilePictureUrl = this.convertProfilePictureUrl(pictureUrl);
+                } else {
+                    // Fallback to default based on gender
+                    this.gender = this.localStorage.getGender() || false;
+                    if (this.gender) {
+                        this.profilePictureUrl = 'assets/media/avatar.png';
+                    } else {
+                        this.profilePictureUrl = 'assets/media/female-avatar.png';
+                    }
                 }
                 this.ref.detectChanges();
             })
@@ -161,6 +181,33 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         } else {
             this.profilePictureUrl = this.account?.Profile_Picture || 'assets/media/female-avatar.png';
         }
+
+        // Convert base64 to data URL only if it's base64 (not an asset path or already a data URL)
+        this.profilePictureUrl = this.convertProfilePictureUrl(this.profilePictureUrl);
+
+        // Initialize the profile picture service with current value from localStorage
+        // This ensures all components start with the same picture
+        if (this.profilePictureUrl) {
+            this.profilePictureService.updateProfilePicture(this.profilePictureUrl);
+        }
+    }
+
+    /**
+     * Convert profile picture URL to proper format
+     * - If it's already a data URL (starts with 'data:image'), return as-is
+     * - If it's an asset path (starts with 'assets/'), return as-is
+     * - If it's base64, convert to data URL
+     */
+    private convertProfilePictureUrl(pictureUrl: string): string {
+        if (!pictureUrl) {
+            return pictureUrl;
+        }
+        // If it's already a data URL or an asset path, return as-is
+        if (pictureUrl.startsWith('data:image') || pictureUrl.startsWith('assets/')) {
+            return pictureUrl;
+        }
+        // Otherwise, it's base64 - convert to data URL
+        return this.imageService.toImageDataUrl(pictureUrl);
     }
 
     fetchUserTheme() {
@@ -180,9 +227,6 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
 
 
 
-
-
-
     onMenuButtonClick() {
         this.layoutService.onMenuToggle();
     }
@@ -191,22 +235,6 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         this.layoutService.onTopbarMenuToggle();
     }
 
-    // changeUserTheme() {
-    //     if (this.themeLoading) {
-    //         return; // Prevent multiple clicks while loading
-    //     }
-
-    //     // Get current theme from layout service config if userTheme is not set
-    //     if (!this.userTheme) {
-    //         const currentConfig = this.layoutService.config();
-    //         this.userTheme = currentConfig.colorScheme || 'light';
-    //     }
-
-    //     this.themeLoading = true; // Set loading to true
-    //     // Toggle theme: if current is 'light', switch to 'dark', otherwise switch to 'light'
-    //     this.userTheme = this.userTheme === 'light' ? 'dark' : 'light';
-    //     this.applyUserTheme(this.userTheme as 'light' | 'dark');
-    // }
     changeUserTheme() {
         if (this.themeLoading) {
             return; // Prevent multiple clicks while loading
@@ -277,71 +305,4 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
 
 
 
-
-    //#region search
-    // search(event: any) {
-    //     const query = event.query;
-
-    //     if (query.trim()) {
-    //         this.isSearching = true;
-
-    //         this.searchService.searchByTag(query).subscribe(
-    //             (response) => {
-    //                 if (response.isSuccess && response.data) {
-    //                     this.filteredResults = this.mapSearchResults(response.data);
-    //                 } else {
-    //                     this.filteredResults = [];
-    //                 }
-    //                 this.isSearching = false;
-    //                 this.ref.detectChanges();
-    //             },
-    //             (error) => {
-    //                 console.error('Search error:', error);
-    //                 this.filteredResults = [];
-    //                 this.isSearching = false;
-    //             }
-    //         );
-    //     }
-    // }
-
-    mapSearchResults(data: any): any[] {
-        const results: any[] = [];
-
-        if (data.lessons && data.lessons.length) {
-            results.push({ label: 'Lessons', value: null });
-            data.lessons.forEach((lesson: string) => {
-                results.push({ label: `- ${lesson}`, value: lesson });
-            });
-        }
-
-        if (data.games && data.games.length) {
-            results.push({ label: 'Games', value: null });
-            data.games.forEach((game: string) => {
-                results.push({ label: `- ${game}`, value: game });
-            });
-        }
-
-        if (data.phishingTemplates && data.phishingTemplates.length) {
-            results.push({ label: 'Phishing Templates', value: null });
-            data.phishingTemplates.forEach((template: string) => {
-                results.push({ label: `- ${template}`, value: template });
-            });
-        }
-
-        if (data.wallpapers && data.wallpapers.length) {
-            results.push({ label: 'Wallpapers', value: null });
-            data.wallpapers.forEach((wallpaper: string) => {
-                results.push({ label: `- ${wallpaper}`, value: wallpaper });
-            });
-        }
-
-        return results;
-    }
-
-    onSearchItemSelected(event: any) {
-        console.log('Selected item:', event);
-        // Implement navigation or further logic based on the selected item
-    }
-
-    //#endregion
 }
