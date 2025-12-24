@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { MessageService } from 'primeng/api';
+import { MessageService, TreeNode } from 'primeng/api';
 import { RolesService } from '../../../services/roles.service';
 import { SettingsConfigurationsService } from 'src/app/modules/system-administration/erp-functions/services/settings-configurations.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
@@ -12,29 +13,8 @@ import { IAccountSettings } from 'src/app/core/models/account-status.model';
     styleUrls: ['./role-permissions.component.scss']
 })
 export class RolePermissionsComponent implements OnInit, OnDestroy {
-    private _visible: boolean = false;
-
-    @Input()
-    get visible(): boolean {
-        return this._visible;
-    }
-    set visible(value: boolean) {
-        this._visible = value;
-        if (value) {
-            // Reset state when opening dialog
-            this.loading = false;
-            this.saving = false;
-            this.loadingFunctions = false;
-            this.loadingModules = false;
-            this.prepareDialog();
-        }
-    }
-
-    @Input() roleId: string = '';
-    @Input() roleTitle: string = '';
-
-    @Output() visibleChange = new EventEmitter<boolean>();
-    @Output() permissionsUpdated = new EventEmitter<void>();
+    roleId: string = '';
+    roleTitle: string = '';
 
     loading: boolean = false;
     saving: boolean = false;
@@ -45,21 +25,24 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
     functions: number[] = [];
     availableFunctions: any[] = []; // Store full objects with id and name
     selectedFunctions: number[] = []; // Store IDs for selected items
-    functionsWildcard: boolean = false;
-    functionsExceptions: number[] = [];
 
     // Modules
     modules: number[] = [];
     availableModules: any[] = []; // Store full objects with id and name
     selectedModules: number[] = []; // Store IDs for selected items
-    modulesWildcard: boolean = false;
-    modulesExceptions: number[] = [];
+
+    // Tree structure
+    treeNodes: TreeNode[] = [];
+    selectedTreeNodes: TreeNode[] = [];
+    rootLevelModules: any[] = []; // Summary and HR modules (functionId = null)
 
     private subscriptions: Subscription[] = [];
     accountSettings: IAccountSettings;
     isRegional: boolean = false;
 
     constructor(
+        private route: ActivatedRoute,
+        private router: Router,
         private rolesService: RolesService,
         private settingsConfigurationsService: SettingsConfigurationsService,
         private messageService: MessageService,
@@ -70,6 +53,20 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        // Get roleId from route params
+        this.roleId = this.route.snapshot.paramMap.get('roleId') || '';
+        if (!this.roleId) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Invalid role ID.'
+            });
+            this.router.navigate(['/entity-administration/roles/list']);
+            return;
+        }
+
+        // Load role details to get role title
+        this.loadRoleDetails();
         this.loadAvailableFunctionsAndModules();
     }
 
@@ -79,6 +76,18 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
         this.availableModules = this.availableModules || [];
         this.selectedFunctions = this.selectedFunctions || [];
         this.selectedModules = this.selectedModules || [];
+
+        let functionsLoaded = false;
+        let modulesLoaded = false;
+
+        // Helper function to build tree when both are loaded
+        const tryBuildTree = () => {
+            if (functionsLoaded && modulesLoaded) {
+                this.buildTreeStructure();
+                // Load permissions after tree is built
+                this.loadPermissions();
+            }
+        };
 
         // Load available functions
         const functionsSub = this.settingsConfigurationsService.getFunctionsList().subscribe({
@@ -95,6 +104,8 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
                         detail: 'Failed to load available functions.'
                     });
                 }
+                functionsLoaded = true;
+                tryBuildTree();
             },
             error: () => {
                 this.availableFunctions = [];
@@ -103,6 +114,8 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
                     summary: 'Error',
                     detail: 'An error occurred while loading available functions.'
                 });
+                functionsLoaded = true;
+                tryBuildTree();
             }
         });
 
@@ -121,6 +134,8 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
                         detail: 'Failed to load available modules.'
                     });
                 }
+                modulesLoaded = true;
+                tryBuildTree();
             },
             error: () => {
                 this.availableModules = [];
@@ -129,6 +144,8 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
                     summary: 'Error',
                     detail: 'An error occurred while loading available modules.'
                 });
+                modulesLoaded = true;
+                tryBuildTree();
             }
         });
 
@@ -139,18 +156,25 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
         this.subscriptions.forEach((sub) => sub.unsubscribe());
     }
 
-    private prepareDialog(): void {
+    private loadRoleDetails(): void {
         if (!this.roleId) {
             return;
         }
-        // Ensure arrays are initialized
-        this.selectedFunctions = this.selectedFunctions || [];
-        this.selectedModules = this.selectedModules || [];
-        this.availableFunctions = this.availableFunctions || [];
-        this.availableModules = this.availableModules || [];
-        this.functionsExceptions = this.functionsExceptions || [];
-        this.modulesExceptions = this.modulesExceptions || [];
-        this.loadPermissions();
+
+        const sub = this.rolesService.getEntityRoleDetails(Number(this.roleId)).subscribe({
+            next: (response: any) => {
+                if (response?.success) {
+                    const role = response?.message || {};
+                    this.roleTitle = this.isRegional
+                        ? (role?.Title_Regional || role?.Title || '')
+                        : (role?.Title || '');
+                }
+            },
+            error: () => {
+                // Handle error silently
+            }
+        });
+        this.subscriptions.push(sub);
     }
 
     private loadPermissions(): void {
@@ -233,83 +257,255 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
         if (!list || list.length === 0) {
             if (type === 'functions') {
                 this.functions = [];
-                this.functionsWildcard = false;
-                this.functionsExceptions = [];
                 this.selectedFunctions = [];
             } else {
                 this.modules = [];
-                this.modulesWildcard = false;
-                this.modulesExceptions = [];
                 this.selectedModules = [];
+            }
+            // Update tree selection after both functions and modules are parsed
+            if (type === 'modules') {
+                this.updateTreeSelection();
             }
             return;
         }
 
-        // Check if wildcard (contains 0)
-        const hasWildcard = list.includes(0);
-        const exceptions = list.filter(id => id < 0).map(id => Math.abs(id));
+        // Filter out wildcard (0) and negative IDs (exceptions), keep only positive IDs
+        const positiveIds = list.filter(id => id > 0);
 
         if (type === 'functions') {
-            this.functionsWildcard = hasWildcard;
-            this.functionsExceptions = exceptions;
-            if (hasWildcard) {
-                // Wildcard mode: show exceptions as selected
-                this.selectedFunctions = exceptions;
-            } else {
-                // Normal mode: show selected functions
-                this.selectedFunctions = list.filter(id => id > 0);
-            }
+            this.selectedFunctions = positiveIds;
             this.functions = list;
         } else {
-            this.modulesWildcard = hasWildcard;
-            this.modulesExceptions = exceptions;
-            if (hasWildcard) {
-                // Wildcard mode: show exceptions as selected
-                this.selectedModules = exceptions;
-            } else {
-                // Normal mode: show selected modules
-                this.selectedModules = list.filter(id => id > 0);
-            }
+            this.selectedModules = positiveIds;
             this.modules = list;
+            // Update tree selection after modules are parsed
+            this.updateTreeSelection();
         }
     }
 
-    toggleFunctionsWildcard(): void {
-        // Note: functionsWildcard is already toggled by two-way binding, so check the NEW state
-        if (this.functionsWildcard) {
-            // Just switched TO wildcard mode (all functions allowed)
-            // Clear all selections - user can then select exceptions if needed
-            this.selectedFunctions = [];
-            this.functionsExceptions = [];
-        } else {
-            // Just switched FROM wildcard mode (back to normal selection)
-            // Save current exceptions for reference
-            if (this.selectedFunctions.length > 0) {
-                this.functionsExceptions = [...this.selectedFunctions];
+    /**
+     * Build tree structure from available functions and modules
+     * Functions are parent nodes, modules are children
+     */
+    private buildTreeStructure(): void {
+        if (!this.availableFunctions || !this.availableModules) {
+            this.treeNodes = [];
+            return;
+        }
+
+        // Separate root-level modules (functionId is null or undefined)
+        this.rootLevelModules = this.availableModules.filter(module => !module.functionId || module.functionId === null);
+
+        // Group modules by functionId
+        const modulesByFunction: { [key: number]: any[] } = {};
+        this.availableModules.forEach(module => {
+            if (module.functionId && module.functionId !== null) {
+                if (!modulesByFunction[module.functionId]) {
+                    modulesByFunction[module.functionId] = [];
+                }
+                modulesByFunction[module.functionId].push(module);
             }
-            // In normal mode, selected items represent allowed functions
-            // Start with empty list - user needs to select which functions are allowed
-            this.selectedFunctions = [];
+        });
+
+        // Build tree nodes
+        this.treeNodes = this.availableFunctions
+            .filter(func => func && func.id)
+            .sort((a, b) => (a.defaultOrder || 0) - (b.defaultOrder || 0))
+            .map(func => {
+                // Get modules for this function
+                const functionModules = (modulesByFunction[func.id] || [])
+                    .sort((a, b) => (a.defaultOrder || 0) - (b.defaultOrder || 0))
+                    .map(module => ({
+                        label: module.name || `Module #${module.id}`,
+                        data: {
+                            type: 'module',
+                            id: module.id,
+                            functionId: module.functionId
+                        },
+                        leaf: true
+                    } as TreeNode));
+
+                return {
+                    label: func.name || `Function #${func.id}`,
+                    data: {
+                        type: 'function',
+                        id: func.id
+                    },
+                    children: functionModules,
+                    expanded: true
+                } as TreeNode;
+            });
+
+        // Update tree selection if permissions are already loaded
+        if (this.functions.length > 0 || this.modules.length > 0) {
+            this.updateTreeSelection();
         }
     }
 
-    toggleModulesWildcard(): void {
-        // Note: modulesWildcard is already toggled by two-way binding, so check the NEW state
-        if (this.modulesWildcard) {
-            // Just switched TO wildcard mode (all modules allowed)
-            // Clear all selections - user can then select exceptions if needed
-            this.selectedModules = [];
-            this.modulesExceptions = [];
-        } else {
-            // Just switched FROM wildcard mode (back to normal selection)
-            // Save current exceptions for reference
-            if (this.selectedModules.length > 0) {
-                this.modulesExceptions = [...this.selectedModules];
-            }
-            // In normal mode, selected items represent allowed modules
-            // Start with empty list - user needs to select which modules are allowed
-            this.selectedModules = [];
+    /**
+     * Update tree selection based on current selectedFunctions and selectedModules
+     */
+    private updateTreeSelection(): void {
+        if (!this.treeNodes || this.treeNodes.length === 0) {
+            this.selectedTreeNodes = [];
+            return;
         }
+
+        const selectedNodes: TreeNode[] = [];
+
+        // Select specific functions and modules
+        this.treeNodes.forEach(funcNode => {
+            const functionId = funcNode.data?.id;
+            if (this.selectedFunctions.includes(functionId)) {
+                selectedNodes.push(funcNode);
+                // Select modules if they are in selectedModules
+                if (funcNode.children) {
+                    funcNode.children.forEach(moduleNode => {
+                        const moduleId = moduleNode.data?.id;
+                        if (this.selectedModules.includes(moduleId)) {
+                            selectedNodes.push(moduleNode);
+                        }
+                    });
+                }
+            } else {
+                // Function not selected, but check if any of its modules are selected
+                if (funcNode.children) {
+                    funcNode.children.forEach(moduleNode => {
+                        const moduleId = moduleNode.data?.id;
+                        if (this.selectedModules.includes(moduleId)) {
+                            selectedNodes.push(moduleNode);
+                        }
+                    });
+                }
+            }
+        });
+
+        this.selectedTreeNodes = selectedNodes;
+    }
+
+    /**
+     * Handle tree node selection
+     */
+    onNodeSelect(event: any): void {
+        const node = event.node;
+        if (!node || !node.data) {
+            return;
+        }
+
+        if (node.data.type === 'function') {
+            // When a function is selected, select all its child modules
+            if (node.children && node.children.length > 0) {
+                node.children.forEach((childNode: TreeNode) => {
+                    if (!this.selectedTreeNodes.includes(childNode)) {
+                        this.selectedTreeNodes.push(childNode);
+                    }
+                });
+            }
+        } else if (node.data.type === 'module') {
+            // When a module is selected, automatically select its parent function
+            const functionId = node.data.functionId;
+            if (functionId) {
+                // Find the parent function node
+                const parentFunctionNode = this.treeNodes.find(funcNode => funcNode.data?.id === functionId);
+                if (parentFunctionNode && !this.selectedTreeNodes.includes(parentFunctionNode)) {
+                    this.selectedTreeNodes.push(parentFunctionNode);
+                }
+            }
+        }
+
+        // Update selectedFunctions and selectedModules from tree selection
+        this.extractSelectionFromTree();
+    }
+
+    /**
+     * Handle tree node unselection
+     */
+    onNodeUnselect(event: any): void {
+        const node = event.node;
+        if (!node || !node.data) {
+            return;
+        }
+
+        if (node.data.type === 'function') {
+            // When a function is unselected, unselect all its child modules
+            if (node.children && node.children.length > 0) {
+                node.children.forEach((childNode: TreeNode) => {
+                    const index = this.selectedTreeNodes.indexOf(childNode);
+                    if (index > -1) {
+                        this.selectedTreeNodes.splice(index, 1);
+                    }
+                });
+            }
+        } else if (node.data.type === 'module') {
+            // When a module is unselected, check if all modules of its parent function are unselected
+            const functionId = node.data.functionId;
+            if (functionId) {
+                // Find the parent function node
+                const parentFunctionNode = this.treeNodes.find(funcNode => funcNode.data?.id === functionId);
+                if (parentFunctionNode && parentFunctionNode.children) {
+                    // Check if any module of this function is still selected
+                    const hasSelectedModule = parentFunctionNode.children.some((moduleNode: TreeNode) =>
+                        this.selectedTreeNodes.includes(moduleNode)
+                    );
+
+                    // If no modules are selected, unselect the function
+                    if (!hasSelectedModule) {
+                        const functionIndex = this.selectedTreeNodes.indexOf(parentFunctionNode);
+                        if (functionIndex > -1) {
+                            this.selectedTreeNodes.splice(functionIndex, 1);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Update selectedFunctions and selectedModules from tree selection
+        this.extractSelectionFromTree();
+    }
+
+    /**
+     * Extract selected functions and modules from tree selection
+     * If at least one module of a function is selected, the function is considered selected
+     */
+    private extractSelectionFromTree(): void {
+        const selectedFunctionIds: number[] = [];
+        const selectedModuleIds: number[] = [];
+
+        // First, collect all selected modules
+        this.selectedTreeNodes.forEach(node => {
+            if (node.data?.type === 'module') {
+                selectedModuleIds.push(node.data.id);
+            }
+        });
+
+        // Collect functions that are explicitly selected
+        this.selectedTreeNodes.forEach(node => {
+            if (node.data?.type === 'function') {
+                selectedFunctionIds.push(node.data.id);
+            }
+        });
+
+        // Also include functions that have at least one module selected
+        // (even if the function node itself is not in selectedTreeNodes)
+        this.treeNodes.forEach(funcNode => {
+            const functionId = funcNode.data?.id;
+            if (functionId && !selectedFunctionIds.includes(functionId)) {
+                // Check if any module of this function is selected
+                if (funcNode.children && funcNode.children.length > 0) {
+                    const hasSelectedModule = funcNode.children.some((moduleNode: TreeNode) => {
+                        const moduleId = moduleNode.data?.id;
+                        return selectedModuleIds.includes(moduleId);
+                    });
+
+                    if (hasSelectedModule) {
+                        selectedFunctionIds.push(functionId);
+                    }
+                }
+            }
+        });
+
+        this.selectedFunctions = selectedFunctionIds;
+        this.selectedModules = selectedModuleIds;
     }
 
     savePermissions(): void {
@@ -317,23 +513,14 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
             return;
         }
 
+        // Ensure we have the latest selection from tree
+        this.extractSelectionFromTree();
+
         this.saving = true;
 
-        // Build functions list
-        let functionsToSave: number[] = [];
-        if (this.functionsWildcard) {
-            functionsToSave = [0, ...this.selectedFunctions.map(id => -id)];
-        } else {
-            functionsToSave = [...this.selectedFunctions];
-        }
-
-        // Build modules list
-        let modulesToSave: number[] = [];
-        if (this.modulesWildcard) {
-            modulesToSave = [0, ...this.selectedModules.map(id => -id)];
-        } else {
-            modulesToSave = [...this.selectedModules];
-        }
+        // Always use normal mode: send selected function and module IDs
+        const functionsToSave: number[] = [...this.selectedFunctions];
+        const modulesToSave: number[] = [...this.selectedModules];
 
         // Save functions
         const functionsSub = this.rolesService.setRoleFunctions(Number(this.roleId), functionsToSave).subscribe({
@@ -367,8 +554,10 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
                     detail: 'Permissions updated successfully.'
                 });
 
-                this.permissionsUpdated.emit();
-                this.closeDialog();
+                // Navigate back to role details after successful save, open Permissions tab (index 1)
+                this.router.navigate(['/company-administration/roles', this.roleId], {
+                    queryParams: { tab: 1 }
+                });
             },
             error: () => {
                 this.saving = false;
@@ -376,6 +565,13 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
         });
 
         this.subscriptions.push(modulesSub);
+    }
+
+    navigateBack(): void {
+        // Navigate back to role details, open Permissions tab (index 1)
+        this.router.navigate(['/company-administration/roles', this.roleId], {
+            queryParams: { tab: 1 }
+        });
     }
 
     /**
@@ -400,30 +596,6 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
         return moduleObj && moduleObj.name ? moduleObj.name : `Module #${moduleId}`;
     }
 
-    closeDialog(): void {
-        this.onVisibleChange(false);
-    }
-
-    onDialogHide(): void {
-        // Reset all state when dialog is hidden
-        this.loading = false;
-        this.saving = false;
-        this.loadingFunctions = false;
-        this.loadingModules = false;
-        // Ensure arrays are never null
-        this.selectedFunctions = this.selectedFunctions || [];
-        this.selectedModules = this.selectedModules || [];
-        this.availableFunctions = this.availableFunctions || [];
-        this.availableModules = this.availableModules || [];
-        this.functionsExceptions = this.functionsExceptions || [];
-        this.modulesExceptions = this.modulesExceptions || [];
-        this.onVisibleChange(false);
-    }
-
-    onVisibleChange(value: boolean): void {
-        this._visible = value;
-        this.visibleChange.emit(value);
-    }
 
     private handleBusinessError(type: 'functions' | 'modules', response: any): void | null {
         const code = String(response?.message || '');

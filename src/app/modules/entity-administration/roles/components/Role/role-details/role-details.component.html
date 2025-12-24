@@ -179,10 +179,6 @@
     </div>
 </div>
 
-<!-- Permissions Dialog -->
-<app-role-permissions [(visible)]="permissionsDialogVisible" [roleId]="roleId" [roleTitle]="roleDetails?.title || ''"
-    (permissionsUpdated)="handlePermissionsUpdated()">
-</app-role-permissions>
 
 <!-- Edit Role Dialog -->
 <app-edit-role-dialog [(visible)]="editRoleDialogVisible" [roleId]="roleId" [roleTitle]="roleDetails?.title || ''"

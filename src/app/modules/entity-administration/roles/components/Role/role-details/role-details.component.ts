@@ -29,7 +29,6 @@ export class RoleDetailsComponent implements OnInit, OnDestroy {
     modulesList: Module[] = [];
     accountsList: any[] = [];
     loadingAccounts: boolean = false;
-    permissionsDialogVisible: boolean = false;
     editRoleDialogVisible: boolean = false;
 
     accountSettings: IAccountSettings;
@@ -60,6 +59,15 @@ export class RoleDetailsComponent implements OnInit, OnDestroy {
             });
             this.router.navigate(['/company-administration/roles/list']);
             return;
+        }
+
+        // Check for tab query parameter to set active tab
+        const tabParam = this.route.snapshot.queryParams['tab'];
+        if (tabParam !== undefined && tabParam !== null) {
+            const tabIndex = parseInt(tabParam, 10);
+            if (!isNaN(tabIndex) && tabIndex >= 0) {
+                this.activeTabIndex = tabIndex;
+            }
         }
 
         this.loadAllData();
@@ -271,11 +279,7 @@ export class RoleDetailsComponent implements OnInit, OnDestroy {
     }
 
     openPermissionsDialog(): void {
-        this.permissionsDialogVisible = true;
-    }
-
-    handlePermissionsUpdated(): void {
-        this.loadAllData();
+        this.router.navigate(['/company-administration/roles/permissions', this.roleId]);
     }
 
     loadAssignedAccounts(): void {
