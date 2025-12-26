@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { WorkflowsComponent } from './workflows/workflows.component';
 
 // Components
-import { UsersDetailsComponent } from './components/users-details/users-details.component';
-import { WorkflowsComponent } from './components/workflows/workflows.component';
+
 
 const routes: Routes = [
     { path: '', redirectTo: 'entities/list', pathMatch: 'full' },
@@ -23,7 +23,6 @@ const routes: Routes = [
         data: { breadcrumb: 'userAccounts' }
     },
 
-    { path: 'users-details', component: UsersDetailsComponent, data: { breadcrumb: 'usersDetails' } },
     { path: 'workflows', component: WorkflowsComponent, data: { breadcrumb: 'workflows' } }
 ];
 
@@ -31,4 +30,4 @@ const routes: Routes = [
     imports: [RouterModule.forChild(routes)],
     exports: [RouterModule]
 })
-export class CompanyAdministrationRoutingModule { }
+export class EntityAdministrationRoutingModule { }

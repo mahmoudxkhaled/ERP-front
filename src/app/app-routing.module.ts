@@ -35,7 +35,7 @@ const routes: Routes = [
                 path: 'company-administration',
                 canActivate: [AuthGuard],
                 data: { breadcrumb: 'companyAdministration' },
-                loadChildren: () => import('./modules/company-administration/company-administration.module').then((m) => m.CompanyAdministrationModule),
+                loadChildren: () => import('./modules/entity-administration/entity-administration.module').then((m) => m.EntityAdministrationModule),
             },
             {
                 path: 'document-control',
