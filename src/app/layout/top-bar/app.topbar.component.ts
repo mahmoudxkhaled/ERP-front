@@ -8,6 +8,7 @@ import { ImageService } from 'src/app/core/services/image.service';
 import { LanguageDirService } from 'src/app/core/services/language-dir.service';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { ProfilePictureService } from 'src/app/core/services/profile-picture.service';
+import { UserNameService } from 'src/app/core/services/user-name.service';
 import { AuthService } from 'src/app/modules/auth/services/auth.service';
 import { LocalStorageService } from '../../core/services/local-storage.service';
 import { LayoutService } from '../app-services/app.layout.service';
@@ -88,6 +89,7 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         private imageService: ImageService,
         private entityLogoService: EntityLogoService,
         private profilePictureService: ProfilePictureService,
+        private userNameService: UserNameService,
     ) {
     }
 
@@ -124,6 +126,17 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
                     }
                 }
                 this.ref.detectChanges();
+            })
+        );
+        // Subscribe to user name changes
+        this.subs.add(
+            this.userNameService.userName$.subscribe((userName: string) => {
+                console.log('TopBar: Received user name update:', userName);
+                if (userName) {
+                    this.userName = userName;
+                    this.ref.detectChanges();
+                    console.log('TopBar: Updated userName to:', this.userName);
+                }
             })
         );
     }
@@ -189,6 +202,12 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         // This ensures all components start with the same picture
         if (this.profilePictureUrl) {
             this.profilePictureService.updateProfilePicture(this.profilePictureUrl);
+        }
+
+        // Initialize the user name service with current value from localStorage
+        // This ensures all components start with the same user name
+        if (this.userName) {
+            this.userNameService.updateUserName(this.userName);
         }
     }
 

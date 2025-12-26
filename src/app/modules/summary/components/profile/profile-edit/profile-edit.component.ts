@@ -5,6 +5,7 @@ import { TranslationService } from 'src/app/core/services/translation.service';
 import { MessageService } from 'primeng/api';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { ProfilePictureService } from 'src/app/core/services/profile-picture.service';
+import { UserNameService } from 'src/app/core/services/user-name.service';
 import { IUserDetails, IAccountDetails, IEntityDetails, IAccountSettings } from 'src/app/core/models/account-status.model';
 import { ProfileApiService } from '../../../services/profile-api.service';
 import { ProfileContactInfo, ProfilePreferences } from '../../../models/profile.model';
@@ -62,6 +63,7 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
         private localStorageService: LocalStorageService,
         private profileApiService: ProfileApiService,
         private profilePictureService: ProfilePictureService,
+        private userNameService: UserNameService,
         private router: Router
     ) {
         this.isLoading$ = this.profileApiService.isLoadingSubject.asObservable();
@@ -138,6 +140,18 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
                     this.userDetails.Last_Name = userData?.Last_Name || '';
                     this.userDetails.Prefix = userData?.Prefix || '';
                     this.userDetails.Gender = gender;
+
+                    // Also update regional fields if available
+                    this.userDetails.First_Name_Regional = userData?.First_Name_Regional || '';
+                    this.userDetails.Middle_Name_Regional = userData?.Middle_Name_Regional || '';
+                    this.userDetails.Last_Name_Regional = userData?.Last_Name_Regional || '';
+                    this.userDetails.Prefix_Regional = userData?.Prefix_Regional || '';
+
+                    // Update localStorage to persist the changes
+                    this.localStorageService.setItem('User_Details', this.userDetails);
+
+                    // Sync user name with service to update top bar in real-time
+                    this.syncUserName();
                 }
             }
         });
@@ -258,7 +272,10 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
                     detail: this.translate.getInstant('profile.messages.saveSuccess')
                 });
 
-                // Reload user data
+                // Sync user name with service to update top bar in real-time
+                this.syncUserName();
+
+                // Reload user data (this will also update localStorage)
                 this.loadUserDetailsFromAPI();
             },
             error: () => {
@@ -697,6 +714,40 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
 
     navigateBack(): void {
         this.router.navigate(['/summary/profile']);
+    }
+
+    /**
+     * Sync user name with UserNameService and update localStorage
+     * This ensures all components (top bar) are updated in real-time
+     */
+    private syncUserName(): void {
+        if (!this.userDetails) return;
+
+        const isRegional = this.accountSettings?.Language !== 'English';
+        let displayName = '';
+
+        if (isRegional) {
+            const firstNameRegional = this.userDetails.First_Name_Regional || '';
+            const lastNameRegional = this.userDetails.Last_Name_Regional || '';
+            displayName = (firstNameRegional + ' ' + lastNameRegional).trim();
+        }
+
+        const firstNameEnglish = this.userDetails.First_Name || '';
+        const lastNameEnglish = this.userDetails.Last_Name || '';
+        const englishName = (firstNameEnglish + ' ' + lastNameEnglish).trim();
+
+        if (isRegional && displayName) {
+            this.userNameService.updateUserName(displayName);
+        } else if (englishName) {
+            this.userNameService.updateUserName(englishName);
+        } else {
+            this.userNameService.updateUserName(this.accountDetails?.Email || 'User');
+        }
+
+        console.log('ProfileEdit: syncUserName called, userDetails:', this.userDetails);
+
+        // Update localStorage to persist the changes
+        this.localStorageService.setItem('User_Details', this.userDetails);
     }
 
     /**
