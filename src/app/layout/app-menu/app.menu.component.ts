@@ -1,12 +1,9 @@
-import { OnInit } from '@angular/core';
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { TranslationService } from '../../core/services/translation.service';
-import { AuthService } from '../../modules/auth/services/auth.service';
-import { LogoutComponent } from 'src/app/modules/auth/components/logout/logout.component';
+import { Component, OnInit } from '@angular/core';
 import { DialogService } from 'primeng/dynamicdialog';
-import { ModuleNavigationService } from '../../core/services/module-navigation.service';
+import { LogoutComponent } from 'src/app/modules/auth/components/logout/logout.component';
 import { IMenuFunction, IMenuModule } from '../../core/models/account-status.model';
+import { ModuleNavigationService } from '../../core/services/module-navigation.service';
+import { TranslationService } from '../../core/services/translation.service';
 
 @Component({
     selector: 'app-menu',
@@ -15,12 +12,10 @@ import { IMenuFunction, IMenuModule } from '../../core/models/account-status.mod
 export class AppMenuComponent implements OnInit {
     model: any[] = [];
     currentPages: any;
-    showLogoutDialog: boolean = false; // Track logout dialog visibility
+    showLogoutDialog: boolean = false;
 
     constructor(
         private translate: TranslationService,
-        private router: Router,
-        private authService: AuthService,
         private dialogService: DialogService,
         private moduleNavigationService: ModuleNavigationService
     ) {
@@ -45,7 +40,6 @@ export class AppMenuComponent implements OnInit {
             hasPermession: true,
             icon: func.icon || this.getDefaultFunctionIcon(func.code),
             items: func.modules.map(module => {
-                // Special handling for logout module
                 if (module.code === 'LGOT') {
                     return {
                         label: this.getDisplayName(module),
@@ -55,7 +49,6 @@ export class AppMenuComponent implements OnInit {
                     };
                 }
 
-                // Regular module items
                 return {
                     label: this.getDisplayName(module),
                     hasPermession: true,
@@ -67,17 +60,13 @@ export class AppMenuComponent implements OnInit {
         }));
     }
 
-    /**
-     * Get display name for function or module (respects regional settings)
-     */
+
     private getDisplayName(item: IMenuFunction | IMenuModule): string {
         // Use name (already filtered by regional in service)
         return item.name || '';
     }
 
-    /**
-     * Get default icon for function based on code
-     */
+
     private getDefaultFunctionIcon(functionCode: string): string {
         const iconMap: Record<string, string> = {
             'DBS': 'fa fa-chart-pie',
@@ -93,9 +82,7 @@ export class AppMenuComponent implements OnInit {
         return iconMap[functionCode] || 'fa fa-folder';
     }
 
-    /**
-     * Get default icon for module based on code
-     */
+
     private getDefaultModuleIcon(moduleCode: string): string {
         const iconMap: Record<string, string> = {
             'ACT': 'fa fa-bolt',
@@ -116,7 +103,6 @@ export class AppMenuComponent implements OnInit {
     }
 
     hassPermession(pageName: string): boolean {
-        // return this.currentPages.includes(pageName);
         return true;
     }
 

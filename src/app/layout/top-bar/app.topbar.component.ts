@@ -202,11 +202,9 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         if (!pictureUrl) {
             return pictureUrl;
         }
-        // If it's already a data URL or an asset path, return as-is
         if (pictureUrl.startsWith('data:image') || pictureUrl.startsWith('assets/')) {
             return pictureUrl;
         }
-        // Otherwise, it's base64 - convert to data URL
         return this.imageService.toImageDataUrl(pictureUrl);
     }
 

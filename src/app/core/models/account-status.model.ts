@@ -78,7 +78,7 @@ export interface IModuleDetail {
     Name: string;
     Name_Regional: string;
     Default_Order: number;
-    URL: string; // URL field from localStorage
+    URL: string;
 }
 
 export interface IModulesDetails {
@@ -102,17 +102,15 @@ export interface IAccountStatusResponse {
     Account_Settings: IAccountSettings;
 }
 
-/**
- * Menu/Dashboard helper interfaces for dynamic UI generation
- */
+
 export interface IMenuFunction {
     code: string;
     name: string;
     nameRegional: string;
     defaultOrder: number;
-    icon?: string; // Function logo URL (if available)
+    icon?: string;
     modules: IMenuModule[];
-    url: string; // Format: /{functionSlug}/{moduleSlug}/{nestedRoute}
+    url: string;
 }
 
 export interface IMenuModule {
@@ -120,10 +118,10 @@ export interface IMenuModule {
     name: string;
     nameRegional: string;
     defaultOrder: number;
-    url: string; // Format: /{functionSlug}/{moduleSlug}/{nestedRoute}
-    icon?: string; // Module logo URL (if available)
+    url: string;
+    icon?: string;
     isImplemented: boolean;
     moduleId: number;
-    functionCode: string; // Parent function code
+    functionCode: string;
 }
 
