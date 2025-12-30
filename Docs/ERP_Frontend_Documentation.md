@@ -1154,7 +1154,6 @@ Routes Structure:
 │   ├── document-control → SharedDocumentsModule (lazy)
 │   └── financials → FinancialsModule (lazy)
 ├── /auth → AuthModule (lazy)
-├── /GetQuote → AuthModule (lazy)
 ├── /notfound → NotfoundModule (lazy)
 ├── /landing → LandingModule (lazy)
 └──  → redirect to /notfound
