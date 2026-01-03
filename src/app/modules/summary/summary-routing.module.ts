@@ -15,6 +15,11 @@ const routes: Routes = [
     { path: 'profile', component: ProfileOverviewComponent, data: { breadcrumb: 'profile' } },
     { path: 'profile/edit', component: ProfileEditComponent, data: { breadcrumb: 'editProfile' } },
     { path: 'settings', component: SettingsComponent, data: { breadcrumb: 'settings' } },
+    {
+        path: 'groups',
+        loadChildren: () => import('./components/groups/groups.module').then(m => m.GroupsModule),
+        data: { breadcrumb: 'groups' }
+    },
 ];
 
 @NgModule({

@@ -1,0 +1,80 @@
+<div class="card">
+    <!-- Header -->
+    <div class="flex justify-content-between align-items-center mb-4">
+        <h2>Group Details</h2>
+        <p-button label="Back to List" icon="pi pi-arrow-left" class="p-button-secondary" (onClick)="navigateBack()"
+            [disabled]="loading">
+        </p-button>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div *ngIf="loading" class="flex justify-content-center align-items-center" style="min-height: 200px;">
+        <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+    </div>
+
+    <!-- Content -->
+    <div *ngIf="!loading && groupDetails">
+        <p-tabView [(activeIndex)]="activeTabIndex" class="w-full h-full">
+            <!-- Tab 1: Basic Information -->
+            <p-tabPanel header="Basic Information">
+                <!-- Section 1: Basic Information -->
+                <p-panel class="mb-5" [toggleable]="false">
+                    <ng-template pTemplate="header">
+                        <div class="flex align-items-center justify-content-between w-full">
+                            <div class="flex align-items-center gap-3">
+                                <i class="pi pi-users text-primary text-2xl"></i>
+                                <span class="text-xl font-semibold">Group Profile</span>
+                            </div>
+                            <p-button label="Edit Group" icon="pi pi-pencil" size="small" severity="contrast"
+                                (onClick)="openEditGroupDialog()" [disabled]="loading" class="edit-group-btn">
+                            </p-button>
+                        </div>
+                    </ng-template>
+
+                    <div class="group-profile-content">
+                        <!-- Hero Section: Core Identity -->
+                        <div class="profile-hero p-5 mb-5">
+                            <div class="grid align-items-start">
+                                <!-- Group Identity Info -->
+                                <div class="col-12">
+                                    <div>
+                                        <h1 class="text-3xl font-bold text-900 mt-0 mb-2">
+                                            {{ getGroupTitle() || 'Unnamed Group' }}
+                                        </h1>
+                                        <div class="flex flex-column gap-3 text-lg">
+                                            <div class="flex align-items-center gap-3 text-700">
+                                                <span><strong>Group ID:</strong> #{{ getGroupId() || '—' }}</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Status Badge -->
+                                        <div class="flex gap-3 mt-4">
+                                            <p-tag [value]="getStatusLabel()" [severity]="getStatusSeverity()"
+                                                [rounded]="true" icon="pi pi-circle-fill" class="text-sm font-medium">
+                                            </p-tag>
+                                        </div>
+
+                                        <div class="mt-4 pt-4 border-top-1 surface-border">
+                                            <small class="text-500">Description</small>
+                                            <p class="mt-1 text-700 font-medium">
+                                                {{ getGroupDescription() || 'No description has been provided for this group.' }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </p-panel>
+            </p-tabPanel>
+
+            <!-- Tab 2: Members -->
+            <p-tabPanel header="Members">
+                <app-group-members [groupId]="getGroupIdAsNumber()" (membersUpdated)="handleGroupUpdated()"></app-group-members>
+            </p-tabPanel>
+        </p-tabView>
+    </div>
+</div>
+
+<p-toast></p-toast>
+
