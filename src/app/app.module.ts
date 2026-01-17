@@ -9,6 +9,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ErrorHandlingInterceptor } from './core/interceptors/error-handling.interceptor';
 import { LoadingInterceptor } from './core/interceptors/loading.interceptor';
+import { RoutingHeaderInterceptor } from './core/interceptors/routing-header.interceptor';
 import { SafePipe } from './core/pipes/safe.pipe';
 import { AppLayoutModule } from './layout/app-layout/app.layout.module';
 import { AppTranslateModule } from './Shared/shared/app-translate.module';
@@ -29,6 +30,11 @@ import { SharedModule } from './Shared/shared/shared.module';
     providers: [
         DialogService,
         MessageService,
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: RoutingHeaderInterceptor,
+            multi: true,
+        },
         {
             provide: HTTP_INTERCEPTORS,
             useClass: ErrorHandlingInterceptor,
