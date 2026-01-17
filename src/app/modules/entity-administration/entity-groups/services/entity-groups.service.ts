@@ -2,16 +2,23 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, finalize } from 'rxjs';
 import { ApiService } from 'src/app/core/api/api.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { PermissionService } from 'src/app/core/services/permission.service';
+import { Roles } from 'src/app/core/models/system-roles';
 
+/**
+ * Service for managing Entity Groups (Entity_ID > 0)
+ * Entity Groups can only be managed by Entity Administrators
+ */
 @Injectable({
     providedIn: 'root',
 })
-export class GroupsService {
+export class EntityGroupsService {
     isLoadingSubject = new BehaviorSubject<boolean>(false);
 
     constructor(
         private apiServices: ApiService,
-        private localStorageService: LocalStorageService
+        private localStorageService: LocalStorageService,
+        private permissionService: PermissionService
     ) {
         this.isLoadingSubject = new BehaviorSubject<boolean>(false);
     }
@@ -20,19 +27,35 @@ export class GroupsService {
         return this.localStorageService.getAccessToken();
     }
 
-    private getAccountId(): number {
-        const accountDetails = this.localStorageService.getAccountDetails();
-        return accountDetails?.Account_ID || 0;
+    private getEntityId(): number {
+        const entityDetails = this.localStorageService.getEntityDetails();
+        return entityDetails?.Entity_ID || 0;
     }
 
     /**
-     * Create a new Account Group
+     * Check if current user is Entity Admin
+     */
+    isEntityAdmin(): boolean {
+        return this.permissionService.hasRole(Roles.EntityAdministrator) ||
+            this.permissionService.hasRole(Roles.SystemAdministrator) ||
+            this.permissionService.hasRole(Roles.Developer);
+    }
+
+    /**
+     * Create a new Entity Group
      * API Code: 570
      * @param title - Group title
      * @param description - Group description
-     * @param entityId - Entity ID (0 for personal groups)
+     * @param entityId - Entity ID (must be > 0 for entity groups)
      */
-    createGroup(title: string, description: string, entityId: number = 0): Observable<any> {
+    createEntityGroup(title: string, description: string, entityId: number): Observable<any> {
+        if (!this.isEntityAdmin()) {
+            throw new Error('Only Entity Administrators can create entity groups.');
+        }
+        if (entityId <= 0) {
+            throw new Error('Entity ID must be greater than 0 for entity groups.');
+        }
+
         this.isLoadingSubject.next(true);
         const params = [title, description, entityId.toString()];
         return this.apiServices.callAPI(570, this.getAccessToken(), params).pipe(
@@ -41,11 +64,11 @@ export class GroupsService {
     }
 
     /**
-     * Get Account Group details
+     * Get Entity Group details
      * API Code: 571
      * @param groupId - Group ID
      */
-    getGroup(groupId: number): Observable<any> {
+    getEntityGroup(groupId: number): Observable<any> {
         this.isLoadingSubject.next(true);
         return this.apiServices.callAPI(571, this.getAccessToken(), [groupId.toString()]).pipe(
             finalize(() => this.isLoadingSubject.next(false))
@@ -53,14 +76,18 @@ export class GroupsService {
     }
 
     /**
-     * Update Account Group
+     * Update Entity Group
      * API Code: 572
      * @param groupId - Group ID
      * @param title - Group title
      * @param description - Group description
      * @param isRegional - Whether to use regional fields
      */
-    updateGroup(groupId: number, title: string, description: string, isRegional: boolean): Observable<any> {
+    updateEntityGroup(groupId: number, title: string, description: string, isRegional: boolean): Observable<any> {
+        if (!this.isEntityAdmin()) {
+            throw new Error('Only Entity Administrators can update entity groups.');
+        }
+
         this.isLoadingSubject.next(true);
         const params = [groupId.toString(), title, description, isRegional.toString()];
         return this.apiServices.callAPI(572, this.getAccessToken(), params).pipe(
@@ -69,11 +96,15 @@ export class GroupsService {
     }
 
     /**
-     * Activate Account Group
+     * Activate Entity Group
      * API Code: 573
      * @param groupId - Group ID
      */
-    activateGroup(groupId: number): Observable<any> {
+    activateEntityGroup(groupId: number): Observable<any> {
+        if (!this.isEntityAdmin()) {
+            throw new Error('Only Entity Administrators can activate entity groups.');
+        }
+
         this.isLoadingSubject.next(true);
         return this.apiServices.callAPI(573, this.getAccessToken(), [groupId.toString()]).pipe(
             finalize(() => this.isLoadingSubject.next(false))
@@ -81,11 +112,15 @@ export class GroupsService {
     }
 
     /**
-     * Deactivate Account Group
+     * Deactivate Entity Group
      * API Code: 574
      * @param groupId - Group ID
      */
-    deactivateGroup(groupId: number): Observable<any> {
+    deactivateEntityGroup(groupId: number): Observable<any> {
+        if (!this.isEntityAdmin()) {
+            throw new Error('Only Entity Administrators can deactivate entity groups.');
+        }
+
         this.isLoadingSubject.next(true);
         return this.apiServices.callAPI(574, this.getAccessToken(), [groupId.toString()]).pipe(
             finalize(() => this.isLoadingSubject.next(false))
@@ -93,27 +128,17 @@ export class GroupsService {
     }
 
     /**
-     * Delete Account Group
+     * Delete Entity Group
      * API Code: 575
      * @param groupId - Group ID
      */
-    deleteGroup(groupId: number): Observable<any> {
+    deleteEntityGroup(groupId: number): Observable<any> {
+        if (!this.isEntityAdmin()) {
+            throw new Error('Only Entity Administrators can delete entity groups.');
+        }
+
         this.isLoadingSubject.next(true);
         return this.apiServices.callAPI(575, this.getAccessToken(), [groupId.toString()]).pipe(
-            finalize(() => this.isLoadingSubject.next(false))
-        );
-    }
-
-    /**
-     * List Personal Account Groups
-     * API Code: 576
-     * @param accountId - Account ID
-     * @param activeOnly - Filter by active groups only
-     */
-    listPersonalGroups(accountId: number, activeOnly: boolean = false): Observable<any> {
-        this.isLoadingSubject.next(true);
-        const params = [accountId.toString(), activeOnly.toString()];
-        return this.apiServices.callAPI(576, this.getAccessToken(), params).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );
     }
@@ -139,6 +164,10 @@ export class GroupsService {
      * @param accountIds - Array of Account IDs
      */
     assignGroupMembers(groupId: number, accountIds: number[]): Observable<any> {
+        if (!this.isEntityAdmin()) {
+            throw new Error('Only Entity Administrators can assign group members.');
+        }
+
         this.isLoadingSubject.next(true);
         const params = [groupId.toString(), JSON.stringify(accountIds)];
         return this.apiServices.callAPI(580, this.getAccessToken(), params).pipe(
@@ -153,6 +182,10 @@ export class GroupsService {
      * @param accountIds - Array of Account IDs to add
      */
     addGroupMembers(groupId: number, accountIds: number[]): Observable<any> {
+        if (!this.isEntityAdmin()) {
+            throw new Error('Only Entity Administrators can add group members.');
+        }
+
         this.isLoadingSubject.next(true);
         const params = [groupId.toString(), JSON.stringify(accountIds)];
         return this.apiServices.callAPI(581, this.getAccessToken(), params).pipe(
@@ -181,6 +214,10 @@ export class GroupsService {
      * @param accountIds - Array of Account IDs to remove
      */
     removeGroupMembers(groupId: number, accountIds: number[]): Observable<any> {
+        if (!this.isEntityAdmin()) {
+            throw new Error('Only Entity Administrators can remove group members.');
+        }
+
         this.isLoadingSubject.next(true);
         const params = [groupId.toString(), JSON.stringify(accountIds)];
         return this.apiServices.callAPI(583, this.getAccessToken(), params).pipe(
@@ -189,10 +226,9 @@ export class GroupsService {
     }
 
     /**
-     * Get current user's account ID
+     * Get current entity ID
      */
-    getCurrentAccountId(): number {
-        return this.getAccountId();
+    getCurrentEntityId(): number {
+        return this.getEntityId();
     }
 }
-

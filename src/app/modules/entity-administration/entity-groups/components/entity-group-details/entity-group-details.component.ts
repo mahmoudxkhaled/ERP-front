@@ -2,18 +2,18 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
-import { GroupsService } from '../../../services/groups.service';
+import { EntityGroupsService } from '../../services/entity-groups.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { PermissionService } from 'src/app/core/services/permission.service';
-import { IAccountSettings, IAccountDetails } from 'src/app/core/models/account-status.model';
-import { Group } from '../../../models/groups.model';
+import { IAccountSettings } from 'src/app/core/models/account-status.model';
+import { Group } from 'src/app/modules/summary/models/groups.model';
 
 @Component({
-    selector: 'app-group-details',
-    templateUrl: './group-details.component.html',
-    styleUrls: ['./group-details.component.scss']
+    selector: 'app-entity-group-details',
+    templateUrl: './entity-group-details.component.html',
+    styleUrls: ['./entity-group-details.component.scss']
 })
-export class GroupDetailsComponent implements OnInit, OnDestroy {
+export class EntityGroupDetailsComponent implements OnInit, OnDestroy {
     groupId: string = '';
     loading: boolean = false;
 
@@ -22,25 +22,33 @@ export class GroupDetailsComponent implements OnInit, OnDestroy {
 
     accountSettings: IAccountSettings;
     isRegional: boolean = false;
-    currentAccountId: number = 0;
 
     private subscriptions: Subscription[] = [];
 
     constructor(
         private route: ActivatedRoute,
         private router: Router,
-        private groupsService: GroupsService,
+        private entityGroupsService: EntityGroupsService,
         private messageService: MessageService,
         private localStorageService: LocalStorageService,
         private permissionService: PermissionService
     ) {
         this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
         this.isRegional = this.accountSettings?.Language !== 'English';
-        const accountDetails = this.localStorageService.getAccountDetails() as IAccountDetails;
-        this.currentAccountId = accountDetails?.Account_ID || 0;
     }
 
     ngOnInit(): void {
+        // Check if user is Entity Admin
+        if (!this.entityGroupsService.isEntityAdmin()) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Access Denied',
+                detail: 'Only Entity Administrators can access Entity Groups.'
+            });
+            this.router.navigate(['/company-administration/entity-groups/list']);
+            return;
+        }
+
         this.groupId = this.route.snapshot.paramMap.get('id') || '';
         if (!this.groupId) {
             this.messageService.add({
@@ -48,7 +56,7 @@ export class GroupDetailsComponent implements OnInit, OnDestroy {
                 summary: 'Error',
                 detail: 'Invalid group ID.'
             });
-            this.router.navigate(['/summary/groups/list']);
+            this.router.navigate(['/company-administration/entity-groups/list']);
             return;
         }
 
@@ -62,7 +70,7 @@ export class GroupDetailsComponent implements OnInit, OnDestroy {
     loadAllData(): void {
         this.loading = true;
 
-        const sub = this.groupsService.getGroup(Number(this.groupId)).subscribe({
+        const sub = this.entityGroupsService.getEntityGroup(Number(this.groupId)).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
                     this.handleBusinessError('details', response);
@@ -70,7 +78,7 @@ export class GroupDetailsComponent implements OnInit, OnDestroy {
                 }
                 this.groupDetails = response?.message || {};
 
-                // Map to Group model - only need basic info for members component
+                // Map to Group model - only need entityId for members component
                 this.group = {
                     id: String(this.groupDetails?.Group_ID || this.groupDetails?.groupID || this.groupId),
                     title: this.isRegional ? (this.groupDetails?.Title_Regional || this.groupDetails?.title_Regional || this.groupDetails?.Title || this.groupDetails?.title || '') : (this.groupDetails?.Title || this.groupDetails?.title || ''),
@@ -79,6 +87,17 @@ export class GroupDetailsComponent implements OnInit, OnDestroy {
                     active: Boolean(this.groupDetails?.Is_Active !== undefined ? this.groupDetails.Is_Active : (this.groupDetails?.is_Active !== undefined ? this.groupDetails.is_Active : true)),
                     createAccountId: this.groupDetails?.Create_Account_ID || this.groupDetails?.createAccountID || 0
                 };
+
+                // Verify it's an Entity Group
+                if (this.group.entityId <= 0) {
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Error',
+                        detail: 'This is not an Entity Group.'
+                    });
+                    this.router.navigate(['/company-administration/entity-groups/list']);
+                    return;
+                }
 
                 this.loading = false;
             }
@@ -92,7 +111,7 @@ export class GroupDetailsComponent implements OnInit, OnDestroy {
     }
 
     navigateBack(): void {
-        this.router.navigate(['/summary/groups/list']);
+        this.router.navigate(['/company-administration/entities', this.group?.entityId]);
     }
 
     getGroupIdAsNumber(): number {
@@ -110,7 +129,7 @@ export class GroupDetailsComponent implements OnInit, OnDestroy {
                 detail
             });
         }
-        return null
+        return null;
     }
 
     private getErrorMessage(context: string, code: string): string | null {
@@ -122,4 +141,3 @@ export class GroupDetailsComponent implements OnInit, OnDestroy {
         }
     }
 }
-

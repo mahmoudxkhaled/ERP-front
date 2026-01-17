@@ -1,7 +1,7 @@
 <div class="card">
     <!-- Header -->
     <div class="flex justify-content-between align-items-center mb-4">
-        <h2>Group Members</h2>
+        <h2>Entity Group Members</h2>
         <p-button label="Back to List" icon="pi pi-arrow-left" class="p-button-secondary" (onClick)="navigateBack()"
             [disabled]="loading">
         </p-button>
@@ -14,8 +14,9 @@
 
     <!-- Members Component -->
     <div *ngIf="!loading && group">
-        <app-group-members [groupId]="getGroupIdAsNumber()" (membersUpdated)="handleGroupUpdated()">
-        </app-group-members>
+        <app-entity-group-members [groupId]="getGroupIdAsNumber()" [entityId]="group.entityId"
+            (membersUpdated)="handleGroupUpdated()">
+        </app-entity-group-members>
     </div>
 </div>
 

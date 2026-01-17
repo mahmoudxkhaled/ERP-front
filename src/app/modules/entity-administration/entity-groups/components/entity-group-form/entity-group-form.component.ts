@@ -2,23 +2,24 @@ import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, S
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
-import { GroupsService } from '../../../services/groups.service';
+import { EntityGroupsService } from '../../services/entity-groups.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { PermissionService } from 'src/app/core/services/permission.service';
-import { IAccountSettings, IAccountDetails } from 'src/app/core/models/account-status.model';
-import { Group } from '../../../models/groups.model';
+import { IAccountSettings } from 'src/app/core/models/account-status.model';
+import { Group } from 'src/app/modules/summary/models/groups.model';
 import { textFieldValidator, getTextFieldError } from 'src/app/core/validators/text-field.validator';
 
 type GroupFormContext = 'create' | 'update' | 'details';
 
 @Component({
-    selector: 'app-group-form',
-    templateUrl: './group-form.component.html',
-    styleUrls: ['./group-form.component.scss']
+    selector: 'app-entity-group-form',
+    templateUrl: './entity-group-form.component.html',
+    styleUrls: ['./entity-group-form.component.scss']
 })
-export class GroupFormComponent implements OnInit, OnDestroy, OnChanges {
+export class EntityGroupFormComponent implements OnInit, OnDestroy, OnChanges {
     @Input() visible: boolean = false;
     @Input() groupId?: number; // Optional: for edit mode
+    @Input() entityId?: number; // Optional: for create mode
     @Output() visibleChange = new EventEmitter<boolean>();
     @Output() saved = new EventEmitter<void>();
 
@@ -28,22 +29,20 @@ export class GroupFormComponent implements OnInit, OnDestroy, OnChanges {
     submitted: boolean = false;
     accountSettings: IAccountSettings;
     isRegional: boolean = false;
-    currentAccountId: number = 0;
+    currentEntityId: number = 0;
     group: Group | null = null;
 
     private subscriptions: Subscription[] = [];
 
     constructor(
         private fb: FormBuilder,
-        private groupsService: GroupsService,
+        private entityGroupsService: EntityGroupsService,
         private messageService: MessageService,
         private localStorageService: LocalStorageService,
         private permissionService: PermissionService
     ) {
         this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
         this.isRegional = this.accountSettings?.Language !== 'English';
-        const accountDetails = this.localStorageService.getAccountDetails() as IAccountDetails;
-        this.currentAccountId = accountDetails?.Account_ID || 0;
     }
 
     ngOnInit(): void {
@@ -54,6 +53,7 @@ export class GroupFormComponent implements OnInit, OnDestroy, OnChanges {
         if (changes['visible'] && this.visible) {
             this.resetForm();
             this.isEdit = !!this.groupId;
+            this.currentEntityId = this.entityId || this.entityGroupsService.getCurrentEntityId();
 
             if (this.isEdit && this.groupId) {
                 this.loadGroup();
@@ -91,7 +91,7 @@ export class GroupFormComponent implements OnInit, OnDestroy, OnChanges {
         }
 
         this.loading = true;
-        const sub = this.groupsService.getGroup(this.groupId).subscribe({
+        const sub = this.entityGroupsService.getEntityGroup(this.groupId).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
                     this.handleBusinessError('details', response);
@@ -99,7 +99,7 @@ export class GroupFormComponent implements OnInit, OnDestroy, OnChanges {
                 }
                 const groupData = response?.message ?? {};
 
-                // Map to Group model for owner verification
+                // Map to Group model
                 this.group = {
                     id: String(groupData?.Group_ID || groupData?.groupID || this.groupId),
                     title: this.isRegional ? (groupData?.Title_Regional || groupData?.title_Regional || groupData?.Title || groupData?.title || '') : (groupData?.Title || groupData?.title || ''),
@@ -109,12 +109,12 @@ export class GroupFormComponent implements OnInit, OnDestroy, OnChanges {
                     createAccountId: groupData?.Create_Account_ID || groupData?.createAccountID || 0
                 };
 
-                // Check if user is owner for Personal Groups
-                if (this.group.entityId === 0 && !this.isGroupOwner(this.group)) {
+                // Verify it's an Entity Group
+                if (this.group.entityId <= 0) {
                     this.messageService.add({
                         severity: 'error',
-                        summary: 'Access Denied',
-                        detail: 'You are not the owner of this group. Only the group owner can edit it.'
+                        summary: 'Error',
+                        detail: 'This is not an Entity Group.'
                     });
                     this.closeDialog();
                     return;
@@ -154,19 +154,20 @@ export class GroupFormComponent implements OnInit, OnDestroy, OnChanges {
             return;
         }
 
+        if (!this.entityGroupsService.isEntityAdmin()) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Access Denied',
+                detail: 'Only Entity Administrators can manage Entity Groups.'
+            });
+            return;
+        }
+
         this.loading = true;
         const { title, description } = this.form.value;
 
-        console.log('title', title);
-        console.log('description', description);
-        console.log('isEdit', this.isEdit);
-        console.log('groupId', this.groupId);
-        console.log('isRegional', this.isRegional);
-        console.log('currentAccountId', this.currentAccountId);
-        console.log('group', this.group);
-        console.log('form', this.form.value);
         if (this.isEdit && this.groupId) {
-            const sub = this.groupsService.updateGroup(
+            const sub = this.entityGroupsService.updateEntityGroup(
                 this.groupId,
                 title,
                 description,
@@ -181,7 +182,7 @@ export class GroupFormComponent implements OnInit, OnDestroy, OnChanges {
                     this.messageService.add({
                         severity: 'success',
                         summary: 'Success',
-                        detail: 'Group updated successfully.'
+                        detail: 'Entity Group updated successfully.'
                     });
                     this.closeDialog();
                     this.saved.emit();
@@ -193,8 +194,17 @@ export class GroupFormComponent implements OnInit, OnDestroy, OnChanges {
             return;
         }
 
-        // Create new group - always use Entity_ID = 0 for personal groups
-        const sub = this.groupsService.createGroup(title, description, 0).subscribe({
+        // Create new entity group - Entity_ID must be > 0
+        if (this.currentEntityId <= 0) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Invalid Entity ID. Cannot create Entity Group.'
+            });
+            this.loading = false;
+            return;
+        }
+        const sub = this.entityGroupsService.createEntityGroup(title, description, this.currentEntityId).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
                     this.handleBusinessError('create', response);
@@ -204,7 +214,7 @@ export class GroupFormComponent implements OnInit, OnDestroy, OnChanges {
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Success',
-                    detail: 'Group created successfully.'
+                    detail: 'Entity Group created successfully.'
                 });
                 this.closeDialog();
                 this.saved.emit();
@@ -229,18 +239,6 @@ export class GroupFormComponent implements OnInit, OnDestroy, OnChanges {
 
     get descriptionError(): string {
         return getTextFieldError(this.f['description'], 'Group description', this.submitted);
-    }
-
-    /**
-     * Check if the current user is the owner of the group
-     * Personal Groups (Entity_ID = 0) can only be managed by their owner
-     */
-    isGroupOwner(group: Group | null): boolean {
-        if (!group || group.entityId !== 0) {
-            return false; // Only Personal Groups (Entity_ID = 0) are owner-managed
-        }
-        console.log('group.createAccountId', group.createAccountId);
-        return group.createAccountId === this.currentAccountId;
     }
 
     private handleBusinessError(context: GroupFormContext, response: any): void | null {
@@ -305,4 +303,3 @@ export class GroupFormComponent implements OnInit, OnDestroy, OnChanges {
         return null;
     }
 }
-

@@ -57,6 +57,20 @@ const PERMISSION_MATRIX = {
     Set_ERP_System_Settings: [Roles.Developer, Roles.SystemAdministrator],
     Get_ERP_System_Settings: [Roles.Developer, Roles.SystemAdministrator],
     Remove_ERP_System_Setting: [Roles.Developer, Roles.SystemAdministrator],
+
+    // Account Group Management APIs (570-583)
+    Create_Account_Group: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator, Roles.SystemUser],
+    Get_Account_Group: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator, Roles.SystemUser],
+    Update_Account_Group: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator, Roles.SystemUser],
+    Activate_Account_Group: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator, Roles.SystemUser],
+    Deactivate_Account_Group: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator, Roles.SystemUser],
+    Delete_Account_Group: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator, Roles.SystemUser],
+    List_Personal_Account_Groups: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator, Roles.SystemUser],
+    List_Entity_Account_Groups: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator, Roles.SystemUser],
+    Assign_Group_Members: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator, Roles.SystemUser],
+    Add_Group_Members: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator, Roles.SystemUser],
+    Get_Group_Members: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator, Roles.SystemUser],
+    Remove_Group_Members: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator, Roles.SystemUser],
 } as const;
 
 export type PermissionAction = keyof typeof PERMISSION_MATRIX;
@@ -140,6 +154,25 @@ export class PermissionService {
 
     canRemoveEntityAdmin(): boolean {
         return this.can('Delete_Entity_Admin');
+    }
+
+    /**
+     * Account Group Management permissions
+     */
+    canCreateAccountGroup(): boolean {
+        return this.can('Create_Account_Group');
+    }
+
+    canManageAccountGroup(): boolean {
+        return this.can('Update_Account_Group') || this.can('Delete_Account_Group');
+    }
+
+    canListPersonalGroups(): boolean {
+        return this.can('List_Personal_Account_Groups');
+    }
+
+    canListEntityGroups(): boolean {
+        return this.can('List_Entity_Account_Groups');
     }
 
     /**

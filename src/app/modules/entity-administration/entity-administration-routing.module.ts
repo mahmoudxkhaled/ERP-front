@@ -22,6 +22,11 @@ const routes: Routes = [
         loadChildren: () => import('../entity-administration/user-accounts/user-accounts.module').then((m) => m.UserAccountsModule),
         data: { breadcrumb: 'userAccounts' }
     },
+    {
+        path: 'entity-groups',
+        loadChildren: () => import('../entity-administration/entity-groups/entity-groups.module').then((m) => m.EntityGroupsModule),
+        data: { breadcrumb: 'entityGroups' }
+    },
 
     { path: 'workflows', component: WorkflowsComponent, data: { breadcrumb: 'workflows' } }
 ];

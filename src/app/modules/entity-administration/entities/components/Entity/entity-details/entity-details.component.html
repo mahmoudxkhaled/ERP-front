@@ -154,6 +154,12 @@
             <p-tabPanel header="Roles & Permissions">
                 <app-roles-list [entityId]="getEntityIdAsNumber()"></app-roles-list>
             </p-tabPanel>
+
+            <!-- Tab 5: Entity Groups -->
+            <p-tabPanel header="Entity Groups">
+                <app-entity-groups-list [entityId]="getEntityIdAsNumber()"
+                    [showHeader]="false"></app-entity-groups-list>
+            </p-tabPanel>
         </p-tabView>
     </div>
 </div>

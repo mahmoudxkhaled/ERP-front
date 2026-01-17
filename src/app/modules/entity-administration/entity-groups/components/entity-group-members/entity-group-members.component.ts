@@ -1,21 +1,22 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
-import { GroupsService } from '../../../services/groups.service';
+import { EntityGroupsService } from '../../services/entity-groups.service';
 import { EntitiesService } from 'src/app/modules/entity-administration/entities/services/entities.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { PermissionService } from 'src/app/core/services/permission.service';
-import { IAccountSettings, IAccountDetails } from 'src/app/core/models/account-status.model';
-import { GroupMember, Group } from '../../../models/groups.model';
+import { IAccountSettings } from 'src/app/core/models/account-status.model';
+import { GroupMember, Group } from 'src/app/modules/summary/models/groups.model';
 import { EntityAccount } from 'src/app/modules/entity-administration/entities/models/entities.model';
 
 @Component({
-    selector: 'app-group-members',
-    templateUrl: './group-members.component.html',
-    styleUrls: ['./group-members.component.scss']
+    selector: 'app-entity-group-members',
+    templateUrl: './entity-group-members.component.html',
+    styleUrls: ['./entity-group-members.component.scss']
 })
-export class GroupMembersComponent implements OnInit, OnDestroy {
+export class EntityGroupMembersComponent implements OnInit, OnDestroy {
     @Input() groupId: number = 0;
+    @Input() entityId?: number; // Optional: if provided, use this instead of group's entityId
     @Output() membersUpdated = new EventEmitter<void>();
 
     members: GroupMember[] = [];
@@ -36,13 +37,12 @@ export class GroupMembersComponent implements OnInit, OnDestroy {
 
     accountSettings: IAccountSettings;
     isRegional: boolean = false;
-    currentAccountId: number = 0;
     group: Group | null = null;
 
     private subscriptions: Subscription[] = [];
 
     constructor(
-        private groupsService: GroupsService,
+        private entityGroupsService: EntityGroupsService,
         private entitiesService: EntitiesService,
         private messageService: MessageService,
         private localStorageService: LocalStorageService,
@@ -50,13 +50,18 @@ export class GroupMembersComponent implements OnInit, OnDestroy {
     ) {
         this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
         this.isRegional = this.accountSettings?.Language !== 'English';
-        const entityDetails = this.localStorageService.getEntityDetails();
-        this.selectedEntityId = entityDetails?.Entity_ID?.toString() || '0';
-        const accountDetails = this.localStorageService.getAccountDetails() as IAccountDetails;
-        this.currentAccountId = accountDetails?.Account_ID || 0;
     }
 
     ngOnInit(): void {
+        // Initialize selectedEntityId from @Input() if provided
+        if (this.entityId && this.entityId > 0) {
+            this.selectedEntityId = this.entityId.toString();
+        } else {
+            // Fallback to localStorage
+            const entityDetails = this.localStorageService.getEntityDetails();
+            this.selectedEntityId = entityDetails?.Entity_ID?.toString() || '0';
+        }
+
         if (this.groupId) {
             this.loadGroupInfo();
             this.loadMembers();
@@ -68,7 +73,7 @@ export class GroupMembersComponent implements OnInit, OnDestroy {
             return;
         }
 
-        const sub = this.groupsService.getGroup(this.groupId).subscribe({
+        const sub = this.entityGroupsService.getEntityGroup(this.groupId).subscribe({
             next: (response: any) => {
                 if (response?.success) {
                     const groupData = response?.message ?? {};
@@ -97,7 +102,7 @@ export class GroupMembersComponent implements OnInit, OnDestroy {
         }
 
         this.loadingMembers = true;
-        const sub = this.groupsService.getGroupMembers(this.groupId, true).subscribe({
+        const sub = this.entityGroupsService.getGroupMembers(this.groupId, true).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
                     this.handleBusinessError('getMembers', response);
@@ -144,6 +149,14 @@ export class GroupMembersComponent implements OnInit, OnDestroy {
     }
 
     openAddMembersDialog(): void {
+        if (!this.canManageGroup()) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Access Denied',
+                detail: 'Only Entity Administrators can manage Entity Groups.'
+            });
+            return;
+        }
         this.addMembersDialogVisible = true;
         this.selectedAccounts = [];
         this.accountTableTextFilter = '';
@@ -157,8 +170,6 @@ export class GroupMembersComponent implements OnInit, OnDestroy {
     }
 
     loadAccountsForSelection(): void {
-
-
         this.loadingAccountsTable = true;
 
         // API uses negative page numbers: -1 = page 1, -2 = page 2, etc.
@@ -243,10 +254,19 @@ export class GroupMembersComponent implements OnInit, OnDestroy {
             return;
         }
 
+        if (!this.canManageGroup()) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Access Denied',
+                detail: 'Only Entity Administrators can manage Entity Groups.'
+            });
+            return;
+        }
+
         const accountIds = this.selectedAccounts.map(account => Number(account.accountId));
         this.loading = true;
 
-        const sub = this.groupsService.addGroupMembers(this.groupId, accountIds).subscribe({
+        const sub = this.entityGroupsService.addGroupMembers(this.groupId, accountIds).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
                     this.handleBusinessError('addMembers', response);
@@ -274,10 +294,19 @@ export class GroupMembersComponent implements OnInit, OnDestroy {
             return;
         }
 
+        if (!this.canManageGroup()) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Access Denied',
+                detail: 'Only Entity Administrators can manage Entity Groups.'
+            });
+            return;
+        }
+
         this.loading = true;
         const accountIds = [Number(member.accountId)];
 
-        const sub = this.groupsService.removeGroupMembers(this.groupId, accountIds).subscribe({
+        const sub = this.entityGroupsService.removeGroupMembers(this.groupId, accountIds).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
                     this.handleBusinessError('removeMember', response);
@@ -300,6 +329,20 @@ export class GroupMembersComponent implements OnInit, OnDestroy {
         this.subscriptions.push(sub);
     }
 
+    /**
+     * Check if user can manage Entity Groups
+     */
+    canManageGroup(): boolean {
+        if (!this.entityGroupsService.isEntityAdmin()) {
+            return false;
+        }
+        if (!this.permissionService.can('Add_Group_Members') || !this.permissionService.can('Remove_Group_Members')) {
+            return false;
+        }
+        // Entity Groups (Entity_ID > 0) can be managed by any Entity Admin
+        return this.group ? this.group.entityId > 0 : false;
+    }
+
     private handleBusinessError(context: string, response: any): void {
         const code = String(response?.message || '');
         const detail = this.getErrorMessage(context, code);
@@ -315,27 +358,6 @@ export class GroupMembersComponent implements OnInit, OnDestroy {
         this.loadingMembers = false;
     }
 
-    /**
-     * Check if the current user is the owner of the group
-     * Personal Groups (Entity_ID = 0) can only be managed by their owner
-     */
-    isGroupOwner(): boolean {
-        if (!this.group || this.group.entityId !== 0) {
-            return false; // Only Personal Groups (Entity_ID = 0) are owner-managed
-        }
-        return this.group.createAccountId === this.currentAccountId;
-    }
-
-    /**
-     * Check if user can manage this group
-     */
-    canManageGroup(): boolean {
-        if (!this.permissionService.can('Add_Group_Members') || !this.permissionService.can('Remove_Group_Members')) {
-            return false;
-        }
-        return this.isGroupOwner();
-    }
-
     private getErrorMessage(context: string, code: string): string | null {
         switch (code) {
             case 'ERP11290':
@@ -347,4 +369,3 @@ export class GroupMembersComponent implements OnInit, OnDestroy {
         }
     }
 }
-

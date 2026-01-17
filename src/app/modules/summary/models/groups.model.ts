@@ -3,13 +3,14 @@
  * Represents the raw group data structure from the API
  */
 export interface GroupBackend {
-    Group_ID: number;
-    Title: string;
-    Description: string;
-    Title_Regional: string;
-    Description_Regional: string;
-    Entity_ID: number;
-    Is_Active: boolean;
+    groupID: number;
+    entityID: number | null;
+    title: string;
+    title_Regional: string;
+    description: string;
+    description_Regional: string;
+    createAccountID: number;
+    is_Active?: boolean; // May not always be present in list response
 }
 
 /**
@@ -34,6 +35,7 @@ export interface Group {
     descriptionRegional?: string;
     entityId: number;
     active: boolean;
+    createAccountId: number; // Account ID of the group owner/creator
 }
 
 /**

@@ -1,22 +1,26 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Observable, Subscription } from 'rxjs';
-import { GroupsService } from '../../../services/groups.service';
+import { EntityGroupsService } from '../../services/entity-groups.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { PermissionService } from 'src/app/core/services/permission.service';
-import { Group, GroupBackend } from '../../../models/groups.model';
-import { IAccountSettings, IAccountDetails } from 'src/app/core/models/account-status.model';
+import { Group, GroupBackend } from 'src/app/modules/summary/models/groups.model';
+import { IAccountSettings } from 'src/app/core/models/account-status.model';
+import { Roles } from 'src/app/core/models/system-roles';
 
 type GroupActionContext = 'list' | 'activate' | 'deactivate' | 'delete';
 
 @Component({
-    selector: 'app-groups-list',
-    templateUrl: './groups-list.component.html',
-    styleUrls: ['./groups-list.component.scss']
+    selector: 'app-entity-groups-list',
+    templateUrl: './entity-groups-list.component.html',
+    styleUrls: ['./entity-groups-list.component.scss']
 })
-export class GroupsListComponent implements OnInit, OnDestroy {
+export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
+    @Input() entityId?: number; // Optional: if provided, use this instead of current entity
+    @Input() showHeader: boolean = true; // Show/hide header section
+
     groups: Group[] = [];
     isLoading$: Observable<boolean>;
     tableLoadingSpinner = false;
@@ -30,27 +34,55 @@ export class GroupsListComponent implements OnInit, OnDestroy {
     deleteGroupDialog: boolean = false;
     currentGroupForDelete?: Group;
     activeOnlyFilter: boolean = false;
-    currentAccountId: number = 0;
+    currentEntityId: number = 0;
 
     // Dialog for form
     formDialogVisible: boolean = false;
     formGroupId?: number;
+    formEntityId?: number;
 
     constructor(
-        private groupsService: GroupsService,
+        private entityGroupsService: EntityGroupsService,
         private router: Router,
         private messageService: MessageService,
         private localStorageService: LocalStorageService,
         private permissionService: PermissionService
     ) {
-        this.isLoading$ = this.groupsService.isLoadingSubject.asObservable();
-        const accountDetails = this.localStorageService.getAccountDetails() as IAccountDetails;
-        this.currentAccountId = accountDetails?.Account_ID || 0;
+        this.isLoading$ = this.entityGroupsService.isLoadingSubject.asObservable();
     }
 
     ngOnInit(): void {
+        // Use provided entityId or get from service
+        if (this.entityId && this.entityId > 0) {
+            this.currentEntityId = this.entityId;
+        } else {
+            this.currentEntityId = this.entityGroupsService.getCurrentEntityId();
+        }
+
+        // Only check permissions and redirect if used as standalone page (not as child component)
+        if (this.showHeader) {
+            // Check if user is Entity Admin
+            if (!this.isEntityAdmin()) {
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Access Denied',
+                    detail: 'Only Entity Administrators can access Entity Groups.'
+                });
+                this.router.navigate(['/company-administration']);
+                return;
+            }
+        }
+
         this.configureMenuItems();
         this.loadGroups();
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        // Reload groups if entityId input changes
+        if (changes['entityId'] && !changes['entityId'].firstChange && this.entityId) {
+            this.currentEntityId = this.entityId;
+            this.loadGroups();
+        }
     }
 
     ngOnDestroy(): void {
@@ -58,26 +90,27 @@ export class GroupsListComponent implements OnInit, OnDestroy {
     }
 
     loadGroups(): void {
-
-
         this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
         const isRegional = this.accountSettings?.Language !== 'English';
         this.tableLoadingSpinner = true;
 
-        const accountId = this.groupsService.getCurrentAccountId();
-        if (!accountId) {
+        // Update entityId if input changed
+        if (this.entityId && this.entityId > 0) {
+            this.currentEntityId = this.entityId;
+        }
+
+        if (!this.currentEntityId || this.currentEntityId <= 0) {
             this.messageService.add({
                 severity: 'error',
                 summary: 'Error',
-                detail: 'Unable to get account information.'
+                detail: 'Unable to get entity information.'
             });
             this.resetLoadingFlags();
             return;
         }
 
-        const sub = this.groupsService.listPersonalGroups(accountId, this.activeOnlyFilter).subscribe({
+        const sub = this.entityGroupsService.listEntityGroups(this.currentEntityId, this.activeOnlyFilter).subscribe({
             next: (response: any) => {
-                console.log('response listPersonalGroups', response);
                 if (!response?.success) {
                     this.handleBusinessError('list', response);
                     return;
@@ -94,7 +127,7 @@ export class GroupsListComponent implements OnInit, OnDestroy {
                         titleRegional: groupBackend?.title_Regional || '',
                         descriptionRegional: groupBackend?.description_Regional || '',
                         entityId: groupBackend?.entityID || 0,
-                        active: Boolean(groupBackend?.is_Active !== undefined ? groupBackend.is_Active : true), // Default to active if not provided
+                        active: Boolean(groupBackend?.is_Active !== undefined ? groupBackend.is_Active : true),
                         createAccountId: groupBackend?.createAccountID || 0
                     };
                 }) : [];
@@ -114,13 +147,14 @@ export class GroupsListComponent implements OnInit, OnDestroy {
     edit(group: Group): void {
         if (group.id) {
             this.formGroupId = Number(group.id);
+            this.formEntityId = undefined; // Use group's entityId from loaded data
             this.formDialogVisible = true;
         }
     }
 
     viewDetails(group: Group): void {
         if (group.id) {
-            this.router.navigate(['/summary/groups', group.id]);
+            this.router.navigate(['/company-administration/entity-groups', group.id]);
         }
     }
 
@@ -131,6 +165,14 @@ export class GroupsListComponent implements OnInit, OnDestroy {
     }
 
     onStatusToggle(group: Group): void {
+        if (!this.canManageGroup(group)) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Access Denied',
+                detail: 'Only Entity Administrators can manage Entity Groups.'
+            });
+            return;
+        }
         this.currentGroupForActivation = group;
         this.activationGroupDialog = true;
     }
@@ -160,8 +202,8 @@ export class GroupsListComponent implements OnInit, OnDestroy {
         control.disable();
         const context: GroupActionContext = value ? 'activate' : 'deactivate';
         const toggle$ = value
-            ? this.groupsService.activateGroup(Number(group.id))
-            : this.groupsService.deactivateGroup(Number(group.id));
+            ? this.entityGroupsService.activateEntityGroup(Number(group.id))
+            : this.entityGroupsService.deactivateEntityGroup(Number(group.id));
 
         const sub = toggle$.subscribe({
             next: (response: any) => {
@@ -192,6 +234,14 @@ export class GroupsListComponent implements OnInit, OnDestroy {
     }
 
     confirmDelete(group: Group): void {
+        if (!this.canManageGroup(group)) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Access Denied',
+                detail: 'Only Entity Administrators can delete Entity Groups.'
+            });
+            return;
+        }
         this.currentGroupForDelete = group;
         this.deleteGroupDialog = true;
     }
@@ -208,7 +258,7 @@ export class GroupsListComponent implements OnInit, OnDestroy {
 
         const group = this.currentGroupForDelete;
 
-        const sub = this.groupsService.deleteGroup(Number(group.id)).subscribe({
+        const sub = this.entityGroupsService.deleteEntityGroup(Number(group.id)).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
                     this.handleBusinessError('delete', response);
@@ -235,12 +285,14 @@ export class GroupsListComponent implements OnInit, OnDestroy {
 
     navigateToNew(): void {
         this.formGroupId = undefined;
+        this.formEntityId = this.currentEntityId;
         this.formDialogVisible = true;
     }
 
     onFormDialogClose(): void {
         this.formDialogVisible = false;
         this.formGroupId = undefined;
+        this.formEntityId = undefined;
     }
 
     onFormSaved(): void {
@@ -255,6 +307,24 @@ export class GroupsListComponent implements OnInit, OnDestroy {
         return status ? 'Active' : 'Inactive';
     }
 
+    /**
+     * Check if current user is Entity Admin
+     */
+    isEntityAdmin(): boolean {
+        return this.entityGroupsService.isEntityAdmin();
+    }
+
+    /**
+     * Check if user can manage Entity Groups
+     */
+    canManageGroup(group: Group): boolean {
+        if (!this.isEntityAdmin()) {
+            return false;
+        }
+        // Entity Groups (Entity_ID > 0) can be managed by any Entity Admin
+        return group.entityId > 0;
+    }
+
     private buildActivationControls(): void {
         this.activationControls = {};
         this.groups.forEach((group) => {
@@ -263,7 +333,6 @@ export class GroupsListComponent implements OnInit, OnDestroy {
     }
 
     private configureMenuItems(): void {
-        // Menu items will be configured dynamically based on current group
         this.menuItems = [
             {
                 label: 'View Details',
@@ -287,7 +356,7 @@ export class GroupsListComponent implements OnInit, OnDestroy {
             }
         ];
 
-        if (this.isGroupOwner(group)) {
+        if (this.canManageGroup(group)) {
             items.push(
                 {
                     label: 'Edit',
@@ -303,27 +372,6 @@ export class GroupsListComponent implements OnInit, OnDestroy {
         }
 
         return items;
-    }
-
-    /**
-     * Check if the current user is the owner of the group
-     * Personal Groups (Entity_ID = 0) can only be managed by their owner
-     */
-    isGroupOwner(group: Group): boolean {
-        if (!group || group.entityId !== 0) {
-            return false; // Only Personal Groups (Entity_ID = 0) are owner-managed
-        }
-        return group.createAccountId === this.currentAccountId;
-    }
-
-    /**
-     * Check if user can manage a specific group
-     */
-    canManageGroup(group: Group): boolean {
-        if (!this.permissionService.can('Update_Account_Group')) {
-            return false;
-        }
-        return this.isGroupOwner(group);
     }
 
     private handleBusinessError(context: GroupActionContext, response: any): void | null {
@@ -364,7 +412,7 @@ export class GroupsListComponent implements OnInit, OnDestroy {
     private getListErrorMessage(code: string): string | null {
         switch (code) {
             case 'ERP11287':
-                return 'Invalid Account ID';
+                return 'Invalid Entity ID';
             default:
                 return null;
         }
@@ -401,4 +449,3 @@ export class GroupsListComponent implements OnInit, OnDestroy {
         this.tableLoadingSpinner = false;
     }
 }
-
