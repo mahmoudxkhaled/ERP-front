@@ -252,6 +252,8 @@ export class ErrorHandlingInterceptor implements HttpInterceptor {
             'ERP11059': 'Internal routing error - IP issues. Please contact support.',
             'ERP11060': 'Error adding new Access Token. Please try again.',
             'ERP11061': 'Error extending Access Token. Please try again.',
+            'ERP11065': 'Missing Routing header. Please contact support.',
+            'ERP11066': 'Invalid Routing header. Please contact support.',
             'ERP11068': 'Core database transaction error. Please try again.',
             'ERP11069': 'ERP database transaction error. Please try again.',
 
