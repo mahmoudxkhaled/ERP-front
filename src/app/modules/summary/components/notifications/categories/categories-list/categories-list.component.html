@@ -1,0 +1,104 @@
+<div class="card">
+    <div class="flex justify-content-between align-items-center mb-4" *ngIf="isSystemAdmin || isEntityAdmin">
+        <h2>Notification Categories</h2>
+        <div class="flex gap-2">
+            <p-button *ngIf="isSystemAdmin" label="Add System Category" icon="pi pi-plus" 
+                (onClick)="navigateToNew(true)" [disabled]="!!(isLoading$ | async)">
+            </p-button>
+            <p-button *ngIf="isEntityAdmin && currentEntityId > 0" label="Add Entity Category" icon="pi pi-plus" 
+                (onClick)="navigateToNew(false)" [disabled]="!!(isLoading$ | async)">
+            </p-button>
+        </div>
+    </div>
+
+    <div style="position: relative;">
+        <app-table-loading-spinner *ngIf="tableLoadingSpinner"></app-table-loading-spinner>
+        <p-table #categoriesTable [value]="categories" [paginator]="false" responsiveLayout="scroll"
+            [loading]="!!(isLoading$ | async)">
+
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Id</th>
+                    <th style="width: 200px;">Title</th>
+                    <th style="width: 300px;">Description</th>
+                    <th>Type</th>
+                    <th>Can Unsubscribe</th>
+                    <th style="width: 150px; text-align: start !important;">Actions</th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-category>
+                <tr>
+                    <td>
+                        <p-tag [value]="'#' + category.id" severity="info"></p-tag>
+                    </td>
+                    <td>
+                        <span class="font-semibold name-text" style="cursor: pointer;"
+                            (click)="viewDetails(category)">
+                            {{ category.title }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="text-600 line-height-3 description-text">{{ category.description || 'No description provided.' }}</span>
+                    </td>
+                    <td>
+                        <p-tag [value]="category.isSystemCategory ? 'System' : 'Entity'" 
+                            [severity]="category.isSystemCategory ? 'info' : 'warning'">
+                        </p-tag>
+                    </td>
+                    <td>
+                        <p-tag [value]="category.canBeUnsubscribed ? 'Yes' : 'No'" 
+                            [severity]="category.canBeUnsubscribed ? 'success' : 'secondary'">
+                        </p-tag>
+                    </td>
+                    <td class="text-start">
+                        <button pButton pRipple type="button" icon="pi pi-ellipsis-v"
+                            class="p-button-rounded p-button-text p-button-plain"
+                            (click)="openMenu(rowMenu, category, $event)" 
+                            [disabled]="!canManageCategory(category)">
+                        </button>
+                        <p-menu #rowMenu [model]="menuItems" [popup]="true" [appendTo]="'body'"></p-menu>
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="6" class="text-center">No categories found</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+<!-- Category Form Dialog -->
+<app-category-form 
+    [(visible)]="formDialogVisible"
+    [categoryId]="formCategoryId"
+    [isSystemCategory]="isSystemCategory"
+    (saved)="onFormSaved()">
+</app-category-form>
+
+<!-- Delete Confirmation Dialog -->
+<p-dialog [(visible)]="deleteCategoryDialog" [modal]="true" [style]="{ width: '450px' }" 
+    [closable]="true" [draggable]="false" [resizable]="false">
+    <ng-template pTemplate="header">
+        <h3>Confirm Delete</h3>
+    </ng-template>
+
+    <div>
+        <p>Are you sure you want to delete the category <strong>{{ currentCategoryForDelete?.title }}</strong>?</p>
+        <p class="text-red-500 mt-2">This action cannot be undone.</p>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <p-button label="Cancel" icon="pi pi-times" class="p-button-secondary" 
+            (onClick)="deleteCategoryDialog = false">
+        </p-button>
+        <p-button label="Delete" icon="pi pi-trash" class="p-button-danger" 
+            (onClick)="deleteCategory()" [loading]="!!(isLoading$ | async)">
+        </p-button>
+    </ng-template>
+</p-dialog>
+
+<p-toast></p-toast>

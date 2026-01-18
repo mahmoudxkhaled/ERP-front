@@ -1,0 +1,75 @@
+<p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '700px' }" [closable]="true" [draggable]="false"
+    [resizable]="false" (onHide)="closeDialog()">
+    <ng-template pTemplate="header">
+        <h3>{{ isEdit ? 'Edit Notification' : 'Create Notification' }} ({{ isSystemNotification ? 'System' : 'Entity' }})</h3>
+    </ng-template>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="grid">
+            <div class="col-12">
+                <div class="field p-fluid">
+                    <label for="categoryId">Category <span class="text-red-500">*</span></label>
+                    <p-dropdown id="categoryId" formControlName="categoryId" [options]="notificationCategories" 
+                        optionLabel="Title" optionValue="Category_ID" placeholder="Select Category"
+                        [class.ng-invalid]="submitted && f['categoryId'].invalid">
+                    </p-dropdown>
+                    <small class="p-error" *ngIf="submitted && f['categoryId'].invalid">
+                        Category is required.
+                    </small>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="field p-fluid">
+                    <label for="title">Title <span class="text-red-500">*</span></label>
+                    <input id="title" type="text" pInputText formControlName="title"
+                        [class.ng-invalid]="submitted && f['title'].invalid" placeholder="Enter notification title" />
+                    <small class="p-error" *ngIf="submitted && f['title'].invalid && titleError">
+                        {{ titleError }}
+                    </small>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="field p-fluid">
+                    <label for="message">Message <span class="text-red-500">*</span></label>
+                    <textarea id="message" pInputTextarea formControlName="message" rows="5"
+                        [class.ng-invalid]="submitted && f['message'].invalid"
+                        placeholder="Enter notification message"></textarea>
+                    <small class="p-error" *ngIf="submitted && f['message'].invalid && messageError">
+                        {{ messageError }}
+                    </small>
+                </div>
+            </div>
+
+            <div class="col-12 md:col-6">
+                <div class="field p-fluid">
+                    <label for="referenceType">Reference Type</label>
+                    <p-dropdown id="referenceType" formControlName="referenceType" [options]="referenceTypes" 
+                        optionLabel="label" optionValue="value" placeholder="Select Reference Type">
+                    </p-dropdown>
+                </div>
+            </div>
+
+            <div class="col-12 md:col-6">
+                <div class="field p-fluid">
+                    <label for="referenceId">Reference ID</label>
+                    <input id="referenceId" type="number" pInputText formControlName="referenceId" 
+                        placeholder="Enter reference ID" 
+                        [disabled]="!form.get('referenceType')?.value" />
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <ng-template pTemplate="footer">
+        <p-button label="Cancel" icon="pi pi-times" class="p-button-secondary" (onClick)="cancel()"
+            [disabled]="loading">
+        </p-button>
+        <p-button [label]="isEdit ? 'Update' : 'Save'" icon="pi pi-check" (onClick)="submit()" [loading]="loading"
+            [disabled]="loading">
+        </p-button>
+    </ng-template>
+</p-dialog>
+
+<p-toast></p-toast>

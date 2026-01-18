@@ -11,7 +11,11 @@ import { SettingsComponent } from './components/settings/settings.component';
 const routes: Routes = [
     { path: '', redirectTo: 'actions', pathMatch: 'full' },
     { path: 'actions', component: ActionsComponent, data: { breadcrumb: 'actions' } },
-    { path: 'notifications', component: NotificationsComponent, data: { breadcrumb: 'notifications' } },
+    {
+        path: 'notifications',
+        loadChildren: () => import('./components/notifications/notifications.module').then(m => m.NotificationsModule),
+        data: { breadcrumb: 'notifications' }
+    },
     { path: 'profile', component: ProfileOverviewComponent, data: { breadcrumb: 'profile' } },
     { path: 'profile/edit', component: ProfileEditComponent, data: { breadcrumb: 'editProfile' } },
     { path: 'settings', component: SettingsComponent, data: { breadcrumb: 'settings' } },

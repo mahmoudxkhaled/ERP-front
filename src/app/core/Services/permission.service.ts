@@ -71,6 +71,52 @@ const PERMISSION_MATRIX = {
     Add_Group_Members: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator, Roles.SystemUser],
     Get_Group_Members: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator, Roles.SystemUser],
     Remove_Group_Members: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator, Roles.SystemUser],
+
+    // Notification Types APIs (800)
+    List_Notification_Types: [Roles.Developer, Roles.SystemAdministrator],
+
+    // Notification Categories - System APIs (810-814)
+    Create_Notification_Category: [Roles.Developer, Roles.SystemAdministrator],
+    Get_Notification_Category: [Roles.Developer, Roles.SystemAdministrator],
+    List_Notification_Categories: [Roles.Developer, Roles.SystemAdministrator],
+    Update_Notification_Category: [Roles.Developer, Roles.SystemAdministrator],
+    Delete_Notification_Category: [Roles.Developer, Roles.SystemAdministrator],
+
+    // Notification Categories - Entity APIs (815-819)
+    Create_Entity_Notification_Category: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator],
+    Get_Entity_Notification_Category: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator],
+    List_Entity_Notification_Categories: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator],
+    Update_Entity_Notification_Category: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator],
+    Delete_Entity_Notification_Category: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator],
+
+    // Notifications - System APIs (820-824)
+    Create_Notification: [Roles.Developer, Roles.SystemAdministrator],
+    Get_Notification: [Roles.Developer, Roles.SystemAdministrator],
+    List_Notifications: [Roles.Developer, Roles.SystemAdministrator],
+    Update_Notification: [Roles.Developer, Roles.SystemAdministrator],
+    Delete_Notification: [Roles.Developer, Roles.SystemAdministrator],
+
+    // Notifications - Entity APIs (825-829)
+    Create_Entity_Notification: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator],
+    Get_Entity_Notification: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator],
+    List_Entity_Notifications: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator],
+    Update_Entity_Notification: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator],
+    Delete_Entity_Notification: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator],
+
+    // Send Notification APIs (830-834)
+    Send_Notification_To_Accounts: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator],
+    Send_Notification_To_Groups: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator],
+    Send_Notification_To_Roles: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator],
+    Send_Notification_To_Entities: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator],
+    Send_Notification_To_All: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator],
+
+    // Account Notifications APIs (840-845)
+    Mark_Notifications_Read: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator, Roles.SystemUser],
+    Mark_Notifications_Unread: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator, Roles.SystemUser],
+    Delete_Account_Notifications: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator, Roles.SystemUser],
+    List_Account_Notifications: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator, Roles.SystemUser],
+    Subscribe_To_Notification_Category: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator, Roles.SystemUser],
+    Unsubscribe_To_Notification_Category: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator, Roles.SystemUser],
 } as const;
 
 export type PermissionAction = keyof typeof PERMISSION_MATRIX;
@@ -173,6 +219,155 @@ export class PermissionService {
 
     canListEntityGroups(): boolean {
         return this.can('List_Entity_Account_Groups');
+    }
+
+    /**
+     * Notification Types permissions
+     */
+    canListNotificationTypes(): boolean {
+        return this.can('List_Notification_Types');
+    }
+
+    /**
+     * Notification Categories - System permissions
+     */
+    canCreateNotificationCategory(): boolean {
+        return this.can('Create_Notification_Category');
+    }
+
+    canGetNotificationCategory(): boolean {
+        return this.can('Get_Notification_Category');
+    }
+
+    canListNotificationCategories(): boolean {
+        return this.can('List_Notification_Categories');
+    }
+
+    canUpdateNotificationCategory(): boolean {
+        return this.can('Update_Notification_Category');
+    }
+
+    canDeleteNotificationCategory(): boolean {
+        return this.can('Delete_Notification_Category');
+    }
+
+    /**
+     * Notification Categories - Entity permissions
+     */
+    canCreateEntityNotificationCategory(): boolean {
+        return this.can('Create_Entity_Notification_Category');
+    }
+
+    canGetEntityNotificationCategory(): boolean {
+        return this.can('Get_Entity_Notification_Category');
+    }
+
+    canListEntityNotificationCategories(): boolean {
+        return this.can('List_Entity_Notification_Categories');
+    }
+
+    canUpdateEntityNotificationCategory(): boolean {
+        return this.can('Update_Entity_Notification_Category');
+    }
+
+    canDeleteEntityNotificationCategory(): boolean {
+        return this.can('Delete_Entity_Notification_Category');
+    }
+
+    /**
+     * Notifications - System permissions
+     */
+    canCreateNotification(): boolean {
+        return this.can('Create_Notification');
+    }
+
+    canGetNotification(): boolean {
+        return this.can('Get_Notification');
+    }
+
+    canListNotifications(): boolean {
+        return this.can('List_Notifications');
+    }
+
+    canUpdateNotification(): boolean {
+        return this.can('Update_Notification');
+    }
+
+    canDeleteNotification(): boolean {
+        return this.can('Delete_Notification');
+    }
+
+    /**
+     * Notifications - Entity permissions
+     */
+    canCreateEntityNotification(): boolean {
+        return this.can('Create_Entity_Notification');
+    }
+
+    canGetEntityNotification(): boolean {
+        return this.can('Get_Entity_Notification');
+    }
+
+    canListEntityNotifications(): boolean {
+        return this.can('List_Entity_Notifications');
+    }
+
+    canUpdateEntityNotification(): boolean {
+        return this.can('Update_Entity_Notification');
+    }
+
+    canDeleteEntityNotification(): boolean {
+        return this.can('Delete_Entity_Notification');
+    }
+
+    /**
+     * Send Notification permissions
+     */
+    canSendNotificationToAccounts(): boolean {
+        return this.can('Send_Notification_To_Accounts');
+    }
+
+    canSendNotificationToGroups(): boolean {
+        return this.can('Send_Notification_To_Groups');
+    }
+
+    canSendNotificationToRoles(): boolean {
+        return this.can('Send_Notification_To_Roles');
+    }
+
+    canSendNotificationToEntities(): boolean {
+        return this.can('Send_Notification_To_Entities');
+    }
+
+    canSendNotificationToAll(): boolean {
+        return this.can('Send_Notification_To_All');
+    }
+
+    /**
+     * Account Notifications permissions
+     */
+    canListAccountNotifications(): boolean {
+        return this.can('List_Account_Notifications');
+    }
+
+    canMarkNotificationsRead(): boolean {
+        return this.can('Mark_Notifications_Read');
+    }
+
+    canMarkNotificationsUnread(): boolean {
+        return this.can('Mark_Notifications_Unread');
+    }
+
+    canDeleteAccountNotifications(): boolean {
+        return this.can('Delete_Account_Notifications');
+    }
+
+    canSubscribeToNotificationCategory(): boolean {
+        return this.can('Subscribe_To_Notification_Category');
+    }
+
+    canUnsubscribeFromNotificationCategory(): boolean {
+        return this.can('Unsubscribe_To_Notification_Category');
     }
 
     /**
