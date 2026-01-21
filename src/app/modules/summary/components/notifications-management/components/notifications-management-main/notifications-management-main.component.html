@@ -1,0 +1,29 @@
+<div class="card">
+    <div class="flex justify-content-between align-items-center mb-4">
+        <h2>Notifications Management</h2>
+    </div>
+
+    <p-tabView [(activeIndex)]="activeTabIndex">
+        <!-- Types Tab -->
+        <p-tabPanel header="Types" [disabled]="!canAccessTypes()">
+            <app-types-list></app-types-list>
+        </p-tabPanel>
+
+        <!-- Categories Tab -->
+        <p-tabPanel header="Categories" [disabled]="!canAccessCategories()">
+            <app-categories-list></app-categories-list>
+        </p-tabPanel>
+
+        <!-- Create Notification Tab -->
+        <p-tabPanel header="Create Notification" [disabled]="!canCreateNotification()">
+            <app-create-notification (notificationCreated)="onNotificationCreated($event)"></app-create-notification>
+        </p-tabPanel>
+
+        <!-- Send Tab -->
+        <p-tabPanel header="Send" [disabled]="!canSendNotification()">
+            <app-send-notification [notificationId]="currentNotificationId"></app-send-notification>
+        </p-tabPanel>
+    </p-tabView>
+</div>
+
+<p-toast></p-toast>

@@ -95,15 +95,19 @@ export class NotificationsService {
         typeId: number,
         title: string,
         description: string,
+        sendEmail: boolean,
         canBeUnsubscribed: boolean
     ): Observable<any> {
         this.isLoadingSubject.next(true);
         const params = [
-            typeId.toString(),
+            typeId,
             title,
             description,
-            canBeUnsubscribed.toString()
+            sendEmail,
+            canBeUnsubscribed
         ];
+        console.log('params', params);
+
         return this.apiServices.callAPI(810, this.getAccessToken(), params).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );
@@ -142,6 +146,7 @@ export class NotificationsService {
      * @param typeId - Notification Type ID
      * @param title - Category title
      * @param description - Category description
+     * @param sendEmail - Whether to send email notifications
      * @param isRegional - Whether to use regional fields
      * @param canBeUnsubscribed - Whether users can unsubscribe
      */
@@ -150,6 +155,7 @@ export class NotificationsService {
         typeId: number,
         title: string,
         description: string,
+        sendEmail: boolean,
         isRegional: boolean,
         canBeUnsubscribed: boolean
     ): Observable<any> {
@@ -160,8 +166,10 @@ export class NotificationsService {
             title,
             description,
             isRegional.toString(),
-            canBeUnsubscribed.toString()
+            sendEmail.toString(),
+            canBeUnsubscribed.toString(),
         ];
+        console.log('params', params);
         return this.apiServices.callAPI(813, this.getAccessToken(), params).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );
@@ -188,6 +196,7 @@ export class NotificationsService {
      * @param typeId - Notification Type ID
      * @param title - Category title
      * @param description - Category description
+     * @param sendEmail - Whether to send email notifications
      * @param canBeUnsubscribed - Whether users can unsubscribe
      */
     createEntityNotificationCategory(
@@ -195,15 +204,17 @@ export class NotificationsService {
         typeId: number,
         title: string,
         description: string,
+        sendEmail: boolean,
         canBeUnsubscribed: boolean
     ): Observable<any> {
         this.isLoadingSubject.next(true);
         const params = [
-            entityId.toString(),
-            typeId.toString(),
+            entityId,
+            typeId,
             title,
             description,
-            canBeUnsubscribed.toString()
+            sendEmail,
+            canBeUnsubscribed
         ];
         return this.apiServices.callAPI(815, this.getAccessToken(), params).pipe(
             finalize(() => this.isLoadingSubject.next(false))
@@ -248,6 +259,7 @@ export class NotificationsService {
      * @param typeId - Notification Type ID
      * @param title - Category title
      * @param description - Category description
+     * @param sendEmail - Whether to send email notifications
      * @param isRegional - Whether to use regional fields
      * @param canBeUnsubscribed - Whether users can unsubscribe
      */
@@ -256,6 +268,7 @@ export class NotificationsService {
         typeId: number,
         title: string,
         description: string,
+        sendEmail: boolean,
         isRegional: boolean,
         canBeUnsubscribed: boolean
     ): Observable<any> {
@@ -265,6 +278,7 @@ export class NotificationsService {
             typeId.toString(),
             title,
             description,
+            sendEmail.toString(),
             isRegional.toString(),
             canBeUnsubscribed.toString()
         ];
@@ -312,8 +326,9 @@ export class NotificationsService {
             title,
             message,
             referenceType || '',
-            referenceId ? referenceId.toString() : ''
+            referenceId ? referenceId.toString() : '0'
         ];
+        console.log('params111111', params);
         return this.apiServices.callAPI(820, this.getAccessToken(), params).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );
@@ -441,6 +456,7 @@ export class NotificationsService {
             referenceType || '',
             referenceId ? referenceId.toString() : ''
         ];
+        console.log('params', params);
         return this.apiServices.callAPI(825, this.getAccessToken(), params).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );

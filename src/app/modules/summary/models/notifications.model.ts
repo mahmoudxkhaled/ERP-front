@@ -3,9 +3,11 @@
  * Represents the raw notification type data structure from the API
  */
 export interface NotificationTypeBackend {
-    Type_ID: number;
-    Name?: string;
-    Name_Regional?: string;
+    type_ID: number;
+    title: string;
+    description: string;
+    urgeny?: string; // Typo in API - should be "urgency"
+    example?: string;
 }
 
 /**
@@ -19,6 +21,7 @@ export interface NotificationCategoryBackend {
     Title_Regional?: string;
     Description: string;
     Description_Regional?: string;
+    Send_Email: boolean;
     Can_Be_Unsubscribed: boolean;
     Entity_ID?: number; // Present for Entity Categories only
 }
@@ -119,6 +122,8 @@ export interface NotificationType {
     id: number;
     name: string;
     nameRegional?: string;
+    urgency?: string;
+    example?: string;
 }
 
 /**
@@ -132,6 +137,7 @@ export interface NotificationCategory {
     description: string;
     titleRegional?: string;
     descriptionRegional?: string;
+    sendEmail: boolean;
     canBeUnsubscribed: boolean;
     entityId?: number; // Present for Entity Categories only
     isSystemCategory: boolean; // true if Entity_ID is not present or 0

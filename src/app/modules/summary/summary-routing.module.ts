@@ -16,6 +16,11 @@ const routes: Routes = [
         loadChildren: () => import('./components/notifications/notifications.module').then(m => m.NotificationsModule),
         data: { breadcrumb: 'notifications' }
     },
+    {
+        path: 'notifications-management',
+        loadChildren: () => import('./components/notifications-management/notifications-management.module').then(m => m.NotificationsManagementModule),
+        data: { breadcrumb: 'notifications-management' }
+    },
     { path: 'profile', component: ProfileOverviewComponent, data: { breadcrumb: 'profile' } },
     { path: 'profile/edit', component: ProfileEditComponent, data: { breadcrumb: 'editProfile' } },
     { path: 'settings', component: SettingsComponent, data: { breadcrumb: 'settings' } },
