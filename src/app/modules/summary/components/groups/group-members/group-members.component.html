@@ -4,13 +4,32 @@
         </p-button>
     </div>
 
+    <!-- Search Bar -->
+    <div class="mb-3">
+        <div class="p-inputgroup w-full">
+            <span class="p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input type="text" pInputText placeholder="Search by ID or email..." 
+                    [value]="searchText" (input)="onSearchInput($event)" class="w-full" />
+            </span>
+            <button *ngIf="searchText" pButton pRipple type="button" 
+                icon="pi pi-times" class="p-button-rounded p-button-text p-button-plain"
+                (click)="clearSearch()" pTooltip="Clear search">
+            </button>
+        </div>
+    </div>
+
     <!-- Loading Spinner -->
     <div *ngIf="loadingMembers" class="flex justify-content-center align-items-center" style="min-height: 100px;">
         <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
     </div>
 
     <!-- Members Table -->
-    <p-table *ngIf="!loadingMembers" [value]="members" [paginator]="false" responsiveLayout="scroll">
+    <div #membersTableContainer style="position: relative;">
+        <p-table *ngIf="!loadingMembers" [value]="filteredMembers" [paginator]="true" [first]="first" [rows]="rows"
+            [rowsPerPageOptions]="[10, 25, 50, 100]" [showCurrentPageReport]="true" responsiveLayout="scroll"
+            [lazy]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            (onLazyLoad)="onPageChange($event)">
         <ng-template pTemplate="header">
             <tr>
                 <th>Account ID</th>

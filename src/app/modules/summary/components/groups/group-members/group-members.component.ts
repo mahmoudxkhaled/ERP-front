@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, ElementRef } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import { GroupsService } from '../../../services/groups.service';
@@ -14,12 +14,22 @@ import { EntityAccount } from 'src/app/modules/entity-administration/entities/mo
     styleUrls: ['./group-members.component.scss']
 })
 export class GroupMembersComponent implements OnInit, OnDestroy {
+    @ViewChild('membersTableContainer') membersTableContainer?: ElementRef;
+
     @Input() groupId: number = 0;
     @Output() membersUpdated = new EventEmitter<void>();
 
     members: GroupMember[] = [];
     loading: boolean = false;
     loadingMembers: boolean = false;
+
+    // Pagination (handled by PrimeNG automatically)
+    first: number = 0;
+    rows: number = 10;
+
+    // Search functionality
+    searchText: string = '';
+    filteredMembers: GroupMember[] = [];
 
     // Account selection dialog
     addMembersDialogVisible: boolean = false;
@@ -82,6 +92,7 @@ export class GroupMembersComponent implements OnInit, OnDestroy {
                     };
                 });
 
+                this.applySearchFilter();
                 this.loadingMembers = false;
             },
             error: () => {
@@ -273,6 +284,51 @@ export class GroupMembersComponent implements OnInit, OnDestroy {
             default:
                 return null;
         }
+    }
+
+    onPageChange(event: any): void {
+        this.first = event.first;
+        this.rows = event.rows;
+        // Scroll to top of table when page changes
+        this.scrollToTableTop();
+    }
+
+    scrollToTableTop(): void {
+        // Use setTimeout to ensure the DOM has updated before scrolling
+        setTimeout(() => {
+            if (this.membersTableContainer) {
+                this.membersTableContainer.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 0);
+    }
+
+    onSearchInput(event: Event): void {
+        const target = event.target as HTMLInputElement;
+        this.searchText = target?.value || '';
+        this.applySearchFilter();
+        // Reset to first page when searching
+        this.first = 0;
+    }
+
+    clearSearch(): void {
+        this.searchText = '';
+        this.applySearchFilter();
+        this.first = 0;
+    }
+
+    private applySearchFilter(): void {
+        if (!this.searchText || this.searchText.trim() === '') {
+            this.filteredMembers = [...this.members];
+            return;
+        }
+
+        const searchTerm = this.searchText.toLowerCase().trim();
+        this.filteredMembers = this.members.filter((member) => {
+            const idMatch = String(member.accountId).includes(searchTerm) || false;
+            const emailMatch = member.email?.toLowerCase().includes(searchTerm) || false;
+
+            return idMatch || emailMatch;
+        });
     }
 }
 
