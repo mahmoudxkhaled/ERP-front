@@ -2,7 +2,8 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/co
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MenuItem, MessageService } from 'primeng/api';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, of, EMPTY } from 'rxjs';
+import { concatMap, catchError } from 'rxjs/operators';
 import { GroupsService } from '../../../services/groups.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { PermissionService } from 'src/app/core/services/permission.service';
@@ -89,7 +90,7 @@ export class GroupsListComponent implements OnInit, OnDestroy {
                 }
 
                 console.log('response', response);
-                const groupsData = response?.message?.Account_Groups || response?.message || [];
+                const groupsData = response?.message || [];
                 this.groups = Array.isArray(groupsData) ? groupsData.map((item: any) => {
                     const groupBackend = item as GroupBackend;
                     return {
@@ -211,8 +212,46 @@ export class GroupsListComponent implements OnInit, OnDestroy {
         }
 
         const group = this.currentGroupForDelete;
+        const groupId = Number(group.id);
 
-        const sub = this.groupsService.deleteGroup(Number(group.id)).subscribe({
+        // Step 1: Get all group members first
+        const sub = this.groupsService.getGroupMembers(groupId, true).pipe(
+            // Step 2: Remove all members if they exist
+            concatMap((membersResponse: any) => {
+                if (!membersResponse?.success) {
+                    // If we can't get members, try to delete group anyway
+                    return of(null);
+                }
+
+                const membersData = membersResponse?.message || {};
+                
+                // Extract all account IDs from dictionary format: { accountId: email }
+                const accountIds: number[] = Object.keys(membersData).map((key) => Number(key));
+
+                // If there are no members, skip removal step
+                if (accountIds.length === 0) {
+                    return of(null);
+                }
+
+                // Remove all members
+                return this.groupsService.removeGroupMembers(groupId, accountIds).pipe(
+                    catchError((error) => {
+                        // If removal fails, still try to delete group
+                        this.messageService.add({
+                            severity: 'warn',
+                            summary: 'Warning',
+                            detail: 'Failed to remove some members, but continuing with group deletion.',
+                            life: 3000
+                        });
+                        return of(null);
+                    })
+                );
+            }),
+            // Step 3: Delete the group after members are removed (or if no members)
+            concatMap(() => {
+                return this.groupsService.deleteGroup(groupId);
+            })
+        ).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
                     this.handleBusinessError('delete', response);
@@ -228,6 +267,15 @@ export class GroupsListComponent implements OnInit, OnDestroy {
                 });
                 this.deleteGroupDialog = false;
                 this.loadGroups();
+            },
+            error: (error) => {
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: 'An error occurred while deleting the group.',
+                    life: 3000
+                });
+                this.deleteGroupDialog = false;
             },
             complete: () => {
                 this.currentGroupForDelete = undefined;

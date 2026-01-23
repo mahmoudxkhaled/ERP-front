@@ -156,15 +156,6 @@ export class GroupFormComponent implements OnInit, OnDestroy, OnChanges {
 
         this.loading = true;
         const { title, description } = this.form.value;
-
-        console.log('title', title);
-        console.log('description', description);
-        console.log('isEdit', this.isEdit);
-        console.log('groupId', this.groupId);
-        console.log('isRegional', this.isRegional);
-        console.log('currentAccountId', this.currentAccountId);
-        console.log('group', this.group);
-        console.log('form', this.form.value);
         if (this.isEdit && this.groupId) {
             const sub = this.groupsService.updateGroup(
                 this.groupId,
