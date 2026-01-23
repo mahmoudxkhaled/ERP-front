@@ -1,5 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Observable, Subscription } from 'rxjs';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
@@ -16,6 +15,8 @@ type NotificationActionContext = 'list' | 'delete';
     styleUrls: ['./notifications-list.component.scss']
 })
 export class NotificationsListComponent implements OnInit, OnDestroy {
+    @ViewChild('notificationsTableContainer') notificationsTableContainer?: ElementRef;
+
     notifications: Notification[] = [];
     isLoading$: Observable<boolean>;
     tableLoadingSpinner = false;
@@ -33,12 +34,24 @@ export class NotificationsListComponent implements OnInit, OnDestroy {
     formNotificationId?: number;
     isSystemNotification: boolean = true;
 
-    // Filters
+    // Filters (sent to API)
     selectedTypeIds: number[] = [];
     selectedCategoryIds: number[] = [];
     textFilter: string = '';
 
-    // Pagination
+    // Options for filters (loaded from API)
+    notificationTypes: any[] = [];
+    notificationCategories: any[] = [];
+
+    // Pagination (handled by PrimeNG automatically)
+    first: number = 0;
+    rows: number = 10;
+
+    // Sorting
+    sortField: string = '';
+    sortOrder: number = 0; // 1 for ascending, -1 for descending, 0 for no sort
+
+    // Pagination (for API)
     lastNotificationId: number = 0;
     totalCount: number = 0;
     filterCount: number = 20;
@@ -47,9 +60,15 @@ export class NotificationsListComponent implements OnInit, OnDestroy {
     deleteNotificationDialog: boolean = false;
     currentNotificationForDelete?: Notification;
 
+    // Send dialog
+    sendNotificationDialogVisible: boolean = false;
+    currentNotificationForSend?: Notification;
+
+    // Debounce timer for search
+    private searchTimeout: any;
+
     constructor(
         private notificationsService: NotificationsService,
-        private router: Router,
         private messageService: MessageService,
         private localStorageService: LocalStorageService,
         private permissionService: PermissionService
@@ -64,11 +83,77 @@ export class NotificationsListComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.configureMenuItems();
+        this.loadNotificationTypes();
+        this.loadNotificationCategories();
         this.loadNotifications();
     }
 
     ngOnDestroy(): void {
         this.subscriptions.forEach((sub) => sub.unsubscribe());
+        // Clear search timeout if exists
+        if (this.searchTimeout) {
+            clearTimeout(this.searchTimeout);
+        }
+    }
+
+    loadNotificationTypes(): void {
+        if (!this.permissionService.canListNotificationTypes()) {
+            return;
+        }
+
+        const sub = this.notificationsService.listNotificationTypes().subscribe({
+            next: (response: any) => {
+                if (response?.success) {
+                    const typesData = response?.message || response?.Notification_Types || [];
+                    // Map to the expected format for dropdown
+                    this.notificationTypes = Array.isArray(typesData) ? typesData.map((item: any) => ({
+                        type_ID: item?.type_ID ?? 0,
+                        title: item?.title || ''
+                    })) : [];
+                }
+            }
+        });
+        this.subscriptions.push(sub);
+    }
+
+    loadNotificationCategories(): void {
+        // Load System Categories
+        if (this.permissionService.canListNotificationCategories()) {
+            const sub = this.notificationsService.listNotificationCategories(0, 100).subscribe({
+                next: (response: any) => {
+                    if (response?.success) {
+                        const responseData = response?.message || response;
+                        const categories = responseData?.Categories || responseData?.Notification_Categories || [];
+                        const systemCategories = Array.isArray(categories) ? categories.map((item: any) => ({
+                            Category_ID: item?.Category_ID || 0,
+                            Title: this.isRegional ? (item?.Title_Regional || item?.Title || '') : (item?.Title || ''),
+                            Type_ID: item?.Type_ID || 0
+                        })) : [];
+                        this.notificationCategories = [...this.notificationCategories, ...systemCategories];
+                    }
+                }
+            });
+            this.subscriptions.push(sub);
+        }
+
+        // Load Entity Categories
+        if (this.permissionService.canListEntityNotificationCategories() && this.currentEntityId > 0) {
+            const sub = this.notificationsService.listEntityNotificationCategories(this.currentEntityId, 0, 100).subscribe({
+                next: (response: any) => {
+                    if (response?.success) {
+                        const responseData = response?.message || response;
+                        const categories = responseData?.Notification_Categories || responseData?.message || [];
+                        const entityCategories = Array.isArray(categories) ? categories.map((item: any) => ({
+                            Category_ID: item?.Category_ID || 0,
+                            Title: this.isRegional ? (item?.Title_Regional || item?.Title || '') : (item?.Title || ''),
+                            Type_ID: item?.Type_ID || 0
+                        })) : [];
+                        this.notificationCategories = [...this.notificationCategories, ...entityCategories];
+                    }
+                }
+            });
+            this.subscriptions.push(sub);
+        }
     }
 
     configureMenuItems(): void {
@@ -229,11 +314,13 @@ export class NotificationsListComponent implements OnInit, OnDestroy {
     }
 
     viewDetails(notification: Notification): void {
-        this.router.navigate(['/summary/notifications/notifications', notification.id]);
+        // Open edit dialog to view details
+        this.edit(notification);
     }
 
     sendNotification(notification: Notification): void {
-        this.router.navigate(['/summary/notifications/notifications', notification.id, 'send']);
+        this.currentNotificationForSend = notification;
+        this.sendNotificationDialogVisible = true;
     }
 
     openMenu(menu: any, notification: Notification, event: Event): void {
@@ -307,6 +394,64 @@ export class NotificationsListComponent implements OnInit, OnDestroy {
         this.lastNotificationId = 0;
         this.notifications = [];
         this.loadNotifications();
+    }
+
+    onPageChange(event: any): void {
+        this.first = event.first;
+        this.rows = event.rows;
+        // Scroll to top of table when page changes
+        this.scrollToTableTop();
+    }
+
+    scrollToTableTop(): void {
+        // Use setTimeout to ensure the DOM has updated before scrolling
+        setTimeout(() => {
+            if (this.notificationsTableContainer) {
+                this.notificationsTableContainer.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 0);
+    }
+
+    onSearchInput(event: Event): void {
+        const target = event.target as HTMLInputElement;
+        this.textFilter = target?.value || '';
+
+        // Clear previous timeout
+        if (this.searchTimeout) {
+            clearTimeout(this.searchTimeout);
+        }
+
+        // Debounce: Wait 500ms after user stops typing before calling API
+        this.searchTimeout = setTimeout(() => {
+            this.onFilterChange();
+        }, 500);
+    }
+
+    clearSearch(): void {
+        this.textFilter = '';
+        // Clear timeout if exists
+        if (this.searchTimeout) {
+            clearTimeout(this.searchTimeout);
+        }
+        // Reload notifications from API without search text
+        this.onFilterChange();
+    }
+
+    onSort(event: any): void {
+        this.sortField = event.field;
+        this.sortOrder = event.order;
+        // PrimeNG will automatically sort the filteredNotifications array
+        // No need for manual sorting as we're using client-side sorting
+    }
+
+    onSendDialogClose(): void {
+        this.sendNotificationDialogVisible = false;
+        this.currentNotificationForSend = undefined;
+    }
+
+    onSendDialogSent(): void {
+        this.onSendDialogClose();
+        // Optionally reload notifications or refresh the list
     }
 
     canManageNotification(notification: Notification): boolean {

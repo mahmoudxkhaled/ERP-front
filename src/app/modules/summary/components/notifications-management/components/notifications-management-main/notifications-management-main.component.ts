@@ -57,12 +57,4 @@ export class NotificationsManagementMainComponent implements OnInit {
             this.permissionService.canSendNotificationToEntities() ||
             this.permissionService.canSendNotificationToAll();
     }
-
-    currentNotificationId?: number;
-
-    onNotificationCreated(notificationId: number): void {
-        // After creating notification, navigate to Send tab
-        this.currentNotificationId = notificationId;
-        this.activeTabIndex = 3; // Send tab index
-    }
 }

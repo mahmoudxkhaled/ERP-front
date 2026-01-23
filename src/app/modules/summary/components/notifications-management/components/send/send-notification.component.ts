@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, OnChanges, SimpleChanges, Output, EventEmitter } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import { GroupsService } from '../../../../services/groups.service';
@@ -18,7 +18,10 @@ type SendTargetType = 'accounts' | 'groups' | 'roles' | 'entities' | 'all';
     styleUrls: ['./send-notification.component.scss']
 })
 export class SendNotificationComponent implements OnInit, OnDestroy, OnChanges {
-    @Input() notificationId?: number; // Optional: can be set from parent
+    @Input() visible: boolean = false;
+    @Input() notificationId?: number;
+    @Output() visibleChange = new EventEmitter<boolean>();
+    @Output() sent = new EventEmitter<void>();
 
     notification: Notification | null = null;
     loading: boolean = false;
@@ -65,13 +68,16 @@ export class SendNotificationComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     ngOnInit(): void {
-        if (this.notificationId) {
+        if (this.notificationId && this.visible) {
             this.loadNotification();
         }
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes['notificationId'] && this.notificationId && !this.notification) {
+        if (changes['notificationId'] && this.notificationId && !this.notification && this.visible) {
+            this.loadNotification();
+        }
+        if (changes['visible'] && this.visible && this.notificationId && !this.notification) {
             this.loadNotification();
         }
     }
@@ -381,5 +387,20 @@ export class SendNotificationComponent implements OnInit, OnDestroy, OnChanges {
         this.selectedGroupIds = [];
         this.selectedRoleIds = [];
         this.selectedEntityIds = [];
+
+        // Close dialog and emit sent event
+        this.closeDialog();
+        this.sent.emit();
+    }
+
+    closeDialog(): void {
+        this.visible = false;
+        this.visibleChange.emit(false);
+        // Reset selections when closing
+        this.selectedAccountIds = [];
+        this.selectedGroupIds = [];
+        this.selectedRoleIds = [];
+        this.selectedEntityIds = [];
+        this.selectedTargetType = 'accounts';
     }
 }

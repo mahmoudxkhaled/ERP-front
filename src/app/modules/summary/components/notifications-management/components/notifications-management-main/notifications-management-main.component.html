@@ -14,14 +14,9 @@
             <app-categories-list></app-categories-list>
         </p-tabPanel>
 
-        <!-- Create Notification Tab -->
-        <p-tabPanel header="Create Notification" [disabled]="!canCreateNotification()">
-            <app-create-notification (notificationCreated)="onNotificationCreated($event)"></app-create-notification>
-        </p-tabPanel>
-
-        <!-- Send Tab -->
-        <p-tabPanel header="Send" [disabled]="!canSendNotification()">
-            <app-send-notification [notificationId]="currentNotificationId"></app-send-notification>
+        <!-- Notifications Tab -->
+        <p-tabPanel header="Notifications" [disabled]="!canCreateNotification()">
+            <app-notifications-list></app-notifications-list>
         </p-tabPanel>
     </p-tabView>
 </div>

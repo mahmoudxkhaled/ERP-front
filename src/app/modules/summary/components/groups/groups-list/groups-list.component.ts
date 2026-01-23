@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MenuItem, MessageService } from 'primeng/api';
@@ -17,6 +17,8 @@ type GroupActionContext = 'list' | 'activate' | 'deactivate' | 'delete';
     styleUrls: ['./groups-list.component.scss']
 })
 export class GroupsListComponent implements OnInit, OnDestroy {
+    @ViewChild('groupsTableContainer') groupsTableContainer?: ElementRef;
+
     groups: Group[] = [];
     isLoading$: Observable<boolean>;
     tableLoadingSpinner = false;
@@ -24,7 +26,6 @@ export class GroupsListComponent implements OnInit, OnDestroy {
     activationControls: Record<string, FormControl<boolean>> = {};
     menuItems: MenuItem[] = [];
     currentGroup?: Group;
-    accountSettings: IAccountSettings;
     activationGroupDialog: boolean = false;
     currentGroupForActivation?: Group;
     deleteGroupDialog: boolean = false;
@@ -35,6 +36,14 @@ export class GroupsListComponent implements OnInit, OnDestroy {
     // Dialog for form
     formDialogVisible: boolean = false;
     formGroupId?: number;
+
+    // Pagination (handled by PrimeNG automatically)
+    first: number = 0;
+    rows: number = 10;
+
+    // Search functionality
+    searchText: string = '';
+    filteredGroups: Group[] = [];
 
     constructor(
         private groupsService: GroupsService,
@@ -49,7 +58,6 @@ export class GroupsListComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.configureMenuItems();
         this.loadGroups();
     }
 
@@ -58,10 +66,8 @@ export class GroupsListComponent implements OnInit, OnDestroy {
     }
 
     loadGroups(): void {
-
-
-        this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
-        const isRegional = this.accountSettings?.Language !== 'English';
+        const accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
+        const isRegional = accountSettings?.Language !== 'English';
         this.tableLoadingSpinner = true;
 
         const accountId = this.groupsService.getCurrentAccountId();
@@ -77,28 +83,26 @@ export class GroupsListComponent implements OnInit, OnDestroy {
 
         const sub = this.groupsService.listPersonalGroups(accountId, this.activeOnlyFilter).subscribe({
             next: (response: any) => {
-                console.log('response listPersonalGroups', response);
                 if (!response?.success) {
                     this.handleBusinessError('list', response);
                     return;
                 }
 
+                console.log('response', response);
                 const groupsData = response?.message?.Account_Groups || response?.message || [];
-
                 this.groups = Array.isArray(groupsData) ? groupsData.map((item: any) => {
                     const groupBackend = item as GroupBackend;
                     return {
                         id: String(groupBackend?.groupID || ''),
                         title: isRegional ? (groupBackend?.title_Regional || groupBackend?.title || '') : (groupBackend?.title || ''),
                         description: isRegional ? (groupBackend?.description_Regional || groupBackend?.description || '') : (groupBackend?.description || ''),
-                        titleRegional: groupBackend?.title_Regional || '',
-                        descriptionRegional: groupBackend?.description_Regional || '',
                         entityId: groupBackend?.entityID || 0,
-                        active: Boolean(groupBackend?.is_Active !== undefined ? groupBackend.is_Active : true), // Default to active if not provided
+                        active: Boolean(groupBackend?.isActive !== undefined ? groupBackend.isActive : true), // Default to active if not provided
                         createAccountId: groupBackend?.createAccountID || 0
                     };
                 }) : [];
 
+                this.applySearchFilter();
                 this.buildActivationControls();
             },
             complete: () => this.resetLoadingFlags()
@@ -244,16 +248,9 @@ export class GroupsListComponent implements OnInit, OnDestroy {
     }
 
     onFormSaved(): void {
-        this.loadGroups(); // Reload groups after save
+        this.loadGroups();
     }
 
-    getStatusSeverity(status: boolean): string {
-        return status ? 'success' : 'danger';
-    }
-
-    getStatusLabel(status: boolean): string {
-        return status ? 'Active' : 'Inactive';
-    }
 
     private buildActivationControls(): void {
         this.activationControls = {};
@@ -262,21 +259,6 @@ export class GroupsListComponent implements OnInit, OnDestroy {
         });
     }
 
-    private configureMenuItems(): void {
-        // Menu items will be configured dynamically based on current group
-        this.menuItems = [
-            {
-                label: 'View Details',
-                icon: 'pi pi-eye',
-                command: () => this.currentGroup && this.viewDetails(this.currentGroup)
-            },
-            {
-                label: 'Delete',
-                icon: 'pi pi-trash',
-                command: () => this.currentGroup && this.confirmDelete(this.currentGroup)
-            }
-        ];
-    }
 
     getMenuItemsForGroup(group: Group): MenuItem[] {
         const items: MenuItem[] = [
@@ -284,47 +266,22 @@ export class GroupsListComponent implements OnInit, OnDestroy {
                 label: 'View Details',
                 icon: 'pi pi-eye',
                 command: () => this.viewDetails(group)
+            },
+            {
+                label: 'Edit',
+                icon: 'pi pi-pencil',
+                command: () => this.edit(group)
+            },
+            {
+                label: 'Delete',
+                icon: 'pi pi-trash',
+                command: () => this.confirmDelete(group)
             }
         ];
-
-        if (this.isGroupOwner(group)) {
-            items.push(
-                {
-                    label: 'Edit',
-                    icon: 'pi pi-pencil',
-                    command: () => this.edit(group)
-                },
-                {
-                    label: 'Delete',
-                    icon: 'pi pi-trash',
-                    command: () => this.confirmDelete(group)
-                }
-            );
-        }
 
         return items;
     }
 
-    /**
-     * Check if the current user is the owner of the group
-     * Personal Groups (Entity_ID = 0) can only be managed by their owner
-     */
-    isGroupOwner(group: Group): boolean {
-        if (!group || group.entityId !== 0) {
-            return false; // Only Personal Groups (Entity_ID = 0) are owner-managed
-        }
-        return group.createAccountId === this.currentAccountId;
-    }
-
-    /**
-     * Check if user can manage a specific group
-     */
-    canManageGroup(group: Group): boolean {
-        if (!this.permissionService.can('Update_Account_Group')) {
-            return false;
-        }
-        return this.isGroupOwner(group);
-    }
 
     private handleBusinessError(context: GroupActionContext, response: any): void | null {
         const code = String(response?.message || '');
@@ -399,6 +356,52 @@ export class GroupsListComponent implements OnInit, OnDestroy {
 
     private resetLoadingFlags(): void {
         this.tableLoadingSpinner = false;
+    }
+
+    onPageChange(event: any): void {
+        this.first = event.first;
+        this.rows = event.rows;
+        // Scroll to top of table when page changes
+        this.scrollToTableTop();
+    }
+
+    scrollToTableTop(): void {
+        // Use setTimeout to ensure the DOM has updated before scrolling
+        setTimeout(() => {
+            if (this.groupsTableContainer) {
+                this.groupsTableContainer.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 0);
+    }
+
+    onSearchInput(event: Event): void {
+        const target = event.target as HTMLInputElement;
+        this.searchText = target?.value || '';
+        this.applySearchFilter();
+        // Reset to first page when searching
+        this.first = 0;
+    }
+
+    clearSearch(): void {
+        this.searchText = '';
+        this.applySearchFilter();
+        this.first = 0;
+    }
+
+    private applySearchFilter(): void {
+        if (!this.searchText || this.searchText.trim() === '') {
+            this.filteredGroups = [...this.groups];
+            return;
+        }
+
+        const searchTerm = this.searchText.toLowerCase().trim();
+        this.filteredGroups = this.groups.filter((group) => {
+            const idMatch = group.id?.toLowerCase().includes(searchTerm) || false;
+            const titleMatch = group.title?.toLowerCase().includes(searchTerm) || false;
+            const descriptionMatch = group.description?.toLowerCase().includes(searchTerm) || false;
+
+            return idMatch || titleMatch || descriptionMatch;
+        });
     }
 }
 

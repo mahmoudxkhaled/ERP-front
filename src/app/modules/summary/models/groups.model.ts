@@ -10,7 +10,7 @@ export interface GroupBackend {
     description: string;
     description_Regional: string;
     createAccountID: number;
-    is_Active?: boolean; // May not always be present in list response
+    isActive?: boolean; // May not always be present in list response
 }
 
 /**

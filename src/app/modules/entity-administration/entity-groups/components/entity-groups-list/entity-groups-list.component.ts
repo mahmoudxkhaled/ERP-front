@@ -127,7 +127,7 @@ export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
                         titleRegional: groupBackend?.title_Regional || '',
                         descriptionRegional: groupBackend?.description_Regional || '',
                         entityId: groupBackend?.entityID || 0,
-                        active: Boolean(groupBackend?.is_Active !== undefined ? groupBackend.is_Active : true),
+                        active: Boolean(groupBackend?.isActive !== undefined ? groupBackend.isActive : true),
                         createAccountId: groupBackend?.createAccountID || 0
                     };
                 }) : [];

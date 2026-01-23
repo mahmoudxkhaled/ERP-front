@@ -14,11 +14,15 @@ import { CategoriesListComponent } from './components/categories/categories-list
 import { CategoryFormComponent } from './components/categories/category-form/category-form.component';
 import { CategoryDetailsComponent } from './components/categories/category-details/category-details.component';
 
-// Create Notification
+// Create Notification (kept for reference, can be removed later)
 import { CreateNotificationComponent } from './components/create-notification/create-notification.component';
 
 // Send
 import { SendNotificationComponent } from './components/send/send-notification.component';
+
+// Notifications List and Form (from notifications module)
+import { NotificationsListComponent } from '../notifications/notifications-list/notifications-list.component';
+import { NotificationFormComponent } from '../notifications/notification-form/notification-form.component';
 
 @NgModule({
     declarations: [
@@ -29,6 +33,8 @@ import { SendNotificationComponent } from './components/send/send-notification.c
         CategoryDetailsComponent,
         CreateNotificationComponent,
         SendNotificationComponent,
+        NotificationsListComponent,
+        NotificationFormComponent,
     ],
     imports: [
         NotificationsManagementRoutingModule,

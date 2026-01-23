@@ -1,8 +1,10 @@
-<div class="card">
-    <div class="flex justify-content-between align-items-center mb-4">
+<p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '900px' }" [closable]="true"
+    [draggable]="false" [resizable]="false" (onHide)="closeDialog()">
+    <ng-template pTemplate="header">
         <h3>Send Notification</h3>
-        <p class="text-600" *ngIf="!notificationId">Create a notification first, then send it from here.</p>
-    </div>
+    </ng-template>
+
+    <div class="card" style="box-shadow: none;">
 
     <div *ngIf="loading" class="flex justify-content-center align-items-center" style="min-height: 200px;">
         <p-progressSpinner></p-progressSpinner>
@@ -116,15 +118,20 @@
                 <p class="text-orange-500">This will send the notification to all system users.</p>
             </div>
         </p-panel>
-
-        <div class="flex justify-content-end mt-4">
-            <p-button label="Send" icon="pi pi-send" (onClick)="send()" [loading]="sending" [disabled]="sending"></p-button>
-        </div>
     </div>
 
     <div *ngIf="!loading && !notification" class="text-center p-4">
-        <p class="text-600">No notification selected. Create a notification in the "Create Notification" tab first.</p>
+        <p class="text-600">No notification selected. Please select a notification first.</p>
     </div>
-</div>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <p-button label="Cancel" icon="pi pi-times" class="p-button-secondary" (onClick)="closeDialog()"
+            [disabled]="sending">
+        </p-button>
+        <p-button label="Send" icon="pi pi-send" (onClick)="send()" [loading]="sending" [disabled]="sending || !notification">
+        </p-button>
+    </ng-template>
+</p-dialog>
 
 <p-toast></p-toast>

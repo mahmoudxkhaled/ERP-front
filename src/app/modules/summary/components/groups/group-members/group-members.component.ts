@@ -4,9 +4,8 @@ import { Subscription } from 'rxjs';
 import { GroupsService } from '../../../services/groups.service';
 import { EntitiesService } from 'src/app/modules/entity-administration/entities/services/entities.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
-import { PermissionService } from 'src/app/core/services/permission.service';
-import { IAccountSettings, IAccountDetails } from 'src/app/core/models/account-status.model';
-import { GroupMember, Group } from '../../../models/groups.model';
+import { IAccountDetails } from 'src/app/core/models/account-status.model';
+import { GroupMember } from '../../../models/groups.model';
 import { EntityAccount } from 'src/app/modules/entity-administration/entities/models/entities.model';
 
 @Component({
@@ -34,10 +33,7 @@ export class GroupMembersComponent implements OnInit, OnDestroy {
     selectedEntityId: string = '';
     includeSubentities: boolean = false;
 
-    accountSettings: IAccountSettings;
-    isRegional: boolean = false;
     currentAccountId: number = 0;
-    group: Group | null = null;
 
     private subscriptions: Subscription[] = [];
 
@@ -45,11 +41,8 @@ export class GroupMembersComponent implements OnInit, OnDestroy {
         private groupsService: GroupsService,
         private entitiesService: EntitiesService,
         private messageService: MessageService,
-        private localStorageService: LocalStorageService,
-        private permissionService: PermissionService
+        private localStorageService: LocalStorageService
     ) {
-        this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
-        this.isRegional = this.accountSettings?.Language !== 'English';
         const entityDetails = this.localStorageService.getEntityDetails();
         this.selectedEntityId = entityDetails?.Entity_ID?.toString() || '0';
         const accountDetails = this.localStorageService.getAccountDetails() as IAccountDetails;
@@ -58,34 +51,10 @@ export class GroupMembersComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         if (this.groupId) {
-            this.loadGroupInfo();
             this.loadMembers();
         }
     }
 
-    loadGroupInfo(): void {
-        if (!this.groupId) {
-            return;
-        }
-
-        const sub = this.groupsService.getGroup(this.groupId).subscribe({
-            next: (response: any) => {
-                if (response?.success) {
-                    const groupData = response?.message ?? {};
-                    this.group = {
-                        id: String(groupData?.Group_ID || groupData?.groupID || this.groupId),
-                        title: this.isRegional ? (groupData?.Title_Regional || groupData?.title_Regional || groupData?.Title || groupData?.title || '') : (groupData?.Title || groupData?.title || ''),
-                        description: this.isRegional ? (groupData?.Description_Regional || groupData?.description_Regional || groupData?.Description || groupData?.description || '') : (groupData?.Description || groupData?.description || ''),
-                        entityId: groupData?.Entity_ID || groupData?.entityID || 0,
-                        active: Boolean(groupData?.Is_Active !== undefined ? groupData.Is_Active : (groupData?.is_Active !== undefined ? groupData.is_Active : true)),
-                        createAccountId: groupData?.Create_Account_ID || groupData?.createAccountID || 0
-                    };
-                }
-            }
-        });
-
-        this.subscriptions.push(sub);
-    }
 
     ngOnDestroy(): void {
         this.subscriptions.forEach((sub) => sub.unsubscribe());
@@ -103,35 +72,15 @@ export class GroupMembersComponent implements OnInit, OnDestroy {
                     this.handleBusinessError('getMembers', response);
                     return;
                 }
-                const membersData = response?.message?.Accounts || response?.message || {};
-
-                // Handle both dictionary and array formats
-                if (typeof membersData === 'object' && !Array.isArray(membersData)) {
-                    // Dictionary format: { accountId: email }
-                    this.members = Object.keys(membersData).map((key) => {
-                        const accountId = Number(key);
-                        const email = membersData[key];
-                        return {
-                            accountId: accountId,
-                            email: email || '',
-                            entityId: undefined,
-                            entityName: undefined
-                        };
-                    });
-                } else if (Array.isArray(membersData)) {
-                    // Array format: [accountId1, accountId2, ...]
-                    this.members = membersData.map((item: any) => {
-                        const accountId = typeof item === 'number' ? item : (item?.Account_ID || item?.accountId || 0);
-                        return {
-                            accountId: accountId,
-                            email: item?.Email || item?.email || '',
-                            entityId: item?.Entity_ID || item?.entityId,
-                            entityName: item?.Entity_Name || item?.entityName
-                        };
-                    });
-                } else {
-                    this.members = [];
-                }
+                // API returns dictionary format: { accountId: email }
+                const membersData = response?.message || {};
+                this.members = Object.keys(membersData).map((key) => {
+                    return {
+                        accountId: Number(key),
+                        email: membersData[key] || '',
+                        entityName: undefined
+                    };
+                });
 
                 this.loadingMembers = false;
             },
@@ -168,7 +117,7 @@ export class GroupMembersComponent implements OnInit, OnDestroy {
         const sub = this.entitiesService.getEntityAccountsList(
             this.selectedEntityId,
             this.includeSubentities,
-            false, // activeOnly
+            false,
             lastAccountId,
             this.accountTableRows,
             this.accountTableTextFilter
@@ -178,7 +127,6 @@ export class GroupMembersComponent implements OnInit, OnDestroy {
                     this.loadingAccountsTable = false;
                     return;
                 }
-
                 this.accountTableTotalRecords = Number(response.message?.Total_Count || 0);
                 const accountsData = response?.message?.Accounts || {};
                 const accountsArray = Array.isArray(accountsData) ? accountsData : Object.values(accountsData);
@@ -315,26 +263,6 @@ export class GroupMembersComponent implements OnInit, OnDestroy {
         this.loadingMembers = false;
     }
 
-    /**
-     * Check if the current user is the owner of the group
-     * Personal Groups (Entity_ID = 0) can only be managed by their owner
-     */
-    isGroupOwner(): boolean {
-        if (!this.group || this.group.entityId !== 0) {
-            return false; // Only Personal Groups (Entity_ID = 0) are owner-managed
-        }
-        return this.group.createAccountId === this.currentAccountId;
-    }
-
-    /**
-     * Check if user can manage this group
-     */
-    canManageGroup(): boolean {
-        if (!this.permissionService.can('Add_Group_Members') || !this.permissionService.can('Remove_Group_Members')) {
-            return false;
-        }
-        return this.isGroupOwner();
-    }
 
     private getErrorMessage(context: string, code: string): string | null {
         switch (code) {

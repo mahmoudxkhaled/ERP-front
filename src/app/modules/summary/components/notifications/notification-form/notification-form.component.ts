@@ -110,7 +110,7 @@ export class NotificationFormComponent implements OnInit, OnDestroy, OnChanges {
             const sub = this.notificationsService.listNotificationCategories(0, 100).subscribe({
                 next: (response: any) => {
                     if (response?.success) {
-                        const categories = response?.message?.Notification_Categories || response?.Notification_Categories || [];
+                        const categories = response?.message?.Categories || [];
                         const systemCategories = Array.isArray(categories) ? categories : [];
                         this.notificationCategories = [...this.notificationCategories, ...systemCategories];
                     }
