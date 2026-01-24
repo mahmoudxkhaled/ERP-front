@@ -63,12 +63,34 @@ export class NotificationFormComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
+        // When dialog opens
         if (changes['visible'] && this.visible) {
             this.resetForm();
             this.isEdit = !!this.notificationId;
 
             if (this.isEdit && this.notificationId) {
-                this.loadNotification();
+                // Use setTimeout to ensure notificationId is set
+                setTimeout(() => {
+                    this.loadNotification();
+                }, 0);
+            }
+        }
+
+        // Handle notificationId change when dialog is already open or when both change together
+        if (changes['notificationId'] && this.visible) {
+            const previousId = changes['notificationId'].previousValue;
+            const currentId = changes['notificationId'].currentValue;
+
+            // Only reload if ID actually changed
+            if (previousId !== currentId) {
+                this.isEdit = !!this.notificationId;
+                if (this.isEdit && this.notificationId) {
+                    setTimeout(() => {
+                        this.loadNotification();
+                    }, 0);
+                } else {
+                    this.resetForm();
+                }
             }
         }
     }
@@ -151,35 +173,45 @@ export class NotificationFormComponent implements OnInit, OnDestroy, OnChanges {
                 }
                 const notificationData = response?.message ?? {};
 
+                // API returns snake_case format
+                const notificationId = notificationData?.notification_ID || this.notificationId;
+                const moduleId = notificationData?.module_ID || DEFAULT_MODULE_ID;
+                const typeId = notificationData?.type_ID || 0;
+                const categoryId = notificationData?.category_ID || 0;
+                const entityId = notificationData?.entity_ID;
+                const title = notificationData?.title || '';
+                const titleRegional = notificationData?.title_Regional || '';
+                const message = notificationData?.message || '';
+                const messageRegional = notificationData?.message_Regional || '';
+                const referenceType = notificationData?.reference_Type || null;
+                const referenceId = notificationData?.reference_ID || null;
+                const createdAt = notificationData?.created_At;
+
                 this.notification = {
-                    id: notificationData?.Notification_ID || this.notificationId,
-                    moduleId: notificationData?.Module_ID || DEFAULT_MODULE_ID,
-                    typeId: notificationData?.Type_ID || 0,
-                    categoryId: notificationData?.Category_ID || 0,
-                    entityId: notificationData?.Entity_ID,
-                    title: this.isRegional ? (notificationData?.Title_Regional || notificationData?.Title || '') : (notificationData?.Title || ''),
-                    message: this.isRegional ? (notificationData?.Message_Regional || notificationData?.Message || '') : (notificationData?.Message || ''),
-                    titleRegional: notificationData?.Title_Regional,
-                    messageRegional: notificationData?.Message_Regional,
-                    referenceType: notificationData?.Reference_Type || null,
-                    referenceId: notificationData?.Reference_ID || null,
-                    createdAt: notificationData?.Created_At,
+                    id: notificationId,
+                    moduleId: moduleId,
+                    typeId: typeId,
+                    categoryId: categoryId,
+                    entityId: entityId,
+                    title: this.isRegional ? (titleRegional || title) : title,
+                    message: this.isRegional ? (messageRegional || message) : message,
+                    titleRegional: titleRegional,
+                    messageRegional: messageRegional,
+                    referenceType: referenceType,
+                    referenceId: referenceId,
+                    createdAt: createdAt,
                     isSystemNotification: this.isSystemNotification
                 };
 
-                const title = this.isRegional && notificationData?.Title_Regional
-                    ? notificationData.Title_Regional
-                    : (notificationData?.Title || '');
-                const message = this.isRegional && notificationData?.Message_Regional
-                    ? notificationData.Message_Regional
-                    : (notificationData?.Message || '');
+                const formTitle = this.isRegional && titleRegional ? titleRegional : title;
+                const formMessage = this.isRegional && messageRegional ? messageRegional : message;
 
                 this.form.patchValue({
-                    categoryId: this.notification.categoryId,
-                    title: title,
-                    message: message,
-                    referenceType: this.notification.referenceType,
-                    referenceId: this.notification.referenceId
+                    categoryId: categoryId,
+                    title: formTitle,
+                    message: formMessage,
+                    referenceType: referenceType,
+                    referenceId: referenceId
                 });
             },
             complete: () => this.loading = false

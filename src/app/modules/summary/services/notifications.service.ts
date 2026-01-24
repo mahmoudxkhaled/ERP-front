@@ -405,7 +405,7 @@ export class NotificationsService {
             message,
             isRegional.toString(),
             referenceType || '',
-            referenceId ? referenceId.toString() : ''
+            referenceId ? referenceId.toString() : '0'
         ];
         return this.apiServices.callAPI(823, this.getAccessToken(), params).pipe(
             finalize(() => this.isLoadingSubject.next(false))

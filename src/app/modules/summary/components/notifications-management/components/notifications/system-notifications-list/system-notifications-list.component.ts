@@ -187,7 +187,6 @@ export class SystemNotificationsListComponent implements OnInit, OnDestroy {
                     this.handleBusinessError('list', response);
                     return;
                 }
-
                 const responseData = response?.message || response;
                 this.totalCount = responseData?.Total_Count || 0;
                 const notificationsData = responseData?.Notifications || responseData?.message || [];

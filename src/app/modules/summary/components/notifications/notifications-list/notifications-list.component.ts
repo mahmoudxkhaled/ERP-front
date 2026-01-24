@@ -215,6 +215,7 @@ export class NotificationsListComponent implements OnInit, OnDestroy {
                         return;
                     }
 
+                    console.log('respons123123123e', response);
                     const responseData = response?.message || response;
                     this.totalCount = responseData?.Total_Count || 0;
                     const notificationsData = responseData?.Notifications || responseData?.message || [];
