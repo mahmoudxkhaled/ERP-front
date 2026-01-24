@@ -194,6 +194,11 @@ export class SendNotificationComponent implements OnInit, OnDestroy {
             createdAt: createdAt,
             isSystemNotification: isSystem
         };
+
+        // Load accounts by default when notification is loaded
+        if (this.selectedTargetType === 'accounts') {
+            this.loadAccounts();
+        }
     }
 
     onTargetTypeChange(): void {

@@ -2,25 +2,23 @@
     <div class="flex justify-content-between align-items-center mb-4">
         <h3>System Notification Categories</h3>
         <div class="flex gap-2">
-            <p-button label="Add Category" icon="pi pi-plus"
-                (onClick)="navigateToNew()" [disabled]="!!(isLoading$ | async)">
+            <p-button label="Add Category" icon="pi pi-plus" (onClick)="navigateToNew()"
+                [disabled]="!!(isLoading$ | async)">
             </p-button>
         </div>
     </div>
 
     <!-- Search Bar -->
-    <div class="mb-3">
-        <div class="p-inputgroup w-full">
-            <span class="p-input-icon-left">
-                <i class="pi pi-search"></i>
-                <input type="text" pInputText
-                    placeholder="Search by ID, title, description, send email, or unsubscribe..."
-                    [value]="searchText" (input)="onSearchInput($event)" class="w-full" />
-            </span>
-            <button *ngIf="searchText" pButton pRipple type="button" icon="pi pi-times"
-                class="p-button-rounded p-button-text p-button-plain" (click)="clearSearch()" pTooltip="Clear search">
-            </button>
-        </div>
+    <div class="p-inputgroup  p-fluid col-12  ">
+        <span class="p-input-icon-left ">
+            <i class="pi pi-search"></i>
+            <input type="text" pInputText
+                placeholder="Search by ID, title, description, type, send email, or unsubscribe..." [value]="searchText"
+                (input)="onSearchInput($event)" class="w-full" />
+        </span>
+        <button *ngIf="searchText" pButton pRipple type="button" icon="pi pi-times"
+            class="p-button-rounded p-button-text p-button-plain" (click)="clearSearch()" pTooltip="Clear search">
+        </button>
     </div>
 
     <div #categoriesTableContainer style="position: relative;">
