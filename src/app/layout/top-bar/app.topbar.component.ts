@@ -1,6 +1,8 @@
 import { ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { ListboxChangeEvent } from 'primeng/listbox';
+import { OverlayPanel } from 'primeng/overlaypanel';
+import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import { IAccountDetails, IAccountSettings, IEntityDetails, IUserDetails } from 'src/app/core/models/account-status.model';
 import { EntityLogoService } from 'src/app/core/services/entity-logo.service';
@@ -12,27 +14,9 @@ import { UserNameService } from 'src/app/core/services/user-name.service';
 import { AuthService } from 'src/app/modules/auth/services/auth.service';
 import { LocalStorageService } from '../../core/services/local-storage.service';
 import { LayoutService } from '../app-services/app.layout.service';
-enum NotificationTypeEnum {
-    SendCampaignNotification = 1,
-    SendCampaignLessonNotification = 2,
-}
-
-export interface notificiationDto {
-    transactionId?: string;
-    notificationTypeId?: number;
-    title?: string;
-    notificationMessage?: string;
-    redirectPageUrl?: string;
-    notificationLogoUrl?: string;
-    notificationIcon?: string;
-    notificationParameter1?: string;
-    notificationParameter2?: string;
-    isRead?: boolean;
-    readingTime?: string;
-    isHide?: boolean;
-    hiddenTime?: string;
-    insertedTime?: string;
-}
+import { NotificationsService } from 'src/app/modules/summary/services/notifications.service';
+import { AccountNotification, AccountNotificationBackend } from 'src/app/modules/summary/models/notifications.model';
+import { PermissionService } from 'src/app/core/services/permission.service';
 
 @Component({
     selector: 'app-topbar',
@@ -53,11 +37,15 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         return this.layoutService.state.topbarMenuActive;
     }
 
-    unreadCount = 0;
-    notifications: notificiationDto[] = [];
-    notification: notificiationDto;
+    // Notification properties
+    notifications: AccountNotification[] = [];
+    unreadCount: number = 0;
+    loadingNotifications: boolean = false;
+    currentAccountId: number = 0;
+    accountSettings: IAccountSettings;
+    isRegional: boolean = false;
+
     subs: Subscription = new Subscription();
-    notificationTypeEnum = NotificationTypeEnum;
     userTheme: string;
     userLanguageCode: string;
     userLanguageId: string;
@@ -71,7 +59,6 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
     account: IAccountDetails;
     entityDetails: IEntityDetails;
     userName: string = '';
-    accountSettings: IAccountSettings;
     entityName: string = '';
     gender: boolean = false;
     profilePictureUrl: string = '';
@@ -90,6 +77,9 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         private entityLogoService: EntityLogoService,
         private profilePictureService: ProfilePictureService,
         private userNameService: UserNameService,
+        private notificationsService: NotificationsService,
+        private messageService: MessageService,
+        private permissionService: PermissionService
     ) {
     }
 
@@ -97,6 +87,8 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         this.fetchUserTheme();
         this.loadUserDetails();
         this.initializeStaticLanguages();
+        // Initialize currentAccountId for notifications (after loadUserDetails sets this.account)
+        this.currentAccountId = this.account?.Account_ID || 0;
         this.subs.add(
             this.entityLogoService.logo$.subscribe((base64Logo: string | null) => {
                 if (base64Logo) {
@@ -153,6 +145,7 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
 
         this.entityLogo = this.imageService.toImageDataUrl(this.entityDetails?.Logo);
         const isRegional = this.accountSettings?.Language !== 'English';
+        this.isRegional = isRegional;
 
         if (this.entityDetails) {
             if (isRegional) {
@@ -320,6 +313,181 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         this.isListboxVisible = !this.isListboxVisible; // Toggle visibility
     }
 
+    // ==================== Notification Methods ====================
 
+    onNotificationPanelOpen(event: Event): void {
+        this.loadNotifications();
+    }
+
+    loadNotifications(): void {
+        if (!this.currentAccountId) {
+            return;
+        }
+
+        this.loadingNotifications = true;
+
+        const sub = this.notificationsService.listAccountNotifications(
+            this.currentAccountId,
+            [], // typeFilter
+            [], // categoryFilter
+            '', // textFilter
+            false, // unreadOnly
+            0, // lastNotificationId
+            10 // filterCount - limit to 10 notifications
+        ).subscribe({
+            next: (response: any) => {
+                console.log('response loadNotifications', response);
+                if (!response?.success) {
+                    this.handleNotificationError('list', response);
+                    return;
+                }
+
+                const responseData = response?.message || response;
+                const notificationsData = responseData?.Notifications || responseData?.message || [];
+
+                this.notifications = Array.isArray(notificationsData) ? notificationsData.map((item: any) => {
+                    const notificationBackend = item as any;
+                    return {
+                        id: notificationBackend?.Notification_ID || 0,
+                        moduleId: notificationBackend?.Module_ID || 0,
+                        typeId: notificationBackend?.Type_ID || 0,
+                        categoryId: notificationBackend?.Category_ID || 0,
+                        entityId: notificationBackend?.Entity_ID || null,
+                        title: this.isRegional ? (notificationBackend?.Title_Regional || notificationBackend?.Title || '') : (notificationBackend?.Title || ''),
+                        message: this.isRegional ? (notificationBackend?.Message_Regional || notificationBackend?.Message || '') : (notificationBackend?.Message || ''),
+                        titleRegional: notificationBackend?.Title_Regional,
+                        messageRegional: notificationBackend?.Message_Regional,
+                        referenceType: notificationBackend?.Reference_Type || null,
+                        referenceId: notificationBackend?.Reference_ID || null,
+                        isRead: !Boolean(notificationBackend?.Is_Unread), // Is_Unread: false means read
+                        readAt: notificationBackend?.Read_At || null,
+                        createdAt: notificationBackend?.Received_At || notificationBackend?.Created_At || null
+                    };
+                }) : [];
+
+                this.updateUnreadCount();
+                this.loadingNotifications = false;
+                this.ref.detectChanges();
+            },
+            error: () => {
+                this.loadingNotifications = false;
+                this.ref.detectChanges();
+            }
+        });
+
+        this.subs.add(sub);
+    }
+
+    onNotificationClick(notification: AccountNotification, event: Event): void {
+        event.stopPropagation();
+
+        if (!this.currentAccountId) {
+            return;
+        }
+
+        // Mark as read
+        if (!notification.isRead) {
+            const sub = this.notificationsService.markNotificationsRead(this.currentAccountId, [notification.id]).subscribe({
+                next: (response: any) => {
+                    if (response?.success) {
+                        notification.isRead = true;
+                        this.updateUnreadCount();
+                        this.ref.detectChanges();
+                    }
+                }
+            });
+            this.subs.add(sub);
+        }
+
+        // Navigate to inbox
+        this.router.navigate(['/summary/notifications/inbox']);
+    }
+
+    markAllAsRead(): void {
+        if (!this.currentAccountId || this.notifications.length === 0) {
+            return;
+        }
+
+        const unreadNotifications = this.notifications.filter(n => !n.isRead);
+        if (unreadNotifications.length === 0) {
+            return;
+        }
+
+        const unreadIds = unreadNotifications.map(n => n.id);
+        const sub = this.notificationsService.markNotificationsRead(this.currentAccountId, unreadIds).subscribe({
+            next: (response: any) => {
+                if (response?.success) {
+                    this.notifications.forEach(n => {
+                        if (!n.isRead) {
+                            n.isRead = true;
+                        }
+                    });
+                    this.updateUnreadCount();
+                    this.ref.detectChanges();
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: 'Success',
+                        detail: 'All notifications marked as read.'
+                    });
+                }
+            }
+        });
+        this.subs.add(sub);
+    }
+
+    navigateToInbox(): void {
+        this.router.navigate(['/summary/notifications/inbox']);
+    }
+
+    updateUnreadCount(): void {
+        this.unreadCount = this.notifications.filter(n => !n.isRead).length;
+    }
+
+    getUnreadCount(): number {
+        return this.unreadCount;
+    }
+
+    getTimeAgo(dateString: string | undefined): string {
+        if (!dateString) {
+            return '';
+        }
+
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+        if (diffInSeconds < 60) {
+            return 'Just now';
+        } else if (diffInSeconds < 3600) {
+            const minutes = Math.floor(diffInSeconds / 60);
+            return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
+        } else if (diffInSeconds < 86400) {
+            const hours = Math.floor(diffInSeconds / 3600);
+            return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+        } else if (diffInSeconds < 604800) {
+            const days = Math.floor(diffInSeconds / 86400);
+            return `${days} ${days === 1 ? 'day' : 'days'} ago`;
+        } else {
+            return date.toLocaleDateString();
+        }
+    }
+
+    private handleNotificationError(context: string, response: any): void {
+        const code = String(response?.message || '');
+        let detail = 'Failed to load notifications.';
+
+        if (code === 'ERP11470') {
+            detail = 'Invalid Account ID';
+        }
+
+        this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail
+        });
+
+        this.loadingNotifications = false;
+        this.ref.detectChanges();
+    }
 
 }

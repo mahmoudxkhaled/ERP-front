@@ -145,6 +145,7 @@ export class NotificationsInboxComponent implements OnInit, OnDestroy {
             this.filterCount
         ).subscribe({
             next: (response: any) => {
+                console.log('response loadNotifications from inbox', response);
                 if (!response?.success) {
                     this.handleBusinessError('list', response);
                     return;
@@ -155,22 +156,22 @@ export class NotificationsInboxComponent implements OnInit, OnDestroy {
                 const notificationsData = responseData?.Notifications || responseData?.message || [];
 
                 this.notifications = Array.isArray(notificationsData) ? notificationsData.map((item: any) => {
-                    const notificationBackend = item as AccountNotificationBackend;
+                    const notificationBackend = item as any;
                     return {
                         id: notificationBackend?.Notification_ID || 0,
                         moduleId: notificationBackend?.Module_ID || 0,
                         typeId: notificationBackend?.Type_ID || 0,
                         categoryId: notificationBackend?.Category_ID || 0,
-                        entityId: notificationBackend?.Entity_ID,
+                        entityId: notificationBackend?.Entity_ID || null,
                         title: this.isRegional ? (notificationBackend?.Title_Regional || notificationBackend?.Title || '') : (notificationBackend?.Title || ''),
                         message: this.isRegional ? (notificationBackend?.Message_Regional || notificationBackend?.Message || '') : (notificationBackend?.Message || ''),
                         titleRegional: notificationBackend?.Title_Regional,
                         messageRegional: notificationBackend?.Message_Regional,
                         referenceType: notificationBackend?.Reference_Type || null,
                         referenceId: notificationBackend?.Reference_ID || null,
-                        isRead: Boolean(notificationBackend?.Is_Read),
+                        isRead: !Boolean(notificationBackend?.Is_Unread), // Is_Unread: false means read
                         readAt: notificationBackend?.Read_At || null,
-                        createdAt: notificationBackend?.Created_At
+                        createdAt: notificationBackend?.Received_At || notificationBackend?.Created_At || null
                     };
                 }) : [];
 
