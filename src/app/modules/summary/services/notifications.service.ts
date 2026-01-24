@@ -418,6 +418,7 @@ export class NotificationsService {
      * @param notificationId - Notification ID
      */
     deleteNotification(notificationId: number): Observable<any> {
+        console.log('deleteNotification notificationId', notificationId);
         this.isLoadingSubject.next(true);
         return this.apiServices.callAPI(824, this.getAccessToken(), [notificationId.toString()]).pipe(
             finalize(() => this.isLoadingSubject.next(false))

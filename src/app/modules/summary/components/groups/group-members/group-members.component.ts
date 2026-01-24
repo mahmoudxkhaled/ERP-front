@@ -138,6 +138,7 @@ export class GroupMembersComponent implements OnInit, OnDestroy {
                     this.loadingAccountsTable = false;
                     return;
                 }
+                console.log('loadAccountsForSelection response', response);
                 this.accountTableTotalRecords = Number(response.message?.Total_Count || 0);
                 const accountsData = response?.message?.Accounts || {};
                 const accountsArray = Array.isArray(accountsData) ? accountsData : Object.values(accountsData);
@@ -193,20 +194,23 @@ export class GroupMembersComponent implements OnInit, OnDestroy {
     }
 
     addSelectedMembers(): void {
-        if (this.selectedAccounts.length === 0) {
-            this.messageService.add({
-                severity: 'warn',
-                summary: 'No Selection',
-                detail: 'Please select at least one account to add.'
-            });
-            return;
-        }
+        // if (this.selectedAccounts.length === 0) {
+        //     this.messageService.add({
+        //         severity: 'warn',
+        //         summary: 'No Selection',
+        //         detail: 'Please select at least one account to add.'
+        //     });
+        //     return;
+        // }
+        console.log('selectedAccounts', this.selectedAccounts);
+        console.log('groupId', this.groupId);
 
         const accountIds = this.selectedAccounts.map(account => Number(account.accountId));
         this.loading = true;
 
         const sub = this.groupsService.addGroupMembers(this.groupId, accountIds).subscribe({
             next: (response: any) => {
+                console.log('response11', response);
                 if (!response?.success) {
                     this.handleBusinessError('addMembers', response);
                     return;
@@ -329,6 +333,21 @@ export class GroupMembersComponent implements OnInit, OnDestroy {
 
             return idMatch || emailMatch;
         });
+    }
+
+    getAccountStateSeverity(state: number): string {
+        switch (state) {
+            case 0:
+                return 'secondary'; // Inactive
+            case 1:
+                return 'success'; // Active
+            default:
+                return 'info';
+        }
+    }
+
+    getAccountStateLabel(state: number): string {
+        return state === 1 ? 'Active' : 'Inactive';
     }
 }
 

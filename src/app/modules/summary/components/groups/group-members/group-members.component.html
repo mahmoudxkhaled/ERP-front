@@ -1,23 +1,26 @@
 <div class="card">
+
+
     <div class="flex justify-content-between align-items-center mb-4">
+        <!-- Search Bar -->
+        <div class="  col-12 md:col-5 p-fluid">
+            <div class="p-inputgroup w-full p-fluid">
+                <span class="p-input-icon-left">
+                    <i class="pi pi-search"></i>
+                    <input type="text" pInputText placeholder="Search by ID or email..." [value]="searchText"
+                        (input)="onSearchInput($event)" class="w-full" />
+                </span>
+                <button *ngIf="searchText" pButton pRipple type="button" icon="pi pi-times"
+                    class="p-button-rounded p-button-text p-button-plain" (click)="clearSearch()"
+                    pTooltip="Clear search">
+                </button>
+            </div>
+        </div>
         <p-button label="Add Members" icon="pi pi-user-plus" (onClick)="openAddMembersDialog()" [disabled]="loading">
         </p-button>
     </div>
 
-    <!-- Search Bar -->
-    <div class="mb-3">
-        <div class="p-inputgroup w-full">
-            <span class="p-input-icon-left">
-                <i class="pi pi-search"></i>
-                <input type="text" pInputText placeholder="Search by ID or email..." 
-                    [value]="searchText" (input)="onSearchInput($event)" class="w-full" />
-            </span>
-            <button *ngIf="searchText" pButton pRipple type="button" 
-                icon="pi pi-times" class="p-button-rounded p-button-text p-button-plain"
-                (click)="clearSearch()" pTooltip="Clear search">
-            </button>
-        </div>
-    </div>
+
 
     <!-- Loading Spinner -->
     <div *ngIf="loadingMembers" class="flex justify-content-center align-items-center" style="min-height: 100px;">
@@ -30,121 +33,126 @@
             [rowsPerPageOptions]="[10, 25, 50, 100]" [showCurrentPageReport]="true" responsiveLayout="scroll"
             [lazy]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
             (onLazyLoad)="onPageChange($event)">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Account ID</th>
+                    <th>Email</th>
+                    <th>Entity</th>
+                    <th style="width: 150px; text-align: start;">Actions</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-member>
+                <tr>
+                    <td>
+                        <p-tag [value]="'#' + member.accountId" severity="info"></p-tag>
+                    </td>
+                    <td>
+                        <span class="text-600">{{ member.email || 'N/A' }}</span>
+                    </td>
+                    <td>
+                        <span class="text-600">{{ member.entityName || 'N/A' }}</span>
+                    </td>
+                    <td class="text-start">
+                        <p-button icon="pi pi-trash" severity="danger" [text]="true" [disabled]="loading"
+                            (onClick)="removeMember(member)" pTooltip="Remove member">
+                        </p-button>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="4" class="text-center">No members found</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+
+    <!-- Add Members Dialog -->
+    <p-dialog [(visible)]="addMembersDialogVisible" [modal]="true" [style]="{ width: '800px' }" [closable]="true"
+        [draggable]="false" [resizable]="false" (onHide)="closeAddMembersDialog()">
         <ng-template pTemplate="header">
-            <tr>
-                <th>Account ID</th>
-                <th>Email</th>
-                <th>Entity</th>
-                <th style="width: 150px; text-align: start;">Actions</th>
-            </tr>
+            <h3>Add Members to Group</h3>
         </ng-template>
-        <ng-template pTemplate="body" let-member>
-            <tr>
-                <td>
-                    <p-tag [value]="'#' + member.accountId" severity="info"></p-tag>
-                </td>
-                <td>
-                    <span class="text-600">{{ member.email || 'N/A' }}</span>
-                </td>
-                <td>
-                    <span class="text-600">{{ member.entityName || 'N/A' }}</span>
-                </td>
-                <td class="text-start">
-                    <p-button icon="pi pi-trash" severity="danger" [text]="true" [disabled]="loading"
-                        (onClick)="removeMember(member)" pTooltip="Remove member">
-                    </p-button>
-                </td>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage">
-            <tr>
-                <td colspan="4" class="text-center">No members found</td>
-            </tr>
-        </ng-template>
-    </p-table>
-</div>
 
-<!-- Add Members Dialog -->
-<p-dialog [(visible)]="addMembersDialogVisible" [modal]="true" [style]="{ width: '800px' }" [closable]="true"
-    [draggable]="false" [resizable]="false" (onHide)="closeAddMembersDialog()">
-    <ng-template pTemplate="header">
-        <h3>Add Members to Group</h3>
-    </ng-template>
+        <div class="flex flex-column gap-3">
+            <!-- Entity Filter -->
+            <div class="flex align-items-center gap-3">
+                <div class="flex align-items-center gap-2">
+                    <label for="includeSubentities" class="text-600">Include Sub-entities:</label>
+                    <p-inputSwitch id="includeSubentities" [(ngModel)]="includeSubentities"
+                        (onChange)="onEntityFilterChange()" [disabled]="loadingAccountsTable"></p-inputSwitch>
+                </div>
+            </div>
 
-    <div class="flex flex-column gap-3">
-        <!-- Entity Filter -->
-        <div class="flex align-items-center gap-3">
-            <div class="flex align-items-center gap-2">
-                <label for="includeSubentities" class="text-600">Include Sub-entities:</label>
-                <p-inputSwitch id="includeSubentities" [(ngModel)]="includeSubentities"
-                    (onChange)="onEntityFilterChange()" [disabled]="loadingAccountsTable"></p-inputSwitch>
+            <!-- Search Bar -->
+            <span class="p-input-icon-left w-full">
+                <i class="pi pi-search"></i>
+                <input pInputText type="text" placeholder="Search by email" class="w-full"
+                    [value]="accountTableTextFilter" (input)="onAccountTableSearchInput($event)" />
+            </span>
+
+            <!-- Accounts Table -->
+            <div style="position: relative; min-height: 400px;">
+                <p-table [value]="accountsForSelection" [paginator]="true" [first]="accountTableFirst"
+                    [rows]="accountTableRows" [rowsPerPageOptions]="[10, 25, 50, 100]"
+                    [totalRecords]="accountTableTotalRecords" [showCurrentPageReport]="true" [lazy]="true"
+                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                    [loading]="loadingAccountsTable" (onLazyLoad)="onAccountTablePageChange($event)"
+                    [(selection)]="selectedAccounts" selectionMode="multiple" styleClass="p-datatable-sm">
+
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th style="width: 50px;"></th>
+                            <th>Account ID</th>
+                            <th>Email</th>
+                            <th style="text-align: center;">User ID</th>
+                            <th style="text-align: center;">Account State</th>
+                        </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-account>
+                        <tr>
+                            <td>
+                                <p-tableCheckbox [value]="account"></p-tableCheckbox>
+                            </td>
+                            <td>
+                                <p-tag [value]="'#' + account.accountId" severity="info"></p-tag>
+                            </td>
+                            <td>
+                                <span class="font-semibold">{{ account.email }}</span>
+                            </td>
+                            <td style="text-align: center;">
+                                <span class="text-600">{{ account.userId }}</span>
+                            </td>
+                            <td style="text-align: center;">
+                                <p-tag [value]="getAccountStateLabel(account.accountState)" 
+                                    [severity]="getAccountStateSeverity(account.accountState)"></p-tag>
+                            </td>
+                        </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="emptymessage">
+                        <tr>
+                            <td colspan="5" class="text-center p-4">
+                                <i class="pi pi-inbox text-4xl text-gray-400 mb-2"></i>
+                                <p class="text-gray-500">No accounts found</p>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
             </div>
         </div>
 
-        <!-- Search Bar -->
-        <span class="p-input-icon-left w-full">
-            <i class="pi pi-search"></i>
-            <input pInputText type="text" placeholder="Search by email" class="w-full" [value]="accountTableTextFilter"
-                (input)="onAccountTableSearchInput($event)" />
-        </span>
+        <ng-template pTemplate="footer">
+            <div class="flex justify-content-end gap-2">
+                <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="closeAddMembersDialog()"
+                    [disabled]="loading">
+                </p-button>
+                <p-button label="Add Selected" icon="pi pi-check" (onClick)="addSelectedMembers()" [loading]="loading"
+                    [disabled]="loading || selectedAccounts.length === 0">
+                </p-button>
+            </div>
+        </ng-template>
+    </p-dialog>
 
-        <!-- Accounts Table -->
-        <div style="position: relative; min-height: 400px;">
-            <p-table [value]="accountsForSelection" [paginator]="true" [first]="accountTableFirst"
-                [rows]="accountTableRows" [rowsPerPageOptions]="[10, 25, 50, 100]"
-                [totalRecords]="accountTableTotalRecords" [showCurrentPageReport]="true" [lazy]="true"
-                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-                [loading]="loadingAccountsTable" (onLazyLoad)="onAccountTablePageChange($event)"
-                [(selection)]="selectedAccounts" selectionMode="multiple" styleClass="p-datatable-sm">
-
-                <ng-template pTemplate="header">
-                    <tr>
-                        <th style="width: 50px;"></th>
-                        <th>Account ID</th>
-                        <th>Email</th>
-                        <th style="text-align: center;">User ID</th>
-                    </tr>
-                </ng-template>
-
-                <ng-template pTemplate="body" let-account>
-                    <tr>
-                        <td>
-                            <p-tableCheckbox [value]="account"></p-tableCheckbox>
-                        </td>
-                        <td>
-                            <p-tag [value]="'#' + account.accountId" severity="info"></p-tag>
-                        </td>
-                        <td>
-                            <span class="font-semibold">{{ account.email }}</span>
-                        </td>
-                        <td style="text-align: center;">
-                            <span class="text-600">{{ account.userId }}</span>
-                        </td>
-                    </tr>
-                </ng-template>
-
-                <ng-template pTemplate="emptymessage">
-                    <tr>
-                        <td colspan="4" class="text-center p-4">
-                            <i class="pi pi-inbox text-4xl text-gray-400 mb-2"></i>
-                            <p class="text-gray-500">No accounts found</p>
-                        </td>
-                    </tr>
-                </ng-template>
-            </p-table>
-        </div>
-    </div>
-
-    <ng-template pTemplate="footer">
-        <div class="flex justify-content-end gap-2">
-            <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="closeAddMembersDialog()"
-                [disabled]="loading">
-            </p-button>
-            <p-button label="Add Selected" icon="pi pi-check" (onClick)="addSelectedMembers()" [loading]="loading"
-                [disabled]="loading || selectedAccounts.length === 0">
-            </p-button>
-        </div>
-    </ng-template>
-</p-dialog>
-
-<p-toast></p-toast>
+    <p-toast></p-toast>

@@ -2,7 +2,6 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { Observable, Subscription } from 'rxjs';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
-import { PermissionService } from 'src/app/core/services/permission.service';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { NotificationType, NotificationTypeBackend } from 'src/app/modules/summary/models/notifications.model';
 import { NotificationsService } from 'src/app/modules/summary/services/notifications.service';
@@ -23,8 +22,7 @@ export class TypesListComponent implements OnInit, OnDestroy {
     constructor(
         private notificationsService: NotificationsService,
         private messageService: MessageService,
-        private localStorageService: LocalStorageService,
-        private permissionService: PermissionService
+        private localStorageService: LocalStorageService
     ) {
         this.isLoading$ = this.notificationsService.isLoadingSubject.asObservable();
         this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
@@ -32,9 +30,7 @@ export class TypesListComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        if (this.permissionService.canListNotificationTypes()) {
-            this.loadTypes();
-        }
+        this.loadTypes();
     }
 
     ngOnDestroy(): void {
@@ -46,6 +42,7 @@ export class TypesListComponent implements OnInit, OnDestroy {
 
         const sub = this.notificationsService.listNotificationTypes().subscribe({
             next: (response: any) => {
+                console.log('loadTypes response', response);
                 if (!response?.success) {
                     this.handleError(response);
                     return;

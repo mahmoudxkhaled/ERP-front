@@ -2,8 +2,23 @@
     <div class="flex justify-content-between align-items-center mb-4">
         <h3>Group Members</h3>
         <p-button label="Add Members" icon="pi pi-user-plus" (onClick)="openAddMembersDialog()"
-            [disabled]="loading || !canManageGroup()" [style.display]="canManageGroup() ? 'block' : 'none'">
+            [disabled]="loading">
         </p-button>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="mb-3">
+        <div class="p-inputgroup w-full">
+            <span class="p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input type="text" pInputText placeholder="Search by ID or email..." 
+                    [value]="searchText" (input)="onSearchInput($event)" class="w-full" />
+            </span>
+            <button *ngIf="searchText" pButton pRipple type="button" 
+                icon="pi pi-times" class="p-button-rounded p-button-text p-button-plain"
+                (click)="clearSearch()" pTooltip="Clear search">
+            </button>
+        </div>
     </div>
 
     <!-- Loading Spinner -->
@@ -12,7 +27,11 @@
     </div>
 
     <!-- Members Table -->
-    <p-table *ngIf="!loadingMembers" [value]="members" [paginator]="false" responsiveLayout="scroll">
+    <div #membersTableContainer style="position: relative;">
+        <p-table *ngIf="!loadingMembers" [value]="filteredMembers" [paginator]="true" [first]="first" [rows]="rows"
+            [rowsPerPageOptions]="[10, 25, 50, 100]" [showCurrentPageReport]="true" responsiveLayout="scroll"
+            [lazy]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            (onLazyLoad)="onPageChange($event)">
         <ng-template pTemplate="header">
             <tr>
                 <th>Account ID</th>
@@ -34,7 +53,7 @@
                 </td>
                 <td class="text-start">
                     <p-button icon="pi pi-trash" severity="danger" [text]="true"
-                        [disabled]="loading || !canManageGroup()" [style.display]="canManageGroup() ? 'block' : 'none'"
+                        [disabled]="loading"
                         (onClick)="removeMember(member)" pTooltip="Remove member">
                     </p-button>
                 </td>
@@ -86,7 +105,8 @@
                         <th style="width: 50px;"></th>
                         <th>Account ID</th>
                         <th>Email</th>
-                        <th>User ID</th>
+                        <th style="text-align: center;">User ID</th>
+                        <th style="text-align: center;">Account State</th>
                     </tr>
                 </ng-template>
 
@@ -101,15 +121,19 @@
                         <td>
                             <span class="font-semibold">{{ account.email }}</span>
                         </td>
-                        <td>
+                        <td style="text-align: center;">
                             <span class="text-600">{{ account.userId }}</span>
+                        </td>
+                        <td style="text-align: center;">
+                            <p-tag [value]="getAccountStateLabel(account.accountState)" 
+                                [severity]="getAccountStateSeverity(account.accountState)"></p-tag>
                         </td>
                     </tr>
                 </ng-template>
 
                 <ng-template pTemplate="emptymessage">
                     <tr>
-                        <td colspan="4" class="text-center p-4">
+                        <td colspan="5" class="text-center p-4">
                             <i class="pi pi-inbox text-4xl text-gray-400 mb-2"></i>
                             <p class="text-gray-500">No accounts found</p>
                         </td>

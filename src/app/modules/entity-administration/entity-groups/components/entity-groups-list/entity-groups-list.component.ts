@@ -1,8 +1,9 @@
-import { Component, Input, OnInit, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, OnChanges, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MenuItem, MessageService } from 'primeng/api';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, of } from 'rxjs';
+import { concatMap, catchError } from 'rxjs/operators';
 import { EntityGroupsService } from '../../services/entity-groups.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { PermissionService } from 'src/app/core/services/permission.service';
@@ -18,6 +19,8 @@ type GroupActionContext = 'list' | 'activate' | 'deactivate' | 'delete';
     styleUrls: ['./entity-groups-list.component.scss']
 })
 export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
+    @ViewChild('groupsTableContainer') groupsTableContainer?: ElementRef;
+
     @Input() entityId?: number; // Optional: if provided, use this instead of current entity
     @Input() showHeader: boolean = true; // Show/hide header section
 
@@ -40,6 +43,14 @@ export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
     formDialogVisible: boolean = false;
     formGroupId?: number;
     formEntityId?: number;
+
+    // Pagination (handled by PrimeNG automatically)
+    first: number = 0;
+    rows: number = 10;
+
+    // Search functionality
+    searchText: string = '';
+    filteredGroups: Group[] = [];
 
     constructor(
         private entityGroupsService: EntityGroupsService,
@@ -132,6 +143,7 @@ export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
                     };
                 }) : [];
 
+                this.applySearchFilter();
                 this.buildActivationControls();
             },
             complete: () => this.resetLoadingFlags()
@@ -142,6 +154,7 @@ export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
 
     onActiveFilterChange(): void {
         this.loadGroups();
+        // Note: applySearchFilter is called inside loadGroups() after data is loaded
     }
 
     edit(group: Group): void {
@@ -165,14 +178,6 @@ export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     onStatusToggle(group: Group): void {
-        if (!this.canManageGroup(group)) {
-            this.messageService.add({
-                severity: 'error',
-                summary: 'Access Denied',
-                detail: 'Only Entity Administrators can manage Entity Groups.'
-            });
-            return;
-        }
         this.currentGroupForActivation = group;
         this.activationGroupDialog = true;
     }
@@ -234,14 +239,6 @@ export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     confirmDelete(group: Group): void {
-        if (!this.canManageGroup(group)) {
-            this.messageService.add({
-                severity: 'error',
-                summary: 'Access Denied',
-                detail: 'Only Entity Administrators can delete Entity Groups.'
-            });
-            return;
-        }
         this.currentGroupForDelete = group;
         this.deleteGroupDialog = true;
     }
@@ -257,8 +254,46 @@ export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
         }
 
         const group = this.currentGroupForDelete;
+        const groupId = Number(group.id);
 
-        const sub = this.entityGroupsService.deleteEntityGroup(Number(group.id)).subscribe({
+        // Step 1: Get all group members first
+        const sub = this.entityGroupsService.getGroupMembers(groupId, true).pipe(
+            // Step 2: Remove all members if they exist
+            concatMap((membersResponse: any) => {
+                if (!membersResponse?.success) {
+                    // If we can't get members, try to delete group anyway
+                    return of(null);
+                }
+
+                const membersData = membersResponse?.message || {};
+
+                // Extract all account IDs from dictionary format: { accountId: email }
+                const accountIds: number[] = Object.keys(membersData).map((key) => Number(key));
+
+                // If there are no members, skip removal step
+                if (accountIds.length === 0) {
+                    return of(null);
+                }
+
+                // Remove all members
+                return this.entityGroupsService.removeGroupMembers(groupId, accountIds).pipe(
+                    catchError((error) => {
+                        // If removal fails, still try to delete group
+                        this.messageService.add({
+                            severity: 'warn',
+                            summary: 'Warning',
+                            detail: 'Failed to remove some members, but continuing with group deletion.',
+                            life: 3000
+                        });
+                        return of(null);
+                    })
+                );
+            }),
+            // Step 3: Delete the group after members are removed (or if no members)
+            concatMap(() => {
+                return this.entityGroupsService.deleteEntityGroup(groupId);
+            })
+        ).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
                     this.handleBusinessError('delete', response);
@@ -274,6 +309,15 @@ export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
                 });
                 this.deleteGroupDialog = false;
                 this.loadGroups();
+            },
+            error: (error) => {
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: 'An error occurred while deleting the group.',
+                    life: 3000
+                });
+                this.deleteGroupDialog = false;
             },
             complete: () => {
                 this.currentGroupForDelete = undefined;
@@ -314,16 +358,6 @@ export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
         return this.entityGroupsService.isEntityAdmin();
     }
 
-    /**
-     * Check if user can manage Entity Groups
-     */
-    canManageGroup(group: Group): boolean {
-        if (!this.isEntityAdmin()) {
-            return false;
-        }
-        // Entity Groups (Entity_ID > 0) can be managed by any Entity Admin
-        return group.entityId > 0;
-    }
 
     private buildActivationControls(): void {
         this.activationControls = {};
@@ -348,30 +382,23 @@ export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     getMenuItemsForGroup(group: Group): MenuItem[] {
-        const items: MenuItem[] = [
+        return [
             {
                 label: 'View Details',
                 icon: 'pi pi-eye',
                 command: () => this.viewDetails(group)
+            },
+            {
+                label: 'Edit',
+                icon: 'pi pi-pencil',
+                command: () => this.edit(group)
+            },
+            {
+                label: 'Delete',
+                icon: 'pi pi-trash',
+                command: () => this.confirmDelete(group)
             }
         ];
-
-        if (this.canManageGroup(group)) {
-            items.push(
-                {
-                    label: 'Edit',
-                    icon: 'pi pi-pencil',
-                    command: () => this.edit(group)
-                },
-                {
-                    label: 'Delete',
-                    icon: 'pi pi-trash',
-                    command: () => this.confirmDelete(group)
-                }
-            );
-        }
-
-        return items;
     }
 
     private handleBusinessError(context: GroupActionContext, response: any): void | null {
@@ -447,5 +474,51 @@ export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
 
     private resetLoadingFlags(): void {
         this.tableLoadingSpinner = false;
+    }
+
+    onPageChange(event: any): void {
+        this.first = event.first;
+        this.rows = event.rows;
+        // Scroll to top of table when page changes
+        this.scrollToTableTop();
+    }
+
+    scrollToTableTop(): void {
+        // Use setTimeout to ensure the DOM has updated before scrolling
+        setTimeout(() => {
+            if (this.groupsTableContainer) {
+                this.groupsTableContainer.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 0);
+    }
+
+    onSearchInput(event: Event): void {
+        const target = event.target as HTMLInputElement;
+        this.searchText = target?.value || '';
+        this.applySearchFilter();
+        // Reset to first page when searching
+        this.first = 0;
+    }
+
+    clearSearch(): void {
+        this.searchText = '';
+        this.applySearchFilter();
+        this.first = 0;
+    }
+
+    private applySearchFilter(): void {
+        if (!this.searchText || this.searchText.trim() === '') {
+            this.filteredGroups = [...this.groups];
+            return;
+        }
+
+        const searchTerm = this.searchText.toLowerCase().trim();
+        this.filteredGroups = this.groups.filter((group) => {
+            const idMatch = group.id?.toLowerCase().includes(searchTerm) || false;
+            const titleMatch = group.title?.toLowerCase().includes(searchTerm) || false;
+            const descriptionMatch = group.description?.toLowerCase().includes(searchTerm) || false;
+
+            return idMatch || titleMatch || descriptionMatch;
+        });
     }
 }

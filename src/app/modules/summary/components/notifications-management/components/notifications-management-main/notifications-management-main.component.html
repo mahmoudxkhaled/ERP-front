@@ -4,19 +4,21 @@
     </div>
 
     <p-tabView [(activeIndex)]="activeTabIndex">
-        <!-- Types Tab -->
-        <p-tabPanel header="Types" [disabled]="!canAccessTypes()">
-            <app-types-list></app-types-list>
+        <!-- Notifications Tab -->
+        <p-tabPanel header="Notifications">
+            <app-notifications-list></app-notifications-list>
         </p-tabPanel>
 
+
+
         <!-- Categories Tab -->
-        <p-tabPanel header="Categories" [disabled]="!canAccessCategories()">
+        <p-tabPanel header="Categories">
             <app-categories-list></app-categories-list>
         </p-tabPanel>
 
-        <!-- Notifications Tab -->
-        <p-tabPanel header="Notifications" [disabled]="!canCreateNotification()">
-            <app-notifications-list></app-notifications-list>
+        <!-- Types Tab -->
+        <p-tabPanel header="Types">
+            <app-types-list></app-types-list>
         </p-tabPanel>
     </p-tabView>
 </div>

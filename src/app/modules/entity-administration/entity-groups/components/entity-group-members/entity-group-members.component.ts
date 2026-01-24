@@ -1,10 +1,9 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, ElementRef } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import { EntityGroupsService } from '../../services/entity-groups.service';
 import { EntitiesService } from 'src/app/modules/entity-administration/entities/services/entities.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
-import { PermissionService } from 'src/app/core/services/permission.service';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { GroupMember, Group } from 'src/app/modules/summary/models/groups.model';
 import { EntityAccount } from 'src/app/modules/entity-administration/entities/models/entities.model';
@@ -15,13 +14,23 @@ import { EntityAccount } from 'src/app/modules/entity-administration/entities/mo
     styleUrls: ['./entity-group-members.component.scss']
 })
 export class EntityGroupMembersComponent implements OnInit, OnDestroy {
+    @ViewChild('membersTableContainer') membersTableContainer?: ElementRef;
+
     @Input() groupId: number = 0;
-    @Input() entityId?: number; // Optional: if provided, use this instead of group's entityId
+    @Input() entityId?: number;
     @Output() membersUpdated = new EventEmitter<void>();
 
     members: GroupMember[] = [];
     loading: boolean = false;
     loadingMembers: boolean = false;
+
+    // Pagination (handled by PrimeNG automatically)
+    first: number = 0;
+    rows: number = 10;
+
+    // Search functionality
+    searchText: string = '';
+    filteredMembers: GroupMember[] = [];
 
     // Account selection dialog
     addMembersDialogVisible: boolean = false;
@@ -45,8 +54,7 @@ export class EntityGroupMembersComponent implements OnInit, OnDestroy {
         private entityGroupsService: EntityGroupsService,
         private entitiesService: EntitiesService,
         private messageService: MessageService,
-        private localStorageService: LocalStorageService,
-        private permissionService: PermissionService
+        private localStorageService: LocalStorageService
     ) {
         this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
         this.isRegional = this.accountSettings?.Language !== 'English';
@@ -108,36 +116,17 @@ export class EntityGroupMembersComponent implements OnInit, OnDestroy {
                     this.handleBusinessError('getMembers', response);
                     return;
                 }
-                const membersData = response?.message?.Accounts || response?.message || {};
+                // API returns dictionary format: { accountId: email }
+                const membersData = response?.message || {};
+                this.members = Object.keys(membersData).map((key) => {
+                    return {
+                        accountId: Number(key),
+                        email: membersData[key] || '',
+                        entityName: undefined
+                    };
+                });
 
-                // Handle both dictionary and array formats
-                if (typeof membersData === 'object' && !Array.isArray(membersData)) {
-                    // Dictionary format: { accountId: email }
-                    this.members = Object.keys(membersData).map((key) => {
-                        const accountId = Number(key);
-                        const email = membersData[key];
-                        return {
-                            accountId: accountId,
-                            email: email || '',
-                            entityId: undefined,
-                            entityName: undefined
-                        };
-                    });
-                } else if (Array.isArray(membersData)) {
-                    // Array format: [accountId1, accountId2, ...]
-                    this.members = membersData.map((item: any) => {
-                        const accountId = typeof item === 'number' ? item : (item?.Account_ID || item?.accountId || 0);
-                        return {
-                            accountId: accountId,
-                            email: item?.Email || item?.email || '',
-                            entityId: item?.Entity_ID || item?.entityId,
-                            entityName: item?.Entity_Name || item?.entityName
-                        };
-                    });
-                } else {
-                    this.members = [];
-                }
-
+                this.applySearchFilter();
                 this.loadingMembers = false;
             },
             error: () => {
@@ -149,14 +138,6 @@ export class EntityGroupMembersComponent implements OnInit, OnDestroy {
     }
 
     openAddMembersDialog(): void {
-        if (!this.canManageGroup()) {
-            this.messageService.add({
-                severity: 'error',
-                summary: 'Access Denied',
-                detail: 'Only Entity Administrators can manage Entity Groups.'
-            });
-            return;
-        }
         this.addMembersDialogVisible = true;
         this.selectedAccounts = [];
         this.accountTableTextFilter = '';
@@ -254,20 +235,13 @@ export class EntityGroupMembersComponent implements OnInit, OnDestroy {
             return;
         }
 
-        if (!this.canManageGroup()) {
-            this.messageService.add({
-                severity: 'error',
-                summary: 'Access Denied',
-                detail: 'Only Entity Administrators can manage Entity Groups.'
-            });
-            return;
-        }
-
         const accountIds = this.selectedAccounts.map(account => Number(account.accountId));
         this.loading = true;
-
+        console.log('accountIds', accountIds);
+        console.log('groupId', this.groupId);
         const sub = this.entityGroupsService.addGroupMembers(this.groupId, accountIds).subscribe({
             next: (response: any) => {
+                console.log('response11', response);
                 if (!response?.success) {
                     this.handleBusinessError('addMembers', response);
                     return;
@@ -291,15 +265,6 @@ export class EntityGroupMembersComponent implements OnInit, OnDestroy {
 
     removeMember(member: GroupMember): void {
         if (!member.accountId) {
-            return;
-        }
-
-        if (!this.canManageGroup()) {
-            this.messageService.add({
-                severity: 'error',
-                summary: 'Access Denied',
-                detail: 'Only Entity Administrators can manage Entity Groups.'
-            });
             return;
         }
 
@@ -329,19 +294,6 @@ export class EntityGroupMembersComponent implements OnInit, OnDestroy {
         this.subscriptions.push(sub);
     }
 
-    /**
-     * Check if user can manage Entity Groups
-     */
-    canManageGroup(): boolean {
-        if (!this.entityGroupsService.isEntityAdmin()) {
-            return false;
-        }
-        if (!this.permissionService.can('Add_Group_Members') || !this.permissionService.can('Remove_Group_Members')) {
-            return false;
-        }
-        // Entity Groups (Entity_ID > 0) can be managed by any Entity Admin
-        return this.group ? this.group.entityId > 0 : false;
-    }
 
     private handleBusinessError(context: string, response: any): void {
         const code = String(response?.message || '');
@@ -367,5 +319,65 @@ export class EntityGroupMembersComponent implements OnInit, OnDestroy {
             default:
                 return null;
         }
+    }
+
+    onPageChange(event: any): void {
+        this.first = event.first;
+        this.rows = event.rows;
+        // Scroll to top of table when page changes
+        this.scrollToTableTop();
+    }
+
+    scrollToTableTop(): void {
+        // Use setTimeout to ensure the DOM has updated before scrolling
+        setTimeout(() => {
+            if (this.membersTableContainer) {
+                this.membersTableContainer.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 0);
+    }
+
+    onSearchInput(event: Event): void {
+        const target = event.target as HTMLInputElement;
+        this.searchText = target?.value || '';
+        this.applySearchFilter();
+        // Reset to first page when searching
+        this.first = 0;
+    }
+
+    clearSearch(): void {
+        this.searchText = '';
+        this.applySearchFilter();
+        this.first = 0;
+    }
+
+    private applySearchFilter(): void {
+        if (!this.searchText || this.searchText.trim() === '') {
+            this.filteredMembers = [...this.members];
+            return;
+        }
+
+        const searchTerm = this.searchText.toLowerCase().trim();
+        this.filteredMembers = this.members.filter((member) => {
+            const idMatch = String(member.accountId).includes(searchTerm) || false;
+            const emailMatch = member.email?.toLowerCase().includes(searchTerm) || false;
+
+            return idMatch || emailMatch;
+        });
+    }
+
+    getAccountStateSeverity(state: number): string {
+        switch (state) {
+            case 0:
+                return 'secondary'; // Inactive
+            case 1:
+                return 'success'; // Active
+            default:
+                return 'info';
+        }
+    }
+
+    getAccountStateLabel(state: number): string {
+        return state === 1 ? 'Active' : 'Inactive';
     }
 }

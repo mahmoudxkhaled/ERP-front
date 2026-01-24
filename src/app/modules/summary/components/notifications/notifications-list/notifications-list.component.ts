@@ -334,6 +334,7 @@ export class NotificationsListComponent implements OnInit, OnDestroy {
     }
 
     deleteNotification(): void {
+        console.log('deleteNotification currentNotificationForDelete', this.currentNotificationForDelete);
         if (!this.currentNotificationForDelete) {
             return;
         }
@@ -359,10 +360,12 @@ export class NotificationsListComponent implements OnInit, OnDestroy {
             })
             : this.notificationsService.deleteEntityNotification(notification.id).subscribe({
                 next: (response: any) => {
+                    console.log('deleteNotification response', response);
                     if (!response?.success) {
                         this.handleBusinessError('delete', response);
                         return;
                     }
+
 
                     this.notifications = this.notifications.filter(n => n.id !== notification.id);
                     this.messageService.add({
