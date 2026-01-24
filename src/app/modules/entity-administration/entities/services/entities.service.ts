@@ -93,10 +93,11 @@ export class EntitiesService {
 
     listEntities(lastEntityId: number = 0, filterCount: number = 10, textFilter: string = ''): Observable<any> {
         this.isLoadingSubject.next(true);
-
+        console.log('listEntities');
         const validatedFilterCount = Math.max(10, Math.min(100, filterCount));
 
         const params = [lastEntityId.toString(), validatedFilterCount.toString(), textFilter || ''];
+        console.log('params', params);
         return this.apiServices.callAPI(406, this.getAccessToken(), params).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );

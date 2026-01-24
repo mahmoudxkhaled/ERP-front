@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Router } from '@angular/router';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Observable, Subscription } from 'rxjs';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
@@ -57,14 +58,11 @@ export class EntityNotificationsListComponent implements OnInit, OnDestroy {
     deleteNotificationDialog: boolean = false;
     currentNotificationForDelete?: Notification;
 
-    // Send dialog
-    sendNotificationDialogVisible: boolean = false;
-    currentNotificationForSend?: Notification;
-
     // Debounce timer for search
     private searchTimeout: any;
 
     constructor(
+        private router: Router,
         private notificationsService: NotificationsService,
         private messageService: MessageService,
         private localStorageService: LocalStorageService,
@@ -253,8 +251,9 @@ export class EntityNotificationsListComponent implements OnInit, OnDestroy {
     }
 
     sendNotification(notification: Notification): void {
-        this.currentNotificationForSend = notification;
-        this.sendNotificationDialogVisible = true;
+        this.router.navigate(['/summary/notifications-management/send'], {
+            queryParams: { id: notification.id }
+        });
     }
 
     openMenu(menu: any, notification: Notification, event: Event): void {
@@ -360,15 +359,6 @@ export class EntityNotificationsListComponent implements OnInit, OnDestroy {
         // No need for manual sorting as we're using client-side sorting
     }
 
-    onSendDialogClose(): void {
-        this.sendNotificationDialogVisible = false;
-        this.currentNotificationForSend = undefined;
-    }
-
-    onSendDialogSent(): void {
-        this.onSendDialogClose();
-        // Optionally reload notifications or refresh the list
-    }
 
     canManageNotification(): boolean {
         return this.permissionService.canUpdateEntityNotification() || this.permissionService.canDeleteEntityNotification();

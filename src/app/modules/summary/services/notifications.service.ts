@@ -566,7 +566,10 @@ export class NotificationsService {
      */
     sendNotificationToAccounts(notificationId: number, accountIds: number[]): Observable<any> {
         this.isLoadingSubject.next(true);
-        const params = [notificationId.toString(), JSON.stringify(accountIds)];
+        console.log('notificationId sendNotificationToAccounts', notificationId);
+        console.log('accountIds sendNotificationToAccounts', accountIds);
+        const params = [notificationId, JSON.stringify(accountIds)];
+        console.log('params sendNotificationToAccounts', params);
         return this.apiServices.callAPI(830, this.getAccessToken(), params).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );

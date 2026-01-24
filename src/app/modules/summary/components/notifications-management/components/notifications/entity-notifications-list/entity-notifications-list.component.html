@@ -108,11 +108,6 @@
     [isSystemNotification]="false" (saved)="onFormSaved()">
 </app-notification-form>
 
-<!-- Send Notification Dialog -->
-<app-send-notification [(visible)]="sendNotificationDialogVisible" [notificationId]="currentNotificationForSend?.id"
-    (sent)="onSendDialogSent()">
-</app-send-notification>
-
 <!-- Delete Confirmation Dialog -->
 <p-dialog [(visible)]="deleteNotificationDialog" [modal]="true" [style]="{ width: '450px' }" [closable]="true"
     [draggable]="false" [resizable]="false">

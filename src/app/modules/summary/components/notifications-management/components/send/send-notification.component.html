@@ -1,137 +1,368 @@
-<p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '900px' }" [closable]="true"
-    [draggable]="false" [resizable]="false" (onHide)="closeDialog()">
-    <ng-template pTemplate="header">
-        <h3>Send Notification</h3>
-    </ng-template>
-
-    <div class="card" style="box-shadow: none;">
-
-    <div *ngIf="loading" class="flex justify-content-center align-items-center" style="min-height: 200px;">
-        <p-progressSpinner></p-progressSpinner>
-    </div>
-
-    <div *ngIf="!loading && notification">
-        <p-panel header="Notification Details" class="mb-4">
-            <div class="grid">
-                <div class="col-12">
-                    <div class="field">
-                        <label class="font-semibold">Title</label>
-                        <p>{{ notification.title }}</p>
-                    </div>
-                </div>
-                <div class="col-12">
-                    <div class="field">
-                        <label class="font-semibold">Message</label>
-                        <p>{{ notification.message }}</p>
-                    </div>
+<div class="send-notification-page card">
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <div class="flex align-items-center justify-content-between">
+            <div class="flex align-items-center gap-3">
+                <p-button icon="pi pi-arrow-left" class="p-button-text p-button-rounded" (onClick)="goBack()"
+                    pTooltip="Go Back" tooltipPosition="bottom">
+                </p-button>
+                <div class="flex align-items-center gap-2">
+                    <i class="pi pi-send text-3xl text-primary"></i>
+                    <h2 class="m-0">Send Notification</h2>
                 </div>
             </div>
-        </p-panel>
+            <div class="flex gap-2">
+                <p-button label="Cancel" icon="pi pi-times" class="p-button-secondary" (onClick)="goBack()"
+                    [disabled]="sending">
+                </p-button>
+                <p-button label="Send Notification" icon="pi pi-send" (onClick)="send()" [loading]="sending"
+                    [disabled]="sending || !notification" class="p-button-primary">
+                </p-button>
+            </div>
+        </div>
+    </div>
 
-        <p-panel header="Select Target">
-            <div class="grid mb-3">
-                <div class="col-12">
-                    <label class="block mb-2 font-medium">Send To</label>
-                    <div class="flex gap-2">
-                        <p-button [label]="'Accounts'" [class]="selectedTargetType === 'accounts' ? 'p-button-primary' : 'p-button-secondary'" 
-                            (onClick)="selectedTargetType = 'accounts'; onTargetTypeChange()"></p-button>
-                        <p-button [label]="'Groups'" [class]="selectedTargetType === 'groups' ? 'p-button-primary' : 'p-button-secondary'" 
-                            (onClick)="selectedTargetType = 'groups'; onTargetTypeChange()"></p-button>
-                        <p-button [label]="'Roles'" [class]="selectedTargetType === 'roles' ? 'p-button-primary' : 'p-button-secondary'" 
-                            (onClick)="selectedTargetType = 'roles'; onTargetTypeChange()"></p-button>
-                        <p-button [label]="'Entities'" [class]="selectedTargetType === 'entities' ? 'p-button-primary' : 'p-button-secondary'" 
-                            (onClick)="selectedTargetType = 'entities'; onTargetTypeChange()"></p-button>
-                        <p-button [label]="'All'" [class]="selectedTargetType === 'all' ? 'p-button-primary' : 'p-button-secondary'" 
-                            [disabled]="!canSendToAll()" (onClick)="selectedTargetType = 'all'; onTargetTypeChange()"></p-button>
+    <!-- Content -->
+    <div class="send-notification-content">
+        <div *ngIf="loading" class="flex justify-content-center align-items-center" style="min-height: 400px;">
+            <p-progressSpinner></p-progressSpinner>
+        </div>
+
+        <div *ngIf="!loading && notification">
+            <!-- Notification Details Card -->
+            <div class="notification-details-card mb-4">
+                <div class="flex align-items-center gap-2 mb-3">
+                    <i class="pi pi-info-circle text-primary"></i>
+                    <h4 class="m-0">Notification Details</h4>
+                </div>
+                <div class="grid">
+                    <div class="col-12">
+                        <div class="field">
+                            <label class="block mb-2 text-600 font-semibold">
+                                <i class="pi pi-tag mr-2"></i>Title
+                            </label>
+                            <div class="notification-detail-value">
+                                {{ notification.title }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="field">
+                            <label class="block mb-2 text-600 font-semibold">
+                                <i class="pi pi-file-edit mr-2"></i>Message
+                            </label>
+                            <div class="notification-detail-value">
+                                {{ notification.message }}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Accounts Selection -->
-            <div *ngIf="selectedTargetType === 'accounts'" class="mt-3">
-                <label class="block mb-2 font-medium">Select Accounts</label>
-                <p-table [value]="availableAccounts" selectionMode="multiple" [(selection)]="selectedAccountIds"
-                    [paginator]="true" [rows]="10" [loading]="loading">
-                    <ng-template pTemplate="header">
-                        <tr>
-                            <th style="width: 50px;">
-                                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-                            </th>
-                            <th>Account ID</th>
-                            <th>Email</th>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" let-account>
-                        <tr>
-                            <td>
-                                <p-tableCheckbox [value]="account"></p-tableCheckbox>
-                            </td>
-                            <td>{{ account.Account_ID }}</td>
-                            <td>{{ account.Email }}</td>
-                        </tr>
-                    </ng-template>
-                </p-table>
-            </div>
+            <!-- Target Selection Card -->
+            <div class="target-selection-card" [style.position]="'relative'">
+                <div class="flex align-items-center gap-2 mb-4">
+                    <i class="pi pi-users text-primary"></i>
+                    <h4 class="m-0">Select Target</h4>
+                </div>
 
-            <!-- Groups Selection -->
-            <div *ngIf="selectedTargetType === 'groups'" class="mt-3">
-                <label class="block mb-2 font-medium">Select Groups (Personal Groups Only)</label>
-                <p-table [value]="availableGroups" selectionMode="multiple" [(selection)]="selectedGroupIds"
-                    [paginator]="true" [rows]="10" [loading]="loading">
-                    <ng-template pTemplate="header">
-                        <tr>
-                            <th style="width: 50px;">
-                                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-                            </th>
-                            <th>ID</th>
-                            <th>Title</th>
-                            <th>Description</th>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" let-group>
-                        <tr>
-                            <td>
-                                <p-tableCheckbox [value]="group"></p-tableCheckbox>
-                            </td>
-                            <td>{{ group.id }}</td>
-                            <td>{{ group.title }}</td>
-                            <td>{{ group.description }}</td>
-                        </tr>
-                    </ng-template>
-                </p-table>
-            </div>
+                <!-- Loading Overlay for Target Selection -->
+                <div *ngIf="targetSelectionLoading" class="target-selection-loading">
+                    <p-progressSpinner></p-progressSpinner>
+                </div>
 
-            <!-- Roles Selection -->
-            <div *ngIf="selectedTargetType === 'roles'" class="mt-3">
-                <label class="block mb-2 font-medium">Select Roles</label>
-                <p>Roles selection will be implemented based on available services.</p>
-            </div>
+                <div class="mb-4" [style.opacity]="targetSelectionLoading ? '0.5' : '1'" [style.pointer-events]="targetSelectionLoading ? 'none' : 'auto'">
+                    <label class="block mb-3 text-600 font-semibold">Send To</label>
+                    <div class="flex flex-wrap gap-2">
+                        <p-button [label]="'Accounts'" [icon]="'pi pi-user'"
+                            [class]="selectedTargetType === 'accounts' ? 'p-button-primary' : 'p-button-outlined'"
+                            (onClick)="selectedTargetType = 'accounts'; onTargetTypeChange()"
+                            [style]="{'min-width': '120px'}">
+                        </p-button>
+                        <p-button [label]="'Groups'" [icon]="'pi pi-users'"
+                            [class]="selectedTargetType === 'groups' ? 'p-button-primary' : 'p-button-outlined'"
+                            (onClick)="selectedTargetType = 'groups'; onTargetTypeChange()"
+                            [style]="{'min-width': '120px'}">
+                        </p-button>
+                        <p-button [label]="'Roles'" [icon]="'pi pi-shield'"
+                            [class]="selectedTargetType === 'roles' ? 'p-button-primary' : 'p-button-outlined'"
+                            (onClick)="selectedTargetType = 'roles'; onTargetTypeChange()"
+                            [style]="{'min-width': '120px'}">
+                        </p-button>
+                        <p-button [label]="'Entities'" [icon]="'pi pi-building'"
+                            [class]="selectedTargetType === 'entities' ? 'p-button-primary' : 'p-button-outlined'"
+                            (onClick)="selectedTargetType = 'entities'; onTargetTypeChange()"
+                            [style]="{'min-width': '120px'}">
+                        </p-button>
+                        <p-button [label]="'All'" [icon]="'pi pi-globe'"
+                            [class]="selectedTargetType === 'all' ? 'p-button-primary' : 'p-button-outlined'"
+                            [disabled]="!canSendToAll()" (onClick)="selectedTargetType = 'all'; onTargetTypeChange()"
+                            [style]="{'min-width': '120px'}">
+                        </p-button>
+                    </div>
+                </div>
 
-            <!-- Entities Selection -->
-            <div *ngIf="selectedTargetType === 'entities'" class="mt-3">
-                <label class="block mb-2 font-medium">Select Entities</label>
-                <p>Entities selection will be implemented based on available services.</p>
-            </div>
+                <!-- Accounts Selection -->
+                <div *ngIf="selectedTargetType === 'accounts'" class="selection-table-container">
+                    <div class="flex align-items-center justify-content-between mb-3">
+                        <label class="block m-0 font-semibold">
+                            <i class="pi pi-user mr-2 text-primary"></i>Select Accounts
+                        </label>
+                        <p-tag [value]="selectedAccountIds.length + ' selected'" severity="info"
+                            *ngIf="selectedAccountIds.length > 0"></p-tag>
+                    </div>
+                    <!-- Search Bar -->
+                    <div class="mb-3">
+                        <span class="p-input-icon-left w-full">
+                            <i class="pi pi-search"></i>
+                            <input type="text" pInputText placeholder="Search by Account ID or Email..."
+                                [(ngModel)]="accountSearchFilter" (input)="filterAccounts()" class="w-full" />
+                        </span>
+                    </div>
+                    <p-table [value]="filteredAccounts" selectionMode="multiple" [(selection)]="selectedAccountIds"
+                        [dataKey]="'Account_ID'" [paginator]="true" [rows]="10" [loading]="targetSelectionLoading"
+                        [showCurrentPageReport]="true"
+                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                        styleClass="p-datatable-sm p-datatable-striped">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th style="width: 50px;">
+                                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                                </th>
+                                <th>Account ID</th>
+                                <th>Email</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-account>
+                            <tr>
+                                <td>
+                                    <p-tableCheckbox [value]="account"></p-tableCheckbox>
+                                </td>
+                                <td>
+                                    <p-tag [value]="'#' + account.Account_ID" severity="info"></p-tag>
+                                </td>
+                                <td>
+                                    <span class="font-semibold">{{ account.Email }}</span>
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td colspan="3" class="text-center p-4">
+                                    <i class="pi pi-inbox text-4xl text-gray-400 mb-2"></i>
+                                    <p class="text-gray-500">No accounts found</p>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
 
-            <!-- All -->
-            <div *ngIf="selectedTargetType === 'all'" class="mt-3">
-                <p class="text-orange-500">This will send the notification to all system users.</p>
+                <!-- Groups Selection -->
+                <div *ngIf="selectedTargetType === 'groups'" class="selection-table-container">
+                    <div class="flex align-items-center justify-content-between mb-3">
+                        <label class="block m-0 font-semibold">
+                            <i class="pi pi-users mr-2 text-primary"></i>Select Groups (Personal Groups Only)
+                        </label>
+                        <p-tag [value]="selectedGroupIds.length + ' selected'" severity="info"
+                            *ngIf="selectedGroupIds.length > 0"></p-tag>
+                    </div>
+                    <!-- Search Bar -->
+                    <div class="mb-3">
+                        <span class="p-input-icon-left w-full">
+                            <i class="pi pi-search"></i>
+                            <input type="text" pInputText placeholder="Search by ID, Title, or Description..."
+                                [(ngModel)]="groupSearchFilter" (input)="filterGroups()" class="w-full" />
+                        </span>
+                    </div>
+                    <p-table [value]="filteredGroups" selectionMode="multiple" [(selection)]="selectedGroupIds"
+                        [dataKey]="'id'" [paginator]="true" [rows]="10" [loading]="targetSelectionLoading"
+                        [showCurrentPageReport]="true"
+                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                        styleClass="p-datatable-sm p-datatable-striped">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th style="width: 50px;">
+                                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                                </th>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Description</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-group>
+                            <tr>
+                                <td>
+                                    <p-tableCheckbox [value]="group"></p-tableCheckbox>
+                                </td>
+                                <td>
+                                    <p-tag [value]="'#' + group.id" severity="info"></p-tag>
+                                </td>
+                                <td>
+                                    <span class="font-semibold">{{ group.title }}</span>
+                                </td>
+                                <td>
+                                    <span class="text-600">{{ group.description || 'No description' }}</span>
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td colspan="4" class="text-center p-4">
+                                    <i class="pi pi-inbox text-4xl text-gray-400 mb-2"></i>
+                                    <p class="text-gray-500">No groups found</p>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+
+                <!-- Roles Selection -->
+                <div *ngIf="selectedTargetType === 'roles'" class="selection-table-container">
+                    <div class="flex align-items-center justify-content-between mb-3">
+                        <label class="block m-0 font-semibold">
+                            <i class="pi pi-shield mr-2 text-primary"></i>Select Roles
+                        </label>
+                        <p-tag [value]="selectedRoleIds.length + ' selected'" severity="info"
+                            *ngIf="selectedRoleIds.length > 0"></p-tag>
+                    </div>
+                    <!-- Search Bar -->
+                    <div class="mb-3">
+                        <span class="p-input-icon-left w-full">
+                            <i class="pi pi-search"></i>
+                            <input type="text" pInputText placeholder="Search by Role ID, Title, or Description..."
+                                [(ngModel)]="roleSearchFilter" (input)="filterRoles()" class="w-full" />
+                        </span>
+                    </div>
+                    <p-table [value]="filteredRoles" selectionMode="multiple" [(selection)]="selectedRoleIds"
+                        [dataKey]="'id'" [paginator]="true" [rows]="10" [loading]="targetSelectionLoading"
+                        [showCurrentPageReport]="true"
+                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                        styleClass="p-datatable-sm p-datatable-striped">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th style="width: 50px;">
+                                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                                </th>
+                                <th>Role ID</th>
+                                <th>Title</th>
+                                <th>Description</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-role>
+                            <tr>
+                                <td>
+                                    <p-tableCheckbox [value]="role"></p-tableCheckbox>
+                                </td>
+                                <td>
+                                    <p-tag [value]="'#' + role.id" severity="info"></p-tag>
+                                </td>
+                                <td>
+                                    <span class="font-semibold">{{ role.title }}</span>
+                                </td>
+                                <td>
+                                    <span class="text-600">{{ role.description || 'No description' }}</span>
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td colspan="4" class="text-center p-4">
+                                    <i class="pi pi-inbox text-4xl text-gray-400 mb-2"></i>
+                                    <p class="text-gray-500">No roles found</p>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+
+                <!-- Entities Selection -->
+                <div *ngIf="selectedTargetType === 'entities'" class="selection-table-container">
+                    <div class="flex align-items-center justify-content-between mb-3">
+                        <label class="block m-0 font-semibold">
+                            <i class="pi pi-building mr-2 text-primary"></i>Select Entities
+                        </label>
+                        <p-tag [value]="selectedEntityIds.length + ' selected'" severity="info"
+                            *ngIf="selectedEntityIds.length > 0"></p-tag>
+                    </div>
+                    <!-- Search Bar -->
+                    <div class="mb-3">
+                        <span class="p-input-icon-left w-full">
+                            <i class="pi pi-search"></i>
+                            <input type="text" pInputText placeholder="Search by Entity ID, Code, Name, or Description..."
+                                [(ngModel)]="entitySearchFilter" (input)="filterEntities()" class="w-full" />
+                        </span>
+                    </div>
+                    <p-table [value]="filteredEntities" selectionMode="multiple" [(selection)]="selectedEntityIds"
+                        [dataKey]="'id'" [paginator]="true" [rows]="10" [loading]="targetSelectionLoading"
+                        [showCurrentPageReport]="true"
+                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                        styleClass="p-datatable-sm p-datatable-striped">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th style="width: 50px;">
+                                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                                </th>
+                                <th>Entity ID</th>
+                                <th>Code</th>
+                                <th>Name</th>
+                                <th>Description</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-entity>
+                            <tr>
+                                <td>
+                                    <p-tableCheckbox [value]="entity"></p-tableCheckbox>
+                                </td>
+                                <td>
+                                    <p-tag [value]="'#' + entity.id" severity="info"></p-tag>
+                                </td>
+                                <td>
+                                    <span class="font-semibold">{{ entity.code }}</span>
+                                </td>
+                                <td>
+                                    <span class="font-semibold">{{ entity.name }}</span>
+                                </td>
+                                <td>
+                                    <span class="text-600">{{ entity.description || 'No description' }}</span>
+                                </td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td colspan="5" class="text-center p-4">
+                                    <i class="pi pi-inbox text-4xl text-gray-400 mb-2"></i>
+                                    <p class="text-gray-500">No entities found</p>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
+
+                <!-- All -->
+                <div *ngIf="selectedTargetType === 'all'" class="all-target-warning">
+                    <div class="flex align-items-center gap-2 p-3 border-round"
+                        style="background: #fff3cd; border: 1px solid #ffc107;">
+                        <i class="pi pi-exclamation-triangle text-2xl" style="color: #856404;"></i>
+                        <div>
+                            <p class="m-0 font-semibold" style="color: #856404;">Warning</p>
+                            <p class="m-0 mt-1" style="color: #856404;">This will send the notification to all system
+                                users.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </p-panel>
+        </div>
+
+        <div *ngIf="!loading && !notification" class="empty-state">
+            <div class="flex flex-column align-items-center justify-content-center p-6">
+                <i class="pi pi-inbox text-6xl text-gray-400 mb-3"></i>
+                <p class="text-xl text-600 font-semibold mb-2">No notification selected</p>
+                <p class="text-600">Please select a notification first.</p>
+                <p-button label="Go Back" icon="pi pi-arrow-left" class="p-button-secondary mt-3"
+                    (onClick)="goBack()"></p-button>
+            </div>
+        </div>
     </div>
-
-    <div *ngIf="!loading && !notification" class="text-center p-4">
-        <p class="text-600">No notification selected. Please select a notification first.</p>
-    </div>
-    </div>
-
-    <ng-template pTemplate="footer">
-        <p-button label="Cancel" icon="pi pi-times" class="p-button-secondary" (onClick)="closeDialog()"
-            [disabled]="sending">
-        </p-button>
-        <p-button label="Send" icon="pi pi-send" (onClick)="send()" [loading]="sending" [disabled]="sending || !notification">
-        </p-button>
-    </ng-template>
-</p-dialog>
+</div>
 
 <p-toast></p-toast>
