@@ -11,6 +11,8 @@ import { TypesListComponent } from './components/types/types-list/types-list.com
 
 // Categories
 import { CategoriesListComponent } from './components/categories/categories-list/categories-list.component';
+import { SystemCategoriesListComponent } from './components/categories/system-categories-list/system-categories-list.component';
+import { EntityCategoriesListComponent } from './components/categories/entity-categories-list/entity-categories-list.component';
 import { CategoryFormComponent } from './components/categories/category-form/category-form.component';
 import { CategoryDetailsComponent } from './components/categories/category-details/category-details.component';
 
@@ -22,6 +24,8 @@ import { SendNotificationComponent } from './components/send/send-notification.c
 
 // Notifications List and Form (from notifications module)
 import { NotificationsListComponent } from '../notifications/notifications-list/notifications-list.component';
+import { SystemNotificationsListComponent } from './components/notifications/system-notifications-list/system-notifications-list.component';
+import { EntityNotificationsListComponent } from './components/notifications/entity-notifications-list/entity-notifications-list.component';
 import { NotificationFormComponent } from '../notifications/notification-form/notification-form.component';
 
 @NgModule({
@@ -29,11 +33,15 @@ import { NotificationFormComponent } from '../notifications/notification-form/no
         NotificationsManagementMainComponent,
         TypesListComponent,
         CategoriesListComponent,
+        SystemCategoriesListComponent,
+        EntityCategoriesListComponent,
         CategoryFormComponent,
         CategoryDetailsComponent,
         CreateNotificationComponent,
         SendNotificationComponent,
         NotificationsListComponent,
+        SystemNotificationsListComponent,
+        EntityNotificationsListComponent,
         NotificationFormComponent,
     ],
     imports: [
