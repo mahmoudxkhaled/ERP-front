@@ -10,7 +10,6 @@ import { NotificationsManagementMainComponent } from './components/notifications
 import { TypesListComponent } from './components/types/types-list/types-list.component';
 
 // Categories
-import { CategoriesListComponent } from './components/categories/categories-list/categories-list.component';
 import { SystemCategoriesListComponent } from './components/categories/system-categories-list/system-categories-list.component';
 import { EntityCategoriesListComponent } from './components/categories/entity-categories-list/entity-categories-list.component';
 import { CategoryFormComponent } from './components/categories/category-form/category-form.component';
@@ -32,7 +31,6 @@ import { NotificationFormComponent } from '../notifications/notification-form/no
     declarations: [
         NotificationsManagementMainComponent,
         TypesListComponent,
-        CategoriesListComponent,
         SystemCategoriesListComponent,
         EntityCategoriesListComponent,
         CategoryFormComponent,

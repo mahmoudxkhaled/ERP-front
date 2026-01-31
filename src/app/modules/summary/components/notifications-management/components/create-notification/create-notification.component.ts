@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, OnDestroy, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
@@ -17,6 +17,8 @@ const DEFAULT_MODULE_ID = 1;
     styleUrls: ['./create-notification.component.scss']
 })
 export class CreateNotificationComponent implements OnInit, OnDestroy {
+    /** When set by parent (e.g. Entity/System list dialog), use this mode and hide mode switch. */
+    @Input() notificationMode?: 'system' | 'entity';
     @Output() notificationCreated = new EventEmitter<number>();
 
     form!: FormGroup;
@@ -24,7 +26,8 @@ export class CreateNotificationComponent implements OnInit, OnDestroy {
     submitted: boolean = false;
     accountSettings: IAccountSettings;
     isRegional: boolean = false;
-    notificationCategories: any[] = [];
+    systemCategories: any[] = [];
+    entityCategories: any[] = [];
     currentEntityId: number = 0;
     isSystemAdmin: boolean = false;
     isEntityAdmin: boolean = false;
@@ -57,6 +60,11 @@ export class CreateNotificationComponent implements OnInit, OnDestroy {
         this.initForm();
         this.loadNotificationCategories();
         this.determineNotificationType();
+        if (this.notificationMode === 'system') {
+            this.isSystemNotification = true;
+        } else if (this.notificationMode === 'entity') {
+            this.isSystemNotification = false;
+        }
     }
 
     ngOnDestroy(): void {
@@ -75,6 +83,20 @@ export class CreateNotificationComponent implements OnInit, OnDestroy {
         }
     }
 
+    /** True when parent did not set notificationMode and user can choose (both admin). */
+    canSwitchMode(): boolean {
+        if (this.notificationMode !== undefined) {
+            return false;
+        }
+        return this.isSystemAdmin && this.isEntityAdmin;
+    }
+
+    /** Switch between System and Entity mode; clears category so dropdown options match. */
+    setNotificationMode(isSystem: boolean): void {
+        this.isSystemNotification = isSystem;
+        this.form.patchValue({ categoryId: '' });
+    }
+
     initForm(): void {
         this.form = this.fb.group({
             categoryId: ['', [Validators.required]],
@@ -86,33 +108,43 @@ export class CreateNotificationComponent implements OnInit, OnDestroy {
     }
 
     loadNotificationCategories(): void {
-        // Load System Categories
+        // Load System Categories (for System notification mode only)
         if (this.permissionService.canListNotificationCategories()) {
             const sub = this.notificationsService.listNotificationCategories(0, 100).subscribe({
                 next: (response: any) => {
                     if (response?.success) {
+                        console.log('loadNotificationCategories222222222222 response', response);
                         const categories = response?.message?.Categories || [];
-                        const systemCategories = Array.isArray(categories) ? categories : [];
-                        this.notificationCategories = [...this.notificationCategories, ...systemCategories];
+                        const all = Array.isArray(categories) ? categories : [];
+                        // System categories: only those with Entity_ID empty (no entity = system level)
+                        this.systemCategories = all.filter((c: any) =>
+                            c.Entity_ID === '' || c.Entity_ID == null || c.Entity_ID === undefined
+                        );
                     }
                 }
             });
             this.subscriptions.push(sub);
         }
 
-        // Load Entity Categories
+        // Load Entity Categories (for Entity notification mode only)
         if (this.permissionService.canListEntityNotificationCategories() && this.currentEntityId > 0) {
             const sub = this.notificationsService.listEntityNotificationCategories(this.currentEntityId, 0, 100).subscribe({
                 next: (response: any) => {
                     if (response?.success) {
-                        const categories = response?.message?.Notification_Categories || response?.Notification_Categories || [];
-                        const entityCategories = Array.isArray(categories) ? categories : [];
-                        this.notificationCategories = [...this.notificationCategories, ...entityCategories];
+                        console.log('loadEntityNotificationCategories222222222 response', response);
+                        const message = response?.message || {};
+                        const categories = message?.Categories ?? [];
+                        this.entityCategories = Array.isArray(categories) ? categories : [];
                     }
                 }
             });
             this.subscriptions.push(sub);
         }
+    }
+
+    /** Categories to show in dropdown: System categories in System mode, Entity categories in Entity mode. */
+    get displayCategories(): any[] {
+        return this.isSystemNotification ? this.systemCategories : this.entityCategories;
     }
 
     submit(): void {

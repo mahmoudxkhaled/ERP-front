@@ -34,7 +34,13 @@ export class NotificationsService {
 
     private getEntityId(): number {
         const entityDetails = this.localStorageService.getEntityDetails();
-        return entityDetails?.Entity_ID || 0;
+        const entityIdFromDetails = entityDetails?.Entity_ID || 0;
+        if (entityIdFromDetails > 0) {
+            return entityIdFromDetails;
+        }
+        // Fallback for Entity Admin: use Entity_ID from Account_Details when Entity_Details is missing
+        const accountDetails = this.localStorageService.getAccountDetails();
+        return accountDetails?.Entity_ID || 0;
     }
 
     /**
@@ -278,9 +284,9 @@ export class NotificationsService {
             typeId.toString(),
             title,
             description,
-            sendEmail.toString(),
             isRegional.toString(),
-            canBeUnsubscribed.toString()
+            sendEmail.toString(),
+            canBeUnsubscribed.toString(),
         ];
         return this.apiServices.callAPI(818, this.getAccessToken(), params).pipe(
             finalize(() => this.isLoadingSubject.next(false))
@@ -455,7 +461,7 @@ export class NotificationsService {
             title,
             message,
             referenceType || '',
-            referenceId ? referenceId.toString() : ''
+            referenceId ? referenceId.toString() : '0'
         ];
         console.log('params', params);
         return this.apiServices.callAPI(825, this.getAccessToken(), params).pipe(

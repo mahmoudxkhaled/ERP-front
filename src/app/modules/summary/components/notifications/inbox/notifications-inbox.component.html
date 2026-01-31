@@ -2,37 +2,40 @@
     <div class="flex justify-content-between align-items-center mb-4">
         <h2>Notifications Inbox</h2>
         <div class="flex align-items-center gap-2">
-            <p-tag [value]="'Unread: ' + getUnreadCount()" severity="warning" *ngIf="getUnreadCount() > 0"></p-tag>
+            <div class="flex align-items-center gap-2">
+                <label class="block mb-2 font-medium">Unread Only</label>
+                <p-inputSwitch [(ngModel)]="unreadOnly" (onChange)="onUnreadOnlyChange()"></p-inputSwitch>
+            </div>
+            <div class="flex align-items-center gap-2">
+                <p-tag [value]="'Unread: ' + getUnreadCount()" severity="warning" *ngIf="getUnreadCount() > 0"></p-tag>
+            </div>
         </div>
     </div>
 
     <!-- Filters -->
     <div class="grid mb-3">
-        <div class="col-12 md:col-3">
-            <label class="block mb-2 font-medium">Type Filter</label>
-            <p-multiSelect [options]="notificationTypes" [(ngModel)]="selectedTypeIds" 
-                optionLabel="Name" optionValue="Type_ID" 
-                placeholder="Select Types" (onChange)="onFilterChange()"
-                [showClear]="true">
-            </p-multiSelect>
-        </div>
-        <div class="col-12 md:col-3">
-            <label class="block mb-2 font-medium">Category Filter</label>
-            <p-multiSelect [options]="notificationCategories" [(ngModel)]="selectedCategoryIds" 
-                optionLabel="Title" optionValue="Category_ID" 
-                placeholder="Select Categories" (onChange)="onFilterChange()"
-                [showClear]="true">
-            </p-multiSelect>
-        </div>
-        <div class="col-12 md:col-3">
+
+        <div class="col-12 md:col-4 p-fluid">
             <label class="block mb-2 font-medium">Text Filter</label>
-            <input type="text" pInputText [(ngModel)]="textFilter" 
-                placeholder="Search..." (input)="onFilterChange()" />
+            <input type="text" pInputText [(ngModel)]="textFilter" placeholder="Search..." (input)="onFilterChange()" />
         </div>
-        <div class="col-12 md:col-3">
-            <label class="block mb-2 font-medium">Unread Only</label>
-            <p-inputSwitch [(ngModel)]="unreadOnly" (onChange)="onUnreadOnlyChange()"></p-inputSwitch>
+
+
+        <div class="col-12 md:col-4 p-fluid">
+            <label class="block mb-2 font-medium">Type Filter</label>
+            <p-multiSelect [options]="notificationTypes" [(ngModel)]="selectedTypeIds" optionLabel="title"
+                optionValue="type_ID" placeholder="Select Types" (onChange)="onFilterChange()" [showClear]="false"
+                [showToggleAll]="false">
+            </p-multiSelect>
         </div>
+        <div class="col-12 md:col-4 p-fluid">
+            <label class="block mb-2 font-medium">Category Filter</label>
+            <p-multiSelect [options]="notificationCategories" [(ngModel)]="selectedCategoryIds" optionLabel="Title"
+                optionValue="Category_ID" placeholder="Select Categories" (onChange)="onFilterChange()"
+                [showClear]="false" [showToggleAll]="false">
+            </p-multiSelect>
+        </div>
+
     </div>
 
     <div style="position: relative;">
@@ -43,6 +46,7 @@
             <ng-template pTemplate="header">
                 <tr>
                     <th style="width: 50px;">Status</th>
+                    <th style="width: 120px;">Type</th>
                     <th style="width: 200px;">Title</th>
                     <th style="width: 400px;">Message</th>
                     <th style="width: 150px;">Date</th>
@@ -53,9 +57,12 @@
             <ng-template pTemplate="body" let-notification>
                 <tr [class.unread]="!notification.isRead">
                     <td>
-                        <p-tag [value]="notification.isRead ? 'Read' : 'Unread'" 
+                        <p-tag [value]="notification.isRead ? 'Read' : 'Unread'"
                             [severity]="notification.isRead ? 'success' : 'warning'">
                         </p-tag>
+                    </td>
+                    <td>
+                        <span class="text-600">{{ getTypeName(notification.typeId) }}</span>
                     </td>
                     <td>
                         <span class="font-semibold">{{ notification.title }}</span>
@@ -68,22 +75,14 @@
                     </td>
                     <td class="text-start">
                         <div class="flex gap-2">
-                            <p-button *ngIf="!notification.isRead" 
-                                icon="pi pi-check" 
-                                pTooltip="Mark as Read"
-                                class="p-button-sm p-button-text" 
-                                (onClick)="markAsRead(notification)">
+                            <p-button *ngIf="!notification.isRead" icon="pi pi-check" pTooltip="Mark as Read"
+                                class="p-button-sm p-button-text" (onClick)="markAsRead(notification)">
                             </p-button>
-                            <p-button *ngIf="notification.isRead" 
-                                icon="pi pi-eye-slash" 
-                                pTooltip="Mark as Unread"
-                                class="p-button-sm p-button-text" 
-                                (onClick)="markAsUnread(notification)">
+                            <p-button *ngIf="notification.isRead" icon="pi pi-eye-slash" pTooltip="Mark as Unread"
+                                class="p-button-sm p-button-text" (onClick)="markAsUnread(notification)">
                             </p-button>
-                            <p-button 
-                                icon="pi pi-trash" 
-                                pTooltip="Delete"
-                                class="p-button-sm p-button-text p-button-danger" 
+                            <p-button icon="pi pi-trash" pTooltip="Delete"
+                                class="p-button-sm p-button-text p-button-danger"
                                 (onClick)="deleteNotification(notification)">
                             </p-button>
                         </div>
@@ -93,13 +92,13 @@
 
             <ng-template pTemplate="emptymessage">
                 <tr>
-                    <td colspan="5" class="text-center">No notifications found</td>
+                    <td colspan="6" class="text-center">No notifications found</td>
                 </tr>
             </ng-template>
         </p-table>
 
         <div class="flex justify-content-center mt-3" *ngIf="notifications.length < totalCount">
-            <p-button label="Load More" icon="pi pi-arrow-down" (onClick)="loadMore()" 
+            <p-button label="Load More" icon="pi pi-arrow-down" (onClick)="loadMore()"
                 [loading]="!!(isLoading$ | async)">
             </p-button>
         </div>

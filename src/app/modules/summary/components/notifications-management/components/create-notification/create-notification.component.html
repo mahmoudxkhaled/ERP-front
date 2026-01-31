@@ -1,7 +1,18 @@
 <div class="card">
     <div class="flex justify-content-between align-items-center mb-4">
         <h3>Create Notification</h3>
-        <p-tag [value]="isSystemNotification ? 'System' : 'Entity'" 
+        <div class="flex align-items-center gap-2" *ngIf="canSwitchMode()">
+            <label class="text-600 font-medium">Mode:</label>
+            <p-button [label]="'System'" [icon]="isSystemNotification ? 'pi pi-check-circle' : 'pi pi-circle'"
+                [class]="isSystemNotification ? 'p-button-primary' : 'p-button-outlined'"
+                (onClick)="setNotificationMode(true)">
+            </p-button>
+            <p-button [label]="'Entity'" [icon]="!isSystemNotification ? 'pi pi-check-circle' : 'pi pi-circle'"
+                [class]="!isSystemNotification ? 'p-button-primary' : 'p-button-outlined'"
+                (onClick)="setNotificationMode(false)">
+            </p-button>
+        </div>
+        <p-tag *ngIf="!canSwitchMode()" [value]="isSystemNotification ? 'System' : 'Entity'"
             [severity]="isSystemNotification ? 'info' : 'warning'">
         </p-tag>
     </div>
@@ -11,7 +22,7 @@
             <div class="col-12">
                 <div class="field p-fluid">
                     <label for="categoryId">Category <span class="text-red-500">*</span></label>
-                    <p-dropdown id="categoryId" formControlName="categoryId" [options]="notificationCategories" 
+                    <p-dropdown id="categoryId" formControlName="categoryId" [options]="displayCategories" 
                         optionLabel="Title" optionValue="Category_ID" placeholder="Select Category"
                         [class.ng-invalid]="submitted && f['categoryId'].invalid">
                     </p-dropdown>

@@ -2,7 +2,7 @@
     <div class="flex justify-content-between align-items-center mb-4">
         <h2>Entity Notifications</h2>
         <div class="flex gap-2">
-            <p-button *ngIf="currentEntityId > 0" label="Add Notification" icon="pi pi-plus"
+            <p-button *ngIf="currentEntityId > 0" label="Add Entity Notification" icon="pi pi-plus"
                 (onClick)="navigateToNew()" [disabled]="!!(isLoading$ | async)">
             </p-button>
         </div>
@@ -28,14 +28,15 @@
         <div class="col-12 md:col-3 p-fluid">
             <label class="block mb-2 font-medium">Type Filter</label>
             <p-multiSelect [options]="notificationTypes" [(ngModel)]="selectedTypeIds" optionLabel="title"
-                optionValue="type_ID" placeholder="Select Types" (onChange)="onFilterChange()" [showClear]="true">
+                optionValue="type_ID" placeholder="Select Types" (onChange)="onFilterChange()" [showClear]="false"
+                [showToggleAll]="false">
             </p-multiSelect>
         </div>
         <div class="col-12 md:col-3 p-fluid">
             <label class="block mb-2 font-medium">Category Filter</label>
             <p-multiSelect [options]="notificationCategories" [(ngModel)]="selectedCategoryIds" optionLabel="Title"
                 optionValue="Category_ID" placeholder="Select Categories" (onChange)="onFilterChange()"
-                [showClear]="true">
+                [showClear]="false" [showToggleAll]="false">
             </p-multiSelect>
         </div>
     </div>
@@ -103,7 +104,17 @@
     </div>
 </div>
 
-<!-- Notification Form Dialog -->
+<!-- Add Notification Dialog (create-notification) -->
+<p-dialog [(visible)]="createFormDialogVisible" [modal]="true" [style]="{ width: '600px' }" [closable]="true"
+    [draggable]="false" [resizable]="false" (onHide)="createFormDialogVisible = false">
+    <ng-template pTemplate="header">
+        <h3>Add Entity Notification</h3>
+    </ng-template>
+    <app-create-notification [notificationMode]="'entity'" (notificationCreated)="onCreateNotificationCreated($event)">
+    </app-create-notification>
+</p-dialog>
+
+<!-- Edit Notification Dialog (notification-form) -->
 <app-notification-form [(visible)]="formDialogVisible" [notificationId]="formNotificationId"
     [isSystemNotification]="false" (saved)="onFormSaved()">
 </app-notification-form>

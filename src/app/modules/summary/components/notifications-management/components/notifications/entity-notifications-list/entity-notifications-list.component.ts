@@ -28,9 +28,11 @@ export class EntityNotificationsListComponent implements OnInit, OnDestroy {
     isRegional: boolean = false;
     currentEntityId: number = 0;
 
-    // Dialog for form
+    // Dialog for form (Edit: notification-form)
     formDialogVisible: boolean = false;
     formNotificationId?: number;
+    // Dialog for Add (create-notification)
+    createFormDialogVisible: boolean = false;
 
     // Filters (sent to API)
     selectedTypeIds: number[] = [];
@@ -124,7 +126,7 @@ export class EntityNotificationsListComponent implements OnInit, OnDestroy {
                 next: (response: any) => {
                     if (response?.success) {
                         const responseData = response?.message || response;
-                        const categories = responseData?.Notification_Categories || responseData?.message || [];
+                        const categories = responseData?.Categories || [];
                         const entityCategories = Array.isArray(categories) ? categories.map((item: any) => ({
                             Category_ID: item?.Category_ID || 0,
                             Title: this.isRegional ? (item?.Title_Regional || item?.Title || '') : (item?.Title || ''),
@@ -236,8 +238,7 @@ export class EntityNotificationsListComponent implements OnInit, OnDestroy {
     }
 
     navigateToNew(): void {
-        this.formNotificationId = undefined;
-        this.formDialogVisible = true;
+        this.createFormDialogVisible = true;
     }
 
     edit(notification: Notification): void {
@@ -306,6 +307,13 @@ export class EntityNotificationsListComponent implements OnInit, OnDestroy {
 
     onFormSaved(): void {
         this.onFormDialogClose();
+        this.lastNotificationId = 0;
+        this.notifications = [];
+        this.loadNotifications();
+    }
+
+    onCreateNotificationCreated(_notificationId: number): void {
+        this.createFormDialogVisible = false;
         this.lastNotificationId = 0;
         this.notifications = [];
         this.loadNotifications();

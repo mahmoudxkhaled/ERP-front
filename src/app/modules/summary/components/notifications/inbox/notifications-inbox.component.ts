@@ -72,7 +72,7 @@ export class NotificationsInboxComponent implements OnInit, OnDestroy {
         const sub = this.notificationsService.listNotificationTypes().subscribe({
             next: (response: any) => {
                 if (response?.success) {
-                    const types = response?.message || response?.Notification_Types || [];
+                    const types = response?.message || [];
                     this.notificationTypes = Array.isArray(types) ? types : [];
                 }
             },
@@ -89,7 +89,7 @@ export class NotificationsInboxComponent implements OnInit, OnDestroy {
             const sub = this.notificationsService.listNotificationCategories(0, 100).subscribe({
                 next: (response: any) => {
                     if (response?.success) {
-                        const categories = response?.message?.Notification_Categories || response?.Notification_Categories || [];
+                        const categories = response?.message?.Categories || [];
                         const systemCategories = Array.isArray(categories) ? categories : [];
                         this.notificationCategories = [...this.notificationCategories, ...systemCategories];
                     }
@@ -108,7 +108,7 @@ export class NotificationsInboxComponent implements OnInit, OnDestroy {
                 const sub = this.notificationsService.listEntityNotificationCategories(entityId, 0, 100).subscribe({
                     next: (response: any) => {
                         if (response?.success) {
-                            const categories = response?.message?.Notification_Categories || response?.Notification_Categories || [];
+                            const categories = response?.message?.Categories || [];
                             const entityCategories = Array.isArray(categories) ? categories : [];
                             this.notificationCategories = [...this.notificationCategories, ...entityCategories];
                         }
@@ -145,7 +145,6 @@ export class NotificationsInboxComponent implements OnInit, OnDestroy {
             this.filterCount
         ).subscribe({
             next: (response: any) => {
-                console.log('response loadNotifications from inbox', response);
                 if (!response?.success) {
                     this.handleBusinessError('list', response);
                     return;
@@ -364,5 +363,16 @@ export class NotificationsInboxComponent implements OnInit, OnDestroy {
 
     getUnreadCount(): number {
         return this.notifications.filter(n => !n.isRead).length;
+    }
+
+    /** Get type name from Type_ID using loaded notification types. */
+    getTypeName(typeId: number): string {
+        if (!typeId || !this.notificationTypes?.length) {
+            return '—';
+        }
+        const type = this.notificationTypes.find(
+            (t: any) => (t.type_ID ?? t.Type_ID ?? t.typeId) === typeId
+        );
+        return type?.title ?? type?.Title ?? String(typeId);
     }
 }

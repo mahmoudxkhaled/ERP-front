@@ -27,9 +27,11 @@ export class SystemNotificationsListComponent implements OnInit, OnDestroy {
     accountSettings: IAccountSettings;
     isRegional: boolean = false;
 
-    // Dialog for form
+    // Dialog for form (Edit: notification-form)
     formDialogVisible: boolean = false;
     formNotificationId?: number;
+    // Dialog for Add (create-notification)
+    createFormDialogVisible: boolean = false;
 
     // Filters (sent to API)
     selectedTypeIds: number[] = [];
@@ -95,7 +97,8 @@ export class SystemNotificationsListComponent implements OnInit, OnDestroy {
         const sub = this.notificationsService.listNotificationTypes().subscribe({
             next: (response: any) => {
                 if (response?.success) {
-                    const typesData = response?.message || response?.Notification_Types || [];
+                    console.log('loadNotificationType1111111111111sdasdasds response', response);
+                    const typesData = response?.message || [];
                     // Map to the expected format for dropdown
                     this.notificationTypes = Array.isArray(typesData) ? typesData.map((item: any) => ({
                         type_ID: item?.type_ID ?? 0,
@@ -185,6 +188,7 @@ export class SystemNotificationsListComponent implements OnInit, OnDestroy {
                     this.handleBusinessError('list', response);
                     return;
                 }
+                console.log('loadNotifications response', response);
                 const responseData = response?.message || response;
                 this.totalCount = responseData?.Total_Count || 0;
                 const notificationsData = responseData?.Notifications || responseData?.message || [];
@@ -221,8 +225,7 @@ export class SystemNotificationsListComponent implements OnInit, OnDestroy {
     }
 
     navigateToNew(): void {
-        this.formNotificationId = undefined;
-        this.formDialogVisible = true;
+        this.createFormDialogVisible = true;
     }
 
     edit(notification: Notification): void {
@@ -291,6 +294,13 @@ export class SystemNotificationsListComponent implements OnInit, OnDestroy {
 
     onFormSaved(): void {
         this.onFormDialogClose();
+        this.lastNotificationId = 0;
+        this.notifications = [];
+        this.loadNotifications();
+    }
+
+    onCreateNotificationCreated(_notificationId: number): void {
+        this.createFormDialogVisible = false;
         this.lastNotificationId = 0;
         this.notifications = [];
         this.loadNotifications();
