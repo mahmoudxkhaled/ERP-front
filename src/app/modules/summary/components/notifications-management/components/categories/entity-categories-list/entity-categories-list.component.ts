@@ -127,9 +127,8 @@ export class EntityCategoriesListComponent implements OnInit, OnDestroy {
                     this.handleBusinessError('list', response);
                     return;
                 }
-
                 const responseData = response?.message || response;
-                const categoriesData = responseData?.Notification_Categories || responseData?.message || [];
+                const categoriesData = responseData?.Categories || [];
 
                 const entityCategories = Array.isArray(categoriesData) ? categoriesData.map((item: any) => {
                     const categoryBackend = item as NotificationCategoryBackend;

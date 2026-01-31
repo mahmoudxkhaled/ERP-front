@@ -121,7 +121,7 @@ export class CategoriesListComponent implements OnInit, OnDestroy {
                         this.handleBusinessError('list', response);
                         return;
                     }
-
+                    console.log('loadCategories response', response);
                     const responseData = response?.message || response;
                     this.totalCount = responseData?.Total_Count || 0;
                     const categoriesData = responseData?.Categories || [];

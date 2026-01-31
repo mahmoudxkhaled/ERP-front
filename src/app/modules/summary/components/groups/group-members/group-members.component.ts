@@ -128,7 +128,7 @@ export class GroupMembersComponent implements OnInit, OnDestroy {
         const sub = this.entitiesService.getEntityAccountsList(
             this.selectedEntityId,
             this.includeSubentities,
-            false,
+            true, // Active accounts only
             lastAccountId,
             this.accountTableRows,
             this.accountTableTextFilter

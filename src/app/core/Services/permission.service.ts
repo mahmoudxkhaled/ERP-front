@@ -73,7 +73,7 @@ const PERMISSION_MATRIX = {
     Remove_Group_Members: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator, Roles.SystemUser],
 
     // Notification Types APIs (800)
-    List_Notification_Types: [Roles.Developer, Roles.SystemAdministrator],
+    List_Notification_Types: [Roles.Developer, Roles.SystemAdministrator, Roles.EntityAdministrator],
 
     // Notification Categories - System APIs (810-814)
     Create_Notification_Category: [Roles.Developer, Roles.SystemAdministrator],

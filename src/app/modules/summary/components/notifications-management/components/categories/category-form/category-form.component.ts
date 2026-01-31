@@ -98,6 +98,7 @@ export class CategoryFormComponent implements OnInit, OnDestroy, OnChanges {
         const sub = this.notificationsService.listNotificationTypes().subscribe({
             next: (response: any) => {
                 if (response?.success) {
+                    console.log('loadNotificationTypes response', response);
                     const typesData = response?.message || response?.Notification_Types || [];
                     // Map to the expected format for dropdown (using new API structure)
                     this.notificationTypes = Array.isArray(typesData) ? typesData.map((item: any) => ({
