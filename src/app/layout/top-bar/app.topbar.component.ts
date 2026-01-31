@@ -13,6 +13,7 @@ import { ProfilePictureService } from 'src/app/core/services/profile-picture.ser
 import { UserNameService } from 'src/app/core/services/user-name.service';
 import { AuthService } from 'src/app/modules/auth/services/auth.service';
 import { LocalStorageService } from '../../core/services/local-storage.service';
+import { NotificationRefreshService } from '../../core/services/notification-refresh.service';
 import { LayoutService } from '../app-services/app.layout.service';
 import { NotificationsService } from 'src/app/modules/summary/services/notifications.service';
 import { AccountNotification, AccountNotificationBackend } from 'src/app/modules/summary/models/notifications.model';
@@ -26,6 +27,7 @@ import { PermissionService } from 'src/app/core/services/permission.service';
 export class AppTopbarComponent implements OnInit, OnDestroy {
     @ViewChild('menuButton') menuButton!: ElementRef;
     @ViewChild('mobileMenuButton') mobileMenuButton!: ElementRef;
+    @ViewChild('notificationPanel') notificationPanel!: ElementRef;
     @Input() ComapnyLogo = '../../assets/images/companyDefaultLogo.png';
 
     activeItem!: number;
@@ -79,7 +81,8 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         private userNameService: UserNameService,
         private notificationsService: NotificationsService,
         private messageService: MessageService,
-        private permissionService: PermissionService
+        private permissionService: PermissionService,
+        private notificationRefreshService: NotificationRefreshService
     ) {
     }
 
@@ -123,11 +126,18 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         // Subscribe to user name changes
         this.subs.add(
             this.userNameService.userName$.subscribe((userName: string) => {
-                console.log('TopBar: Received user name update:', userName);
                 if (userName) {
                     this.userName = userName;
                     this.ref.detectChanges();
-                    console.log('TopBar: Updated userName to:', this.userName);
+                }
+            })
+        );
+
+        // Load notifications when refresh is requested (e.g. from app component on page load / refresh)
+        this.subs.add(
+            this.notificationRefreshService.onRefreshRequested().subscribe(() => {
+                if (this.currentAccountId > 0) {
+                    this.loadNotifications();
                 }
             })
         );
@@ -336,7 +346,6 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
             10 // filterCount - limit to 10 notifications
         ).subscribe({
             next: (response: any) => {
-                console.log('response loadNotifications', response);
                 if (!response?.success) {
                     this.handleNotificationError('list', response);
                     return;
@@ -385,6 +394,8 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
             return;
         }
 
+        this.closeNotificationPanel();
+
         // Mark as read
         if (!notification.isRead) {
             const sub = this.notificationsService.markNotificationsRead(this.currentAccountId, [notification.id]).subscribe({
@@ -393,6 +404,7 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
                         notification.isRead = true;
                         this.updateUnreadCount();
                         this.ref.detectChanges();
+                        this.notificationRefreshService.requestRefresh();
                     }
                 }
             });
@@ -401,6 +413,11 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
 
         // Navigate to inbox
         this.router.navigate(['/summary/notifications/inbox']);
+    }
+
+    /** Close the notifications dropdown panel. */
+    closeNotificationPanel(): void {
+        this.notificationPanel?.nativeElement?.classList?.add('ng-hidden');
     }
 
     markAllAsRead(): void {
@@ -424,6 +441,7 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
                     });
                     this.updateUnreadCount();
                     this.ref.detectChanges();
+                    this.notificationRefreshService.requestRefresh();
                     this.messageService.add({
                         severity: 'success',
                         summary: 'Success',
@@ -436,6 +454,7 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
     }
 
     navigateToInbox(): void {
+        this.closeNotificationPanel();
         this.router.navigate(['/summary/notifications/inbox']);
     }
 

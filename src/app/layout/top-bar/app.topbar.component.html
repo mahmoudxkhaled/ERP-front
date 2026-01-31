@@ -62,51 +62,40 @@
 
                 <!-- Notification Bell -->
                 <li>
-                    <i *ngIf="unreadCount > 0" 
-                       class="pi pi-bell text-2xl mr-2 cursor-pointer" 
-                       pBadge 
-                       severity="danger" 
-                       pStyleClass="@next"
-                       enterFromClass="ng-hidden" 
-                       enterActiveClass="px-scalein" 
-                       leaveToClass="ng-hidden"
-                       leaveActiveClass="px-fadeout" 
-                       [hideOnOutsideClick]="true" 
-                       [value]="unreadCount > 99 ? '99+' : unreadCount.toString()"
-                       (click)="onNotificationPanelOpen($event)">
-                    </i>
-                    
-                    <i *ngIf="unreadCount == 0" 
-                       class="pi pi-bell text-2xl mr-2 cursor-pointer" 
-                       pStyleClass="@next"
-                       enterFromClass="ng-hidden" 
-                       enterActiveClass="px-scalein" 
-                       leaveToClass="ng-hidden"
-                       leaveActiveClass="px-fadeout" 
-                       [hideOnOutsideClick]="true"
-                       (click)="onNotificationPanelOpen($event)">
+                    <i *ngIf="unreadCount > 0" class="pi pi-bell text-2xl mr-2 cursor-pointer" pBadge severity="danger"
+                        pStyleClass="@next" enterFromClass="ng-hidden" enterActiveClass="px-scalein"
+                        leaveToClass="ng-hidden" leaveActiveClass="px-fadeout" [hideOnOutsideClick]="true"
+                        [value]="unreadCount > 99 ? '99+' : unreadCount.toString()"
+                        (click)="onNotificationPanelOpen($event)">
                     </i>
 
-                    <div class="ng-hidden" style="margin-top: 9px">
+                    <i *ngIf="unreadCount == 0" class="pi pi-bell text-2xl mr-2 cursor-pointer" pStyleClass="@next"
+                        enterFromClass="ng-hidden" enterActiveClass="px-scalein" leaveToClass="ng-hidden"
+                        leaveActiveClass="px-fadeout" [hideOnOutsideClick]="true"
+                        (click)="onNotificationPanelOpen($event)">
+                    </i>
+
+                    <div #notificationPanel class="ng-hidden" style="margin-top: 9px">
                         <!-- Loading State -->
-                        <div *ngIf="loadingNotifications" class="flex justify-content-center align-items-center" style="min-height: 200px;">
+                        <div *ngIf="loadingNotifications" class="flex justify-content-center align-items-center"
+                            style="min-height: 200px;">
                             <p-progressSpinner></p-progressSpinner>
                         </div>
 
-                        <p-scrollPanel *ngIf="!loadingNotifications && notifications && notifications.length > 0; else noNotifications"
-                                       [style]="{ width: '35rem', height: '300px' }">
+                        <p-scrollPanel
+                            *ngIf="!loadingNotifications && notifications && notifications.length > 0; else noNotifications"
+                            [style]="{ width: '35rem', height: '300px' }">
                             <!-- Notification List -->
                             <ul class="list-none p-0 m-0">
-                                <li *ngFor="let notification of notifications; let last = last" 
-                                    [ngClass]="{
+                                <li *ngFor="let notification of notifications; let last = last" [ngClass]="{
                                         'unread-notification': !notification.isRead,
                                         'read-notification': notification.isRead
-                                    }" 
-                                    [ngStyle]="{ 'border-bottom': last ? 'none' : '1px solid #80808026' }" 
+                                    }" [ngStyle]="{ 'border-bottom': last ? 'none' : '1px solid #80808026' }"
                                     class="notification-item py-3 px-3"
                                     (click)="onNotificationClick(notification, $event)">
                                     <!-- Notification Item -->
-                                    <div class="flex justify-content-between flex-wrap notification-content" style="cursor: pointer;">
+                                    <div class="flex justify-content-between flex-wrap notification-content"
+                                        style="cursor: pointer;">
                                         <!-- Left: Text -->
                                         <div class="flex align-items-center">
                                             <div class="notification-msg">
@@ -116,7 +105,8 @@
                                         </div>
                                         <!-- Right: Date -->
                                         <div class="notification-date flex align-items-center">
-                                            <span class="notification-time">{{ getTimeAgo(notification.createdAt) }}</span>
+                                            <span class="notification-time">{{ getTimeAgo(notification.createdAt)
+                                                }}</span>
                                         </div>
                                     </div>
                                 </li>
@@ -131,20 +121,23 @@
                             </div>
                         </ng-template>
 
-                        <a *ngIf="!loadingNotifications && notifications && notifications.length > 0" 
-                           (click)="markAllAsRead()"
-                           [ngStyle]="{ color: unreadCount > 0 ? 'var(--primary-color)' : 'gray' }"
-                           style="cursor: pointer" 
-                           class="mark-all-btn flex justify-content-end mx-3">
-                            <i class="pi pi-check mx-1" [style.margin-top.px]="3"></i>Mark All as Read
-                        </a>
+                        <div class="flex justify-content-between">
 
-                        <div *ngIf="!loadingNotifications && notifications && notifications.length > 0" 
-                             class="flex justify-content-end mx-3 mb-2">
-                            <a (click)="navigateToInbox()" 
-                               style="cursor: pointer; color: var(--primary-color); text-decoration: none;">
-                                View All
+                            <a *ngIf="!loadingNotifications && notifications && notifications.length > 0"
+                                (click)="markAllAsRead()"
+                                [ngStyle]="{ color: unreadCount > 0 ? 'var(--primary-color)' : 'gray' }"
+                                style="cursor: pointer"
+                                class="mark-all-btn flex justify-content-end     text-sm font-medium">
+                                <i class="pi pi-check mx-1"></i>Mark All as Read
                             </a>
+
+                            <div *ngIf="!loadingNotifications && notifications && notifications.length > 0"
+                                class="flex justify-content-end mx-3 my-2">
+                                <a (click)="navigateToInbox()" class="text-sm font-medium"
+                                    style="cursor: pointer; color: var(--primary-color); text-decoration: none;">
+                                    View All
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </li>

@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { LanguageDirService } from './core/services/language-dir.service';
 import { LocalStorageService } from './core/services/local-storage.service';
 import { NetworkStatusService } from './core/services/network-status.service';
+import { NotificationRefreshService } from './core/services/notification-refresh.service';
 import { TranslationService } from './core/services/translation.service';
 import { LayoutService } from './layout/app-services/app.layout.service';
 import { AuthService } from './modules/auth/services/auth.service';
@@ -23,7 +24,8 @@ export class AppComponent implements OnInit, OnDestroy {
         private ref: ChangeDetectorRef,
         private networkStatusService: NetworkStatusService,
         private translate: TranslationService,
-        private authService: AuthService
+        private authService: AuthService,
+        private notificationRefreshService: NotificationRefreshService
     ) {
         this.refreshLoginDataPackage();
 
@@ -77,7 +79,10 @@ export class AppComponent implements OnInit, OnDestroy {
             this.ref.detectChanges(); // Manually trigger change detection
         });
 
-        // Call getLoginDataPackage on window reload if user is authenticated
+        // Request notification refresh on page load so topbar can show new notifications / unread count
+        if (this.localStorage.getAccessToken()) {
+            this.notificationRefreshService.requestRefresh();
+        }
     }
 
     /**

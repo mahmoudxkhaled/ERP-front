@@ -5,6 +5,7 @@ import { MessageService } from 'primeng/api';
 import { Observable, Subscription } from 'rxjs';
 import { NotificationsService } from '../../../services/notifications.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { NotificationRefreshService } from 'src/app/core/services/notification-refresh.service';
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { AccountNotification, AccountNotificationBackend } from '../../../models/notifications.model';
 import { IAccountSettings, IAccountDetails } from 'src/app/core/models/account-status.model';
@@ -45,7 +46,8 @@ export class NotificationsInboxComponent implements OnInit, OnDestroy {
         private router: Router,
         private messageService: MessageService,
         private localStorageService: LocalStorageService,
-        private permissionService: PermissionService
+        private permissionService: PermissionService,
+        private notificationRefreshService: NotificationRefreshService
     ) {
         this.isLoading$ = this.notificationsService.isLoadingSubject.asObservable();
         const accountDetails = this.localStorageService.getAccountDetails() as IAccountDetails;
@@ -58,6 +60,14 @@ export class NotificationsInboxComponent implements OnInit, OnDestroy {
         this.loadNotificationTypes();
         this.loadNotificationCategories();
         this.loadNotifications();
+
+        // Sync when topbar triggers refresh (e.g. Mark All as Read in dropdown)
+        this.subscriptions.push(
+            this.notificationRefreshService.onRefreshRequested().subscribe(() => {
+                this.lastNotificationId = 0;
+                this.loadNotifications();
+            })
+        );
     }
 
     ngOnDestroy(): void {
@@ -212,6 +222,7 @@ export class NotificationsInboxComponent implements OnInit, OnDestroy {
                 }
 
                 notification.isRead = true;
+                this.notificationRefreshService.requestRefresh();
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Success',
@@ -235,6 +246,7 @@ export class NotificationsInboxComponent implements OnInit, OnDestroy {
                 }
 
                 notification.isRead = false;
+                this.notificationRefreshService.requestRefresh();
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Success',
@@ -258,6 +270,7 @@ export class NotificationsInboxComponent implements OnInit, OnDestroy {
                 }
 
                 this.notifications = this.notifications.filter(n => n.id !== notification.id);
+                this.notificationRefreshService.requestRefresh();
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Success',
