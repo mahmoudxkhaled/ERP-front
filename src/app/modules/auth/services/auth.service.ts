@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, finalize, of, switchMap, tap } from 'rxjs';
 import { ApiService } from 'src/app/core/api/api.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { NotificationRefreshService } from 'src/app/core/services/notification-refresh.service';
 import { IAccountStatusResponse } from 'src/app/core/models/account-status.model';
 
 @Injectable({
@@ -14,6 +15,7 @@ export class AuthService {
         private apiServices: ApiService,
         private localStorageService: LocalStorageService,
         private router: Router,
+        private notificationRefreshService: NotificationRefreshService
     ) {
         this.isLoadingSubject = new BehaviorSubject<boolean>(false);
     }
@@ -36,6 +38,7 @@ export class AuthService {
                 if (response?.success) {
                     return this.getLoginDataPackage(email).pipe(
                         tap(() => {
+                            this.notificationRefreshService.requestRefresh();
                             this.router.navigate(['/']);
                         })
                     );
@@ -63,6 +66,7 @@ export class AuthService {
                 if (response?.success) {
                     return this.getLoginDataPackage(email).pipe(
                         tap(() => {
+                            this.notificationRefreshService.requestRefresh();
                             this.router.navigate(['/']);
                         })
                     );
