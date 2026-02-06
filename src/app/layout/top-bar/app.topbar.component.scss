@@ -939,6 +939,20 @@ p-autoComplete {
   text-align: center;
 }
 
+/* Notification loading skeleton */
+.notification-skeleton {
+  min-height: 200px;
+  padding: 0;
+
+  .skeleton-row {
+    border-bottom: 1px solid #80808026;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
 // Responsive adjustments
 @media (max-width: 640px) {
   ::ng-deep .notification-overlay-panel {
