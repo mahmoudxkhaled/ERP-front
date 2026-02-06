@@ -238,7 +238,9 @@ export class EntityNotificationsListComponent implements OnInit, OnDestroy {
     }
 
     navigateToNew(): void {
-        this.createFormDialogVisible = true;
+        this.router.navigate(['/summary/notifications-management/send'], {
+            queryParams: { mode: 'entity' }
+        });
     }
 
     edit(notification: Notification): void {
@@ -253,7 +255,7 @@ export class EntityNotificationsListComponent implements OnInit, OnDestroy {
 
     sendNotification(notification: Notification): void {
         this.router.navigate(['/summary/notifications-management/send'], {
-            queryParams: { id: notification.id }
+            queryParams: { mode: 'entity', templateId: notification.id }
         });
     }
 
@@ -307,13 +309,6 @@ export class EntityNotificationsListComponent implements OnInit, OnDestroy {
 
     onFormSaved(): void {
         this.onFormDialogClose();
-        this.lastNotificationId = 0;
-        this.notifications = [];
-        this.loadNotifications();
-    }
-
-    onCreateNotificationCreated(_notificationId: number): void {
-        this.createFormDialogVisible = false;
         this.lastNotificationId = 0;
         this.notifications = [];
         this.loadNotifications();

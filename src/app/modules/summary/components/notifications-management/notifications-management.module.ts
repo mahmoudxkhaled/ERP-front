@@ -20,7 +20,6 @@ import { CreateNotificationComponent } from './components/create-notification/cr
 
 // Send
 import { SendNotificationComponent } from './components/send/send-notification.component';
-
 // Notifications List and Form (from notifications module)
 import { NotificationsListComponent } from '../notifications/notifications-list/notifications-list.component';
 import { SystemNotificationsListComponent } from './components/notifications/system-notifications-list/system-notifications-list.component';

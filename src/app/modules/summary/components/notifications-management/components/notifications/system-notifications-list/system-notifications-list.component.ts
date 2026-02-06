@@ -30,8 +30,6 @@ export class SystemNotificationsListComponent implements OnInit, OnDestroy {
     // Dialog for form (Edit: notification-form)
     formDialogVisible: boolean = false;
     formNotificationId?: number;
-    // Dialog for Add (create-notification)
-    createFormDialogVisible: boolean = false;
 
     // Filters (sent to API)
     selectedTypeIds: number[] = [];
@@ -225,7 +223,9 @@ export class SystemNotificationsListComponent implements OnInit, OnDestroy {
     }
 
     navigateToNew(): void {
-        this.createFormDialogVisible = true;
+        this.router.navigate(['/summary/notifications-management/send'], {
+            queryParams: { mode: 'system' }
+        });
     }
 
     edit(notification: Notification): void {
@@ -240,7 +240,7 @@ export class SystemNotificationsListComponent implements OnInit, OnDestroy {
 
     sendNotification(notification: Notification): void {
         this.router.navigate(['/summary/notifications-management/send'], {
-            queryParams: { id: notification.id }
+            queryParams: { mode: 'system', templateId: notification.id }
         });
     }
 
@@ -294,13 +294,6 @@ export class SystemNotificationsListComponent implements OnInit, OnDestroy {
 
     onFormSaved(): void {
         this.onFormDialogClose();
-        this.lastNotificationId = 0;
-        this.notifications = [];
-        this.loadNotifications();
-    }
-
-    onCreateNotificationCreated(_notificationId: number): void {
-        this.createFormDialogVisible = false;
         this.lastNotificationId = 0;
         this.notifications = [];
         this.loadNotifications();

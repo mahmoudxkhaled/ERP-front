@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { GroupsService } from '../../../../services/groups.service';
 import { EntitiesService } from 'src/app/modules/entity-administration/entities/services/entities.service';
 import { RolesService } from 'src/app/modules/entity-administration/roles/services/roles.service';
@@ -10,9 +11,15 @@ import { PermissionService } from 'src/app/core/services/permission.service';
 import { Group } from '../../../../models/groups.model';
 import { IAccountSettings, IAccountDetails } from 'src/app/core/models/account-status.model';
 import { NotificationsService } from '../../../../services/notifications.service';
-import { Notification } from '../../../../models/notifications.model';
+
+const DEFAULT_MODULE_ID = 1;
 
 type SendTargetType = 'accounts' | 'groups' | 'roles' | 'entities' | 'all';
+
+interface TemplateOption {
+    id: number;
+    title: string;
+}
 
 @Component({
     selector: 'app-send-notification',
@@ -20,39 +27,68 @@ type SendTargetType = 'accounts' | 'groups' | 'roles' | 'entities' | 'all';
     styleUrls: ['./send-notification.component.scss']
 })
 export class SendNotificationComponent implements OnInit, OnDestroy {
-    notificationId?: number;
+    /** Current stepper step (0 = Content, 1 = Recipients). 0-based for PrimeNG. */
+    activeStep: number = 0;
 
-    notification: Notification | null = null;
+    /** Step 1: Content. */
+    categoryId: number | null = null;
+    title: string = '';
+    message: string = '';
+    referenceType: string | null = null;
+    referenceId: number | null = null;
+
+    /** Use existing notification as template (prefill form). */
+    templateNotificationId: number | null = null;
+    templateList: TemplateOption[] = [];
+    /** When true, show "Use as template" dropdown. Hidden when user came from list Send button (templateId in URL). */
+    showTemplateDropdown: boolean = true;
+    /** Title of the notification used as template (shown in page header when set). */
+    usedTemplateTitle: string = '';
+    /** When set, template prefill runs after categories are loaded. */
+    private pendingTemplateIdFromUrl: number | null = null;
+
+    /** System vs Entity: which create API and categories to use. */
+    isSystemNotification: boolean = true;
+
+    /** True until categories for current mode are loaded; then we show form and bind template. */
+    loadingCategories: boolean = true;
     loading: boolean = false;
-    targetSelectionLoading: boolean = false; // Loading state for target selection section only
+    targetSelectionLoading: boolean = false;
     sending: boolean = false;
     accountSettings: IAccountSettings;
     isRegional: boolean = false;
     currentAccountId: number = 0;
     currentEntityId: number = 0;
 
-    // Send target
+    /** Categories for dropdown (system or entity). */
+    systemCategories: any[] = [];
+    entityCategories: any[] = [];
+
+    referenceTypes: any[] = [
+        { label: 'None', value: null },
+        { label: 'Image', value: 'Image' },
+        { label: 'Document', value: 'Document' },
+        { label: 'Link', value: 'Link' },
+        { label: 'Workflow', value: 'Workflow' }
+    ];
+
     selectedTargetType: SendTargetType = 'accounts';
 
-    // Accounts
     availableAccounts: any[] = [];
     filteredAccounts: any[] = [];
     selectedAccountIds: number[] = [];
     accountSearchFilter: string = '';
 
-    // Groups (Personal Groups only)
     availableGroups: Group[] = [];
     filteredGroups: Group[] = [];
     selectedGroupIds: number[] = [];
     groupSearchFilter: string = '';
 
-    // Roles
     availableRoles: any[] = [];
     filteredRoles: any[] = [];
     selectedRoleIds: number[] = [];
     roleSearchFilter: string = '';
 
-    // Entities
     availableEntities: any[] = [];
     filteredEntities: any[] = [];
     selectedEntityIds: number[] = [];
@@ -79,21 +115,19 @@ export class SendNotificationComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        // Get notificationId from route query params
-        this.route.queryParams.subscribe(params => {
-            const id = params['id'] ? Number(params['id']) : undefined;
-            if (id && id !== this.notificationId) {
-                this.notificationId = id;
-                this.loadNotification();
-            } else if (!id) {
-                this.messageService.add({
-                    severity: 'warn',
-                    summary: 'No Notification Selected',
-                    detail: 'Please select a notification to send.'
-                });
-                setTimeout(() => {
-                    this.goBack();
-                }, 2000);
+        this.route.queryParams.pipe(take(1)).subscribe(params => {
+            const mode = params['mode'] as string;
+            const templateIdParam = params['templateId'];
+            this.isSystemNotification = mode !== 'entity';
+            this.loadCategories();
+            this.loadTemplateList();
+            if (templateIdParam != null && templateIdParam !== '') {
+                const id = Number(templateIdParam);
+                if (id > 0) {
+                    this.templateNotificationId = id;
+                    this.showTemplateDropdown = false;
+                    this.pendingTemplateIdFromUrl = id;
+                }
             }
         });
     }
@@ -106,115 +140,212 @@ export class SendNotificationComponent implements OnInit, OnDestroy {
         this.router.navigate(['../'], { relativeTo: this.route });
     }
 
-    loadNotificationById(notificationId: number): void {
-        this.notificationId = notificationId;
-        this.loadNotification();
+    /** Categories to show in dropdown. */
+    get displayCategories(): any[] {
+        return this.isSystemNotification ? this.systemCategories : this.entityCategories;
     }
 
-    loadNotification(): void {
-        if (!this.notificationId) {
-            return;
+    /** True when categoryId is set and exists in the loaded categories list (so dropdown can show it). */
+    get isCategorySelectedAndValid(): boolean {
+        if (this.categoryId == null || this.categoryId <= 0) {
+            return false;
+        }
+        return this.displayCategories.some((c: any) => Number(c.Category_ID ?? c.category_ID ?? 0) === this.categoryId);
+    }
+
+    private categoryExistsInList(categoryId: number | null): boolean {
+        if (categoryId == null) {
+            return false;
+        }
+        return this.displayCategories.some((c: any) => Number(c.Category_ID ?? c.category_ID ?? 0) === categoryId);
+    }
+
+    loadCategories(): void {
+        if (this.permissionService.canListNotificationCategories()) {
+            const sub = this.notificationsService.listNotificationCategories(0, 100).subscribe({
+                next: (response: any) => {
+                    if (response?.success) {
+                        console.log('loadCategories', response);
+                        const categories = response?.message?.Categories || response?.message?.Notification_Categories || [];
+                        const all = Array.isArray(categories) ? categories : [];
+                        const filtered = all.filter((c: any) =>
+                            c.Entity_ID === '' || c.Entity_ID == null || c.Entity_ID === undefined
+                        );
+                        this.systemCategories = filtered.map((c: any) => ({
+                            ...c,
+                            Category_ID: Number(c.Category_ID ?? c.category_ID ?? 0)
+                        }));
+                    }
+                    if (this.isSystemNotification) {
+                        this.loadingCategories = false;
+                        this.applyPendingTemplateFromUrl();
+                    }
+                },
+                error: () => {
+                    if (this.isSystemNotification) {
+                        this.loadingCategories = false;
+                    }
+                }
+            });
+            this.subscriptions.push(sub);
+        } else if (this.isSystemNotification) {
+            this.loadingCategories = false;
         }
 
+        if (this.permissionService.canListEntityNotificationCategories() && this.currentEntityId > 0) {
+            const sub = this.notificationsService.listEntityNotificationCategories(this.currentEntityId, 0, 100).subscribe({
+                next: (response: any) => {
+                    if (response?.success) {
+                        const message = response?.message || {};
+                        const categories = message?.Categories ?? message?.Notification_Categories ?? [];
+                        const arr = Array.isArray(categories) ? categories : [];
+                        this.entityCategories = arr.map((c: any) => ({
+                            ...c,
+                            Category_ID: Number(c.Category_ID ?? c.category_ID ?? 0)
+                        }));
+                    }
+                    if (!this.isSystemNotification) {
+                        this.loadingCategories = false;
+                        this.applyPendingTemplateFromUrl();
+                    }
+                },
+                error: () => {
+                    if (!this.isSystemNotification) {
+                        this.loadingCategories = false;
+                    }
+                }
+            });
+            this.subscriptions.push(sub);
+        } else if (!this.isSystemNotification) {
+            this.loadingCategories = false;
+        }
+    }
+
+    /** Run template prefill after categories are loaded so Category dropdown can bind. */
+    private applyPendingTemplateFromUrl(): void {
+        if (this.pendingTemplateIdFromUrl == null) {
+            return;
+        }
+        this.pendingTemplateIdFromUrl = null;
+        this.onTemplateChange();
+    }
+
+    /** Load list of existing notifications for template dropdown. */
+    loadTemplateList(): void {
+        if (this.isSystemNotification) {
+            const sub = this.notificationsService.listNotifications([], [], '', 0, 50).subscribe({
+                next: (response: any) => {
+                    if (response?.success) {
+                        const list = response?.message?.Notifications || response?.message || [];
+                        const arr = Array.isArray(list) ? list : [];
+                        this.templateList = arr.map((n: any) => ({
+                            id: n.Notification_ID ?? n.notification_ID ?? 0,
+                            title: n.Title ?? n.title ?? ('#' + (n.Notification_ID ?? n.notification_ID))
+                        })).filter((t: TemplateOption) => t.id > 0);
+                    }
+                }
+            });
+            this.subscriptions.push(sub);
+        } else if (this.currentEntityId > 0) {
+            const sub = this.notificationsService.listEntityNotifications(
+                this.currentEntityId, [], [], '', 0, 50
+            ).subscribe({
+                next: (response: any) => {
+                    if (response?.success) {
+                        const list = response?.message?.Notifications || response?.message || [];
+                        const arr = Array.isArray(list) ? list : [];
+                        this.templateList = arr.map((n: any) => ({
+                            id: n.Notification_ID ?? n.notification_ID ?? 0,
+                            title: n.Title ?? n.title ?? ('#' + (n.Notification_ID ?? n.notification_ID))
+                        })).filter((t: TemplateOption) => t.id > 0);
+                    }
+                }
+            });
+            this.subscriptions.push(sub);
+        }
+    }
+
+    /** When user selects a template, load that notification and prefill form. */
+    onTemplateChange(): void {
+        if (!this.templateNotificationId) {
+            this.usedTemplateTitle = '';
+            return;
+        }
         this.loading = true;
-        // Try System first, then Entity
-        const sub = this.notificationsService.getNotification(this.notificationId).subscribe({
+        const id = this.templateNotificationId;
+        const obs = this.isSystemNotification
+            ? this.notificationsService.getNotification(id)
+            : this.notificationsService.getEntityNotification(id);
+        const sub = obs.subscribe({
             next: (response: any) => {
-                if (response?.success) {
-                    this.mapNotification(response.message, true);
-                } else {
-                    this.loadEntityNotification();
-                }
                 this.loading = false;
+                if (!response?.success) {
+                    return;
+                }
+                const data = response?.message || response;
+                const rawCategory = data.Category_ID ?? data.category_ID;
+                const parsedCategoryId = (rawCategory != null && rawCategory !== '') ? Number(rawCategory) : null;
+                this.categoryId = this.categoryExistsInList(parsedCategoryId) ? parsedCategoryId : null;
+                this.title = data.title ?? data.Title ?? '';
+                this.message = data.message ?? data.Message ?? '';
+                this.referenceType = data.reference_Type ?? data.Reference_Type ?? null;
+                const refId = data.reference_ID ?? data.Reference_ID;
+                this.referenceId = refId != null && refId !== '' ? Number(refId) : null;
+                const templateTitle = this.isRegional ? (data.Title_Regional ?? data.title ?? data.Title) : (data.title ?? data.Title);
+                this.usedTemplateTitle = templateTitle ?? '';
             },
             error: () => {
-                this.loadEntityNotification();
+                this.loading = false;
             }
         });
         this.subscriptions.push(sub);
     }
 
-    loadEntityNotification(): void {
-        if (!this.notificationId) {
-            return;
+    /** Step 1 is valid when category (and in displayCategories), title, and message are filled. */
+    get isStep1Valid(): boolean {
+        const hasCategory = this.isCategorySelectedAndValid;
+        const hasTitle = !!this.title?.trim();
+        const hasMessage = !!this.message?.trim();
+        return hasCategory && hasTitle && hasMessage;
+    }
+
+    /** Step 2 is valid when at least one recipient is selected or target is All. */
+    get isStep2Valid(): boolean {
+        if (this.selectedTargetType === 'all') {
+            return true;
         }
-
-        const sub = this.notificationsService.getEntityNotification(this.notificationId).subscribe({
-            next: (response: any) => {
-                if (response?.success) {
-                    this.mapNotification(response.message, false);
-                } else {
-                    this.messageService.add({
-                        severity: 'error',
-                        summary: 'Error',
-                        detail: 'Notification not found.'
-                    });
-                }
-                this.loading = false;
-            },
-            error: () => {
-                this.loading = false;
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: 'Notification not found.'
-                });
-            }
-        });
-        this.subscriptions.push(sub);
+        if (this.selectedTargetType === 'accounts') {
+            return this.selectedAccountIds.length > 0;
+        }
+        if (this.selectedTargetType === 'groups') {
+            return this.selectedGroupIds.length > 0;
+        }
+        if (this.selectedTargetType === 'roles') {
+            return this.selectedRoleIds.length > 0;
+        }
+        if (this.selectedTargetType === 'entities') {
+            return this.selectedEntityIds.length > 0;
+        }
+        return false;
     }
 
-    mapNotification(notificationData: any, isSystem: boolean): void {
-        // API returns snake_case format
-        const notificationId = notificationData?.notification_ID || this.notificationId || 0;
-        const moduleId = notificationData?.module_ID || 0;
-        const typeId = notificationData?.type_ID || 0;
-        const categoryId = notificationData?.category_ID || 0;
-        const entityId = notificationData?.entity_ID;
-        const title = notificationData?.title || '';
-        const titleRegional = notificationData?.title_Regional || '';
-        const message = notificationData?.message || '';
-        const messageRegional = notificationData?.message_Regional || '';
-        const referenceType = notificationData?.reference_Type || null;
-        const referenceId = notificationData?.reference_ID || null;
-        const createdAt = notificationData?.created_At;
-
-        this.notification = {
-            id: notificationId,
-            moduleId: moduleId,
-            typeId: typeId,
-            categoryId: categoryId,
-            entityId: entityId,
-            title: this.isRegional ? (titleRegional || title) : title,
-            message: this.isRegional ? (messageRegional || message) : message,
-            titleRegional: titleRegional,
-            messageRegional: messageRegional,
-            referenceType: referenceType,
-            referenceId: referenceId,
-            createdAt: createdAt,
-            isSystemNotification: isSystem
-        };
-
-        // Load accounts by default when notification is loaded
-        if (this.selectedTargetType === 'accounts') {
-            this.loadAccounts();
+    goToStep(step: number): void {
+        this.activeStep = step;
+        if (step === 1) {
+            this.onTargetTypeChange();
         }
     }
 
     onTargetTypeChange(): void {
-        // Reset selections when changing target type
         this.selectedAccountIds = [];
         this.selectedGroupIds = [];
         this.selectedRoleIds = [];
         this.selectedEntityIds = [];
-
-        // Reset search filters
         this.accountSearchFilter = '';
         this.groupSearchFilter = '';
         this.roleSearchFilter = '';
         this.entitySearchFilter = '';
 
-        // Load data based on target type
         switch (this.selectedTargetType) {
             case 'accounts':
                 this.loadAccounts();
@@ -232,33 +363,31 @@ export class SendNotificationComponent implements OnInit, OnDestroy {
     }
 
     loadAccounts(): void {
-        // Load accounts from current entity
-        if (this.currentEntityId > 0) {
-            this.targetSelectionLoading = true;
-            const sub = this.entitiesService.getEntityAccountsList(this.currentEntityId.toString()).subscribe({
-                next: (response: any) => {
-                    if (response?.success) {
-                        const accounts = response?.message?.Accounts || [];
-                        this.availableAccounts = Array.isArray(accounts) ? accounts : [];
-                        this.filteredAccounts = [...this.availableAccounts];
-                    }
-                    this.targetSelectionLoading = false;
-                },
-                error: () => {
-                    this.targetSelectionLoading = false;
-                }
-            });
-            this.subscriptions.push(sub);
+        if (this.currentEntityId <= 0) {
+            return;
         }
+        this.targetSelectionLoading = true;
+        const sub = this.entitiesService.getEntityAccountsList(this.currentEntityId.toString()).subscribe({
+            next: (response: any) => {
+                if (response?.success) {
+                    const accounts = response?.message?.Accounts || [];
+                    this.availableAccounts = Array.isArray(accounts) ? accounts : [];
+                    this.filteredAccounts = [...this.availableAccounts];
+                }
+                this.targetSelectionLoading = false;
+            },
+            error: () => {
+                this.targetSelectionLoading = false;
+            }
+        });
+        this.subscriptions.push(sub);
     }
 
     loadGroups(): void {
-        // Load personal groups only (owned by current user)
         this.targetSelectionLoading = true;
         const sub = this.groupsService.listPersonalGroups(this.currentAccountId, false).subscribe({
             next: (response: any) => {
                 if (response?.success) {
-                    // API returns array directly in message
                     const groups = Array.isArray(response?.message) ? response.message : [];
                     this.availableGroups = groups.map((g: any) => ({
                         id: String(g.groupID),
@@ -280,32 +409,31 @@ export class SendNotificationComponent implements OnInit, OnDestroy {
     }
 
     loadRoles(): void {
-        // Load entity roles from current entity
-        if (this.currentEntityId > 0) {
-            this.targetSelectionLoading = true;
-            const sub = this.rolesService.listEntityRoles(this.currentEntityId, 0, 100).subscribe({
-                next: (response: any) => {
-                    if (response?.success) {
-                        // API returns Entity_Roles as object
-                        const rolesData = response?.message?.Entity_Roles || {};
-                        const rolesArray = Object.values(rolesData).filter((item: any) =>
-                            typeof item === 'object' && item !== null && item.Entity_Role_ID !== undefined
-                        );
-                        this.availableRoles = rolesArray.map((item: any) => ({
-                            id: item.Entity_Role_ID,
-                            title: this.isRegional ? (item.Title_Regional || item.Title) : item.Title,
-                            description: this.isRegional ? (item.Description_Regional || item.Description) : item.Description
-                        }));
-                        this.filteredRoles = [...this.availableRoles];
-                    }
-                    this.targetSelectionLoading = false;
-                },
-                error: () => {
-                    this.targetSelectionLoading = false;
-                }
-            });
-            this.subscriptions.push(sub);
+        if (this.currentEntityId <= 0) {
+            return;
         }
+        this.targetSelectionLoading = true;
+        const sub = this.rolesService.listEntityRoles(this.currentEntityId, 0, 100).subscribe({
+            next: (response: any) => {
+                if (response?.success) {
+                    const rolesData = response?.message?.Entity_Roles || {};
+                    const rolesArray = Object.values(rolesData).filter((item: any) =>
+                        typeof item === 'object' && item !== null && item.Entity_Role_ID !== undefined
+                    );
+                    this.availableRoles = rolesArray.map((item: any) => ({
+                        id: item.Entity_Role_ID,
+                        title: this.isRegional ? (item.Title_Regional || item.Title) : item.Title,
+                        description: this.isRegional ? (item.Description_Regional || item.Description) : item.Description
+                    }));
+                    this.filteredRoles = [...this.availableRoles];
+                }
+                this.targetSelectionLoading = false;
+            },
+            error: () => {
+                this.targetSelectionLoading = false;
+            }
+        });
+        this.subscriptions.push(sub);
     }
 
     loadEntities(): void {
@@ -313,7 +441,6 @@ export class SendNotificationComponent implements OnInit, OnDestroy {
         const sub = this.entitiesService.listEntities(0, 100, '').subscribe({
             next: (response: any) => {
                 if (response?.success) {
-                    // API returns Entities_List or message as object
                     const entitiesData = response?.message?.Entities || {};
                     const entitiesArray = Object.values(entitiesData).filter((item: any) =>
                         typeof item === 'object' && item !== null && item.Entity_ID !== undefined
@@ -340,173 +467,196 @@ export class SendNotificationComponent implements OnInit, OnDestroy {
     }
 
     filterAccounts(): void {
-        if (!this.accountSearchFilter || this.accountSearchFilter.trim() === '') {
+        if (!this.accountSearchFilter?.trim()) {
             this.filteredAccounts = [...this.availableAccounts];
             return;
         }
-
-        const searchTerm = this.accountSearchFilter.toLowerCase().trim();
+        const term = this.accountSearchFilter.toLowerCase().trim();
         this.filteredAccounts = this.availableAccounts.filter((account: any) =>
-            String(account.Account_ID).toLowerCase().includes(searchTerm) ||
-            (account.Email && account.Email.toLowerCase().includes(searchTerm))
+            String(account.Account_ID).toLowerCase().includes(term) ||
+            (account.Email && account.Email.toLowerCase().includes(term))
         );
     }
 
     filterGroups(): void {
-        if (!this.groupSearchFilter || this.groupSearchFilter.trim() === '') {
+        if (!this.groupSearchFilter?.trim()) {
             this.filteredGroups = [...this.availableGroups];
             return;
         }
-
-        const searchTerm = this.groupSearchFilter.toLowerCase().trim();
+        const term = this.groupSearchFilter.toLowerCase().trim();
         this.filteredGroups = this.availableGroups.filter((group: Group) =>
-            String(group.id).toLowerCase().includes(searchTerm) ||
-            (group.title && group.title.toLowerCase().includes(searchTerm)) ||
-            (group.description && group.description.toLowerCase().includes(searchTerm))
+            String(group.id).toLowerCase().includes(term) ||
+            (group.title && group.title.toLowerCase().includes(term)) ||
+            (group.description && group.description.toLowerCase().includes(term))
         );
     }
 
     filterRoles(): void {
-        if (!this.roleSearchFilter || this.roleSearchFilter.trim() === '') {
+        if (!this.roleSearchFilter?.trim()) {
             this.filteredRoles = [...this.availableRoles];
             return;
         }
-
-        const searchTerm = this.roleSearchFilter.toLowerCase().trim();
+        const term = this.roleSearchFilter.toLowerCase().trim();
         this.filteredRoles = this.availableRoles.filter((role: any) =>
-            String(role.id).toLowerCase().includes(searchTerm) ||
-            (role.title && role.title.toLowerCase().includes(searchTerm)) ||
-            (role.description && role.description.toLowerCase().includes(searchTerm))
+            String(role.id).toLowerCase().includes(term) ||
+            (role.title && role.title.toLowerCase().includes(term)) ||
+            (role.description && role.description.toLowerCase().includes(term))
         );
     }
 
     filterEntities(): void {
-        if (!this.entitySearchFilter || this.entitySearchFilter.trim() === '') {
+        if (!this.entitySearchFilter?.trim()) {
             this.filteredEntities = [...this.availableEntities];
             return;
         }
-
-        const searchTerm = this.entitySearchFilter.toLowerCase().trim();
+        const term = this.entitySearchFilter.toLowerCase().trim();
         this.filteredEntities = this.availableEntities.filter((entity: any) =>
-            String(entity.id).toLowerCase().includes(searchTerm) ||
-            (entity.code && entity.code.toLowerCase().includes(searchTerm)) ||
-            (entity.name && entity.name.toLowerCase().includes(searchTerm)) ||
-            (entity.description && entity.description.toLowerCase().includes(searchTerm))
+            String(entity.id).toLowerCase().includes(term) ||
+            (entity.code && entity.code.toLowerCase().includes(term)) ||
+            (entity.name && entity.name.toLowerCase().includes(term)) ||
+            (entity.description && entity.description.toLowerCase().includes(term))
         );
     }
 
+    /**
+     * Create notification then send (Create = Send).
+     * Validates both steps, calls create API, then send API with new ID.
+     */
     send(): void {
-        if (!this.notificationId) {
+        if (!this.isStep1Valid) {
             this.messageService.add({
                 severity: 'warn',
                 summary: 'Validation',
-                detail: 'Please select a notification first.'
+                detail: 'Please complete Step 1: Category, Title, and Message are required.'
+            });
+            return;
+        }
+        if (!this.isStep2Valid) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Validation',
+                detail: 'Please select at least one recipient.'
             });
             return;
         }
 
         this.sending = true;
+        const categoryId = Number(this.categoryId);
+        const title = this.title.trim();
+        const message = this.message.trim();
+        const referenceType = this.referenceType || null;
+        const referenceId = this.referenceId != null ? this.referenceId : null;
 
+        const createObs = this.isSystemNotification
+            ? this.notificationsService.createNotification(
+                DEFAULT_MODULE_ID,
+                categoryId,
+                title,
+                message,
+                referenceType,
+                referenceId
+            )
+            : this.notificationsService.createEntityNotification(
+                DEFAULT_MODULE_ID,
+                categoryId,
+                this.currentEntityId,
+                title,
+                message,
+                referenceType,
+                referenceId
+            );
+
+        const sub = createObs.subscribe({
+            next: (response: any) => {
+                if (!response?.success) {
+                    this.handleCreateError(response);
+                    this.sending = false;
+                    return;
+                }
+                const newId = this.getNewNotificationIdFromResponse(response);
+                if (!newId) {
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: 'Error',
+                        detail: 'Notification was created but ID was not returned.'
+                    });
+                    this.sending = false;
+                    return;
+                }
+                this.sendToTargets(newId);
+            },
+            error: () => {
+                this.sending = false;
+            }
+        });
+        this.subscriptions.push(sub);
+    }
+
+    private getNewNotificationIdFromResponse(response: any): number | null {
+        const msg = response?.message;
+        if (msg == null) {
+            return null;
+        }
+        const id = msg.Notification_ID ?? msg.notification_ID;
+        return id != null ? Number(id) : null;
+    }
+
+    private handleCreateError(response: any): void {
+        const code = String(response?.message || '');
+        let detail = 'Failed to create notification.';
+        if (code === 'ERP11460') detail = 'Invalid Module ID';
+        else if (code === 'ERP11461') detail = 'Invalid Notification Title';
+        else if (code === 'ERP11462') detail = 'Invalid Notification Message';
+        else if (code === 'ERP11463') detail = 'Invalid Reference Type';
+        else if (code === 'ERP11464') detail = 'Invalid Reference ID';
+        this.messageService.add({ severity: 'error', summary: 'Error', detail });
+    }
+
+    private sendToTargets(notificationId: number): void {
         let sub: Subscription;
 
         switch (this.selectedTargetType) {
             case 'accounts':
-                if (this.selectedAccountIds.length === 0) {
-                    this.messageService.add({
-                        severity: 'warn',
-                        summary: 'Validation',
-                        detail: 'Please select at least one account.'
-                    });
-                    this.sending = false;
-                    return;
-                }
-                // Extract Account_ID from selected account objects
-                const accountIds = this.selectedAccountIds.map((account: any) =>
-                    typeof account === 'object' ? account.Account_ID : account
+                const accountIds = this.selectedAccountIds.map((a: any) =>
+                    typeof a === 'object' ? a.Account_ID : a
                 );
-                sub = this.notificationsService.sendNotificationToAccounts(this.notificationId, accountIds).subscribe({
-                    next: (response: any) => {
-                        this.handleSendResponse(response);
-                    }
+                sub = this.notificationsService.sendNotificationToAccounts(notificationId, accountIds).subscribe({
+                    next: (res) => this.handleSendResponse(res)
                 });
                 break;
-
             case 'groups':
-                if (this.selectedGroupIds.length === 0) {
-                    this.messageService.add({
-                        severity: 'warn',
-                        summary: 'Validation',
-                        detail: 'Please select at least one group.'
-                    });
-                    this.sending = false;
-                    return;
-                }
-                // Extract group IDs from selected group objects
-                const groupIds = this.selectedGroupIds.map((group: any) =>
-                    typeof group === 'object' ? Number(group.id) : Number(group)
+                const groupIds = this.selectedGroupIds.map((g: any) =>
+                    typeof g === 'object' ? Number(g.id) : Number(g)
                 );
-                sub = this.notificationsService.sendNotificationToGroups(this.notificationId, groupIds).subscribe({
-                    next: (response: any) => {
-                        this.handleSendResponse(response);
-                    }
+                sub = this.notificationsService.sendNotificationToGroups(notificationId, groupIds).subscribe({
+                    next: (res) => this.handleSendResponse(res)
                 });
                 break;
-
             case 'roles':
-                if (this.selectedRoleIds.length === 0) {
-                    this.messageService.add({
-                        severity: 'warn',
-                        summary: 'Validation',
-                        detail: 'Please select at least one role.'
-                    });
-                    this.sending = false;
-                    return;
-                }
-                // Extract role IDs from selected role objects
-                const roleIds = this.selectedRoleIds.map((role: any) =>
-                    typeof role === 'object' ? role.id : Number(role)
+                const roleIds = this.selectedRoleIds.map((r: any) =>
+                    typeof r === 'object' ? r.id : Number(r)
                 );
-                sub = this.notificationsService.sendNotificationToRoles(this.notificationId, roleIds).subscribe({
-                    next: (response: any) => {
-                        this.handleSendResponse(response);
-                    }
+                sub = this.notificationsService.sendNotificationToRoles(notificationId, roleIds).subscribe({
+                    next: (res) => this.handleSendResponse(res)
                 });
                 break;
-
             case 'entities':
-                if (this.selectedEntityIds.length === 0) {
-                    this.messageService.add({
-                        severity: 'warn',
-                        summary: 'Validation',
-                        detail: 'Please select at least one entity.'
-                    });
-                    this.sending = false;
-                    return;
-                }
-                // Extract entity IDs from selected entity objects
-                const entityIds = this.selectedEntityIds.map((entity: any) =>
-                    typeof entity === 'object' ? entity.id : Number(entity)
+                const entityIds = this.selectedEntityIds.map((e: any) =>
+                    typeof e === 'object' ? e.id : Number(e)
                 );
-                sub = this.notificationsService.sendNotificationToEntities(this.notificationId, entityIds).subscribe({
-                    next: (response: any) => {
-                        this.handleSendResponse(response);
-                    }
+                sub = this.notificationsService.sendNotificationToEntities(notificationId, entityIds).subscribe({
+                    next: (res) => this.handleSendResponse(res)
                 });
                 break;
-
             case 'all':
-                sub = this.notificationsService.sendNotificationToAll(this.notificationId).subscribe({
-                    next: (response: any) => {
-                        this.handleSendResponse(response);
-                    }
+                sub = this.notificationsService.sendNotificationToAll(notificationId).subscribe({
+                    next: (res) => this.handleSendResponse(res)
                 });
                 break;
-
             default:
                 this.sending = false;
                 return;
         }
-
         this.subscriptions.push(sub);
     }
 
@@ -515,30 +665,12 @@ export class SendNotificationComponent implements OnInit, OnDestroy {
 
         if (!response?.success) {
             const code = String(response?.message || '');
-            let detail = '';
-
-            switch (code) {
-                case 'ERP11466':
-                    detail = 'Invalid Account IDs';
-                    break;
-                case 'ERP11467':
-                    detail = 'Invalid Group IDs';
-                    break;
-                case 'ERP11468':
-                    detail = 'Invalid Entity Role IDs';
-                    break;
-                case 'ERP11469':
-                    detail = 'Invalid Entity IDs';
-                    break;
-                default:
-                    detail = 'Failed to send notification. Please try again.';
-            }
-
-            this.messageService.add({
-                severity: 'error',
-                summary: 'Error',
-                detail
-            });
+            let detail = 'Failed to send notification.';
+            if (code === 'ERP11466') detail = 'Invalid Account IDs';
+            else if (code === 'ERP11467') detail = 'Invalid Group IDs';
+            else if (code === 'ERP11468') detail = 'Invalid Entity Role IDs';
+            else if (code === 'ERP11469') detail = 'Invalid Entity IDs';
+            this.messageService.add({ severity: 'error', summary: 'Error', detail });
             return;
         }
 
@@ -548,15 +680,11 @@ export class SendNotificationComponent implements OnInit, OnDestroy {
             detail: 'Notification sent successfully.'
         });
 
-        // Reset selections
         this.selectedAccountIds = [];
         this.selectedGroupIds = [];
         this.selectedRoleIds = [];
         this.selectedEntityIds = [];
 
-        // Navigate back after successful send
-        setTimeout(() => {
-            this.goBack();
-        }, 1500);
+        setTimeout(() => this.goBack(), 1500);
     }
 }

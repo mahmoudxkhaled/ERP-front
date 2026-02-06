@@ -191,14 +191,37 @@ export class ErrorHandlingInterceptor implements HttpInterceptor {
         });
     }
 
+
     /**
-     * Check if error code is a generic error code (ERP11000-ERP11099)
+ * Check if error code is a generic error code (ERP11000-ERP11099)
+ */
+    // private isGenericErrorCode(code: string): boolean {
+    //     if (!code || typeof code !== 'string') {
+    //         return false;
+    //     }
+    //     const match = code.match(/^ERP11(\d{3})$/);
+    //     if (!match) {
+    //         return false;
+    //     }
+    //     const number = parseInt(match[1], 10);
+    //     return number >= 0 && number <= 99;
+    // }
+
+
+    /**
+     * Check if error code is a generic error code (ERP11000-ERP11099 or 11000-11099)
+     * Backend may send with or without "ERP" prefix (e.g. ERP11041 or 11041).
      */
     private isGenericErrorCode(code: string): boolean {
         if (!code || typeof code !== 'string') {
             return false;
         }
-        const match = code.match(/^ERP11(\d{3})$/);
+        // Match ERP11000-ERP11099
+        let match = code.match(/^ERP11(\d{3})$/);
+        if (!match) {
+            // Match 11000-11099 (without ERP prefix, e.g. 11041)
+            match = code.match(/^11(\d{3})$/);
+        }
         if (!match) {
             return false;
         }
@@ -210,8 +233,10 @@ export class ErrorHandlingInterceptor implements HttpInterceptor {
      * Check if error code requires session expired dialog
      */
     private isSessionExpiredCode(code: string): boolean {
+        console.log('code', code);
         const sessionExpiredCodes = [
             'ERP11040', // Access Token missing
+            '11041', // Access Token missing
             'ERP11041', // Access Token invalid
             'ERP11042', // Access Token expired
             'ERP11062', // Error removing Access Token

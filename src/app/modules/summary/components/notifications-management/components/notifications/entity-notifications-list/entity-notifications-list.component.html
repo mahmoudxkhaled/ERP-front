@@ -104,16 +104,6 @@
     </div>
 </div>
 
-<!-- Add Notification Dialog (create-notification) -->
-<p-dialog [(visible)]="createFormDialogVisible" [modal]="true" [style]="{ width: '600px' }" [closable]="true"
-    [draggable]="false" [resizable]="false" (onHide)="createFormDialogVisible = false">
-    <ng-template pTemplate="header">
-        <h3>Add Entity Notification</h3>
-    </ng-template>
-    <app-create-notification [notificationMode]="'entity'" (notificationCreated)="onCreateNotificationCreated($event)">
-    </app-create-notification>
-</p-dialog>
-
 <!-- Edit Notification Dialog (notification-form) -->
 <app-notification-form [(visible)]="formDialogVisible" [notificationId]="formNotificationId"
     [isSystemNotification]="false" (saved)="onFormSaved()">

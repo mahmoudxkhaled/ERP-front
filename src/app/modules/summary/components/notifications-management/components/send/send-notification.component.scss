@@ -14,6 +14,47 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
+.send-notification-stepper {
+    min-height: 200px;
+}
+
+.step-indicator {
+    .step-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        color: var(--text-color-secondary);
+        background: var(--surface-100);
+        transition: background-color 0.2s, color 0.2s;
+
+        &.active {
+            color: var(--primary-color);
+            background: var(--surface-0);
+            border: 1px solid var(--primary-color);
+        }
+
+        &.done {
+            color: var(--green-600);
+            background: var(--green-50);
+        }
+    }
+
+    .step-connector {
+        display: inline-block;
+        width: 2rem;
+        height: 2px;
+        background: var(--surface-300);
+        margin: 0 0.25rem;
+    }
+}
+
+.step-content {
+    padding: 0.5rem 0;
+}
+
 .send-notification-content {
     min-height: 300px;
 }
