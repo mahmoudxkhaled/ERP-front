@@ -90,18 +90,58 @@
     position: relative;
 }
 
-.target-selection-loading {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10;
-    border-radius: 8px;
+/* Skeleton: same layout as stepper + step content */
+.send-loading-skeleton {
+    min-height: 200px;
+}
+
+.send-loading-skeleton--short {
+    min-height: 120px;
+}
+
+/* Skeleton: same layout as target selection (Send To + buttons + table) */
+.target-selection-skeleton {
+    width: 100%;
+}
+
+.target-selection-skeleton-table {
+    width: 100%;
+    overflow: auto;
+    border: 1px solid var(--surface-border);
+    border-radius: var(--border-radius);
+
+    .datatable-skeleton {
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: collapse;
+        border-spacing: 0;
+
+        thead > tr > th {
+            padding: 1rem;
+            text-align: left;
+            border: 0 none;
+            border-bottom: 1px solid var(--surface-border);
+            background: var(--surface-ground);
+            font-weight: 600;
+        }
+
+        tbody > tr > td {
+            padding: 1rem;
+            border: 0 none;
+            border-bottom: 1px solid var(--surface-border);
+            background: var(--surface-card);
+        }
+
+        tbody > tr:last-child > td {
+            border-bottom: none;
+        }
+    }
+
+    .datatable-skeleton-paginator {
+        padding: 0.75rem 1rem;
+        border-top: 1px solid var(--surface-border);
+        background: var(--surface-ground);
+    }
 }
 
 .selection-table-container {

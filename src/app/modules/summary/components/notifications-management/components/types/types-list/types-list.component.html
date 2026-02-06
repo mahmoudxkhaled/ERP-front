@@ -4,8 +4,38 @@
     </div>
 
     <div style="position: relative;">
-        <app-table-loading-spinner *ngIf="tableLoadingSpinner"></app-table-loading-spinner>
-        <p-table #typesTable [value]="types" [paginator]="false" responsiveLayout="scroll"
+        <!-- Skeleton: same table structure as p-table (ID, Title 200px, Description 300px, Urgency 150px, Example 250px) -->
+        <div *ngIf="tableLoadingSpinner" class="datatable-skeleton-wrapper">
+            <table class="datatable-skeleton">
+                <colgroup>
+                    <col style="width: 80px">
+                    <col style="width: 200px">
+                    <col style="width: 300px">
+                    <col style="width: 150px">
+                    <col style="width: 250px">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th><p-skeleton height="1.25rem"></p-skeleton></th>
+                        <th><p-skeleton height="1.25rem"></p-skeleton></th>
+                        <th><p-skeleton height="1.25rem"></p-skeleton></th>
+                        <th><p-skeleton height="1.25rem"></p-skeleton></th>
+                        <th><p-skeleton height="1.25rem"></p-skeleton></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let i of [1,2,3,4,5,6,7,8]">
+                        <td><p-skeleton height="2rem"></p-skeleton></td>
+                        <td><p-skeleton height="2rem"></p-skeleton></td>
+                        <td><p-skeleton height="2rem"></p-skeleton></td>
+                        <td><p-skeleton height="2rem"></p-skeleton></td>
+                        <td><p-skeleton height="2rem"></p-skeleton></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p-table *ngIf="!tableLoadingSpinner" #typesTable [value]="types" [paginator]="false" responsiveLayout="scroll"
             [loading]="!!(isLoading$ | async)">
 
             <ng-template pTemplate="header">

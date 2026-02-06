@@ -39,8 +39,41 @@
     </div>
 
     <div style="position: relative;">
-        <app-table-loading-spinner *ngIf="tableLoadingSpinner"></app-table-loading-spinner>
-        <p-table #notificationsTable [value]="notifications" [paginator]="false" responsiveLayout="scroll"
+        <!-- Skeleton: same table structure and column widths as p-table (PrimeNG uses 1rem cell padding) -->
+        <div *ngIf="tableLoadingSpinner" class="inbox-table-skeleton-wrapper">
+            <table class="inbox-table-skeleton">
+                <colgroup>
+                    <col style="width: 50px">
+                    <col style="width: 120px">
+                    <col style="width: 200px">
+                    <col style="width: 400px">
+                    <col style="width: 150px">
+                    <col style="width: 200px">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th><p-skeleton height="1.25rem"></p-skeleton></th>
+                        <th><p-skeleton height="1.25rem"></p-skeleton></th>
+                        <th><p-skeleton height="1.25rem"></p-skeleton></th>
+                        <th><p-skeleton height="1.25rem"></p-skeleton></th>
+                        <th><p-skeleton height="1.25rem"></p-skeleton></th>
+                        <th><p-skeleton height="1.25rem"></p-skeleton></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let i of [1,2,3,4,5,6,7,8]">
+                        <td><p-skeleton height="2rem"></p-skeleton></td>
+                        <td><p-skeleton height="2rem"></p-skeleton></td>
+                        <td><p-skeleton height="2rem"></p-skeleton></td>
+                        <td><p-skeleton height="2rem"></p-skeleton></td>
+                        <td><p-skeleton height="2rem"></p-skeleton></td>
+                        <td><p-skeleton height="2rem"></p-skeleton></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p-table *ngIf="!tableLoadingSpinner" #notificationsTable [value]="notifications" [paginator]="false" responsiveLayout="scroll"
             [loading]="!!(isLoading$ | async)">
 
             <ng-template pTemplate="header">
@@ -97,7 +130,7 @@
             </ng-template>
         </p-table>
 
-        <div class="flex justify-content-center mt-3" *ngIf="notifications.length < totalCount">
+        <div class="flex justify-content-center mt-3" *ngIf="!tableLoadingSpinner && notifications.length < totalCount">
             <p-button label="Load More" icon="pi pi-arrow-down" (onClick)="loadMore()"
                 [loading]="!!(isLoading$ | async)">
             </p-button>
