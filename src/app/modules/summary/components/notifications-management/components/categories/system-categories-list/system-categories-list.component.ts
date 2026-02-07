@@ -38,6 +38,14 @@ export class SystemCategoriesListComponent implements OnInit, OnDestroy {
     searchText: string = '';
     filteredCategories: NotificationCategory[] = [];
 
+    /** When loading and filteredCategories is empty, return placeholder rows so the table can show skeleton cells. */
+    get tableValue(): NotificationCategory[] {
+        if (this.tableLoadingSpinner && this.filteredCategories.length === 0) {
+            return Array(10).fill(null).map(() => ({} as NotificationCategory));
+        }
+        return this.filteredCategories;
+    }
+
     // Sorting
     sortField: string = '';
     sortOrder: number = 0; // 1 for ascending, -1 for descending, 0 for no sort

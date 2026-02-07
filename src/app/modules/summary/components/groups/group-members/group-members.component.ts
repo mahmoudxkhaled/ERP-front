@@ -31,6 +31,14 @@ export class GroupMembersComponent implements OnInit, OnDestroy {
     searchText: string = '';
     filteredMembers: GroupMember[] = [];
 
+    /** When loading and data is empty, return placeholder rows so the table can show skeleton cells. (table-skeleton.md) */
+    get tableValue(): GroupMember[] {
+        if (this.loadingMembers && this.filteredMembers.length === 0) {
+            return Array(10).fill(null).map(() => ({} as GroupMember));
+        }
+        return this.filteredMembers;
+    }
+
     // Account selection dialog
     addMembersDialogVisible: boolean = false;
     accountsForSelection: EntityAccount[] = [];
@@ -42,6 +50,14 @@ export class GroupMembersComponent implements OnInit, OnDestroy {
     accountTableTextFilter: string = '';
     selectedEntityId: string = '';
     includeSubentities: boolean = false;
+
+    /** Placeholder rows for dialog accounts table so skeleton cells show while loading. */
+    get accountTableValue(): EntityAccount[] {
+        if (this.loadingAccountsTable && this.accountsForSelection.length === 0) {
+            return Array(10).fill(null).map(() => ({} as EntityAccount));
+        }
+        return this.accountsForSelection;
+    }
 
     currentAccountId: number = 0;
 

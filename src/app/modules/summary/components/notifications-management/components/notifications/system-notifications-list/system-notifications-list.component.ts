@@ -22,6 +22,14 @@ export class SystemNotificationsListComponent implements OnInit, OnDestroy {
     isLoading$: Observable<boolean>;
     tableLoadingSpinner = false;
     private subscriptions: Subscription[] = [];
+
+    /** When loading and notifications is empty, return placeholder rows so the table can show skeleton cells. */
+    get tableValue(): Notification[] {
+        if (this.tableLoadingSpinner && this.notifications.length === 0) {
+            return Array(10).fill(null).map(() => ({} as Notification));
+        }
+        return this.notifications;
+    }
     menuItems: MenuItem[] = [];
     currentNotification?: Notification;
     accountSettings: IAccountSettings;

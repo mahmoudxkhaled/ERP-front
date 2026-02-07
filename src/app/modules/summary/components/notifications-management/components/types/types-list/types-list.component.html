@@ -4,39 +4,7 @@
     </div>
 
     <div style="position: relative;">
-        <!-- Skeleton: same table structure as p-table (ID, Title 200px, Description 300px, Urgency 150px, Example 250px) -->
-        <div *ngIf="tableLoadingSpinner" class="datatable-skeleton-wrapper">
-            <table class="datatable-skeleton">
-                <colgroup>
-                    <col style="width: 80px">
-                    <col style="width: 200px">
-                    <col style="width: 300px">
-                    <col style="width: 150px">
-                    <col style="width: 250px">
-                </colgroup>
-                <thead>
-                    <tr>
-                        <th><p-skeleton height="1.25rem"></p-skeleton></th>
-                        <th><p-skeleton height="1.25rem"></p-skeleton></th>
-                        <th><p-skeleton height="1.25rem"></p-skeleton></th>
-                        <th><p-skeleton height="1.25rem"></p-skeleton></th>
-                        <th><p-skeleton height="1.25rem"></p-skeleton></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let i of [1,2,3,4,5,6,7,8]">
-                        <td><p-skeleton height="2rem"></p-skeleton></td>
-                        <td><p-skeleton height="2rem"></p-skeleton></td>
-                        <td><p-skeleton height="2rem"></p-skeleton></td>
-                        <td><p-skeleton height="2rem"></p-skeleton></td>
-                        <td><p-skeleton height="2rem"></p-skeleton></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <p-table *ngIf="!tableLoadingSpinner" #typesTable [value]="types" [paginator]="false" responsiveLayout="scroll"
-            [loading]="!!(isLoading$ | async)">
+        <p-table #typesTable [value]="tableValue" [paginator]="false" responsiveLayout="scroll">
 
             <ng-template pTemplate="header">
                 <tr>
@@ -51,19 +19,44 @@
             <ng-template pTemplate="body" let-type>
                 <tr>
                     <td>
-                        <p-tag [value]="'#' + type.id" severity="info"></p-tag>
+                        <ng-container *ngIf="tableLoadingSpinner; else normalId">
+                            <p-skeleton height="1.5rem" width="4rem" borderRadius="4px"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalId>
+                            <p-tag [value]="'#' + type.id" severity="info"></p-tag>
+                        </ng-template>
                     </td>
                     <td>
-                        <span class="font-semibold">{{ type.name }}</span>
+                        <ng-container *ngIf="tableLoadingSpinner; else normalTitle">
+                            <p-skeleton height="1rem" width="10rem"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalTitle>
+                            <span class="font-semibold">{{ type.name }}</span>
+                        </ng-template>
                     </td>
                     <td>
-                        <span class="text-600">{{ type.nameRegional || 'No description' }}</span>
+                        <ng-container *ngIf="tableLoadingSpinner; else normalDescription">
+                            <p-skeleton height="3rem" width="100%"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalDescription>
+                            <span class="text-600">{{ type.nameRegional || 'No description' }}</span>
+                        </ng-template>
                     </td>
                     <td>
-                        <p-tag [value]="type.urgency || 'N/A'" [severity]="getUrgencySeverity(type.urgency)"></p-tag>
+                        <ng-container *ngIf="tableLoadingSpinner; else normalUrgency">
+                            <p-skeleton height="1.5rem" width="5rem" borderRadius="4px"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalUrgency>
+                            <p-tag [value]="type.urgency || 'N/A'" [severity]="getUrgencySeverity(type.urgency)"></p-tag>
+                        </ng-template>
                     </td>
                     <td>
-                        <span class="text-600 font-italic">{{ type.example || 'No example' }}</span>
+                        <ng-container *ngIf="tableLoadingSpinner; else normalExample">
+                            <p-skeleton height="1.5rem" width="12rem"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalExample>
+                            <span class="text-600 font-italic">{{ type.example || 'No example' }}</span>
+                        </ng-template>
                     </td>
                 </tr>
             </ng-template>

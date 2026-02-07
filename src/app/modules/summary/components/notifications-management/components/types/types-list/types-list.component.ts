@@ -16,6 +16,14 @@ export class TypesListComponent implements OnInit, OnDestroy {
     isLoading$: Observable<boolean>;
     tableLoadingSpinner = false;
     private subscriptions: Subscription[] = [];
+
+    /** When loading and types is empty, return placeholder rows so the table can show skeleton cells. */
+    get tableValue(): NotificationType[] {
+        if (this.tableLoadingSpinner && this.types.length === 0) {
+            return Array(10).fill(null).map(() => ({} as NotificationType));
+        }
+        return this.types;
+    }
     accountSettings: IAccountSettings;
     isRegional: boolean = false;
 

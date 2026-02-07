@@ -7,14 +7,9 @@
         </p-button>
     </div>
 
-    <!-- Loading Spinner -->
-    <div *ngIf="loading" class="flex justify-content-center align-items-center" style="min-height: 200px;">
-        <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
-    </div>
-
-    <!-- Members Component -->
-    <div *ngIf="!loading && group">
-        <app-entity-group-members [groupId]="getGroupIdAsNumber()" [entityId]="group.entityId"
+    <!-- Members Component (shows its own table skeleton while loading) -->
+    <div *ngIf="groupId">
+        <app-entity-group-members [groupId]="getGroupIdAsNumber()" [entityId]="group?.entityId"
             (membersUpdated)="handleGroupUpdated()">
         </app-entity-group-members>
     </div>
