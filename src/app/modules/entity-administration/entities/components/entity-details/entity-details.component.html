@@ -5,9 +5,9 @@
             <ng-container *ngIf="loading; else headerTitle">
                 <p-skeleton height="2rem" width="14rem"></p-skeleton>
             </ng-container>
-            <ng-template #headerTitle>Entity Details</ng-template>
+            <ng-template #headerTitle>{{ 'entities.details.title' | translate }}</ng-template>
         </h2>
-        <p-button label="Back to List" icon="pi pi-arrow-left" class="p-button-secondary" (onClick)="navigateBack()"
+        <p-button [label]="'entities.details.backToList' | translate" icon="pi pi-arrow-left" class="p-button-secondary" (onClick)="navigateBack()"
             [disabled]="loading">
         </p-button>
     </div>
@@ -16,7 +16,7 @@
     <div *ngIf="entityId">
         <ng-container *ngIf="loading; else realContent">
             <p-tabView class="w-full h-full">
-                <p-tabPanel header="Basic Information & Contacts">
+                <p-tabPanel [header]="'entities.details.tabs.basicInfoContacts' | translate">
                     <p-panel class="mb-5" [toggleable]="false">
                         <ng-template pTemplate="header">
                             <div class="flex align-items-center justify-content-between w-full">
@@ -60,25 +60,25 @@
                         </div>
                     </p-panel>
                 </p-tabPanel>
-                <p-tabPanel header="Accounts"></p-tabPanel>
-                <p-tabPanel header="Admins"></p-tabPanel>
-                <p-tabPanel header="Roles & Permissions"></p-tabPanel>
-                <p-tabPanel header="Entity Groups"></p-tabPanel>
+                <p-tabPanel [header]="'entities.details.tabs.accounts' | translate"></p-tabPanel>
+                <p-tabPanel [header]="'entities.details.tabs.admins' | translate"></p-tabPanel>
+                <p-tabPanel [header]="'entities.details.tabs.rolesPermissions' | translate"></p-tabPanel>
+                <p-tabPanel [header]="'entities.details.tabs.entityGroups' | translate"></p-tabPanel>
             </p-tabView>
         </ng-container>
         <ng-template #realContent>
         <p-tabView *ngIf="entityDetails" [(activeIndex)]="activeTabIndex" class="w-full h-full">
             <!-- Tab 1: Basic Information & Contacts -->
-            <p-tabPanel header="Basic Information & Contacts">
+            <p-tabPanel [header]="'entities.details.tabs.basicInfoContacts' | translate">
                 <!-- Section 1: Basic Information -->
                 <p-panel class="  mb-5" [toggleable]="false">
                     <ng-template pTemplate="header">
                         <div class="flex align-items-center justify-content-between w-full">
                             <div class="flex align-items-center gap-3">
                                 <i class="pi pi-briefcase text-primary text-2xl"></i>
-                                <span class="text-xl font-semibold">Entity Profile</span>
+                                <span class="text-xl font-semibold">{{ 'entities.details.profile' | translate }}</span>
                             </div>
-                            <p-button label="Edit Entity" icon="pi pi-pencil" size="small" severity="contrast"
+                            <p-button [label]="'entities.details.editEntity' | translate" icon="pi pi-pencil" size="small" severity="contrast"
                                 (onClick)="openEditEntityDialog()" [disabled]="loading" class="edit-entity-btn">
                             </p-button>
                         </div>
@@ -109,17 +109,17 @@
                                                 <p-fileUpload #logoUploader *ngIf="!hasLogo && !loadingLogo"
                                                     mode="basic" name="logo" accept="image/*"
                                                     (onSelect)="onLogoUpload($event)" [maxFileSize]="2097152"
-                                                    chooseLabel="Upload Photo" styleClass="logo-upload-button">
+                                                    [chooseLabel]="'entities.details.logo.uploadPhoto' | translate" styleClass="logo-upload-button">
                                                 </p-fileUpload>
 
                                                 <!-- Show both Upload Another and Remove when logo exists -->
                                                 <ng-container *ngIf="hasLogo && !loadingLogo">
                                                     <p-fileUpload #logoUploader mode="basic" name="logo"
                                                         accept="image/*" (onSelect)="onLogoUpload($event)"
-                                                        [maxFileSize]="2097152" chooseLabel="Upload Another One"
+                                                        [maxFileSize]="2097152" [chooseLabel]="'entities.details.logo.uploadAnotherOne' | translate"
                                                         styleClass="logo-upload-button">
                                                     </p-fileUpload>
-                                                    <p-button label="Remove Photo" icon="pi pi-trash"
+                                                    <p-button [label]="'entities.details.logo.removePhoto' | translate" icon="pi pi-trash"
                                                         class="p-button-danger p-button-sm" (onClick)="removeLogo()"
                                                         [disabled]="loadingLogo">
                                                     </p-button>
@@ -128,7 +128,7 @@
                                                 <!-- Show recommended size text -->
                                                 <small *ngIf="!loadingLogo" class="text-white-alpha-90 mt-2 text-center"
                                                     style="font-size: 0.75rem;">
-                                                    Recommended: 200KB or less
+                                                    {{ 'entities.details.logo.recommendedSize' | translate }}
                                                 </small>
                                             </div>
                                         </div>
@@ -144,15 +144,15 @@
                                 <div class="col-12 md:col-8">
                                     <div class="pl-4">
                                         <h1 class="text-3xl font-bold text-900 mt-0 mb-2">
-                                            {{ getEntityName() || 'Unnamed Entity' }}
+                                            {{ getEntityName() || ('entities.details.unnamedEntity' | translate) }}
                                         </h1>
                                         <div class="flex flex-column gap-3 text-lg">
                                             <div class="flex align-items-center gap-3 text-700">
-                                                <span><strong>Code:</strong> {{ getEntityCode() || '—' }}</span>
+                                                <span><strong>{{ 'entities.details.fields.code' | translate }}</strong> {{ getEntityCode() || '—' }}</span>
                                             </div>
                                             <div class="flex align-items-center gap-3 text-700">
-                                                <span><strong>Entity ID:</strong> #{{ entityId || '—' }}</span>
-                                                <span><strong>Parent Entity:</strong> #{{ getParentEntityLabel() || '—'
+                                                <span><strong>{{ 'entities.details.fields.entityId' | translate }}</strong> #{{ entityId || '—' }}</span>
+                                                <span><strong>{{ 'entities.details.fields.parentEntity' | translate }}</strong> #{{ getParentEntityLabel() || '—'
                                                     }}</span>
                                             </div>
                                         </div>
@@ -168,10 +168,9 @@
                                         </div>
 
                                         <div class="mt-4 pt-4 border-top-1 surface-border">
-                                            <small class="text-500">Description</small>
+                                            <small class="text-500">{{ 'entities.details.fields.description' | translate }}</small>
                                             <p class="mt-1 text-700 font-medium">
-                                                {{ getEntityDescription() || 'No description has been provided for this
-                                                entity.' }}
+                                                {{ getEntityDescription() || ('entities.details.noDescription' | translate) }}
                                             </p>
                                         </div>
                                     </div>
@@ -191,24 +190,24 @@
             </p-tabPanel>
 
             <!-- Tab 2: Accounts -->
-            <p-tabPanel header="Accounts">
+            <p-tabPanel [header]="'entities.details.tabs.accounts' | translate">
                 <app-entity-account-list [entityId]="entityId" (accountCreated)="handleEntityUpdated()"
                     (accountUpdated)="handleEntityUpdated()"></app-entity-account-list>
             </p-tabPanel>
 
             <!-- Tab 3: Admins -->
-            <p-tabPanel header="Admins">
+            <p-tabPanel [header]="'entities.details.tabs.admins' | translate">
                 <app-entity-account-admin-list [entityId]="entityId" (adminCreated)="handleEntityUpdated()"
                     (adminUpdated)="handleEntityUpdated()"></app-entity-account-admin-list>
             </p-tabPanel>
 
             <!-- Tab 4: Roles & Permissions -->
-            <p-tabPanel header="Roles & Permissions">
+            <p-tabPanel [header]="'entities.details.tabs.rolesPermissions' | translate">
                 <app-roles-list [entityId]="getEntityIdAsNumber()"></app-roles-list>
             </p-tabPanel>
 
             <!-- Tab 5: Entity Groups -->
-            <p-tabPanel header="Entity Groups">
+            <p-tabPanel [header]="'entities.details.tabs.entityGroups' | translate">
                 <app-entity-groups-list [entityId]="getEntityIdAsNumber()"
                     [showHeader]="false"></app-entity-groups-list>
             </p-tabPanel>

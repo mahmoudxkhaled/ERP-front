@@ -1,15 +1,15 @@
 <div class="card">
     <div class="flex justify-content-between align-items-center mb-4">
-        <h2>Manage Entities</h2>
+        <h2>{{ 'entities.title' | translate }}</h2>
         <p-button (onClick)="navigateToNew()" [disabled]="!!(isLoading$ | async)">
             <ng-container *ngIf="isLoading$ | async">
                 <span class="indicator-progress" [style.display]="'block'">
-                    Please wait
+                    {{ 'entities.list.pleaseWait' | translate }}
                     <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
                 </span>
             </ng-container>
             <ng-container *ngIf="(isLoading$ | async) === false">
-                <span>Add New Entity</span>
+                <span>{{ 'entities.list.addNewEntity' | translate }}</span>
             </ng-container>
         </p-button>
     </div>
@@ -31,7 +31,7 @@
                 <div class="flex justify-content-between align-items-center">
                     <span class="p-input-icon-left">
                         <i class="pi pi-search"></i>
-                        <input pInputText type="text" placeholder="Search" #searchInput
+                        <input pInputText type="text" [placeholder]="'entities.list.searchPlaceholder' | translate" #searchInput
                             (input)="onSearchInput($event)" />
                     </span>
                 </div>
@@ -39,14 +39,14 @@
 
             <ng-template pTemplate="header">
                 <tr>
-                    <th>Id</th>
-                    <th style="width: 100px;">Code</th>
-                    <th style="width: 200px;">Name</th>
-                    <th style="width: 300px;">Description</th>
+                    <th>{{ 'entities.list.table.id' | translate }}</th>
+                    <th style="width: 100px;">{{ 'entities.list.table.code' | translate }}</th>
+                    <th style="width: 200px;">{{ 'entities.list.table.name' | translate }}</th>
+                    <th style="width: 300px;">{{ 'entities.list.table.description' | translate }}</th>
                     <!-- <th style="width: 150px;">Parent</th> -->
-                    <th style=" text-align: center !important;">Type</th>
-                    <th style=" text-align: center !important;">Status</th>
-                    <th style="width: 150px; text-align: start !important;">Actions</th>
+                    <th style=" text-align: center !important;">{{ 'entities.list.table.type' | translate }}</th>
+                    <th style=" text-align: center !important;">{{ 'entities.list.table.status' | translate }}</th>
+                    <th style="width: 150px; text-align: start !important;">{{ 'entities.list.table.actions' | translate }}</th>
                 </tr>
             </ng-template>
 
@@ -91,10 +91,7 @@
                             <p-skeleton height="3rem" width="100%" class="line-height-3"></p-skeleton>
                         </ng-container>
                         <ng-template #normalDescription>
-                            <span class="text-600 line-height-3 description-text">{{ entity.description || 'No
-                                description
-                                provided.'
-                                }}</span>
+                            <span class="text-600 line-height-3 description-text">{{ entity.description || ('entities.list.noDescription' | translate) }}</span>
                         </ng-template>
                     </td>
                     <td class="text-center">
@@ -133,7 +130,7 @@
 
             <ng-template pTemplate="emptymessage">
                 <tr>
-                    <td colspan="8" class="text-center">No entities found</td>
+                    <td colspan="8" class="text-center">{{ 'entities.list.noEntities' | translate }}</td>
                 </tr>
             </ng-template>
         </p-table>
@@ -145,34 +142,27 @@
 <p-dialog [(visible)]="activationEntityDialog" [modal]="true" [style]="{ width: '500px' }" [closable]="true"
     [draggable]="false" [resizable]="false">
     <ng-template pTemplate="header">
-        <h3>{{ currentEntityForActivation?.active ? 'Deactivate Entity' : 'Activate Entity' }}</h3>
+        <h3>{{ (currentEntityForActivation?.active ? 'entities.list.activationDialog.deactivateTitle' : 'entities.list.activationDialog.activateTitle') | translate }}</h3>
     </ng-template>
     <div class="flex flex-column gap-3">
         <!-- Activation Message -->
         <ng-container *ngIf="!currentEntityForActivation?.active">
-            <p>
-                Are you sure you want to <strong>activate</strong> <strong>{{ currentEntityForActivation?.name
-                    }}</strong>?
-            </p>
+            <p>{{ 'entities.list.activationDialog.activateMessage' | translate: { name: currentEntityForActivation?.name } }}</p>
         </ng-container>
 
         <!-- Deactivation Message with Critical Warning -->
         <ng-container *ngIf="currentEntityForActivation?.active">
-            <p>
-                Are you sure you want to <strong>deactivate : </strong> <strong>{{ currentEntityForActivation?.name
-                    }}</strong>?
-            </p>
+            <p>{{ 'entities.list.activationDialog.deactivateMessage' | translate: { name: currentEntityForActivation?.name } }}</p>
             <div class="p-3 border-round surface-border"
                 style="background: var(--red-50); border-left: 4px solid var(--red-500);">
                 <div class="flex align-items-start gap-2">
                     <i class="pi pi-exclamation-triangle text-red-500 mt-1" style="font-size: 1.5rem;"></i>
                     <div class="flex flex-column gap-2">
                         <p class="text-red-700 font-semibold m-0" style="font-size: 1rem;">
-                            <strong>Critical Warning:</strong>
+                            <strong>{{ 'entities.list.activationDialog.criticalWarning' | translate }}</strong>
                         </p>
                         <p class="text-red-600 m-0 line-height-3" style="font-size: 0.95rem;">
-                            This action will <strong>forcibly logout all accounts</strong> under this entity's tree,
-                            and will <strong>not allow any login process</strong> for related accounts.
+                            {{ 'entities.list.activationDialog.criticalMessage' | translate }}
                         </p>
 
                     </div>
@@ -181,19 +171,19 @@
         </ng-container>
     </div>
     <ng-template pTemplate="footer">
-        <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="onCancelActivationDialog()"
+        <p-button [label]="'entities.list.activationDialog.cancel' | translate" icon="pi pi-times" class="p-button-text" (onClick)="onCancelActivationDialog()"
             [disabled]="!!(isLoading$ | async)">
         </p-button>
         <p-button [severity]="currentEntityForActivation?.active ? 'danger' : 'success'"
             (onClick)="activation(!currentEntityForActivation?.active)" [disabled]="!!(isLoading$ | async)">
             <ng-container *ngIf="isLoading$ | async">
                 <span class="indicator-progress" [style.display]="'block'">
-                    Please wait
+                    {{ 'entities.list.pleaseWait' | translate }}
                     <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
                 </span>
             </ng-container>
             <ng-container *ngIf="(isLoading$ | async) === false">
-                <span>{{ currentEntityForActivation?.active ? 'Deactivate' : 'Activate' }}</span>
+                <span>{{ (currentEntityForActivation?.active ? 'entities.list.activationDialog.deactivate' : 'entities.list.activationDialog.activate') | translate }}</span>
             </ng-container>
         </p-button>
     </ng-template>
@@ -202,27 +192,25 @@
 <p-dialog [(visible)]="deleteEntityDialog" [modal]="true" [style]="{ width: '450px' }" [closable]="true"
     [draggable]="false" [resizable]="false">
     <ng-template pTemplate="header">
-        <h3>Delete Entity</h3>
+        <h3>{{ 'entities.list.deleteDialog.title' | translate }}</h3>
     </ng-template>
     <div class="flex flex-column gap-3">
-        <p>
-            Are you sure you want to delete <strong>{{ currentEntityForDelete?.name }}</strong>?
-        </p>
-        <p class="text-red-500 font-semibold">This action cannot be undone.</p>
+        <p>{{ 'entities.list.deleteDialog.message' | translate: { name: currentEntityForDelete?.name } }}</p>
+        <p class="text-red-500 font-semibold">{{ 'entities.list.deleteDialog.cannotUndo' | translate }}</p>
     </div>
     <ng-template pTemplate="footer">
-        <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="onCancelDeleteDialog()"
+        <p-button [label]="'entities.list.deleteDialog.cancel' | translate" icon="pi pi-times" class="p-button-text" (onClick)="onCancelDeleteDialog()"
             [disabled]="!!(isLoading$ | async)">
         </p-button>
         <p-button class="p-button-danger" (onClick)="deleteEntity()" [disabled]="!!(isLoading$ | async)">
             <ng-container *ngIf="isLoading$ | async">
                 <span class="indicator-progress" [style.display]="'block'">
-                    Please wait
+                    {{ 'entities.list.pleaseWait' | translate }}
                     <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
                 </span>
             </ng-container>
             <ng-container *ngIf="(isLoading$ | async) === false">
-                <span>Delete</span>
+                <span>{{ 'entities.list.deleteDialog.delete' | translate }}</span>
             </ng-container>
         </p-button>
     </ng-template>

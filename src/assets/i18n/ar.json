@@ -750,28 +750,132 @@
         "description": "إدارة النظام - إدارة الشركات",
         "list": {
             "title": "قائمة الشركات",
-            "addNew": "إضافة شركة جديدة",
-            "name": "الاسم",
-            "country": "الدولة",
-            "status": "الحالة",
-            "actions": "الإجراءات",
-            "edit": "تعديل",
-            "activate": "تفعيل",
-            "deactivate": "تعطيل",
-            "assignAdmin": "تعيين مدير",
-            "noEntities": "لم يتم العثور على شركات"
+            "addNew": "إضافة جديدة",
+            "addNewEntity": "إضافة شركة جديدة",
+            "pleaseWait": "يرجى الانتظار",
+            "searchPlaceholder": "بحث",
+            "table": {
+                "id": "المعرف",
+                "code": "الكود",
+                "name": "الاسم",
+                "description": "الوصف",
+                "type": "النوع",
+                "status": "الحالة",
+                "actions": "الإجراءات"
+            },
+            "noEntities": "لم يتم العثور على شركات",
+            "noDescription": "لا يوجد وصف.",
+            "activationDialog": {
+                "activateTitle": "تفعيل الشركة",
+                "deactivateTitle": "تعطيل الشركة",
+                "activateMessage": "هل أنت متأكد من تفعيل {{name}}؟",
+                "deactivateMessage": "هل أنت متأكد من تعطيل {{name}}؟",
+                "criticalWarning": "تحذير هام:",
+                "criticalMessage": "سيؤدي هذا الإجراء إلى تسجيل خروج جميع الحسابات تحت شجرة هذه الشركة، ولن يسمح بأي عملية تسجيل دخول للحسابات المرتبطة.",
+                "cancel": "إلغاء",
+                "activate": "تفعيل",
+                "deactivate": "تعطيل"
+            },
+            "deleteDialog": {
+                "title": "حذف الشركة",
+                "message": "هل أنت متأكد من حذف {{name}}؟",
+                "cannotUndo": "لا يمكن التراجع عن هذا الإجراء.",
+                "cancel": "إلغاء",
+                "delete": "حذف"
+            }
         },
         "form": {
             "create": "إضافة شركة جديدة",
             "edit": "تعديل شركة",
+            "entityCode": "كود الشركة",
             "companyName": "اسم الشركة",
-            "country": "الدولة",
-            "timezone": "المنطقة الزمنية",
-            "taxId": "الرقم الضريبي",
+            "description": "الوصف",
+            "descriptionRequired": "الوصف مطلوب",
+            "parentEntity": "الشركة الأم",
+            "personalEntity": "شركة شخصية؟",
+            "administratorAccount": "حساب المدير",
+            "email": "البريد الإلكتروني",
+            "firstName": "الاسم الأول",
+            "lastName": "اسم العائلة",
             "save": "حفظ",
             "cancel": "إلغاء",
             "update": "تحديث",
-            "required": "هذا الحقل مطلوب"
+            "required": "هذا الحقل مطلوب",
+            "placeholders": {
+                "entityCode": "أدخل كود الشركة",
+                "companyName": "أدخل اسم الشركة",
+                "description": "أضف وصفاً واضحاً للشركة",
+                "parentEntity": "اختر الشركة الأم",
+                "email": "أدخل البريد الإلكتروني",
+                "firstName": "أدخل الاسم الأول",
+                "lastName": "أدخل اسم العائلة"
+            },
+            "parentDialog": {
+                "title": "اختر الشركة الأم",
+                "searchPlaceholder": "بحث بالاسم أو الكود",
+                "code": "الكود",
+                "name": "الاسم",
+                "noEntities": "لم يتم العثور على شركات",
+                "selectRootEntity": "اختر الشركة الجذرية",
+                "select": "اختيار",
+                "cancel": "إلغاء"
+            }
+        },
+        "details": {
+            "title": "تفاصيل الشركة",
+            "backToList": "العودة للقائمة",
+            "editEntity": "تعديل الشركة",
+            "profile": "ملف الشركة",
+            "tabs": {
+                "basicInfoContacts": "المعلومات الأساسية والاتصال",
+                "accounts": "الحسابات",
+                "admins": "المدراء",
+                "rolesPermissions": "الأدوار والصلاحيات",
+                "entityGroups": "مجموعات الشركات"
+            },
+            "logo": {
+                "uploadPhoto": "رفع صورة",
+                "uploadAnotherOne": "رفع صورة أخرى",
+                "removePhoto": "إزالة الصورة",
+                "recommendedSize": "موصى به: 200 كيلوبايت أو أقل"
+            },
+            "fields": {
+                "code": "الكود:",
+                "entityId": "معرف الشركة:",
+                "parentEntity": "الشركة الأم:",
+                "description": "الوصف"
+            },
+            "noDescription": "لم يتم تقديم وصف لهذه الشركة.",
+            "unnamedEntity": "شركة بدون اسم"
+        },
+        "contact": {
+            "title": "معلومات الاتصال",
+            "editContactDetails": "تعديل بيانات الاتصال",
+            "address": "العنوان",
+            "phoneNumbers": "أرقام الهاتف",
+            "faxNumbers": "أرقام الفاكس",
+            "emailAddresses": "عناوين البريد الإلكتروني",
+            "noPhones": "لم تتم إضافة أرقام هاتف",
+            "noFaxes": "لم تتم إضافة أرقام فاكس",
+            "noEmails": "لم تتم إضافة عناوين بريد إلكتروني",
+            "editDialog": {
+                "title": "تحديث معلومات الاتصال",
+                "addressLabel": "العنوان",
+                "addressRequired": "العنوان مطلوب.",
+                "addressPlaceholder": "أدخل العنوان الكامل...",
+                "addPhone": "إضافة هاتف",
+                "addFax": "إضافة فاكس",
+                "addEmail": "إضافة بريد إلكتروني",
+                "phonePlaceholder": "1234567890",
+                "emailPlaceholder": "contact@example.com",
+                "noPhonesYet": "لم تتم إضافة أرقام هاتف بعد",
+                "noFaxAdded": "لم تتم إضافة أرقام فاكس",
+                "noEmailsAdded": "لم تتم إضافة عناوين بريد إلكتروني",
+                "digitsOnly": "الأرقام فقط مسموحة (مثال: 1234567890)",
+                "validEmail": "يرجى إدخال بريد إلكتروني صحيح",
+                "cancel": "إلغاء",
+                "saveChanges": "حفظ التغييرات"
+            }
         },
         "assignAdmin": {
             "title": "تعيين مدير",
@@ -788,6 +892,188 @@
             "loadError": "فشل تحميل الشركات",
             "saveError": "فشل حفظ الشركة",
             "updateError": "فشل تحديث حالة الشركة"
+        }
+    },
+    "entityAccounts": {
+        "adminList": {
+            "title": "المدراء",
+            "description": "إدارة مدراء الشركة",
+            "createAdmin": "إضافة مدير",
+            "table": {
+                "accountId": "معرف الحساب",
+                "userId": "معرف المستخدم",
+                "email": "البريد الإلكتروني",
+                "entityRole": "دور الشركة",
+                "accountState": "حالة الحساب",
+                "lastLogin": "آخر تسجيل دخول",
+                "actions": "الإجراءات"
+            },
+            "noAdmins": "لم يتم العثور على مدراء.",
+            "na": "—",
+            "active": "نشط",
+            "inactive": "غير نشط",
+            "never": "أبداً",
+            "pleaseWait": "يرجى الانتظار",
+            "deleteDialog": {
+                "title": "حذف الحساب",
+                "message": "هل أنت متأكد من حذف الحساب الخاص بـ {{email}}؟",
+                "cannotUndo": "لا يمكن التراجع عن هذا الإجراء.",
+                "cancel": "إلغاء",
+                "delete": "حذف"
+            },
+            "addAdminDialog": {
+                "title": "إنشاء حساب مدير جديد",
+                "email": "البريد الإلكتروني",
+                "firstName": "الاسم الأول",
+                "lastName": "اسم العائلة",
+                "placeholderEmail": "أدخل البريد الإلكتروني",
+                "placeholderFirstName": "أدخل الاسم الأول",
+                "placeholderLastName": "أدخل اسم العائلة",
+                "emailRequired": "البريد الإلكتروني مطلوب.",
+                "validEmail": "يرجى إدخال بريد إلكتروني صحيح.",
+                "cancel": "إلغاء",
+                "createAdmin": "إضافة مدير"
+            },
+            "activateDialog": {
+                "title": "تفعيل الحساب",
+                "message": "هل أنت متأكد من تفعيل الحساب الخاص بـ {{email}}؟",
+                "cancel": "إلغاء",
+                "activate": "تفعيل"
+            },
+            "deactivateDialog": {
+                "title": "تعطيل الحساب",
+                "message": "هل أنت متأكد من تعطيل الحساب الخاص بـ {{email}}؟",
+                "cancel": "إلغاء",
+                "deactivate": "تعطيل"
+            },
+            "removeAdminDialog": {
+                "title": "إزالة صلاحيات المدير",
+                "message": "هل أنت متأكد من إزالة صلاحيات المدير عن {{email}}؟",
+                "note": "سيتم تخفيض الحساب إلى مستخدم نظام. سيفقد الحساب صلاحيات المدير لكنه سيبقى نشطاً.",
+                "cancel": "إلغاء",
+                "removeAdminAccess": "إزالة صلاحيات المدير"
+            },
+            "updateEmailDialog": {
+                "title": "تحديث بريد الحساب",
+                "accountId": "معرف الحساب",
+                "currentEmail": "البريد الحالي",
+                "newEmail": "البريد الجديد",
+                "placeholderNewEmail": "أدخل البريد الإلكتروني الجديد",
+                "newEmailRequired": "البريد الجديد مطلوب.",
+                "validEmail": "يرجى إدخال بريد إلكتروني صحيح.",
+                "cancel": "إلغاء",
+                "updateEmail": "تحديث البريد"
+            }
+        },
+        "list": {
+            "searchPlaceholder": "بحث الحسابات",
+            "includeSubentities": "تضمين الشركات الفرعية:",
+            "activeOnly": "النشطة فقط:",
+            "title": "الحسابات",
+            "createAccount": "إضافة حساب",
+            "table": {
+                "accountId": "معرف الحساب",
+                "userId": "معرف المستخدم",
+                "email": "البريد الإلكتروني",
+                "role": "الدور",
+                "entityRole": "دور الشركة",
+                "accountState": "حالة الحساب",
+                "lastLogin": "آخر تسجيل دخول",
+                "actions": "الإجراءات"
+            },
+            "noAccounts": "لم يتم العثور على حسابات.",
+            "na": "—",
+            "active": "نشط",
+            "inactive": "غير نشط",
+            "never": "أبداً",
+            "pleaseWait": "يرجى الانتظار",
+            "deleteDialog": {
+                "title": "حذف الحساب",
+                "message": "هل أنت متأكد من حذف الحساب الخاص بـ {{email}}؟",
+                "cannotUndo": "لا يمكن التراجع عن هذا الإجراء.",
+                "cancel": "إلغاء",
+                "delete": "حذف"
+            },
+            "addAccountDialog": {
+                "title": "إنشاء حساب جديد (مستخدم نظام)",
+                "email": "البريد الإلكتروني",
+                "firstName": "الاسم الأول",
+                "lastName": "اسم العائلة",
+                "placeholderEmail": "أدخل البريد الإلكتروني",
+                "placeholderFirstName": "أدخل الاسم الأول",
+                "placeholderLastName": "أدخل اسم العائلة",
+                "emailRequired": "البريد الإلكتروني مطلوب.",
+                "validEmail": "يرجى إدخال بريد إلكتروني صحيح.",
+                "cancel": "إلغاء",
+                "createAccount": "إنشاء حساب"
+            },
+            "activateDialog": {
+                "title": "تفعيل الحساب",
+                "message": "هل أنت متأكد من تفعيل الحساب الخاص بـ {{email}}؟",
+                "cancel": "إلغاء",
+                "activate": "تفعيل"
+            },
+            "deactivateDialog": {
+                "title": "تعطيل الحساب",
+                "message": "هل أنت متأكد من تعطيل الحساب الخاص بـ {{email}}؟",
+                "cancel": "إلغاء",
+                "deactivate": "تعطيل"
+            },
+            "assignAdminDialog": {
+                "title": "تعيين كمدير للشركة",
+                "message": "ترقية {{email}} إلى مدير شركة لـ {{entityName}}؟ سيحصل على صلاحيات المدير الكاملة.",
+                "cancel": "إلغاء",
+                "assign": "تعيين"
+            },
+            "updateEmailDialog": {
+                "title": "تحديث بريد الحساب",
+                "accountId": "معرف الحساب",
+                "currentEmail": "البريد الحالي",
+                "newEmail": "البريد الجديد",
+                "placeholderNewEmail": "أدخل البريد الإلكتروني الجديد",
+                "newEmailRequired": "البريد الجديد مطلوب.",
+                "validEmail": "يرجى إدخال بريد إلكتروني صحيح.",
+                "cancel": "إلغاء",
+                "updateEmail": "تحديث البريد"
+            }
+        },
+        "details": {
+            "title": "تفاصيل الحساب",
+            "loadingText": "جاري تحميل معلومات الحساب...",
+            "accountId": "معرف الحساب",
+            "userId": "معرف المستخدم",
+            "email": "البريد الإلكتروني",
+            "entityId": "معرف الشركة",
+            "entityRoleId": "معرف دور الشركة",
+            "accountState": "حالة الحساب",
+            "description": "الوصف",
+            "descriptionPlaceholder": "أدخل وصف الحساب",
+            "na": "—",
+            "close": "إغلاق",
+            "save": "حفظ"
+        },
+        "update": {
+            "title": "تحديث شركة الحساب",
+            "email": "البريد الإلكتروني",
+            "entity": "الشركة",
+            "selectEntityPlaceholder": "اختر الشركة",
+            "entityRequired": "الشركة مطلوبة.",
+            "entityRole": "دور الشركة",
+            "selectEntityRolePlaceholder": "اختر دور الشركة",
+            "entityRoleRequired": "دور الشركة مطلوب.",
+            "selectEntityFirst": "يرجى اختيار الشركة أولاً.",
+            "loadingRoles": "جاري تحميل الأدوار...",
+            "cancel": "إلغاء",
+            "updateEntity": "تحديث الشركة",
+            "selectDialog": {
+                "title": "اختر الشركة",
+                "searchPlaceholder": "بحث بالاسم أو الكود",
+                "code": "الكود",
+                "name": "الاسم",
+                "noEntities": "لم يتم العثور على شركات",
+                "cancel": "إلغاء",
+                "select": "اختيار"
+            }
         }
     },
     "systemAdministration": {

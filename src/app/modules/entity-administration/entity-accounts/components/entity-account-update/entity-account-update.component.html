@@ -2,49 +2,49 @@
 <p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '520px' }" [closable]="true" [draggable]="false"
     [resizable]="false" (onHide)="onCloseDialog()">
     <ng-template pTemplate="header">
-        <h3>Update Account Entity</h3>
+        <h3>{{ 'entityAccounts.update.title' | translate }}</h3>
     </ng-template>
 
     <form *ngIf="updateEntityForm" [formGroup]="updateEntityForm" (ngSubmit)="saveAccountEntity()">
         <div class="flex flex-column gap-3">
             <!-- Email Field (Read-only) -->
             <div class="field p-fluid">
-                <label for="entityEmail">Email</label>
+                <label for="entityEmail">{{ 'entityAccounts.update.email' | translate }}</label>
                 <input id="entityEmail" type="email" pInputText formControlName="email" readonly />
             </div>
 
             <!-- Entity Selection Field -->
             <div class="field p-fluid">
-                <label for="selectedEntity">Entity <span class="text-red-500">*</span></label>
+                <label for="selectedEntity">{{ 'entityAccounts.update.entity' | translate }} <span class="text-red-500">*</span></label>
                 <div class="p-inputgroup">
                     <input id="selectedEntity" type="text" pInputText [value]="getSelectedEntityDisplayText()" readonly
-                        placeholder="Select entity" (click)="openEntitySelectionDialog()" style="cursor: pointer;" />
+                        [placeholder]="'entityAccounts.update.selectEntityPlaceholder' | translate" (click)="openEntitySelectionDialog()" style="cursor: pointer;" />
                     <p-button icon="pi pi-search" (onClick)="openEntitySelectionDialog()"
                         [disabled]="savingAccountEntity" class="p-button-secondary">
                     </p-button>
                 </div>
                 <small class="p-error"
                     *ngIf="updateEntityForm.get('entityId')?.invalid && updateEntityForm.get('entityId')?.touched">
-                    Entity is required.
+                    {{ 'entityAccounts.update.entityRequired' | translate }}
                 </small>
             </div>
 
             <!-- Entity Role ID Field -->
             <div class="field p-fluid">
-                <label for="entityRoleId">Entity Role <span class="text-red-500">*</span></label>
+                <label for="entityRoleId">{{ 'entityAccounts.update.entityRole' | translate }} <span class="text-red-500">*</span></label>
                 <p-dropdown appendTo="body" id="entityRoleId" formControlName="entityRoleId"
                     [options]="entityRoleOptions" optionLabel="label" optionValue="value"
-                    placeholder="Select Entity Role" [disabled]="!selectedEntityForUpdate || loadingRoles">
+                    [placeholder]="'entityAccounts.update.selectEntityRolePlaceholder' | translate" [disabled]="!selectedEntityForUpdate || loadingRoles">
                 </p-dropdown>
                 <small class="p-error"
                     *ngIf="updateEntityForm.get('entityRoleId')?.invalid && updateEntityForm.get('entityRoleId')?.touched">
-                    Entity Role is required.
+                    {{ 'entityAccounts.update.entityRoleRequired' | translate }}
                 </small>
                 <small class="text-500" *ngIf="!selectedEntityForUpdate">
-                    Please select an entity first.
+                    {{ 'entityAccounts.update.selectEntityFirst' | translate }}
                 </small>
                 <small class="text-500" *ngIf="selectedEntityForUpdate && loadingRoles">
-                    Loading roles...
+                    {{ 'entityAccounts.update.loadingRoles' | translate }}
                 </small>
             </div>
         </div>
@@ -53,10 +53,10 @@
     <!-- Action Buttons -->
     <ng-template pTemplate="footer">
         <div class="flex justify-content-end gap-2">
-            <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="onCancelClick()"
+            <p-button [label]="'entityAccounts.update.cancel' | translate" icon="pi pi-times" class="p-button-text" (onClick)="onCancelClick()"
                 [disabled]="savingAccountEntity">
             </p-button>
-            <p-button label="Update Entity" icon="pi pi-check" (onClick)="saveAccountEntity()"
+            <p-button [label]="'entityAccounts.update.updateEntity' | translate" icon="pi pi-check" (onClick)="saveAccountEntity()"
                 [loading]="savingAccountEntity" [disabled]="savingAccountEntity || updateEntityForm.invalid">
             </p-button>
         </div>
@@ -67,14 +67,14 @@
 <p-dialog [(visible)]="entitySelectionDialogVisible" [modal]="true" [style]="{ width: '800px' }" [closable]="true"
     [draggable]="false" [resizable]="false" (onHide)="closeEntitySelectionDialog()">
     <ng-template pTemplate="header">
-        <h3>Select Entity</h3>
+        <h3>{{ 'entityAccounts.update.selectDialog.title' | translate }}</h3>
     </ng-template>
 
     <div class="flex flex-column gap-3">
         <!-- Search Bar -->
         <span class="p-input-icon-left w-full">
             <i class="pi pi-search"></i>
-            <input pInputText type="text" placeholder="Search by name or code" class="w-full"
+            <input pInputText type="text" [placeholder]="'entityAccounts.update.selectDialog.searchPlaceholder' | translate" class="w-full"
                 [value]="entityTableTextFilter" (input)="onEntityTableSearchInput($event)" />
         </span>
 
@@ -89,8 +89,8 @@
 
                 <ng-template pTemplate="header">
                     <tr>
-                        <th style="width: 150px;">Code</th>
-                        <th>Name</th>
+                        <th style="width: 150px;">{{ 'entityAccounts.update.selectDialog.code' | translate }}</th>
+                        <th>{{ 'entityAccounts.update.selectDialog.name' | translate }}</th>
                     </tr>
                 </ng-template>
 
@@ -120,7 +120,7 @@
                     <tr>
                         <td colspan="2" class="text-center p-4">
                             <i class="pi pi-inbox text-4xl text-gray-400 mb-2"></i>
-                            <p class="text-gray-500">No entities found</p>
+                            <p class="text-gray-500">{{ 'entityAccounts.update.selectDialog.noEntities' | translate }}</p>
                         </td>
                     </tr>
                 </ng-template>
@@ -131,10 +131,10 @@
     <!-- Action Buttons -->
     <ng-template pTemplate="footer">
         <div class="flex justify-content-end gap-2">
-            <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="closeEntitySelectionDialog()"
+            <p-button [label]="'entityAccounts.update.selectDialog.cancel' | translate" icon="pi pi-times" class="p-button-text" (onClick)="closeEntitySelectionDialog()"
                 [disabled]="loadingEntitiesTable">
             </p-button>
-            <p-button label="Select" icon="pi pi-check" (onClick)="closeEntitySelectionDialog()"
+            <p-button [label]="'entityAccounts.update.selectDialog.select' | translate" icon="pi pi-check" (onClick)="closeEntitySelectionDialog()"
                 [disabled]="loadingEntitiesTable">
             </p-button>
         </div>

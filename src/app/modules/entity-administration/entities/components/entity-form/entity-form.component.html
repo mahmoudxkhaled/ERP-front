@@ -1,13 +1,13 @@
 <div class="card">
-    <h2>{{ isEdit ? 'Edit Entity' : 'Create Entity' }}</h2>
+    <h2>{{ (isEdit ? 'entities.form.edit' : 'entities.form.create') | translate }}</h2>
 
     <form [formGroup]="form" (ngSubmit)="submit()">
         <div class="grid">
             <div class="col-12 md:col-6">
                 <div class="field p-fluid">
-                    <label for="code">Entity Code <span class="text-red-500">*</span></label>
+                    <label for="code">{{ 'entities.form.entityCode' | translate }} <span class="text-red-500">*</span></label>
                     <input id="code" type="text" pInputText formControlName="code"
-                        [class.ng-invalid]="submitted && f['code'].invalid" placeholder="Enter entity code" />
+                        [class.ng-invalid]="submitted && f['code'].invalid" [placeholder]="'entities.form.placeholders.entityCode' | translate" />
                     <small class="p-error" *ngIf="submitted && f['code'].invalid && codeError">
                         {{ codeError }}
                     </small>
@@ -16,9 +16,9 @@
 
             <div class="col-12 md:col-6">
                 <div class="field p-fluid">
-                    <label for="name">Company Name <span class="text-red-500">*</span></label>
+                    <label for="name">{{ 'entities.form.companyName' | translate }} <span class="text-red-500">*</span></label>
                     <input id="name" type="text" pInputText formControlName="name"
-                        [class.ng-invalid]="submitted && f['name'].invalid" placeholder="Enter company name" />
+                        [class.ng-invalid]="submitted && f['name'].invalid" [placeholder]="'entities.form.placeholders.companyName' | translate" />
                     <small class="p-error" *ngIf="submitted && f['name'].invalid && nameError">
                         {{ nameError }}
                     </small>
@@ -27,22 +27,22 @@
 
             <div class="col-12 md:col-6">
                 <div class="field p-fluid">
-                    <label for="description">Description <span class="text-red-500">*</span></label>
+                    <label for="description">{{ 'entities.form.description' | translate }} <span class="text-red-500">*</span></label>
                     <input id="description" type="text" pInputTextarea formControlName="description"
                         [class.ng-invalid]="submitted && f['description'].invalid"
-                        placeholder="Add a clear description for this entity" />
+                        [placeholder]="'entities.form.placeholders.description' | translate" />
                     <small class="p-error" *ngIf="submitted && f['description'].invalid">
-                        Description is required
+                        {{ 'entities.form.descriptionRequired' | translate }}
                     </small>
                 </div>
             </div>
 
             <div class="col-12 md:col-6" *ngIf="showParentSelector">
                 <div class="field p-fluid">
-                    <label for="parentEntity">Parent Entity</label>
+                    <label for="parentEntity">{{ 'entities.form.parentEntity' | translate }}</label>
                     <div class="p-inputgroup">
                         <input id="parentEntity" type="text" pInputText [value]="getParentEntityDisplayText()" readonly
-                            placeholder="Select parent entity" (click)="openParentEntityDialog()"
+                            [placeholder]="'entities.form.placeholders.parentEntity' | translate" (click)="openParentEntityDialog()"
                             style="cursor: pointer;" />
                         <p-button icon="pi pi-search" (onClick)="openParentEntityDialog()" [disabled]="loading"
                             class="p-button-secondary">
@@ -53,7 +53,7 @@
 
             <div class="col-12 md:col-6" *ngIf="showIsPersonal">
                 <div class="field flex  p-fluid">
-                    <label for="isPersonal" class="mx-2">Personal Entity?</label>
+                    <label for="isPersonal" class="mx-2">{{ 'entities.form.personalEntity' | translate }}</label>
                     <p-inputSwitch id="isPersonal" formControlName="isPersonal"></p-inputSwitch>
                 </div>
             </div>
@@ -61,13 +61,13 @@
 
         <!-- Account Section -->
         <div *ngIf="showAccountSection && !isEdit" class="mt-4">
-            <h3 class="mb-3">Administrator Account</h3>
+            <h3 class="mb-3">{{ 'entities.form.administratorAccount' | translate }}</h3>
             <div class="grid">
                 <div class="col-12 md:col-6">
                     <div class="field p-fluid">
-                        <label for="email">Email <span class="text-red-500">*</span></label>
+                        <label for="email">{{ 'entities.form.email' | translate }} <span class="text-red-500">*</span></label>
                         <input id="email" type="email" pInputText formControlName="email"
-                            [class.ng-invalid]="submitted && f['email'].invalid" placeholder="Enter email address" />
+                            [class.ng-invalid]="submitted && f['email'].invalid" [placeholder]="'entities.form.placeholders.email' | translate" />
                         <small class="p-error" *ngIf="submitted && f['email'].invalid && emailError">
                             {{ emailError }}
                         </small>
@@ -76,9 +76,9 @@
 
                 <div class="col-12 md:col-6">
                     <div class="field p-fluid">
-                        <label for="firstName">First Name <span class="text-red-500">*</span></label>
+                        <label for="firstName">{{ 'entities.form.firstName' | translate }} <span class="text-red-500">*</span></label>
                         <input id="firstName" type="text" pInputText formControlName="firstName"
-                            [class.ng-invalid]="submitted && f['firstName'].invalid" placeholder="Enter first name" />
+                            [class.ng-invalid]="submitted && f['firstName'].invalid" [placeholder]="'entities.form.placeholders.firstName' | translate" />
                         <small class="p-error" *ngIf="submitted && f['firstName'].invalid && firstNameError">
                             {{ firstNameError }}
                         </small>
@@ -87,9 +87,9 @@
 
                 <div class="col-12 md:col-6">
                     <div class="field p-fluid">
-                        <label for="lastName">Last Name <span class="text-red-500">*</span></label>
+                        <label for="lastName">{{ 'entities.form.lastName' | translate }} <span class="text-red-500">*</span></label>
                         <input id="lastName" type="text" pInputText formControlName="lastName"
-                            [class.ng-invalid]="submitted && f['lastName'].invalid" placeholder="Enter last name" />
+                            [class.ng-invalid]="submitted && f['lastName'].invalid" [placeholder]="'entities.form.placeholders.lastName' | translate" />
                         <small class="p-error" *ngIf="submitted && f['lastName'].invalid && lastNameError">
                             {{ lastNameError }}
                         </small>
@@ -99,10 +99,10 @@
         </div>
 
         <div class="flex justify-content-end gap-2 mt-4">
-            <p-button label="Cancel" icon="pi pi-times" class="p-button-secondary" (onClick)="cancel()"
+            <p-button [label]="'entities.form.cancel' | translate" icon="pi pi-times" class="p-button-secondary" (onClick)="cancel()"
                 [disabled]="loading">
             </p-button>
-            <p-button [label]="isEdit ? 'Update' : 'Save'" icon="pi pi-check" type="submit" [loading]="loading"
+            <p-button [label]="(isEdit ? 'entities.form.update' : 'entities.form.save') | translate" icon="pi pi-check" type="submit" [loading]="loading"
                 [disabled]="loading">
             </p-button>
         </div>
@@ -113,14 +113,14 @@
 <p-dialog [(visible)]="parentEntityDialogVisible" [modal]="true" [style]="{ width: '800px' }" [closable]="true"
     [draggable]="false" [resizable]="false" (onHide)="closeParentEntityDialog()">
     <ng-template pTemplate="header">
-        <h3>Select Parent Entity</h3>
+        <h3>{{ 'entities.form.parentDialog.title' | translate }}</h3>
     </ng-template>
 
     <div class="flex flex-column gap-3">
         <!-- Search Bar -->
         <span class="p-input-icon-left w-full">
             <i class="pi pi-search"></i>
-            <input pInputText type="text" placeholder="Search by name or code" class="w-full"
+            <input pInputText type="text" [placeholder]="'entities.form.parentDialog.searchPlaceholder' | translate" class="w-full"
                 [value]="entityTableTextFilter" (input)="onEntityTableSearchInput($event)" />
         </span>
 
@@ -135,8 +135,8 @@
 
                 <ng-template pTemplate="header">
                     <tr>
-                        <th style="width: 150px;">Code</th>
-                        <th>Name</th>
+                        <th style="width: 150px;">{{ 'entities.form.parentDialog.code' | translate }}</th>
+                        <th>{{ 'entities.form.parentDialog.name' | translate }}</th>
                     </tr>
                 </ng-template>
 
@@ -156,7 +156,7 @@
                     <tr>
                         <td colspan="2" class="text-center p-4">
                             <i class="pi pi-inbox text-4xl text-gray-400 mb-2"></i>
-                            <p class="text-gray-500">No entities found</p>
+                            <p class="text-gray-500">{{ 'entities.form.parentDialog.noEntities' | translate }}</p>
                         </td>
                     </tr>
                 </ng-template>
@@ -167,14 +167,14 @@
     <!-- Action Buttons -->
     <ng-template pTemplate="footer">
         <div class="flex justify-content-between align-items-center">
-            <p-button label="Select Root Entity" icon="pi pi-home" class="p-button-secondary"
+            <p-button [label]="'entities.form.parentDialog.selectRootEntity' | translate" icon="pi pi-home" class="p-button-secondary"
                 (onClick)="selectRootEntity()" [disabled]="loadingEntitiesTable">
             </p-button>
             <div class="flex gap-2">
-                <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="closeParentEntityDialog()"
+                <p-button [label]="'entities.form.parentDialog.cancel' | translate" icon="pi pi-times" class="p-button-text" (onClick)="closeParentEntityDialog()"
                     [disabled]="loadingEntitiesTable">
                 </p-button>
-                <p-button label="Select" icon="pi pi-check" (onClick)="closeParentEntityDialog()"
+                <p-button [label]="'entities.form.parentDialog.select' | translate" icon="pi pi-check" (onClick)="closeParentEntityDialog()"
                     [disabled]="loadingEntitiesTable">
                 </p-button>
             </div>

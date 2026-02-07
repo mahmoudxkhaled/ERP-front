@@ -894,27 +894,131 @@
         "list": {
             "title": "Entities List",
             "addNew": "Add New",
-            "name": "Name",
-            "country": "Country",
-            "status": "Status",
-            "actions": "Actions",
-            "edit": "Edit",
-            "activate": "Activate",
-            "deactivate": "Deactivate",
-            "assignAdmin": "Assign Admin",
-            "noEntities": "No entities found"
+            "addNewEntity": "Add New Entity",
+            "pleaseWait": "Please wait",
+            "searchPlaceholder": "Search",
+            "table": {
+                "id": "Id",
+                "code": "Code",
+                "name": "Name",
+                "description": "Description",
+                "type": "Type",
+                "status": "Status",
+                "actions": "Actions"
+            },
+            "noEntities": "No entities found",
+            "noDescription": "No description provided.",
+            "activationDialog": {
+                "activateTitle": "Activate Entity",
+                "deactivateTitle": "Deactivate Entity",
+                "activateMessage": "Are you sure you want to activate {{name}}?",
+                "deactivateMessage": "Are you sure you want to deactivate {{name}}?",
+                "criticalWarning": "Critical Warning:",
+                "criticalMessage": "This action will forcibly logout all accounts under this entity's tree, and will not allow any login process for related accounts.",
+                "cancel": "Cancel",
+                "activate": "Activate",
+                "deactivate": "Deactivate"
+            },
+            "deleteDialog": {
+                "title": "Delete Entity",
+                "message": "Are you sure you want to delete {{name}}?",
+                "cannotUndo": "This action cannot be undone.",
+                "cancel": "Cancel",
+                "delete": "Delete"
+            }
         },
         "form": {
             "create": "Create Entity",
             "edit": "Edit Entity",
+            "entityCode": "Entity Code",
             "companyName": "Company Name",
-            "country": "Country",
-            "timezone": "Timezone",
-            "taxId": "Tax ID",
+            "description": "Description",
+            "descriptionRequired": "Description is required",
+            "parentEntity": "Parent Entity",
+            "personalEntity": "Personal Entity?",
+            "administratorAccount": "Administrator Account",
+            "email": "Email",
+            "firstName": "First Name",
+            "lastName": "Last Name",
             "save": "Save",
             "cancel": "Cancel",
             "update": "Update",
-            "required": "This field is required"
+            "required": "This field is required",
+            "placeholders": {
+                "entityCode": "Enter entity code",
+                "companyName": "Enter company name",
+                "description": "Add a clear description for this entity",
+                "parentEntity": "Select parent entity",
+                "email": "Enter email address",
+                "firstName": "Enter first name",
+                "lastName": "Enter last name"
+            },
+            "parentDialog": {
+                "title": "Select Parent Entity",
+                "searchPlaceholder": "Search by name or code",
+                "code": "Code",
+                "name": "Name",
+                "noEntities": "No entities found",
+                "selectRootEntity": "Select Root Entity",
+                "select": "Select",
+                "cancel": "Cancel"
+            }
+        },
+        "details": {
+            "title": "Entity Details",
+            "backToList": "Back to List",
+            "editEntity": "Edit Entity",
+            "profile": "Entity Profile",
+            "tabs": {
+                "basicInfoContacts": "Basic Information & Contacts",
+                "accounts": "Accounts",
+                "admins": "Admins",
+                "rolesPermissions": "Roles & Permissions",
+                "entityGroups": "Entity Groups"
+            },
+            "logo": {
+                "uploadPhoto": "Upload Photo",
+                "uploadAnotherOne": "Upload Another One",
+                "removePhoto": "Remove Photo",
+                "recommendedSize": "Recommended: 200KB or less"
+            },
+            "fields": {
+                "code": "Code:",
+                "entityId": "Entity ID:",
+                "parentEntity": "Parent Entity:",
+                "description": "Description"
+            },
+            "noDescription": "No description has been provided for this entity.",
+            "unnamedEntity": "Unnamed Entity"
+        },
+        "contact": {
+            "title": "Contact Information",
+            "editContactDetails": "Edit Contact Details",
+            "address": "Address",
+            "phoneNumbers": "Phone Numbers",
+            "faxNumbers": "Fax Numbers",
+            "emailAddresses": "Email Addresses",
+            "noPhones": "No phone numbers added",
+            "noFaxes": "No fax numbers added",
+            "noEmails": "No email addresses added",
+            "editDialog": {
+                "title": "Update Contact Information",
+                "addressLabel": "Address",
+                "addressRequired": "Address is required.",
+                "addressPlaceholder": "Enter full address...",
+                "addPhone": "Add Phone",
+                "addFax": "Add Fax",
+                "addEmail": "Add Email",
+                "phonePlaceholder": "1234567890",
+                "emailPlaceholder": "contact@example.com",
+                "noPhonesYet": "No phone numbers added yet",
+                "noFaxAdded": "No fax numbers added",
+                "noEmailsAdded": "No email addresses added",
+                "digitsOnly": "Only digits allowed (e.g., 1234567890)",
+                "validEmail": "Please enter a valid email address",
+                "cancel": "Cancel",
+                "saveChanges": "Save Changes"
+            }
         },
         "assignAdmin": {
             "title": "Assign Admin",
@@ -931,6 +1035,188 @@
             "loadError": "Failed to load entities",
             "saveError": "Failed to save entity",
             "updateError": "Failed to update entity status"
+        }
+    },
+    "entityAccounts": {
+        "adminList": {
+            "title": "Administrators",
+            "description": "Manage entity administrators",
+            "createAdmin": "Create Admin",
+            "table": {
+                "accountId": "Account ID",
+                "userId": "User ID",
+                "email": "Email",
+                "entityRole": "Entity Role",
+                "accountState": "Account State",
+                "lastLogin": "Last Login",
+                "actions": "Actions"
+            },
+            "noAdmins": "No administrators found.",
+            "na": "N/A",
+            "active": "Active",
+            "inactive": "Inactive",
+            "never": "Never",
+            "pleaseWait": "Please wait",
+            "deleteDialog": {
+                "title": "Delete Account",
+                "message": "Are you sure you want to delete the account for {{email}}?",
+                "cannotUndo": "This action cannot be undone.",
+                "cancel": "Cancel",
+                "delete": "Delete"
+            },
+            "addAdminDialog": {
+                "title": "Create New Admin Account",
+                "email": "Email",
+                "firstName": "First Name",
+                "lastName": "Last Name",
+                "placeholderEmail": "Enter email address",
+                "placeholderFirstName": "Enter first name",
+                "placeholderLastName": "Enter last name",
+                "emailRequired": "Email is required.",
+                "validEmail": "Please enter a valid email address.",
+                "cancel": "Cancel",
+                "createAdmin": "Create Admin"
+            },
+            "activateDialog": {
+                "title": "Activate Account",
+                "message": "Are you sure you want to activate the account for {{email}}?",
+                "cancel": "Cancel",
+                "activate": "Activate"
+            },
+            "deactivateDialog": {
+                "title": "Deactivate Account",
+                "message": "Are you sure you want to deactivate the account for {{email}}?",
+                "cancel": "Cancel",
+                "deactivate": "Deactivate"
+            },
+            "removeAdminDialog": {
+                "title": "Remove Admin Access",
+                "message": "Are you sure you want to remove admin access for {{email}}?",
+                "note": "This will demote the account to a system user. The account will lose administrator privileges but will remain active.",
+                "cancel": "Cancel",
+                "removeAdminAccess": "Remove Admin Access"
+            },
+            "updateEmailDialog": {
+                "title": "Update Account Email",
+                "accountId": "Account ID",
+                "currentEmail": "Current Email",
+                "newEmail": "New Email",
+                "placeholderNewEmail": "Enter new email address",
+                "newEmailRequired": "New email is required.",
+                "validEmail": "Please enter a valid email address.",
+                "cancel": "Cancel",
+                "updateEmail": "Update Email"
+            }
+        },
+        "list": {
+            "searchPlaceholder": "Search accounts",
+            "includeSubentities": "Include Sub-entities:",
+            "activeOnly": "Active Only:",
+            "title": "Accounts",
+            "createAccount": "Create Account",
+            "table": {
+                "accountId": "Account ID",
+                "userId": "User ID",
+                "email": "Email",
+                "role": "Role",
+                "entityRole": "Entity Role",
+                "accountState": "Account State",
+                "lastLogin": "Last Login",
+                "actions": "Actions"
+            },
+            "noAccounts": "No accounts found.",
+            "na": "N/A",
+            "active": "Active",
+            "inactive": "Inactive",
+            "never": "Never",
+            "pleaseWait": "Please wait",
+            "deleteDialog": {
+                "title": "Delete Account",
+                "message": "Are you sure you want to delete the account for {{email}}?",
+                "cannotUndo": "This action cannot be undone.",
+                "cancel": "Cancel",
+                "delete": "Delete"
+            },
+            "addAccountDialog": {
+                "title": "Create New Account (System User)",
+                "email": "Email",
+                "firstName": "First Name",
+                "lastName": "Last Name",
+                "placeholderEmail": "Enter email address",
+                "placeholderFirstName": "Enter first name",
+                "placeholderLastName": "Enter last name",
+                "emailRequired": "Email is required.",
+                "validEmail": "Please enter a valid email address.",
+                "cancel": "Cancel",
+                "createAccount": "Create Account"
+            },
+            "activateDialog": {
+                "title": "Activate Account",
+                "message": "Are you sure you want to activate the account for {{email}}?",
+                "cancel": "Cancel",
+                "activate": "Activate"
+            },
+            "deactivateDialog": {
+                "title": "Deactivate Account",
+                "message": "Are you sure you want to deactivate the account for {{email}}?",
+                "cancel": "Cancel",
+                "deactivate": "Deactivate"
+            },
+            "assignAdminDialog": {
+                "title": "Assign As Entity Admin",
+                "message": "Promote {{email}} to entity administrator for {{entityName}}? They will gain full admin permissions.",
+                "cancel": "Cancel",
+                "assign": "Assign"
+            },
+            "updateEmailDialog": {
+                "title": "Update Account Email",
+                "accountId": "Account ID",
+                "currentEmail": "Current Email",
+                "newEmail": "New Email",
+                "placeholderNewEmail": "Enter new email address",
+                "newEmailRequired": "New email is required.",
+                "validEmail": "Please enter a valid email address.",
+                "cancel": "Cancel",
+                "updateEmail": "Update Email"
+            }
+        },
+        "details": {
+            "title": "Account Details",
+            "loadingText": "Loading account information...",
+            "accountId": "Account ID",
+            "userId": "User ID",
+            "email": "Email",
+            "entityId": "Entity ID",
+            "entityRoleId": "Entity Role ID",
+            "accountState": "Account State",
+            "description": "Description",
+            "descriptionPlaceholder": "Enter account description",
+            "na": "N/A",
+            "close": "Close",
+            "save": "Save"
+        },
+        "update": {
+            "title": "Update Account Entity",
+            "email": "Email",
+            "entity": "Entity",
+            "selectEntityPlaceholder": "Select entity",
+            "entityRequired": "Entity is required.",
+            "entityRole": "Entity Role",
+            "selectEntityRolePlaceholder": "Select Entity Role",
+            "entityRoleRequired": "Entity Role is required.",
+            "selectEntityFirst": "Please select an entity first.",
+            "loadingRoles": "Loading roles...",
+            "cancel": "Cancel",
+            "updateEntity": "Update Entity",
+            "selectDialog": {
+                "title": "Select Entity",
+                "searchPlaceholder": "Search by name or code",
+                "code": "Code",
+                "name": "Name",
+                "noEntities": "No entities found",
+                "cancel": "Cancel",
+                "select": "Select"
+            }
         }
     },
     "systemAdministration": {

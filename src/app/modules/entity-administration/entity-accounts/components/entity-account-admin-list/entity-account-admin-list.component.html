@@ -5,29 +5,29 @@
             <div class="flex align-items-center justify-content-between w-full">
                 <div class="flex align-items-center gap-3">
                     <i class="pi pi-shield text-primary text-2xl"></i>
-                    <span class="text-xl font-semibold">Administrators</span>
+                    <span class="text-xl font-semibold">{{ 'entityAccounts.adminList.title' | translate }}</span>
                 </div>
                 <div class="flex gap-2">
-                    <p-button label="Create Admin" icon="pi pi-user-plus" iconPos="left" size="small"
+                    <p-button [label]="'entityAccounts.adminList.createAdmin' | translate" icon="pi pi-user-plus" iconPos="left" size="small"
                         severity="contrast" (onClick)="navigateToCreateAdmin()" [disabled]="loadingAdmins"></p-button>
                 </div>
             </div>
         </ng-template>
         <div class="flex justify-content-between align-items-center mb-3">
-            <p class="text-600 m-0">Manage entity administrators</p>
+            <p class="text-600 m-0">{{ 'entityAccounts.adminList.description' | translate }}</p>
         </div>
 
         <p-table [value]="tableValue" [paginator]="true" [rows]="10"
             [showCurrentPageReport]="true" responsiveLayout="scroll" [rowsPerPageOptions]="[10, 25, 50]">
             <ng-template pTemplate="header">
                 <tr>
-                    <th class="text-center">Account ID</th>
-                    <th class="text-center">User ID</th>
-                    <th>Email</th>
-                    <th class="text-center">Entity Role</th>
-                    <th class="text-center">Account State</th>
-                    <th class="text-center">Last Login</th>
-                    <th class="text-start" style="width: 200px;">Actions</th>
+                    <th class="text-center">{{ 'entityAccounts.adminList.table.accountId' | translate }}</th>
+                    <th class="text-center">{{ 'entityAccounts.adminList.table.userId' | translate }}</th>
+                    <th>{{ 'entityAccounts.adminList.table.email' | translate }}</th>
+                    <th class="text-center">{{ 'entityAccounts.adminList.table.entityRole' | translate }}</th>
+                    <th class="text-center">{{ 'entityAccounts.adminList.table.accountState' | translate }}</th>
+                    <th class="text-center">{{ 'entityAccounts.adminList.table.lastLogin' | translate }}</th>
+                    <th class="text-start" style="width: 200px;">{{ 'entityAccounts.adminList.table.actions' | translate }}</th>
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-admin>
@@ -61,7 +61,7 @@
                             <p-skeleton height="1.5rem" width="5rem" borderRadius="4px"></p-skeleton>
                         </ng-container>
                         <ng-template #normalEntityRole>
-                            <span class="text-600">{{ admin.entityRoleName || 'N/A' }}</span>
+                            <span class="text-600">{{ admin.entityRoleName || ('entityAccounts.adminList.na' | translate) }}</span>
                         </ng-template>
                     </td>
                     <td class="text-center">
@@ -69,7 +69,7 @@
                             <p-skeleton height="1.5rem" width="5rem" borderRadius="4px"></p-skeleton>
                         </ng-container>
                         <ng-template #normalAccountState>
-                            <p-tag [value]="admin.accountState === 1 ? 'Active' : 'Inactive'"
+                            <p-tag [value]="admin.accountState === 1 ? ('entityAccounts.adminList.active' | translate) : ('entityAccounts.adminList.inactive' | translate)"
                                 [severity]="admin.accountState === 1 ? 'success' : 'danger'"></p-tag>
                         </ng-template>
                     </td>
@@ -79,7 +79,7 @@
                         </ng-container>
                         <ng-template #normalLastLogin>
                             <span class="text-600">
-                                {{ isDefaultDate(admin.Last_Login) ? 'Never' : (admin.Last_Login | date:'short') }}
+                                {{ isDefaultDate(admin.Last_Login) ? ('entityAccounts.adminList.never' | translate) : (admin.Last_Login | date:'short') }}
                             </span>
                         </ng-template>
                     </td>
@@ -99,7 +99,7 @@
             </ng-template>
             <ng-template pTemplate="emptymessage">
                 <tr>
-                    <td colspan="7" class="text-center">No administrators found.</td>
+                    <td colspan="7" class="text-center">{{ 'entityAccounts.adminList.noAdmins' | translate }}</td>
                 </tr>
             </ng-template>
         </p-table>
@@ -110,27 +110,25 @@
 <p-dialog [(visible)]="deleteAccountDialog" [modal]="true" [style]="{ width: '450px' }" [closable]="true"
     [draggable]="false" [resizable]="false">
     <ng-template pTemplate="header">
-        <h3>Delete Account</h3>
+        <h3>{{ 'entityAccounts.adminList.deleteDialog.title' | translate }}</h3>
     </ng-template>
     <div class="flex flex-column gap-3">
-        <p>
-            Are you sure you want to delete the account for <strong>{{ accountToDelete?.email }}</strong>?
-        </p>
-        <p class="text-red-500 font-semibold">This action cannot be undone.</p>
+        <p>{{ 'entityAccounts.adminList.deleteDialog.message' | translate: { email: accountToDelete?.email } }}</p>
+        <p class="text-red-500 font-semibold">{{ 'entityAccounts.adminList.deleteDialog.cannotUndo' | translate }}</p>
     </div>
     <ng-template pTemplate="footer">
-        <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="onCancelDeleteAccountDialog()"
+        <p-button [label]="'entityAccounts.adminList.deleteDialog.cancel' | translate" icon="pi pi-times" class="p-button-text" (onClick)="onCancelDeleteAccountDialog()"
             [disabled]="loadingAdmins">
         </p-button>
         <p-button class="p-button-danger" (onClick)="deleteAccount()" [disabled]="loadingAdmins">
             <ng-container *ngIf="loadingAdmins">
                 <span class="indicator-progress" [style.display]="'block'">
-                    Please wait
+                    {{ 'entityAccounts.adminList.pleaseWait' | translate }}
                     <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
                 </span>
             </ng-container>
             <ng-container *ngIf="!loadingAdmins">
-                <span>Delete</span>
+                <span>{{ 'entityAccounts.adminList.deleteDialog.delete' | translate }}</span>
             </ng-container>
         </p-button>
     </ng-template>
@@ -140,26 +138,26 @@
 <p-dialog [(visible)]="addAdminDialog" [modal]="true" [style]="{ width: '500px' }" [closable]="true" [draggable]="false"
     [resizable]="false">
     <ng-template pTemplate="header">
-        <h3>Create New Admin Account</h3>
+        <h3>{{ 'entityAccounts.adminList.addAdminDialog.title' | translate }}</h3>
     </ng-template>
     <form *ngIf="form" [formGroup]="form" (ngSubmit)="submit()">
         <div class="flex flex-column gap-3">
             <!-- Email Field -->
             <div class="field p-fluid">
-                <label for="email">Email <span class="text-red-500">*</span></label>
+                <label for="email">{{ 'entityAccounts.adminList.addAdminDialog.email' | translate }} <span class="text-red-500">*</span></label>
                 <input id="email" type="email" pInputText formControlName="email"
-                    [class.ng-invalid]="submitted && f['email'].invalid" placeholder="Enter email address" />
+                    [class.ng-invalid]="submitted && f['email'].invalid" [placeholder]="'entityAccounts.adminList.addAdminDialog.placeholderEmail' | translate" />
                 <small class="p-error" *ngIf="submitted && f['email'].invalid">
-                    <span *ngIf="f['email'].errors?.['required']">Email is required.</span>
-                    <span *ngIf="f['email'].errors?.['email']">Please enter a valid email address.</span>
+                    <span *ngIf="f['email'].errors?.['required']">{{ 'entityAccounts.adminList.addAdminDialog.emailRequired' | translate }}</span>
+                    <span *ngIf="f['email'].errors?.['email']">{{ 'entityAccounts.adminList.addAdminDialog.validEmail' | translate }}</span>
                 </small>
             </div>
 
             <!-- First Name Field -->
             <div class="field p-fluid">
-                <label for="firstName">First Name <span class="text-red-500">*</span></label>
+                <label for="firstName">{{ 'entityAccounts.adminList.addAdminDialog.firstName' | translate }} <span class="text-red-500">*</span></label>
                 <input id="firstName" type="text" pInputText formControlName="firstName"
-                    [class.ng-invalid]="submitted && f['firstName'].invalid" placeholder="Enter first name" />
+                    [class.ng-invalid]="submitted && f['firstName'].invalid" [placeholder]="'entityAccounts.adminList.addAdminDialog.placeholderFirstName' | translate" />
                 <small class="p-error" *ngIf="submitted && f['firstName'].invalid && firstNameError">
                     {{ firstNameError }}
                 </small>
@@ -167,9 +165,9 @@
 
             <!-- Last Name Field -->
             <div class="field p-fluid">
-                <label for="lastName">Last Name <span class="text-red-500">*</span></label>
+                <label for="lastName">{{ 'entityAccounts.adminList.addAdminDialog.lastName' | translate }} <span class="text-red-500">*</span></label>
                 <input id="lastName" type="text" pInputText formControlName="lastName"
-                    [class.ng-invalid]="submitted && f['lastName'].invalid" placeholder="Enter last name" />
+                    [class.ng-invalid]="submitted && f['lastName'].invalid" [placeholder]="'entityAccounts.adminList.addAdminDialog.placeholderLastName' | translate" />
                 <small class="p-error" *ngIf="submitted && f['lastName'].invalid && lastNameError">
                     {{ lastNameError }}
                 </small>
@@ -178,10 +176,10 @@
 
         <!-- Action Buttons -->
         <div class="flex justify-content-end gap-2 mt-4">
-            <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="onAdminCancelled()"
+            <p-button [label]="'entityAccounts.adminList.addAdminDialog.cancel' | translate" icon="pi pi-times" class="p-button-text" (onClick)="onAdminCancelled()"
                 [disabled]="loading">
             </p-button>
-            <p-button label="Create Admin" icon="pi pi-check" type="submit" [loading]="loading" [disabled]="loading">
+            <p-button [label]="'entityAccounts.adminList.addAdminDialog.createAdmin' | translate" icon="pi pi-check" type="submit" [loading]="loading" [disabled]="loading">
             </p-button>
         </div>
     </form>
@@ -191,26 +189,24 @@
 <p-dialog [(visible)]="activateAccountDialog" [modal]="true" [style]="{ width: '450px' }" [closable]="true"
     [draggable]="false" [resizable]="false">
     <ng-template pTemplate="header">
-        <h3>Activate Account</h3>
+        <h3>{{ 'entityAccounts.adminList.activateDialog.title' | translate }}</h3>
     </ng-template>
     <div class="flex flex-column gap-3">
-        <p>
-            Are you sure you want to activate the account for <strong>{{ accountToActivate?.email }}</strong>?
-        </p>
+        <p>{{ 'entityAccounts.adminList.activateDialog.message' | translate: { email: accountToActivate?.email } }}</p>
     </div>
     <ng-template pTemplate="footer">
-        <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="onCancelActivateAccountDialog()"
+        <p-button [label]="'entityAccounts.adminList.activateDialog.cancel' | translate" icon="pi pi-times" class="p-button-text" (onClick)="onCancelActivateAccountDialog()"
             [disabled]="loadingAdmins">
         </p-button>
         <p-button (onClick)="activateAccount()" [disabled]="loadingAdmins">
             <ng-container *ngIf="loadingAdmins">
                 <span class="indicator-progress" [style.display]="'block'">
-                    Please wait
+                    {{ 'entityAccounts.adminList.pleaseWait' | translate }}
                     <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
                 </span>
             </ng-container>
             <ng-container *ngIf="!loadingAdmins">
-                <span>Activate</span>
+                <span>{{ 'entityAccounts.adminList.activateDialog.activate' | translate }}</span>
             </ng-container>
         </p-button>
     </ng-template>
@@ -220,26 +216,24 @@
 <p-dialog [(visible)]="deactivateAccountDialog" [modal]="true" [style]="{ width: '450px' }" [closable]="true"
     [draggable]="false" [resizable]="false">
     <ng-template pTemplate="header">
-        <h3>Deactivate Account</h3>
+        <h3>{{ 'entityAccounts.adminList.deactivateDialog.title' | translate }}</h3>
     </ng-template>
     <div class="flex flex-column gap-3">
-        <p>
-            Are you sure you want to deactivate the account for <strong>{{ accountToDeactivate?.email }}</strong>?
-        </p>
+        <p>{{ 'entityAccounts.adminList.deactivateDialog.message' | translate: { email: accountToDeactivate?.email } }}</p>
     </div>
     <ng-template pTemplate="footer">
-        <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="onCancelDeactivateAccountDialog()"
+        <p-button [label]="'entityAccounts.adminList.deactivateDialog.cancel' | translate" icon="pi pi-times" class="p-button-text" (onClick)="onCancelDeactivateAccountDialog()"
             [disabled]="loadingAdmins">
         </p-button>
         <p-button (onClick)="deactivateAccount()" [disabled]="loadingAdmins">
             <ng-container *ngIf="loadingAdmins">
                 <span class="indicator-progress" [style.display]="'block'">
-                    Please wait
+                    {{ 'entityAccounts.adminList.pleaseWait' | translate }}
                     <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
                 </span>
             </ng-container>
             <ng-container *ngIf="!loadingAdmins">
-                <span>Deactivate</span>
+                <span>{{ 'entityAccounts.adminList.deactivateDialog.deactivate' | translate }}</span>
             </ng-container>
         </p-button>
     </ng-template>
@@ -249,30 +243,27 @@
 <p-dialog [(visible)]="removeAdminDialog" [modal]="true" [style]="{ width: '450px' }" [closable]="true"
     [draggable]="false" [resizable]="false">
     <ng-template pTemplate="header">
-        <h3>Remove Admin Access</h3>
+        <h3>{{ 'entityAccounts.adminList.removeAdminDialog.title' | translate }}</h3>
     </ng-template>
     <div class="flex flex-column gap-3">
-        <p>
-            Are you sure you want to remove admin access for <strong>{{ adminToRemove?.email }}</strong>?
-        </p>
+        <p>{{ 'entityAccounts.adminList.removeAdminDialog.message' | translate: { email: adminToRemove?.email } }}</p>
         <p class="text-600">
-            This will demote the account to a system user. The account will lose administrator privileges but will
-            remain active.
+            {{ 'entityAccounts.adminList.removeAdminDialog.note' | translate }}
         </p>
     </div>
     <ng-template pTemplate="footer">
-        <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="onCancelRemoveAdminDialog()"
+        <p-button [label]="'entityAccounts.adminList.removeAdminDialog.cancel' | translate" icon="pi pi-times" class="p-button-text" (onClick)="onCancelRemoveAdminDialog()"
             [disabled]="loadingAdmins">
         </p-button>
         <p-button (onClick)="removeAdmin()" [disabled]="loadingAdmins">
             <ng-container *ngIf="loadingAdmins">
                 <span class="indicator-progress" [style.display]="'block'">
-                    Please wait
+                    {{ 'entityAccounts.adminList.pleaseWait' | translate }}
                     <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
                 </span>
             </ng-container>
             <ng-container *ngIf="!loadingAdmins">
-                <span>Remove Admin Access</span>
+                <span>{{ 'entityAccounts.adminList.removeAdminDialog.removeAdminAccess' | translate }}</span>
             </ng-container>
         </p-button>
     </ng-template>
@@ -287,43 +278,42 @@
 <p-dialog [(visible)]="updateAccountEmailDialog" [modal]="true" [style]="{ width: '500px' }" [closable]="true"
     [draggable]="false" [resizable]="false" (onHide)="onCloseUpdateAccountEmailDialog()">
     <ng-template pTemplate="header">
-        <h3>Update Account Email</h3>
+        <h3>{{ 'entityAccounts.adminList.updateEmailDialog.title' | translate }}</h3>
     </ng-template>
     <form *ngIf="updateEmailForm" [formGroup]="updateEmailForm" (ngSubmit)="saveAccountEmail()">
         <div class="flex flex-column gap-3">
             <!-- Account ID Field (Read-only) -->
             <div class="field p-fluid">
-                <label for="emailAccountId">Account ID</label>
+                <label for="emailAccountId">{{ 'entityAccounts.adminList.updateEmailDialog.accountId' | translate }}</label>
                 <input id="emailAccountId" type="text" pInputText formControlName="accountId" readonly />
             </div>
 
             <!-- Current Email Field (Read-only) -->
             <div class="field p-fluid">
-                <label for="currentEmail">Current Email</label>
+                <label for="currentEmail">{{ 'entityAccounts.adminList.updateEmailDialog.currentEmail' | translate }}</label>
                 <input id="currentEmail" type="email" pInputText formControlName="currentEmail" readonly />
             </div>
 
             <!-- New Email Field -->
             <div class="field p-fluid">
-                <label for="newEmail">New Email <span class="text-red-500">*</span></label>
+                <label for="newEmail">{{ 'entityAccounts.adminList.updateEmailDialog.newEmail' | translate }} <span class="text-red-500">*</span></label>
                 <input id="newEmail" type="email" pInputText formControlName="newEmail"
                     [class.ng-invalid]="updateEmailForm.get('newEmail')?.invalid && updateEmailForm.get('newEmail')?.touched"
-                    placeholder="Enter new email address" />
+                    [placeholder]="'entityAccounts.adminList.updateEmailDialog.placeholderNewEmail' | translate" />
                 <small class="p-error"
                     *ngIf="updateEmailForm.get('newEmail')?.invalid && updateEmailForm.get('newEmail')?.touched">
-                    <span *ngIf="updateEmailForm.get('newEmail')?.errors?.['required']">New email is required.</span>
-                    <span *ngIf="updateEmailForm.get('newEmail')?.errors?.['email']">Please enter a valid email
-                        address.</span>
+                    <span *ngIf="updateEmailForm.get('newEmail')?.errors?.['required']">{{ 'entityAccounts.adminList.updateEmailDialog.newEmailRequired' | translate }}</span>
+                    <span *ngIf="updateEmailForm.get('newEmail')?.errors?.['email']">{{ 'entityAccounts.adminList.updateEmailDialog.validEmail' | translate }}</span>
                 </small>
             </div>
         </div>
 
         <!-- Action Buttons -->
         <div class="flex justify-content-end gap-2 mt-4">
-            <p-button label="Cancel" icon="pi pi-times" class="p-button-text"
+            <p-button [label]="'entityAccounts.adminList.updateEmailDialog.cancel' | translate" icon="pi pi-times" class="p-button-text"
                 (onClick)="onCloseUpdateAccountEmailDialog()" [disabled]="savingAccountEmail">
             </p-button>
-            <p-button label="Update Email" icon="pi pi-check" type="submit" [loading]="savingAccountEmail"
+            <p-button [label]="'entityAccounts.adminList.updateEmailDialog.updateEmail' | translate" icon="pi pi-check" type="submit" [loading]="savingAccountEmail"
                 [disabled]="savingAccountEmail || updateEmailForm.invalid">
             </p-button>
         </div>

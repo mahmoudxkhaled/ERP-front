@@ -1,13 +1,13 @@
 <p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '600px' }" [closable]="true" [draggable]="false"
     [resizable]="false" (onHide)="onDialogHide()">
     <ng-template pTemplate="header">
-        <h3>Account Details</h3>
+        <h3>{{ 'entityAccounts.details.title' | translate }}</h3>
     </ng-template>
 
     <!-- Loading State -->
     <div *ngIf="loadingAccountDetails" class="loading-container">
         <i class="pi pi-spin pi-spinner"></i>
-        <p class="loading-text">Loading account information...</p>
+        <p class="loading-text">{{ 'entityAccounts.details.loadingText' | translate }}</p>
     </div>
 
     <!-- Content -->
@@ -16,37 +16,37 @@
         <div class="info-section">
             <!-- Account ID -->
             <div class="info-field">
-                <label class="info-label">Account ID</label>
-                <span class="info-value">{{ accountId || 'N/A' }}</span>
+                <label class="info-label">{{ 'entityAccounts.details.accountId' | translate }}</label>
+                <span class="info-value">{{ accountId || ('entityAccounts.details.na' | translate) }}</span>
             </div>
 
             <!-- User ID -->
             <div class="info-field">
-                <label class="info-label">User ID</label>
-                <span class="info-value">{{ userId || 'N/A' }}</span>
+                <label class="info-label">{{ 'entityAccounts.details.userId' | translate }}</label>
+                <span class="info-value">{{ userId || ('entityAccounts.details.na' | translate) }}</span>
             </div>
 
             <!-- Email -->
             <div class="info-field">
-                <label class="info-label">Email</label>
-                <span class="info-value">{{ email || 'N/A' }}</span>
+                <label class="info-label">{{ 'entityAccounts.details.email' | translate }}</label>
+                <span class="info-value">{{ email || ('entityAccounts.details.na' | translate) }}</span>
             </div>
 
             <!-- Entity ID -->
             <div class="info-field">
-                <label class="info-label">Entity ID</label>
-                <span class="info-value">{{ entityId || 'N/A' }}</span>
+                <label class="info-label">{{ 'entityAccounts.details.entityId' | translate }}</label>
+                <span class="info-value">{{ entityId || ('entityAccounts.details.na' | translate) }}</span>
             </div>
 
             <!-- Entity Role ID -->
             <div class="info-field">
-                <label class="info-label">Entity Role ID</label>
-                <span class="info-value">{{ entityRoleId || 'N/A' }}</span>
+                <label class="info-label">{{ 'entityAccounts.details.entityRoleId' | translate }}</label>
+                <span class="info-value">{{ entityRoleId || ('entityAccounts.details.na' | translate) }}</span>
             </div>
 
             <!-- Account State -->
             <div class="info-field">
-                <label class="info-label">Account State</label>
+                <label class="info-label">{{ 'entityAccounts.details.accountState' | translate }}</label>
                 <div class="info-value">
                     <p-tag [value]="getAccountStateText()" [severity]="getAccountStateSeverity()"></p-tag>
                 </div>
@@ -56,9 +56,9 @@
         <!-- Description Field (Editable) -->
         <div class="description-section">
             <div class="field p-fluid">
-                <label for="detailsDescription" class="info-label">Description</label>
+                <label for="detailsDescription" class="info-label">{{ 'entityAccounts.details.description' | translate }}</label>
                 <textarea id="detailsDescription" pInputTextarea [formControl]="descriptionFormControl" rows="4"
-                    placeholder="Enter account description"></textarea>
+                    [placeholder]="'entityAccounts.details.descriptionPlaceholder' | translate"></textarea>
             </div>
         </div>
     </div>
@@ -66,10 +66,10 @@
     <!-- Action Buttons -->
     <ng-template pTemplate="footer">
         <div class="flex justify-content-end gap-2">
-            <p-button label="Close" icon="pi pi-times" class="p-button-text" (onClick)="closeDialog()"
+            <p-button [label]="'entityAccounts.details.close' | translate" icon="pi pi-times" class="p-button-text" (onClick)="closeDialog()"
                 [disabled]="savingAccountDetails">
             </p-button>
-            <p-button label="Save" icon="pi pi-check" (onClick)="saveAccountDetails()" [loading]="savingAccountDetails"
+            <p-button [label]="'entityAccounts.details.save' | translate" icon="pi pi-check" (onClick)="saveAccountDetails()" [loading]="savingAccountDetails"
                 [disabled]="savingAccountDetails ||!isDescriptionModified">
             </p-button>
         </div>
