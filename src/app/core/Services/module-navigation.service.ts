@@ -29,7 +29,9 @@ export class ModuleNavigationService {
             return [];
         }
 
-        const isRegional = accountSettings?.Language !== 'English';
+        let isRegional = accountSettings?.Language !== 'English';
+        const isRtl = this.localStorageService.getItem('isRtl') === true;
+        isRegional = isRtl ? true : isRegional;
 
         // Convert functions object to array and group modules
         const functionsArray: IMenuFunction[] = [];

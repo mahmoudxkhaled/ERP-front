@@ -963,11 +963,11 @@ p-autoComplete {
 }
 
 
-.p-scrollpanel-content {
+::ng-deep .p-scrollpanel-content {
     height: calc(100% + 18px);
-    width: calc(100% + 18px);
+    width: calc(100% + 18px) !important;
     padding: 0 0px 0px 0px !important;
-    position: relative;
-    overflow: auto;
-    box-sizing: border-box;
+    position: relative !important;
+    overflow: auto !important;
+    box-sizing: border-box !important;
 }
