@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Observable, Subscription } from 'rxjs';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { TranslationService } from 'src/app/core/services/translation.service';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { SettingsConfigurationsService } from 'src/app/modules/system-administration/settings-configurations.service';
 import { Function, Module } from '../../../erp-functions/models/settings-configurations.model';
@@ -53,7 +54,8 @@ export class ModulesListComponent implements OnInit, OnDestroy {
         private settingsConfigurationsService: SettingsConfigurationsService,
         private router: Router,
         private messageService: MessageService,
-        private localStorageService: LocalStorageService
+        private localStorageService: LocalStorageService,
+        private translate: TranslationService
     ) {
         this.isLoading$ = this.settingsConfigurationsService.isLoadingSubject.asObservable();
     }
@@ -242,17 +244,17 @@ export class ModulesListComponent implements OnInit, OnDestroy {
     private configureMenuItems(): void {
         this.menuItems = [
             {
-                label: 'View Details',
+                label: this.translate.getInstant('shared.actions.viewDetails'),
                 icon: 'pi pi-eye',
                 command: () => this.currentModule && this.viewDetails(this.currentModule)
             },
             {
-                label: 'Edit',
+                label: this.translate.getInstant('shared.actions.edit'),
                 icon: 'pi pi-pencil',
                 command: () => this.currentModule && this.edit(this.currentModule)
             },
             {
-                label: 'Manage Logo',
+                label: this.translate.getInstant('shared.actions.manageLogo'),
                 icon: 'pi pi-image',
                 command: () => this.currentModule && this.openLogoDialog(this.currentModule)
             },

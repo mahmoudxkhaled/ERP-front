@@ -4,6 +4,7 @@ import { MenuItem, MessageService } from 'primeng/api';
 import { Observable, Subscription } from 'rxjs';
 import { RolesService } from '../../../services/roles.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { TranslationService } from 'src/app/core/services/translation.service';
 import { EntityRole, EntityRoleBackend } from '../../../models/roles.model';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { EntitiesService } from 'src/app/modules/entity-administration/entities/services/entities.service';
@@ -52,7 +53,8 @@ export class RolesListComponent implements OnInit, OnDestroy, OnChanges {
         private router: Router,
         private messageService: MessageService,
         private localStorageService: LocalStorageService,
-        private entitiesService: EntitiesService
+        private entitiesService: EntitiesService,
+        private translate: TranslationService
     ) {
         this.isLoading$ = this.rolesService.isLoadingSubject.asObservable();
     }
@@ -234,17 +236,17 @@ export class RolesListComponent implements OnInit, OnDestroy, OnChanges {
 
         this.menuItems = [
             {
-                label: 'View Details',
+                label: this.translate.getInstant('shared.actions.viewDetails'),
                 icon: 'pi pi-eye',
                 command: () => this.currentRole && this.viewDetails(this.currentRole)
             },
             {
-                label: 'Edit',
+                label: this.translate.getInstant('shared.actions.edit'),
                 icon: 'pi pi-pencil',
                 command: () => this.currentRole && this.openEditRoleDialog(this.currentRole)
             },
             {
-                label: 'Delete',
+                label: this.translate.getInstant('shared.actions.delete'),
                 icon: 'pi pi-trash',
                 command: () => this.currentRole && this.confirmDelete(this.currentRole)
             }

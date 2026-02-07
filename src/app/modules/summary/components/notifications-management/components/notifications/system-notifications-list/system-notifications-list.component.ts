@@ -4,6 +4,7 @@ import { MenuItem, MessageService } from 'primeng/api';
 import { Observable, Subscription } from 'rxjs';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { PermissionService } from 'src/app/core/services/permission.service';
+import { TranslationService } from 'src/app/core/services/translation.service';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { Notification, NotificationBackend } from 'src/app/modules/summary/models/notifications.model';
 import { NotificationsService } from 'src/app/modules/summary/services/notifications.service';
@@ -73,7 +74,8 @@ export class SystemNotificationsListComponent implements OnInit, OnDestroy {
         private notificationsService: NotificationsService,
         private messageService: MessageService,
         private localStorageService: LocalStorageService,
-        private permissionService: PermissionService
+        private permissionService: PermissionService,
+        private translate: TranslationService
     ) {
         this.isLoading$ = this.notificationsService.isLoadingSubject.asObservable();
         this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
@@ -140,7 +142,7 @@ export class SystemNotificationsListComponent implements OnInit, OnDestroy {
     configureMenuItems(): void {
         this.menuItems = [
             {
-                label: 'View Details',
+                label: this.translate.getInstant('shared.actions.viewDetails'),
                 icon: 'pi pi-eye',
                 command: () => {
                     if (this.currentNotification) {
@@ -149,7 +151,7 @@ export class SystemNotificationsListComponent implements OnInit, OnDestroy {
                 }
             },
             {
-                label: 'Send',
+                label: this.translate.getInstant('shared.actions.send'),
                 icon: 'pi pi-send',
                 command: () => {
                     if (this.currentNotification) {
@@ -158,7 +160,7 @@ export class SystemNotificationsListComponent implements OnInit, OnDestroy {
                 }
             },
             {
-                label: 'Edit',
+                label: this.translate.getInstant('shared.actions.edit'),
                 icon: 'pi pi-pencil',
                 command: () => {
                     if (this.currentNotification) {
@@ -167,7 +169,7 @@ export class SystemNotificationsListComponent implements OnInit, OnDestroy {
                 }
             },
             {
-                label: 'Delete',
+                label: this.translate.getInstant('shared.actions.delete'),
                 icon: 'pi pi-trash',
                 command: () => {
                     if (this.currentNotification) {

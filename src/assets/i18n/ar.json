@@ -581,6 +581,9 @@
             "edit": "تعديل",
             "delete": "حذف",
             "view": "عرض",
+            "viewDetails": "عرض التفاصيل",
+            "send": "إرسال",
+            "manageLogo": "إدارة الشعار",
             "upload": "رفع",
             "download": "تحميل",
             "export": "تصدير",
@@ -1006,6 +1009,15 @@
                 "message": "هل أنت متأكد من تعطيل الحساب الخاص بـ {{email}}؟",
                 "cancel": "إلغاء",
                 "deactivate": "تعطيل"
+            },
+            "menu": {
+                "viewEditAccountDetails": "عرض/تعديل تفاصيل الحساب",
+                "updateAccountEmail": "تحديث بريد الحساب",
+                "updateAccountEntity": "تحديث شركة الحساب",
+                "activateAccount": "تفعيل الحساب",
+                "deactivateAccount": "إلغاء تفعيل الحساب",
+                "deleteAccount": "حذف الحساب",
+                "removeAdminAccess": "إزالة صلاحيات المدير"
             },
             "removeAdminDialog": {
                 "title": "إزالة صلاحيات المدير",

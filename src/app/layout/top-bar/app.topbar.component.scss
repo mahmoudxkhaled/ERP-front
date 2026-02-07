@@ -961,3 +961,13 @@ p-autoComplete {
     }
   }
 }
+
+
+.p-scrollpanel-content {
+    height: calc(100% + 18px);
+    width: calc(100% + 18px);
+    padding: 0 0px 0px 0px !important;
+    position: relative;
+    overflow: auto;
+    box-sizing: border-box;
+}

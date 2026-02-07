@@ -5,6 +5,7 @@ import { MenuItem, MessageService } from 'primeng/api';
 import { Observable, Subscription } from 'rxjs';
 import { SettingsConfigurationsService } from '../../services/settings-configurations.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { TranslationService } from 'src/app/core/services/translation.service';
 import { Function } from '../../models/settings-configurations.model';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
 
@@ -51,7 +52,8 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
         private settingsConfigurationsService: SettingsConfigurationsService,
         private router: Router,
         private messageService: MessageService,
-        private localStorageService: LocalStorageService
+        private localStorageService: LocalStorageService,
+        private translate: TranslationService
     ) {
         this.isLoading$ = this.settingsConfigurationsService.isLoadingSubject.asObservable();
     }
@@ -217,17 +219,17 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
     private configureMenuItems(): void {
         this.menuItems = [
             {
-                label: 'View Details',
+                label: this.translate.getInstant('shared.actions.viewDetails'),
                 icon: 'pi pi-eye',
                 command: () => this.currentFunction && this.viewDetails(this.currentFunction)
             },
             {
-                label: 'Edit',
+                label: this.translate.getInstant('shared.actions.edit'),
                 icon: 'pi pi-pencil',
                 command: () => this.currentFunction && this.edit(this.currentFunction)
             },
             {
-                label: 'Manage Logo',
+                label: this.translate.getInstant('shared.actions.manageLogo'),
                 icon: 'pi pi-image',
                 command: () => this.currentFunction && this.openLogoDialog(this.currentFunction)
             },

@@ -4,6 +4,7 @@ import { MessageService } from 'primeng/api';
 import { Subscription, throwError } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { TranslationService } from 'src/app/core/services/translation.service';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { textFieldValidator, getTextFieldError, nameFieldValidator, getNameFieldError } from 'src/app/core/validators/text-field.validator';
@@ -87,7 +88,8 @@ export class EntityAccountAdminListComponent implements OnInit, OnDestroy, OnCha
         private localStorageService: LocalStorageService,
         private permissionService: PermissionService,
         private fb: FormBuilder,
-        private rolesService: RolesService
+        private rolesService: RolesService,
+        private translate: TranslationService
     ) {
         this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
         this.isRegional = this.accountSettings?.Language !== 'English';
@@ -440,7 +442,7 @@ export class EntityAccountAdminListComponent implements OnInit, OnDestroy, OnCha
 
         if (canGetAccountDetails || canUpdateAccountDetails) {
             menuItemsList.push({
-                label: 'View/Edit Account Details',
+                label: this.translate.getInstant('entityAccounts.adminList.menu.viewEditAccountDetails'),
                 icon: 'pi pi-eye',
                 command: () => this.currentAdmin && this.openViewAccountDetails(this.currentAdmin)
             });
@@ -448,7 +450,7 @@ export class EntityAccountAdminListComponent implements OnInit, OnDestroy, OnCha
 
         if (canUpdateAccountEmail) {
             menuItemsList.push({
-                label: 'Update Account Email',
+                label: this.translate.getInstant('entityAccounts.adminList.menu.updateAccountEmail'),
                 icon: 'pi pi-envelope',
                 command: () => this.currentAdmin && this.openUpdateAccountEmail(this.currentAdmin)
             });
@@ -456,7 +458,7 @@ export class EntityAccountAdminListComponent implements OnInit, OnDestroy, OnCha
 
         if (canUpdateAccountEntity) {
             menuItemsList.push({
-                label: 'Update Account Entity',
+                label: this.translate.getInstant('entityAccounts.adminList.menu.updateAccountEntity'),
                 icon: 'pi pi-building',
                 command: () => this.currentAdmin && this.openUpdateAccountEntity(this.currentAdmin)
             });
@@ -464,7 +466,7 @@ export class EntityAccountAdminListComponent implements OnInit, OnDestroy, OnCha
 
         if (canActivateAccount && admin.accountState === 0) {
             menuItemsList.push({
-                label: 'Activate Account',
+                label: this.translate.getInstant('entityAccounts.adminList.menu.activateAccount'),
                 icon: 'pi pi-check',
                 command: () => this.currentAdmin && this.confirmActivateAccount(this.currentAdmin)
             });
@@ -472,7 +474,7 @@ export class EntityAccountAdminListComponent implements OnInit, OnDestroy, OnCha
 
         if (canDeactivateAccount && admin.accountState === 1) {
             menuItemsList.push({
-                label: 'Deactivate Account',
+                label: this.translate.getInstant('entityAccounts.adminList.menu.deactivateAccount'),
                 icon: 'pi pi-times',
                 command: () => this.currentAdmin && this.confirmDeactivateAccount(this.currentAdmin)
             });
@@ -480,7 +482,7 @@ export class EntityAccountAdminListComponent implements OnInit, OnDestroy, OnCha
 
         if (canDeleteAccount) {
             menuItemsList.push({
-                label: 'Delete Account',
+                label: this.translate.getInstant('entityAccounts.adminList.menu.deleteAccount'),
                 icon: 'pi pi-trash',
                 command: () => this.currentAdmin && this.confirmDeleteAccount(this.currentAdmin)
             });
@@ -488,7 +490,7 @@ export class EntityAccountAdminListComponent implements OnInit, OnDestroy, OnCha
 
         if (canRemoveAdmin) {
             menuItemsList.push({
-                label: 'Remove Admin Access',
+                label: this.translate.getInstant('entityAccounts.adminList.menu.removeAdminAccess'),
                 icon: 'pi pi-user-minus',
                 command: () => this.currentAdmin && this.confirmRemoveAdmin(this.currentAdmin)
             });

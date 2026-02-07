@@ -5,6 +5,7 @@ import { MenuItem, MessageService } from 'primeng/api';
 import { Observable, Subscription } from 'rxjs';
 import { EntitiesService } from '../../services/entities.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { TranslationService } from 'src/app/core/services/translation.service';
 import { Entity, EntityBackend, EntitiesListResponse } from '../../models/entities.model';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { Roles } from 'src/app/core/models/system-roles';
@@ -52,7 +53,8 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
         private router: Router,
         private messageService: MessageService,
         private localStorageService: LocalStorageService,
-        private permissionService: PermissionService
+        private permissionService: PermissionService,
+        private translate: TranslationService
     ) {
         this.isLoading$ = this.entitiesService.isLoadingSubject.asObservable();
     }
@@ -295,12 +297,12 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
 
         this.menuItems = [
             {
-                label: 'View Details',
+                label: this.translate.getInstant('shared.actions.viewDetails'),
                 icon: 'pi pi-eye',
                 command: () => this.currentEntity && this.viewDetails(this.currentEntity)
             },
             ...(canDeleteEntity ? [{
-                label: 'Delete',
+                label: this.translate.getInstant('shared.actions.delete'),
                 icon: 'pi pi-trash',
                 command: () => this.currentEntity && this.confirmDelete(this.currentEntity)
             }] : [])
