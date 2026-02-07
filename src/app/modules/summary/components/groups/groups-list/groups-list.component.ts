@@ -46,6 +46,14 @@ export class GroupsListComponent implements OnInit, OnDestroy {
     searchText: string = '';
     filteredGroups: Group[] = [];
 
+    /** When loading and filteredGroups is empty, return placeholder rows so the table can show skeleton cells. */
+    get tableValue(): Group[] {
+        if (this.tableLoadingSpinner && this.filteredGroups.length === 0) {
+            return Array(10).fill(null).map(() => ({} as Group));
+        }
+        return this.filteredGroups;
+    }
+
     constructor(
         private groupsService: GroupsService,
         private router: Router,

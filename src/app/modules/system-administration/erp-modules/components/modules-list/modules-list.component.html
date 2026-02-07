@@ -19,64 +19,20 @@
         <div class="p-inputgroup w-full">
             <span class="p-input-icon-left">
                 <i class="pi pi-search"></i>
-                <input type="text" pInputText placeholder="Search by code, name, ID, URL, or function..." 
+                <input type="text" pInputText placeholder="Search by code, name, ID, URL, or function..."
                     [value]="searchText" (input)="onSearchInput($event)" class="w-full" />
             </span>
-            <button *ngIf="searchText" pButton pRipple type="button" 
-                icon="pi pi-times" class="p-button-rounded p-button-text p-button-plain"
-                (click)="clearSearch()" pTooltip="Clear search">
+            <button *ngIf="searchText" pButton pRipple type="button" icon="pi pi-times"
+                class="p-button-rounded p-button-text p-button-plain" (click)="clearSearch()" pTooltip="Clear search">
             </button>
         </div>
     </div>
 
     <div #modulesTableContainer style="position: relative;">
-        <!-- Skeleton: same table structure (Id 40px, Code 100px, Name 200px, Function 200px, Default Order 100px, URL 200px, Status, Actions 150px) + paginator -->
-        <div *ngIf="tableLoadingSpinner" class="datatable-skeleton-wrapper">
-            <table class="datatable-skeleton">
-                <colgroup>
-                    <col style="width: 40px">
-                    <col style="width: 100px">
-                    <col style="width: 200px">
-                    <col style="width: 200px">
-                    <col style="width: 100px">
-                    <col style="width: 200px">
-                    <col style="width: 80px">
-                    <col style="width: 150px">
-                </colgroup>
-                <thead>
-                    <tr>
-                        <th><p-skeleton height="1.25rem"></p-skeleton></th>
-                        <th><p-skeleton height="1.25rem"></p-skeleton></th>
-                        <th><p-skeleton height="1.25rem"></p-skeleton></th>
-                        <th><p-skeleton height="1.25rem"></p-skeleton></th>
-                        <th><p-skeleton height="1.25rem"></p-skeleton></th>
-                        <th><p-skeleton height="1.25rem"></p-skeleton></th>
-                        <th><p-skeleton height="1.25rem"></p-skeleton></th>
-                        <th><p-skeleton height="1.25rem"></p-skeleton></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let i of [1,2,3,4,5,6,7,8,9,10]">
-                        <td><p-skeleton height="2rem"></p-skeleton></td>
-                        <td><p-skeleton height="2rem"></p-skeleton></td>
-                        <td><p-skeleton height="2rem"></p-skeleton></td>
-                        <td><p-skeleton height="2rem"></p-skeleton></td>
-                        <td><p-skeleton height="2rem"></p-skeleton></td>
-                        <td><p-skeleton height="2rem"></p-skeleton></td>
-                        <td><p-skeleton height="2rem"></p-skeleton></td>
-                        <td><p-skeleton height="2rem"></p-skeleton></td>
-                    </tr>
-                </tbody>
-            </table>
-            <div class="datatable-skeleton-paginator">
-                <p-skeleton width="280px" height="2.5rem"></p-skeleton>
-            </div>
-        </div>
-
-        <p-table *ngIf="!tableLoadingSpinner" #modulesTable [value]="filteredModules" [paginator]="true" [first]="first" [rows]="rows"
+        <p-table #modulesTable [value]="tableValue" [paginator]="true" [first]="first" [rows]="rows"
             [rowsPerPageOptions]="[10, 25, 50, 100]" [showCurrentPageReport]="true" responsiveLayout="scroll"
             [lazy]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-            [loading]="!!(isLoading$ | async)" (onLazyLoad)="onPageChange($event)">
+            (onLazyLoad)="onPageChange($event)">
 
             <ng-template pTemplate="header">
                 <tr>
@@ -94,36 +50,76 @@
             <ng-template pTemplate="body" let-moduleItem>
                 <tr>
                     <td>
-                        <p-tag [value]="'#' + moduleItem.id" severity="info"></p-tag>
+                        <ng-container *ngIf="tableLoadingSpinner; else normalId">
+                            <p-skeleton height="1.5rem" width="4rem" borderRadius="4px"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalId>
+                            <p-tag [value]="'#' + moduleItem.id" severity="info"></p-tag>
+                        </ng-template>
                     </td>
                     <td>
-                        <span class="font-semibold text-lg">{{ moduleItem.code }}</span>
+                        <ng-container *ngIf="tableLoadingSpinner; else normalCode">
+                            <p-skeleton height="1.5rem" width="5rem"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalCode>
+                            <span class="font-semibold text-lg">{{ moduleItem.code }}</span>
+                        </ng-template>
                     </td>
                     <td>
-                        <span style="cursor: pointer;" class="font-semibold"
-                            routerLink="/system-administration/erp-modules/{{ moduleItem.id }}">
-                            {{ moduleItem.name }}</span>
+                        <ng-container *ngIf="tableLoadingSpinner; else normalName">
+                            <p-skeleton height="1rem" width="10rem"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalName>
+                            <span style="cursor: pointer;" class="font-semibold"
+                                routerLink="/system-administration/erp-modules/{{ moduleItem.id }}">
+                                {{ moduleItem.name }}</span>
+                        </ng-template>
                     </td>
                     <td>
-                        <span class="text-600">{{ getFunctionName(moduleItem.functionId) }}</span>
+                        <ng-container *ngIf="tableLoadingSpinner; else normalFunction">
+                            <p-skeleton height="1.5rem" width="8rem"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalFunction>
+                            <span class="text-600">{{ getFunctionName(moduleItem.functionId) }}</span>
+                        </ng-template>
                     </td>
                     <td>
-                        <span class="text-600">{{ moduleItem.defaultOrder || '—' }}</span>
+                        <ng-container *ngIf="tableLoadingSpinner; else normalOrder">
+                            <p-skeleton height="1.5rem" width="4rem"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalOrder>
+                            <span class="text-600">{{ moduleItem.defaultOrder || '—' }}</span>
+                        </ng-template>
                     </td>
                     <td>
-                        <span class="text-600">{{ moduleItem.url || '—' }}</span>
+                        <ng-container *ngIf="tableLoadingSpinner; else normalUrl">
+                            <p-skeleton height="1.5rem" width="10rem"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalUrl>
+                            <span class="text-600">{{ moduleItem.url || '—' }}</span>
+                        </ng-template>
                     </td>
                     <td class="text-center">
-                        <p-inputSwitch [formControl]="activationControls[moduleItem.id]"
-                            (onChange)="onStatusToggle(moduleItem)">
-                        </p-inputSwitch>
+                        <ng-container *ngIf="tableLoadingSpinner; else normalStatus">
+                            <p-skeleton height="1.5rem" width="3rem" borderRadius="30px"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalStatus>
+                            <p-inputSwitch [formControl]="activationControls[moduleItem.id]"
+                                (onChange)="onStatusToggle(moduleItem)">
+                            </p-inputSwitch>
+                        </ng-template>
                     </td>
                     <td class="text-start">
-                        <button pButton pRipple type="button" icon="pi pi-ellipsis-v"
-                            class="p-button-rounded p-button-text p-button-plain"
-                            (click)="openMenu(rowMenu, moduleItem, $event)">
-                        </button>
-                        <p-menu #rowMenu [model]="menuItems" [popup]="true" [appendTo]="'body'"></p-menu>
+                        <ng-container *ngIf="tableLoadingSpinner; else normalActions">
+                            <p-skeleton height="2rem" width="2rem" borderRadius="50%"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalActions>
+                            <button pButton pRipple type="button" icon="pi pi-ellipsis-v"
+                                class="p-button-rounded p-button-text p-button-plain"
+                                (click)="openMenu(rowMenu, moduleItem, $event)">
+                            </button>
+                            <p-menu #rowMenu [model]="menuItems" [popup]="true" [appendTo]="'body'"></p-menu>
+                        </ng-template>
                     </td>
                 </tr>
             </ng-template>

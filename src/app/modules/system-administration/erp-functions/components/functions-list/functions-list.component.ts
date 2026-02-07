@@ -39,6 +39,14 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
     searchText: string = '';
     filteredFunctions: Function[] = [];
 
+    /** When loading and filteredFunctions is empty, return placeholder rows so the table can show skeleton cells. */
+    get tableValue(): Function[] {
+        if (this.tableLoadingSpinner && this.filteredFunctions.length === 0) {
+            return Array(10).fill(null).map(() => ({} as Function));
+        }
+        return this.filteredFunctions;
+    }
+
     constructor(
         private settingsConfigurationsService: SettingsConfigurationsService,
         private router: Router,

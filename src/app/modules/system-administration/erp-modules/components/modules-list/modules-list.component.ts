@@ -41,6 +41,14 @@ export class ModulesListComponent implements OnInit, OnDestroy {
     searchText: string = '';
     filteredModules: Module[] = [];
 
+    /** When loading and filteredModules is empty, return placeholder rows so the table can show skeleton cells. */
+    get tableValue(): Module[] {
+        if (this.tableLoadingSpinner && this.filteredModules.length === 0) {
+            return Array(10).fill(null).map(() => ({} as Module));
+        }
+        return this.filteredModules;
+    }
+
     constructor(
         private settingsConfigurationsService: SettingsConfigurationsService,
         private router: Router,
@@ -53,7 +61,8 @@ export class ModulesListComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
         this.configureMenuItems();
-        // Load functions first, then modules after functions are loaded
+        // Show skeleton immediately while we load (functions then modules)
+        this.tableLoadingSpinner = true;
         this.loadFunctions();
     }
 
@@ -329,7 +338,7 @@ export class ModulesListComponent implements OnInit, OnDestroy {
             const idMatch = String(moduleItem.id).includes(searchTerm) || false;
             const urlMatch = moduleItem.url?.toLowerCase().includes(searchTerm) || false;
             const functionNameMatch = this.getFunctionName(moduleItem.functionId).toLowerCase().includes(searchTerm) || false;
-            
+
             return codeMatch || nameMatch || idMatch || urlMatch || functionNameMatch;
         });
     }

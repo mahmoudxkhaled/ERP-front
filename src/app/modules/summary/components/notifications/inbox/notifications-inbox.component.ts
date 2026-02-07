@@ -22,6 +22,14 @@ export class NotificationsInboxComponent implements OnInit, OnDestroy {
     isLoading$: Observable<boolean>;
     tableLoadingSpinner = false;
     private subscriptions: Subscription[] = [];
+
+    /** When loading and notifications is empty, return placeholder rows so the table can show skeleton cells. */
+    get tableValue(): AccountNotification[] {
+        if (this.tableLoadingSpinner && this.notifications.length === 0) {
+            return Array(10).fill(null).map(() => ({} as AccountNotification));
+        }
+        return this.notifications;
+    }
     currentAccountId: number = 0;
     accountSettings: IAccountSettings;
     isRegional: boolean = false;

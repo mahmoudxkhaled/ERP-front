@@ -39,42 +39,7 @@
     </div>
 
     <div style="position: relative;">
-        <!-- Skeleton: same table structure and column widths as p-table (PrimeNG uses 1rem cell padding) -->
-        <div *ngIf="tableLoadingSpinner" class="inbox-table-skeleton-wrapper">
-            <table class="inbox-table-skeleton">
-                <colgroup>
-                    <col style="width: 50px">
-                    <col style="width: 120px">
-                    <col style="width: 200px">
-                    <col style="width: 400px">
-                    <col style="width: 150px">
-                    <col style="width: 200px">
-                </colgroup>
-                <thead>
-                    <tr>
-                        <th><p-skeleton height="1.25rem"></p-skeleton></th>
-                        <th><p-skeleton height="1.25rem"></p-skeleton></th>
-                        <th><p-skeleton height="1.25rem"></p-skeleton></th>
-                        <th><p-skeleton height="1.25rem"></p-skeleton></th>
-                        <th><p-skeleton height="1.25rem"></p-skeleton></th>
-                        <th><p-skeleton height="1.25rem"></p-skeleton></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let i of [1,2,3,4,5,6,7,8]">
-                        <td><p-skeleton height="2rem"></p-skeleton></td>
-                        <td><p-skeleton height="2rem"></p-skeleton></td>
-                        <td><p-skeleton height="2rem"></p-skeleton></td>
-                        <td><p-skeleton height="2rem"></p-skeleton></td>
-                        <td><p-skeleton height="2rem"></p-skeleton></td>
-                        <td><p-skeleton height="2rem"></p-skeleton></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <p-table *ngIf="!tableLoadingSpinner" #notificationsTable [value]="notifications" [paginator]="false" responsiveLayout="scroll"
-            [loading]="!!(isLoading$ | async)">
+        <p-table #notificationsTable [value]="tableValue" [paginator]="false" responsiveLayout="scroll">
 
             <ng-template pTemplate="header">
                 <tr>
@@ -90,35 +55,65 @@
             <ng-template pTemplate="body" let-notification>
                 <tr [class.unread]="!notification.isRead">
                     <td>
-                        <p-tag [value]="notification.isRead ? 'Read' : 'Unread'"
-                            [severity]="notification.isRead ? 'success' : 'warning'">
-                        </p-tag>
+                        <ng-container *ngIf="isLoading$ | async; else normalStatus">
+                            <p-skeleton height="1.5rem" width="5rem" borderRadius="4px"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalStatus>
+                            <p-tag [value]="notification.isRead ? 'Read' : 'Unread'"
+                                [severity]="notification.isRead ? 'success' : 'warning'">
+                            </p-tag>
+                        </ng-template>
                     </td>
                     <td>
-                        <span class="text-600">{{ getTypeName(notification.typeId) }}</span>
+                        <ng-container *ngIf="isLoading$ | async; else normalType">
+                            <p-skeleton height="1.5rem" width="5rem"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalType>
+                            <span class="text-600">{{ getTypeName(notification.typeId) }}</span>
+                        </ng-template>
                     </td>
                     <td>
-                        <span class="font-semibold">{{ notification.title }}</span>
+                        <ng-container *ngIf="isLoading$ | async; else normalTitle">
+                            <p-skeleton height="1rem" width="10rem"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalTitle>
+                            <span class="font-semibold">{{ notification.title }}</span>
+                        </ng-template>
                     </td>
                     <td>
-                        <span class="text-600 line-height-3">{{ notification.message }}</span>
+                        <ng-container *ngIf="isLoading$ | async; else normalMessage">
+                            <p-skeleton height="3rem" width="100%" class="line-height-3"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalMessage>
+                            <span class="text-600 line-height-3">{{ notification.message }}</span>
+                        </ng-template>
                     </td>
                     <td>
-                        <span>{{ notification.createdAt | date: 'short' }}</span>
+                        <ng-container *ngIf="isLoading$ | async; else normalDate">
+                            <p-skeleton height="1.5rem" width="6rem"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalDate>
+                            <span>{{ notification.createdAt | date: 'short' }}</span>
+                        </ng-template>
                     </td>
                     <td class="text-start">
-                        <div class="flex gap-2">
-                            <p-button *ngIf="!notification.isRead" icon="pi pi-check" pTooltip="Mark as Read"
-                                class="p-button-sm p-button-text" (onClick)="markAsRead(notification)">
-                            </p-button>
-                            <p-button *ngIf="notification.isRead" icon="pi pi-eye-slash" pTooltip="Mark as Unread"
-                                class="p-button-sm p-button-text" (onClick)="markAsUnread(notification)">
-                            </p-button>
-                            <p-button icon="pi pi-trash" pTooltip="Delete"
-                                class="p-button-sm p-button-text p-button-danger"
-                                (onClick)="deleteNotification(notification)">
-                            </p-button>
-                        </div>
+                        <ng-container *ngIf="isLoading$ | async; else normalActions">
+                            <p-skeleton height="2rem" width="8rem"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalActions>
+                            <div class="flex gap-2">
+                                <p-button *ngIf="!notification.isRead" icon="pi pi-check" pTooltip="Mark as Read"
+                                    class="p-button-sm p-button-text" (onClick)="markAsRead(notification)">
+                                </p-button>
+                                <p-button *ngIf="notification.isRead" icon="pi pi-eye-slash" pTooltip="Mark as Unread"
+                                    class="p-button-sm p-button-text" (onClick)="markAsUnread(notification)">
+                                </p-button>
+                                <p-button icon="pi pi-trash" pTooltip="Delete"
+                                    class="p-button-sm p-button-text p-button-danger"
+                                    (onClick)="deleteNotification(notification)">
+                                </p-button>
+                            </div>
+                        </ng-template>
                     </td>
                 </tr>
             </ng-template>
