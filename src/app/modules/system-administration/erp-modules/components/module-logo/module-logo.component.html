@@ -5,37 +5,50 @@
     </ng-template>
 
     <div class="flex flex-column gap-4">
-        <!-- Current Logo Display -->
-        <div class="flex justify-content-center align-items-center p-4">
-            <div class="logo-preview-container"
-                style="max-width: 300px; max-height: 300px; border: 1px solid var(--surface-border); border-radius: 8px; padding: 1rem; background: var(--surface-ground);">
-                <img [src]="moduleLogo" alt="Module Logo" style="width: 100%; height: 100%; object-fit: contain;">
+        <!-- Skeleton when loading logo: same size as logo area (300x300) + upload section -->
+        <div *ngIf="loadingLogo" class="flex flex-column gap-4">
+            <div class="flex justify-content-center align-items-center p-4">
+                <div class="module-logo-skeleton-box"
+                    style="width: 300px; height: 300px; border: 1px solid var(--surface-border); border-radius: 8px; padding: 1rem; background: var(--surface-ground);">
+                    <p-skeleton width="100%" height="100%" styleClass="rounded"></p-skeleton>
+                </div>
+            </div>
+            <div class="flex flex-column gap-3">
+                <div class="field p-fluid">
+                    <p-skeleton width="6rem" height="1rem" class="mb-2"></p-skeleton>
+                    <p-skeleton width="100%" height="2.5rem" styleClass="rounded"></p-skeleton>
+                    <p-skeleton width="90%" height="0.875rem" class="mt-2"></p-skeleton>
+                </div>
             </div>
         </div>
 
-        <!-- Upload Section -->
-        <div class="flex flex-column gap-3">
-            <div class="field p-fluid">
-                <label>Upload Logo</label>
-                <p-fileUpload #logoUploader mode="basic" name="logo" accept="image/*" (onSelect)="onLogoUpload($event)"
-                    [maxFileSize]="2097152" chooseLabel="Choose Logo" [disabled]="loading || loadingLogo">
-                </p-fileUpload>
-                <small class="text-500">
-                    Allowed formats: PNG, JPG, JPE, JPEG, GIF, BMP, TIFF, TIF, PICT. Recommended size: 200KB or less.
-                </small>
+        <!-- Main content when logo loaded -->
+        <ng-container *ngIf="!loadingLogo">
+            <div class="flex justify-content-center align-items-center p-4">
+                <div class="logo-preview-container"
+                    style="max-width: 300px; max-height: 300px; border: 1px solid var(--surface-border); border-radius: 8px; padding: 1rem; background: var(--surface-ground);">
+                    <img [src]="moduleLogo" alt="Module Logo" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
             </div>
 
-            <div *ngIf="hasLogo" class="flex justify-content-center">
-                <p-button label="Remove Logo" icon="pi pi-trash" severity="danger" (onClick)="removeLogo()"
-                    [disabled]="loading">
-                </p-button>
-            </div>
-        </div>
+            <div class="flex flex-column gap-3">
+                <div class="field p-fluid">
+                    <label>Upload Logo</label>
+                    <p-fileUpload #logoUploader mode="basic" name="logo" accept="image/*" (onSelect)="onLogoUpload($event)"
+                        [maxFileSize]="2097152" chooseLabel="Choose Logo" [disabled]="loading || loadingLogo">
+                    </p-fileUpload>
+                    <small class="text-500">
+                        Allowed formats: PNG, JPG, JPE, JPEG, GIF, BMP, TIFF, TIF, PICT. Recommended size: 200KB or less.
+                    </small>
+                </div>
 
-        <!-- Loading Indicator -->
-        <div *ngIf="loadingLogo" class="flex justify-content-center align-items-center p-4">
-            <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
-        </div>
+                <div *ngIf="hasLogo" class="flex justify-content-center">
+                    <p-button label="Remove Logo" icon="pi pi-trash" severity="danger" (onClick)="removeLogo()"
+                        [disabled]="loading">
+                    </p-button>
+                </div>
+            </div>
+        </ng-container>
     </div>
 
     <ng-template pTemplate="footer">

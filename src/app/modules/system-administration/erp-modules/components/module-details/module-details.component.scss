@@ -1,5 +1,16 @@
 // Module Details Component Styles
 
+.module-details-skeleton {
+    min-height: 200px;
+}
+
+.details-skeleton-panel {
+    padding: 0;
+    border: 1px solid var(--surface-border);
+    border-radius: var(--border-radius);
+    background: var(--surface-card);
+}
+
 .logo-container {
     border: 1px solid var(--surface-border);
     border-radius: 8px;

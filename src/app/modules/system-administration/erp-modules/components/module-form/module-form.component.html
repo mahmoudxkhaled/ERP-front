@@ -87,8 +87,15 @@
     </ng-template>
 
     <div class="flex flex-column gap-3">
-        <div *ngIf="loadingFunctions" class="flex justify-content-center align-items-center p-4">
-            <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+        <!-- Skeleton: same area as function list (max-height 400px, list of rows) -->
+        <div *ngIf="loadingFunctions" class="flex flex-column gap-2" style="max-height: 400px; overflow-y: auto;">
+            <div *ngFor="let i of [1,2,3,4,5,6,7]" class="p-3 border-round surface-border"
+                style="border: 1px solid var(--surface-border);">
+                <div class="flex align-items-center justify-content-between">
+                    <p-skeleton width="12rem" height="1.25rem"></p-skeleton>
+                    <p-skeleton width="4rem" height="1rem"></p-skeleton>
+                </div>
+            </div>
         </div>
 
         <div *ngIf="!loadingFunctions" class="flex flex-column gap-2" style="max-height: 400px; overflow-y: auto;">
