@@ -34,6 +34,14 @@ export class EntityAccountAdminListComponent implements OnInit, OnDestroy, OnCha
     loadingAdmins: boolean = false;
     entityAdmins: EntityAccount[] = [];
 
+    /** When loading and entityAdmins is empty, return placeholder rows so the table can show skeleton cells. */
+    get tableValue(): EntityAccount[] {
+        if (this.loadingAdmins && this.entityAdmins.length === 0) {
+            return Array(10).fill(null).map(() => ({} as EntityAccount));
+        }
+        return this.entityAdmins;
+    }
+
     accountSettings: IAccountSettings;
     isRegional: boolean = false;
 

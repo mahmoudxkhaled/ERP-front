@@ -26,6 +26,14 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
   loadingAccounts: boolean = false;
   entityAccounts: EntityAccount[] = [];
 
+  /** When loading and entityAccounts is empty, return placeholder rows so the table can show skeleton cells. */
+  get tableValue(): EntityAccount[] {
+    if (this.loadingAccounts && this.entityAccounts.length === 0) {
+      return Array(10).fill(null).map(() => ({} as EntityAccount));
+    }
+    return this.entityAccounts;
+  }
+
   // Pagination
   first: number = 0;
   rows: number = 10;

@@ -38,14 +38,10 @@
             </div>
         </ng-template>
 
-        <div *ngIf="loadingAccounts" class="flex justify-content-center align-items-center" style="min-height: 100px;">
-            <i class="pi pi-spin pi-spinner"></i>
-        </div>
-
-        <p-table *ngIf="!loadingAccounts" [value]="entityAccounts" [paginator]="true" [first]="first" [rows]="rows"
+        <p-table [value]="tableValue" [paginator]="true" [first]="first" [rows]="rows"
             [totalRecords]="totalRecords" [showCurrentPageReport]="true" responsiveLayout="scroll"
             [rowsPerPageOptions]="[10, 25, 50, 100]"
-            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [loading]="loadingAccounts"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
             (onPage)="onPageChange($event)">
             <ng-template pTemplate="header">
                 <tr>
@@ -62,36 +58,76 @@
             <ng-template pTemplate="body" let-account>
                 <tr>
                     <td class="text-center">
-                        <span class="text-600">{{ account.accountId }}</span>
+                        <ng-container *ngIf="loadingAccounts; else normalAccountId">
+                            <p-skeleton height="1.5rem" width="4rem"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalAccountId>
+                            <span class="text-600">{{ account.accountId }}</span>
+                        </ng-template>
                     </td>
                     <td class="text-center">
-                        <span class="text-600">{{ account.userId }}</span>
+                        <ng-container *ngIf="loadingAccounts; else normalUserId">
+                            <p-skeleton height="1.5rem" width="4rem"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalUserId>
+                            <span class="text-600">{{ account.userId }}</span>
+                        </ng-template>
                     </td>
                     <td>
-                        <span class="text-600">{{ account.email }}</span>
+                        <ng-container *ngIf="loadingAccounts; else normalEmail">
+                            <p-skeleton height="1.5rem" width="12rem"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalEmail>
+                            <span class="text-600">{{ account.email }}</span>
+                        </ng-template>
                     </td>
                     <td class="text-center">
-                        <p-tag [value]="account.roleName"
-                            [severity]="account.systemRoleId === 4 ? 'info' : 'secondary'"></p-tag>
+                        <ng-container *ngIf="loadingAccounts; else normalRole">
+                            <p-skeleton height="1.5rem" width="5rem" borderRadius="4px"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalRole>
+                            <p-tag [value]="account.roleName"
+                                [severity]="account.systemRoleId === 4 ? 'info' : 'secondary'"></p-tag>
+                        </ng-template>
                     </td>
                     <td class="text-center">
-                        <span class="text-600">{{ account.entityRoleName || 'N/A' }}</span>
+                        <ng-container *ngIf="loadingAccounts; else normalEntityRole">
+                            <p-skeleton height="1.5rem" width="5rem" borderRadius="4px"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalEntityRole>
+                            <span class="text-600">{{ account.entityRoleName || 'N/A' }}</span>
+                        </ng-template>
                     </td>
                     <td class="text-center">
-                        <p-tag [value]="account.accountState === 1 ? 'Active' : 'Inactive'"
-                            [severity]="account.accountState === 1 ? 'success' : 'danger'"></p-tag>
+                        <ng-container *ngIf="loadingAccounts; else normalAccountState">
+                            <p-skeleton height="1.5rem" width="5rem" borderRadius="4px"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalAccountState>
+                            <p-tag [value]="account.accountState === 1 ? 'Active' : 'Inactive'"
+                                [severity]="account.accountState === 1 ? 'success' : 'danger'"></p-tag>
+                        </ng-template>
                     </td>
                     <td class="text-center">
-                        <span class="text-600">
-                            {{ isDefaultDate(account.Last_Login) ? 'Never' : (account.Last_Login | date:'short') }}
-                        </span>
+                        <ng-container *ngIf="loadingAccounts; else normalLastLogin">
+                            <p-skeleton height="1.5rem" width="6rem"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalLastLogin>
+                            <span class="text-600">
+                                {{ isDefaultDate(account.Last_Login) ? 'Never' : (account.Last_Login | date:'short') }}
+                            </span>
+                        </ng-template>
                     </td>
                     <td class="text-start">
-                        <button pButton pRipple type="button" icon="pi pi-ellipsis-v"
-                            class="p-button-rounded p-button-text p-button-plain"
-                            (click)="openOtherAccountMenu(rowMenu, account, $event)" [disabled]="loadingAccounts">
-                        </button>
-                        <p-menu #rowMenu [model]="otherAccountsMenuItems" [popup]="true" [appendTo]="'body'"></p-menu>
+                        <ng-container *ngIf="loadingAccounts; else normalActions">
+                            <p-skeleton height="2rem" width="2rem" borderRadius="50%"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalActions>
+                            <button pButton pRipple type="button" icon="pi pi-ellipsis-v"
+                                class="p-button-rounded p-button-text p-button-plain"
+                                (click)="openOtherAccountMenu(rowMenu, account, $event)" [disabled]="loadingAccounts">
+                            </button>
+                            <p-menu #rowMenu [model]="otherAccountsMenuItems" [popup]="true" [appendTo]="'body'"></p-menu>
+                        </ng-template>
                     </td>
                 </tr>
             </ng-template>

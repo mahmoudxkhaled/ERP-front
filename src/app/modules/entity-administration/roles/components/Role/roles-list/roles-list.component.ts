@@ -22,6 +22,14 @@ export class RolesListComponent implements OnInit, OnDestroy, OnChanges {
     isLoading$: Observable<boolean>;
     tableLoadingSpinner = false;
     private subscriptions: Subscription[] = [];
+
+    /** When loading and roles is empty, return placeholder rows so the table can show skeleton cells. */
+    get tableValue(): EntityRole[] {
+        if (this.tableLoadingSpinner && this.roles.length === 0) {
+            return Array(10).fill(null).map(() => ({} as EntityRole));
+        }
+        return this.roles;
+    }
     menuItems: MenuItem[] = [];
     currentRole?: EntityRole;
     accountSettings: IAccountSettings;

@@ -17,11 +17,7 @@
             <p class="text-600 m-0">Manage entity administrators</p>
         </div>
 
-        <div *ngIf="loadingAdmins" class="flex justify-content-center align-items-center" style="min-height: 100px;">
-            <i class="pi pi-spin pi-spinner"></i>
-        </div>
-
-        <p-table *ngIf="!loadingAdmins" [value]="entityAdmins" [paginator]="true" [rows]="10"
+        <p-table [value]="tableValue" [paginator]="true" [rows]="10"
             [showCurrentPageReport]="true" responsiveLayout="scroll" [rowsPerPageOptions]="[10, 25, 50]">
             <ng-template pTemplate="header">
                 <tr>
@@ -37,32 +33,67 @@
             <ng-template pTemplate="body" let-admin>
                 <tr>
                     <td class="text-center">
-                        <span class="text-600">{{ admin.accountId }}</span>
+                        <ng-container *ngIf="loadingAdmins; else normalAccountId">
+                            <p-skeleton height="1.5rem" width="4rem"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalAccountId>
+                            <span class="text-600">{{ admin.accountId }}</span>
+                        </ng-template>
                     </td>
                     <td class="text-center">
-                        <span class="text-600">{{ admin.userId }}</span>
+                        <ng-container *ngIf="loadingAdmins; else normalUserId">
+                            <p-skeleton height="1.5rem" width="4rem"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalUserId>
+                            <span class="text-600">{{ admin.userId }}</span>
+                        </ng-template>
                     </td>
                     <td>
-                        <span class="text-600">{{ admin.email }}</span>
+                        <ng-container *ngIf="loadingAdmins; else normalEmail">
+                            <p-skeleton height="1.5rem" width="12rem"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalEmail>
+                            <span class="text-600">{{ admin.email }}</span>
+                        </ng-template>
                     </td>
                     <td class="text-center">
-                        <span class="text-600">{{ admin.entityRoleName || 'N/A' }}</span>
+                        <ng-container *ngIf="loadingAdmins; else normalEntityRole">
+                            <p-skeleton height="1.5rem" width="5rem" borderRadius="4px"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalEntityRole>
+                            <span class="text-600">{{ admin.entityRoleName || 'N/A' }}</span>
+                        </ng-template>
                     </td>
                     <td class="text-center">
-                        <p-tag [value]="admin.accountState === 1 ? 'Active' : 'Inactive'"
-                            [severity]="admin.accountState === 1 ? 'success' : 'danger'"></p-tag>
+                        <ng-container *ngIf="loadingAdmins; else normalAccountState">
+                            <p-skeleton height="1.5rem" width="5rem" borderRadius="4px"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalAccountState>
+                            <p-tag [value]="admin.accountState === 1 ? 'Active' : 'Inactive'"
+                                [severity]="admin.accountState === 1 ? 'success' : 'danger'"></p-tag>
+                        </ng-template>
                     </td>
                     <td class="text-center">
-                        <span class="text-600">
-                            {{ isDefaultDate(admin.Last_Login) ? 'Never' : (admin.Last_Login | date:'short') }}
-                        </span>
+                        <ng-container *ngIf="loadingAdmins; else normalLastLogin">
+                            <p-skeleton height="1.5rem" width="6rem"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalLastLogin>
+                            <span class="text-600">
+                                {{ isDefaultDate(admin.Last_Login) ? 'Never' : (admin.Last_Login | date:'short') }}
+                            </span>
+                        </ng-template>
                     </td>
                     <td class="text-start">
-                        <button pButton pRipple type="button" icon="pi pi-ellipsis-v"
-                            class="p-button-rounded p-button-text p-button-plain"
-                            (click)="openMenu(rowMenu, admin, $event)" [disabled]="loadingAdmins">
-                        </button>
-                        <p-menu #rowMenu [model]="menuItems" [popup]="true" [appendTo]="'body'"></p-menu>
+                        <ng-container *ngIf="loadingAdmins; else normalActions">
+                            <p-skeleton height="2rem" width="2rem" borderRadius="50%"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalActions>
+                            <button pButton pRipple type="button" icon="pi pi-ellipsis-v"
+                                class="p-button-rounded p-button-text p-button-plain"
+                                (click)="openMenu(rowMenu, admin, $event)" [disabled]="loadingAdmins">
+                            </button>
+                            <p-menu #rowMenu [model]="menuItems" [popup]="true" [appendTo]="'body'"></p-menu>
+                        </ng-template>
                     </td>
                 </tr>
             </ng-template>

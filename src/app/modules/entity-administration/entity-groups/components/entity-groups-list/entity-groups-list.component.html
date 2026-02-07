@@ -54,11 +54,10 @@
     </div>
 
     <div #groupsTableContainer style="position: relative;">
-        <app-table-loading-spinner *ngIf="tableLoadingSpinner"></app-table-loading-spinner>
-        <p-table #groupsTable [value]="filteredGroups" [paginator]="true" [first]="first" [rows]="rows"
+        <p-table #groupsTable [value]="tableValue" [paginator]="true" [first]="first" [rows]="rows"
             [rowsPerPageOptions]="[10, 25, 50, 100]" [showCurrentPageReport]="true" responsiveLayout="scroll"
             [lazy]="false" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-            [loading]="!!(isLoading$ | async)" (onLazyLoad)="onPageChange($event)">
+            (onLazyLoad)="onPageChange($event)">
 
             <ng-template pTemplate="header">
                 <tr>
@@ -74,32 +73,57 @@
                 <tr>
                     <td>
                         <div>
-                            <p-tag [value]="'#' + group.id" severity="info"></p-tag>
+                            <ng-container *ngIf="isLoading$ | async; else normalId">
+                                <p-skeleton height="1.5rem" width="4rem" borderRadius="4px"></p-skeleton>
+                            </ng-container>
+                            <ng-template #normalId>
+                                <p-tag [value]="'#' + group.id" severity="info"></p-tag>
+                            </ng-template>
                         </div>
                     </td>
                     <td>
                         <div class="flex flex-column">
-                            <span style="cursor: pointer;" class="font-semibold name-text"
-                                routerLink="/company-administration/entity-groups/{{ group.id }}">
-                                {{ group.title }}</span>
+                            <ng-container *ngIf="isLoading$ | async; else normalTitle">
+                                <p-skeleton height="1rem" width="10rem"></p-skeleton>
+                            </ng-container>
+                            <ng-template #normalTitle>
+                                <span style="cursor: pointer;" class="font-semibold name-text"
+                                    routerLink="/company-administration/entity-groups/{{ group.id }}">
+                                    {{ group.title }}</span>
+                            </ng-template>
                         </div>
                     </td>
                     <td>
-                        <span class="text-600 line-height-3 description-text">{{ group.description || 'No description
-                            provided.'
-                            }}</span>
+                        <ng-container *ngIf="isLoading$ | async; else normalDescription">
+                            <p-skeleton height="3rem" width="100%" class="line-height-3"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalDescription>
+                            <span class="text-600 line-height-3 description-text">{{ group.description || 'No description
+                                provided.'
+                                }}</span>
+                        </ng-template>
                     </td>
 
                     <td class="text-center">
-                        <p-inputSwitch [formControl]="activationControls[group.id]" (onChange)="onStatusToggle(group)">
-                        </p-inputSwitch>
+                        <ng-container *ngIf="isLoading$ | async; else normalStatus">
+                            <p-skeleton height="1.5rem" width="3rem" borderRadius="30px"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalStatus>
+                            <p-inputSwitch [formControl]="activationControls[group.id]" (onChange)="onStatusToggle(group)">
+                            </p-inputSwitch>
+                        </ng-template>
                     </td>
                     <td class="text-start">
-                        <button pButton pRipple type="button" icon="pi pi-ellipsis-v"
-                            class="p-button-rounded p-button-text p-button-plain"
-                            (click)="openMenu(rowMenu, group, $event)">
-                        </button>
-                        <p-menu #rowMenu [model]="menuItems" [popup]="true" [appendTo]="'body'"></p-menu>
+                        <ng-container *ngIf="isLoading$ | async; else normalActions">
+                            <p-skeleton height="2rem" width="2rem" borderRadius="50%"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalActions>
+                            <button pButton pRipple type="button" icon="pi pi-ellipsis-v"
+                                class="p-button-rounded p-button-text p-button-plain"
+                                (click)="openMenu(rowMenu, group, $event)">
+                            </button>
+                            <p-menu #rowMenu [model]="menuItems" [popup]="true" [appendTo]="'body'"></p-menu>
+                        </ng-template>
                     </td>
                 </tr>
             </ng-template>

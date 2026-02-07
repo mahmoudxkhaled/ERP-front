@@ -29,6 +29,14 @@ export class UsersListComponent implements OnInit, OnDestroy {
     searchText: string = '';
     filteredUsers: User[] = [];
 
+    /** When loading and filteredUsers is empty, return placeholder rows so the table can show skeleton cells. */
+    get tableValue(): User[] {
+        if (this.tableLoadingSpinner && this.filteredUsers.length === 0) {
+            return Array(10).fill(null).map(() => ({} as User));
+        }
+        return this.filteredUsers;
+    }
+
     constructor(
         private usersService: UsersService,
         private router: Router,

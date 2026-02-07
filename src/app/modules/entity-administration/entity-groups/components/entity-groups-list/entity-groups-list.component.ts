@@ -52,6 +52,14 @@ export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
     searchText: string = '';
     filteredGroups: Group[] = [];
 
+    /** When loading and filteredGroups is empty, return placeholder rows so the table can show skeleton cells. */
+    get tableValue(): Group[] {
+        if (this.tableLoadingSpinner && this.filteredGroups.length === 0) {
+            return Array(10).fill(null).map(() => ({} as Group));
+        }
+        return this.filteredGroups;
+    }
+
     constructor(
         private entityGroupsService: EntityGroupsService,
         private router: Router,
