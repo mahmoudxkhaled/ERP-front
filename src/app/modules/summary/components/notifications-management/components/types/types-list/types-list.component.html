@@ -1,6 +1,6 @@
 <div class="card">
     <div class="flex justify-content-between align-items-center mb-4">
-        <h3>Notification Types</h3>
+        <h3>{{ 'notificationsManagement.typesList.title' | translate }}</h3>
     </div>
 
     <div style="position: relative;">
@@ -8,11 +8,11 @@
 
             <ng-template pTemplate="header">
                 <tr>
-                    <th>ID</th>
-                    <th style="width: 200px;">Title</th>
-                    <th style="width: 300px;">Description</th>
-                    <th style="width: 150px;">Urgency</th>
-                    <th style="width: 250px;">Example</th>
+                    <th>{{ 'notificationsManagement.typesList.tableId' | translate }}</th>
+                    <th style="width: 200px;">{{ 'notificationsManagement.typesList.tableTitle' | translate }}</th>
+                    <th style="width: 300px;">{{ 'notificationsManagement.typesList.tableDescription' | translate }}</th>
+                    <th style="width: 150px;">{{ 'notificationsManagement.typesList.tableUrgency' | translate }}</th>
+                    <th style="width: 250px;">{{ 'notificationsManagement.typesList.tableExample' | translate }}</th>
                 </tr>
             </ng-template>
 
@@ -39,7 +39,7 @@
                             <p-skeleton height="3rem" width="100%"></p-skeleton>
                         </ng-container>
                         <ng-template #normalDescription>
-                            <span class="text-600">{{ type.nameRegional || 'No description' }}</span>
+                            <span class="text-600">{{ type.nameRegional || ('notificationsManagement.typesList.noDescription' | translate) }}</span>
                         </ng-template>
                     </td>
                     <td>
@@ -55,7 +55,7 @@
                             <p-skeleton height="1.5rem" width="12rem"></p-skeleton>
                         </ng-container>
                         <ng-template #normalExample>
-                            <span class="text-600 font-italic">{{ type.example || 'No example' }}</span>
+                            <span class="text-600 font-italic">{{ type.example || ('notificationsManagement.typesList.noExample' | translate) }}</span>
                         </ng-template>
                     </td>
                 </tr>
@@ -63,7 +63,7 @@
 
             <ng-template pTemplate="emptymessage">
                 <tr>
-                    <td colspan="5" class="text-center">No notification types found</td>
+                    <td colspan="5" class="text-center">{{ 'notificationsManagement.typesList.noTypesFound' | translate }}</td>
                 </tr>
             </ng-template>
         </p-table>

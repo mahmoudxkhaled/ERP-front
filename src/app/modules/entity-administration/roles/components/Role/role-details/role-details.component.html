@@ -5,9 +5,9 @@
             <ng-container *ngIf="loading; else headerTitle">
                 <p-skeleton height="2rem" width="12rem"></p-skeleton>
             </ng-container>
-            <ng-template #headerTitle>Role Details</ng-template>
+            <ng-template #headerTitle>{{ 'entityRoles.details.title' | translate }}</ng-template>
         </h2>
-        <p-button label="Back to List" icon="pi pi-arrow-left" class="p-button-secondary" (onClick)="navigateBack()"
+        <p-button [label]="'entityRoles.details.backToList' | translate" icon="pi pi-arrow-left" class="p-button-secondary" (onClick)="navigateBack()"
             [disabled]="loading">
         </p-button>
     </div>
@@ -16,7 +16,7 @@
     <div *ngIf="roleId">
         <ng-container *ngIf="loading; else realContent">
             <p-tabView class="w-full h-full">
-                <p-tabPanel header="Basic Information">
+                <p-tabPanel [header]="'entityRoles.details.tabs.basicInformation' | translate">
                     <p-panel class="mb-5" [toggleable]="false">
                         <ng-template pTemplate="header">
                             <div class="flex align-items-center justify-content-between w-full">
@@ -40,13 +40,13 @@
                         </div>
                     </p-panel>
                 </p-tabPanel>
-                <p-tabPanel header="Permissions">
+                <p-tabPanel [header]="'entityRoles.details.tabs.permissions' | translate">
                     <div class="flex justify-content-end mb-3">
                         <p-skeleton height="2.25rem" width="10rem" borderRadius="4px"></p-skeleton>
                     </div>
                     <div class="grid">
                         <div class="col-12 md:col-6">
-                            <p-panel header="Functions" [toggleable]="false">
+                            <p-panel [header]="'entityRoles.details.functions' | translate" [toggleable]="false">
                                 <div class="flex flex-column gap-2">
                                     <p-skeleton height="2rem" width="100%"></p-skeleton>
                                     <p-skeleton height="2rem" width="90%"></p-skeleton>
@@ -55,7 +55,7 @@
                             </p-panel>
                         </div>
                         <div class="col-12 md:col-6">
-                            <p-panel header="Modules" [toggleable]="false">
+                            <p-panel [header]="'entityRoles.details.modules' | translate" [toggleable]="false">
                                 <div class="flex flex-column gap-2">
                                     <p-skeleton height="2rem" width="100%"></p-skeleton>
                                     <p-skeleton height="2rem" width="85%"></p-skeleton>
@@ -64,16 +64,16 @@
                         </div>
                     </div>
                 </p-tabPanel>
-                <p-tabPanel header="Assigned Accounts">
+                <p-tabPanel [header]="'entityRoles.details.tabs.assignedAccounts' | translate">
                     <p-table [value]="[1,2,3,4,5,6,7,8,9,10]" [paginator]="true" [rows]="10"
                         [rowsPerPageOptions]="[5, 10, 20, 50]" [showCurrentPageReport]="true"
                         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} accounts"
                         styleClass="p-datatable-sm">
                         <ng-template pTemplate="header">
                             <tr>
-                                <th style="width: 10%">Account ID</th>
-                                <th style="width: 30%">Email</th>
-                                <th style="width: 15%">Status</th>
+                                <th style="width: 10%">{{ 'entityRoles.details.accountId' | translate }}</th>
+                                <th style="width: 30%">{{ 'entityRoles.details.email' | translate }}</th>
+                                <th style="width: 15%">{{ 'entityRoles.details.status' | translate }}</th>
                             </tr>
                         </ng-template>
                         <ng-template pTemplate="body">
@@ -90,16 +90,16 @@
         <ng-template #realContent>
         <p-tabView *ngIf="roleDetails" [(activeIndex)]="activeTabIndex" class="w-full h-full">
             <!-- Tab 1: Basic Information -->
-            <p-tabPanel header="Basic Information">
+            <p-tabPanel [header]="'entityRoles.details.tabs.basicInformation' | translate">
                 <p-panel class="mb-5" [toggleable]="false">
                     <ng-template pTemplate="header">
                         <div class="flex align-items-center justify-content-between w-full">
                             <div class="flex align-items-center gap-3">
                                 <i class="pi pi-shield text-primary text-2xl"></i>
-                                <span class="text-xl font-semibold">Role Profile</span>
+                                <span class="text-xl font-semibold">{{ 'entityRoles.details.profile' | translate }}</span>
                             </div>
                             <div class="flex gap-2">
-                                <p-button label="Edit Role" icon="pi pi-pencil" size="small" severity="contrast"
+                                <p-button [label]="'entityRoles.details.editRole' | translate" icon="pi pi-pencil" size="small" severity="contrast"
                                     (onClick)="openEditRoleDialog()" [disabled]="loading">
                                 </p-button>
                             </div>
@@ -114,7 +114,7 @@
                                     <div class="info-icon">
                                         <i class="pi pi-hashtag"></i>
                                     </div>
-                                    <span class="info-label">Role ID</span>
+                                    <span class="info-label">{{ 'entityRoles.details.roleId' | translate }}</span>
                                 </div>
                                 <p class="info-value">#{{ roleDetails.id }}</p>
                             </div>
@@ -125,7 +125,7 @@
                                     <div class="info-icon">
                                         <i class="pi pi-tag"></i>
                                     </div>
-                                    <span class="info-label">Title</span>
+                                    <span class="info-label">{{ 'entityRoles.details.title' | translate }}</span>
                                 </div>
                                 <p class="info-value">{{ roleDetails.title }}</p>
                             </div>
@@ -136,9 +136,9 @@
                                     <div class="info-icon">
                                         <i class="pi pi-building"></i>
                                     </div>
-                                    <span class="info-label">Entity</span>
+                                    <span class="info-label">{{ 'entityRoles.details.entity' | translate }}</span>
                                 </div>
-                                <p class="info-value">{{ entityName || 'Loading...' }}</p>
+                                <p class="info-value">{{ entityName || ('entityRoles.details.loading' | translate) }}</p>
                             </div>
 
                             <!-- Status -->
@@ -147,9 +147,9 @@
                                     <div class="info-icon">
                                         <i class="pi pi-check-circle"></i>
                                     </div>
-                                    <span class="info-label">Status</span>
+                                    <span class="info-label">{{ 'entityRoles.details.status' | translate }}</span>
                                 </div>
-                                <p class="info-value">Active</p>
+                                <p class="info-value">{{ 'entityRoles.details.active' | translate }}</p>
                             </div>
 
                             <!-- Description -->
@@ -158,10 +158,10 @@
                                     <div class="info-icon">
                                         <i class="pi pi-file-edit"></i>
                                     </div>
-                                    <span class="info-label">Description</span>
+                                    <span class="info-label">{{ 'entityRoles.details.description' | translate }}</span>
                                 </div>
                                 <p class="info-value description-text">
-                                    {{ roleDetails.description || 'No description provided.' }}
+                                    {{ roleDetails.description || ('entityRoles.details.noDescription' | translate) }}
                                 </p>
                             </div>
                         </div>
@@ -170,15 +170,15 @@
             </p-tabPanel>
 
             <!-- Tab 2: Permissions -->
-            <p-tabPanel header="Permissions">
+            <p-tabPanel [header]="'entityRoles.details.tabs.permissions' | translate">
                 <div class="flex justify-content-end mb-3">
-                    <p-button label="Manage Permissions" icon="pi pi-cog" severity="contrast"
+                    <p-button [label]="'entityRoles.details.managePermissions' | translate" icon="pi pi-cog" severity="contrast"
                         (onClick)="openPermissionsDialog()" [disabled]="loading">
                     </p-button>
                 </div>
                 <div class="grid">
                     <div class="col-12 md:col-6">
-                        <p-panel header="Functions" [toggleable]="false">
+                        <p-panel [header]="'entityRoles.details.functions' | translate" [toggleable]="false">
                             <div *ngIf="functionsList.length > 0; else noFunctions" class="functions-list">
                                 <ul class="list-none p-0 m-0">
                                     <li *ngFor="let func of functionsList" class="list-item">
@@ -191,12 +191,12 @@
                                 </ul>
                             </div>
                             <ng-template #noFunctions>
-                                <p class="text-500 m-0">No functions assigned.</p>
+                                <p class="text-500 m-0">{{ 'entityRoles.details.noFunctions' | translate }}</p>
                             </ng-template>
                         </p-panel>
                     </div>
                     <div class="col-12 md:col-6">
-                        <p-panel header="Modules" [toggleable]="false">
+                        <p-panel [header]="'entityRoles.details.modules' | translate" [toggleable]="false">
                             <div *ngIf="modulesList.length > 0; else noModules" class="modules-list">
                                 <ul class="list-none p-0 m-0">
                                     <li *ngFor="let module of modulesList" class="list-item">
@@ -209,7 +209,7 @@
                                 </ul>
                             </div>
                             <ng-template #noModules>
-                                <p class="text-500 m-0">No modules assigned.</p>
+                                <p class="text-500 m-0">{{ 'entityRoles.details.noModules' | translate }}</p>
                             </ng-template>
                         </p-panel>
                     </div>
@@ -217,16 +217,16 @@
             </p-tabPanel>
 
             <!-- Tab 3: Assigned Accounts (skeleton inside cells when loadingAccounts) -->
-            <p-tabPanel header="Assigned Accounts">
+            <p-tabPanel [header]="'entityRoles.details.tabs.assignedAccounts' | translate">
                 <p-table [value]="accountsTableValue" [paginator]="true" [rows]="10"
                     [rowsPerPageOptions]="[5, 10, 20, 50]" [showCurrentPageReport]="true"
                     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} accounts"
                     [globalFilterFields]="['email', 'accountId']" styleClass="p-datatable-sm">
                     <ng-template pTemplate="header">
                         <tr>
-                            <th style="width: 10%">Account ID</th>
-                            <th style="width: 30%">Email</th>
-                            <th style="width: 15%">Status</th>
+                            <th style="width: 10%">{{ 'entityRoles.details.accountId' | translate }}</th>
+                            <th style="width: 30%">{{ 'entityRoles.details.email' | translate }}</th>
+                            <th style="width: 15%">{{ 'entityRoles.details.status' | translate }}</th>
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-account>
@@ -248,7 +248,7 @@
                                     <p-skeleton height="1.5rem" width="5rem" borderRadius="16px"></p-skeleton>
                                 </ng-container>
                                 <ng-template #statusContent>
-                                    <p-tag [value]="account.accountState === 1 ? 'Active' : 'Inactive'"
+                                    <p-tag [value]="account.accountState === 1 ? ('entityRoles.details.active' | translate) : ('entityRoles.details.inactive' | translate)"
                                         [severity]="account.accountState === 1 ? 'success' : 'danger'">
                                     </p-tag>
                                 </ng-template>
@@ -258,7 +258,7 @@
                     <ng-template pTemplate="emptymessage">
                         <tr>
                             <td colspan="3" class="text-center p-4">
-                                <p class="text-500 m-0">No accounts assigned to this role.</p>
+                                <p class="text-500 m-0">{{ 'entityRoles.details.noAccountsAssigned' | translate }}</p>
                             </td>
                         </tr>
                     </ng-template>

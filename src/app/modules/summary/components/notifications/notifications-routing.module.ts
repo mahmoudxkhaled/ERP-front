@@ -6,7 +6,7 @@ import { NotificationsInboxComponent } from './inbox/notifications-inbox.compone
 
 const routes: Routes = [
     { path: '', redirectTo: 'inbox', pathMatch: 'full' },
-    { path: 'inbox', component: NotificationsInboxComponent, data: { breadcrumb: 'Inbox' } },
+    { path: 'inbox', component: NotificationsInboxComponent, data: { breadcrumb: 'inbox' } },
 ];
 
 @NgModule({

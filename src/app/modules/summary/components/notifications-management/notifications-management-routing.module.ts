@@ -6,8 +6,8 @@ import { NotificationsManagementMainComponent } from './components/notifications
 import { SendNotificationComponent } from './components/send/send-notification.component';
 
 const routes: Routes = [
-    { path: '', component: NotificationsManagementMainComponent, data: { breadcrumb: 'Notifications Management' } },
-    { path: 'send', component: SendNotificationComponent, data: { breadcrumb: 'Send Notification' } },
+    { path: '', component: NotificationsManagementMainComponent, data: { breadcrumb: 'notificationsManagement' } },
+    { path: 'send', component: SendNotificationComponent, data: { breadcrumb: 'sendNotification' } },
 ];
 
 @NgModule({

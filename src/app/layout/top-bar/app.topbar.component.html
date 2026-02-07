@@ -3,8 +3,8 @@
 
     <div class="mx-4 flex align-items-center company-info-desktop">
 
-        <img *ngIf="entityLogo" width="45" class="mx-2" [src]="entityLogo" alt="Company Logo" />
-        <p style="font-size: 1.2rem; font-weight: 600;"> {{ entityName }} - ERP System</p>
+        <img *ngIf="entityLogo" width="45" class="mx-2" [src]="entityLogo" [attr.alt]="'layout.top-bar.companyLogo' | translate" />
+        <p style="font-size: 1.2rem; font-weight: 600;"> {{ entityName }}{{ 'layout.top-bar.erpSystemSuffix' | translate }}</p>
     </div>
     <div class="company-info-mobile layout-topbar-start flex justify-content-between align-items-center"
         style="margin-top: 10px">
@@ -19,7 +19,7 @@
                         ERP Logo
                     </text>
                 </svg> -->
-                <img width="70" src="../../assets/media/White-Logo.png" alt="Company Logo" />
+                <img width="70" src="../../assets/media/White-Logo.png" [attr.alt]="'layout.top-bar.companyLogo' | translate" />
                 <!-- <img src="../../assets/media/logo1.png" alt="iAware Logo" /> -->
             </a>
         </div>
@@ -42,7 +42,7 @@
         <!-- <img src="../../assets/media/logo1.png" width="100" alt="Logo" /> -->
         <!-- </a> -->
         <img width="70" src="../../assets/media/White-Logo.png" routerLink="/" style="cursor: pointer;"
-            alt="Company Logo" />
+            [attr.alt]="'layout.top-bar.companyLogo' | translate" />
     </div>
     <div class="layout-topbar-end">
         <div class="layout-topbar-actions-end">
@@ -123,7 +123,7 @@
                         <ng-template #noNotifications>
                             <div class="no-notifications" style="text-align: center; padding: 1rem; color: gray">
                                 <div *ngIf="!loadingNotifications">
-                                    You don't have notifications yet
+                                    {{ 'layout.top-bar.noNotificationsYet' | translate }}
                                 </div>
                             </div>
                         </ng-template>
@@ -135,14 +135,14 @@
                                 [ngStyle]="{ color: unreadCount > 0 ? 'var(--primary-color)' : 'gray' }"
                                 style="cursor: pointer"
                                 class="mark-all-btn flex justify-content-end     text-sm font-medium">
-                                <i class="pi pi-check mx-1"></i>Mark All as Read
+                                <i class="pi pi-check mx-1"></i>{{ 'layout.top-bar.markAllAsRead' | translate }}
                             </a>
 
                             <div *ngIf="!loadingNotifications && notifications && notifications.length > 0"
                                 class="flex justify-content-end mx-3 my-2">
                                 <a (click)="navigateToInbox()" class="text-sm font-medium"
                                     style="cursor: pointer; color: var(--primary-color); text-decoration: none;">
-                                    View All
+                                    {{ 'layout.top-bar.viewAll' | translate }}
                                 </a>
                             </div>
                         </div>
@@ -169,7 +169,7 @@
                         userName }}</p>
                 </li>
                 <li>
-                    <img [src]="profilePictureUrl" alt="avatar" style="width: 32px; height: 32px; vertical-align: middle;
+                    <img [src]="profilePictureUrl" [attr.alt]="'layout.top-bar.avatar' | translate" style="width: 32px; height: 32px; vertical-align: middle;
                     border-radius: 50%;
                     border: 1px solid gray; background-color: white; cursor: pointer;" routerLink="/summary/profile" />
                 </li>

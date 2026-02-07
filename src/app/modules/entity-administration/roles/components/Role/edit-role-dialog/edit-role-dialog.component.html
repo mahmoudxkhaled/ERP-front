@@ -4,16 +4,16 @@
         <div class="dialog-header">
             <i class="pi pi-pencil mr-2 text-primary"></i>
             <div>
-                <div class="title">Edit Role</div>
-                <small class="subtitle">{{ roleTitle || 'Current Role' }}</small>
+                <div class="title">{{ 'entityRoles.editDialog.title' | translate }}</div>
+                <small class="subtitle">{{ roleTitle || ('entityRoles.editDialog.currentRole' | translate) }}</small>
             </div>
         </div>
     </ng-template>
 
     <form [formGroup]="form" class="form-grid" (ngSubmit)="submit()">
         <div class="field">
-            <label for="title">Title</label>
-            <input pInputText id="title" type="text" formControlName="title" placeholder="Enter role title"
+            <label for="title">{{ 'entityRoles.editDialog.titleLabel' | translate }}</label>
+            <input pInputText id="title" type="text" formControlName="title" [placeholder]="'entityRoles.editDialog.titlePlaceholder' | translate"
                 [class.p-invalid]="form.controls['title'].invalid && form.controls['title'].touched" />
             <small *ngIf="form.controls['title'].invalid && form.controls['title'].touched && titleError"
                 class="p-error">
@@ -22,9 +22,9 @@
         </div>
 
         <div class="field">
-            <label for="description">Description</label>
+            <label for="description">{{ 'entityRoles.editDialog.descriptionLabel' | translate }}</label>
             <textarea pInputTextarea id="description" rows="3" formControlName="description"
-                placeholder="Enter role description"
+                [placeholder]="'entityRoles.editDialog.descriptionPlaceholder' | translate"
                 [class.p-invalid]="form.controls['description'].invalid && form.controls['description'].touched"></textarea>
             <small
                 *ngIf="form.controls['description'].invalid && form.controls['description'].touched && descriptionError"
@@ -36,18 +36,18 @@
 
     <ng-template pTemplate="footer">
         <div class="dialog-footer">
-            <p-button label="Cancel" icon="pi pi-times" styleClass="p-button-text" (onClick)="closeDialog()"
+            <p-button [label]="'entityRoles.editDialog.cancel' | translate" icon="pi pi-times" styleClass="p-button-text" (onClick)="closeDialog()"
                 [disabled]="saving"></p-button>
             <p-button type="submit" [disabled]="saving || loadingDetails" (onClick)="submit()">
                 <ng-container *ngIf="saving">
                     <span class="indicator-progress" [style.display]="'block'">
                         <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
-                        Save Changes
+                        {{ 'entityRoles.editDialog.saveChanges' | translate }}
                     </span>
                 </ng-container>
                 <ng-container *ngIf="saving === false">
                     <i class="pi pi-check mx-1" style="font-size: 1rem"></i>
-                    <span>Save Changes</span>
+                    <span>{{ 'entityRoles.editDialog.saveChanges' | translate }}</span>
                 </ng-container>
             </p-button>
         </div>

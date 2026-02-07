@@ -7,16 +7,16 @@
             <div class="p-inputgroup w-full p-fluid">
                 <span class="p-input-icon-left">
                     <i class="pi pi-search"></i>
-                    <input type="text" pInputText placeholder="Search by ID or email..." [value]="searchText"
+                    <input type="text" pInputText [placeholder]="'summaryGroups.members.searchPlaceholder' | translate" [value]="searchText"
                         (input)="onSearchInput($event)" class="w-full" />
                 </span>
                 <button *ngIf="searchText" pButton pRipple type="button" icon="pi pi-times"
                     class="p-button-rounded p-button-text p-button-plain" (click)="clearSearch()"
-                    pTooltip="Clear search">
+                    [pTooltip]="'summaryGroups.members.clearSearch' | translate">
                 </button>
             </div>
         </div>
-        <p-button label="Add Members" icon="pi pi-user-plus" (onClick)="openAddMembersDialog()" [disabled]="loading">
+        <p-button [label]="'summaryGroups.members.addMembers' | translate" icon="pi pi-user-plus" (onClick)="openAddMembersDialog()" [disabled]="loading">
         </p-button>
     </div>
 
@@ -30,10 +30,10 @@
             (onLazyLoad)="onPageChange($event)">
             <ng-template pTemplate="header">
                 <tr>
-                    <th>Account ID</th>
-                    <th>Email</th>
-                    <th>Entity</th>
-                    <th style="width: 150px; text-align: start;">Actions</th>
+                    <th>{{ 'summaryGroups.members.table.accountId' | translate }}</th>
+                    <th>{{ 'summaryGroups.members.table.email' | translate }}</th>
+                    <th>{{ 'summaryGroups.members.table.entity' | translate }}</th>
+                    <th style="width: 150px; text-align: start;">{{ 'summaryGroups.members.table.actions' | translate }}</th>
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-member>
@@ -51,7 +51,7 @@
                             <p-skeleton height="1.5rem" width="12rem"></p-skeleton>
                         </ng-container>
                         <ng-template #normalEmail>
-                            <span class="text-600">{{ member.email || 'N/A' }}</span>
+                            <span class="text-600">{{ member.email || ('summaryGroups.members.na' | translate) }}</span>
                         </ng-template>
                     </td>
                     <td>
@@ -59,7 +59,7 @@
                             <p-skeleton height="1.5rem" width="10rem"></p-skeleton>
                         </ng-container>
                         <ng-template #normalEntity>
-                            <span class="text-600">{{ member.entityName || 'N/A' }}</span>
+                            <span class="text-600">{{ member.entityName || ('summaryGroups.members.na' | translate) }}</span>
                         </ng-template>
                     </td>
                     <td class="text-start">
@@ -68,7 +68,7 @@
                         </ng-container>
                         <ng-template #normalActions>
                             <p-button icon="pi pi-trash" severity="danger" [text]="true" [disabled]="loading"
-                                (onClick)="removeMember(member)" pTooltip="Remove member">
+                                (onClick)="removeMember(member)" [pTooltip]="'summaryGroups.members.removeMemberTooltip' | translate">
                             </p-button>
                         </ng-template>
                     </td>
@@ -76,7 +76,7 @@
             </ng-template>
             <ng-template pTemplate="emptymessage">
                 <tr>
-                    <td colspan="4" class="text-center">No members found</td>
+                    <td colspan="4" class="text-center">{{ 'summaryGroups.members.noMembers' | translate }}</td>
                 </tr>
             </ng-template>
         </p-table>
@@ -86,14 +86,14 @@
     <p-dialog [(visible)]="addMembersDialogVisible" [modal]="true" [style]="{ width: '800px' }" [closable]="true"
         [draggable]="false" [resizable]="false" (onHide)="closeAddMembersDialog()">
         <ng-template pTemplate="header">
-            <h3>Add Members to Group</h3>
+            <h3>{{ 'summaryGroups.members.addDialog.title' | translate }}</h3>
         </ng-template>
 
         <div class="flex flex-column gap-3">
             <!-- Entity Filter -->
             <div class="flex align-items-center gap-3">
                 <div class="flex align-items-center gap-2">
-                    <label for="includeSubentities" class="text-600">Include Sub-entities:</label>
+                    <label for="includeSubentities" class="text-600">{{ 'summaryGroups.members.addDialog.includeSubentities' | translate }}</label>
                     <p-inputSwitch id="includeSubentities" [(ngModel)]="includeSubentities"
                         (onChange)="onEntityFilterChange()" [disabled]="loadingAccountsTable"></p-inputSwitch>
                 </div>
@@ -102,7 +102,7 @@
             <!-- Search Bar -->
             <span class="p-input-icon-left w-full">
                 <i class="pi pi-search"></i>
-                <input pInputText type="text" placeholder="Search by email" class="w-full"
+                <input pInputText type="text" [placeholder]="'summaryGroups.members.addDialog.searchPlaceholder' | translate" class="w-full"
                     [value]="accountTableTextFilter" (input)="onAccountTableSearchInput($event)" />
             </span>
 
@@ -118,10 +118,10 @@
                     <ng-template pTemplate="header">
                         <tr>
                             <th style="width: 50px;"></th>
-                            <th>Account ID</th>
-                            <th>Email</th>
-                            <th style="text-align: center;">User ID</th>
-                            <th style="text-align: center;">Account State</th>
+                            <th>{{ 'summaryGroups.members.addDialog.accountId' | translate }}</th>
+                            <th>{{ 'summaryGroups.members.addDialog.email' | translate }}</th>
+                            <th style="text-align: center;">{{ 'summaryGroups.members.addDialog.userId' | translate }}</th>
+                            <th style="text-align: center;">{{ 'summaryGroups.members.addDialog.accountState' | translate }}</th>
                         </tr>
                     </ng-template>
 
@@ -175,7 +175,7 @@
                         <tr>
                             <td colspan="5" class="text-center p-4">
                                 <i class="pi pi-inbox text-4xl text-gray-400 mb-2"></i>
-                                <p class="text-gray-500">No accounts found</p>
+                                <p class="text-gray-500">{{ 'summaryGroups.members.addDialog.noAccounts' | translate }}</p>
                             </td>
                         </tr>
                     </ng-template>
@@ -185,10 +185,10 @@
 
         <ng-template pTemplate="footer">
             <div class="flex justify-content-end gap-2">
-                <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="closeAddMembersDialog()"
+                <p-button [label]="'summaryGroups.members.addDialog.cancel' | translate" icon="pi pi-times" class="p-button-text" (onClick)="closeAddMembersDialog()"
                     [disabled]="loading">
                 </p-button>
-                <p-button label="Add Selected" icon="pi pi-check" (onClick)="addSelectedMembers()" [loading]="loading"
+                <p-button [label]="'summaryGroups.members.addDialog.addSelected' | translate" icon="pi pi-check" (onClick)="addSelectedMembers()" [loading]="loading"
                     [disabled]="loading || selectedAccounts.length === 0">
                 </p-button>
             </div>

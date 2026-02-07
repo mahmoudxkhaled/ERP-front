@@ -1,7 +1,7 @@
 <div class="notifications-container card">
     <div class="page-header">
-        <h1>{{ translate.getInstant('dashboard.notifications') }}</h1>
-        <p class="page-description">Stay updated with your notifications</p>
+        <h1>{{ 'dashboard.notifications' | translate }}</h1>
+        <p class="page-description">{{ 'summaryNotifications.page.description' | translate }}</p>
     </div>
 
     <div class="notifications-content">
@@ -9,27 +9,27 @@
             <div class="notification-item">
                 <div class="notification-icon">🔔</div>
                 <div class="notification-content">
-                    <h3>System Update</h3>
-                    <p>Your system has been updated to the latest version</p>
-                    <span class="notification-time">2 hours ago</span>
+                    <h3>{{ 'summaryNotifications.page.systemUpdate' | translate }}</h3>
+                    <p>{{ 'summaryNotifications.page.systemUpdateMessage' | translate }}</p>
+                    <span class="notification-time">{{ 'summaryNotifications.page.hoursAgo' | translate: { count: 2 } }}</span>
                 </div>
             </div>
 
             <div class="notification-item">
                 <div class="notification-icon">📧</div>
                 <div class="notification-content">
-                    <h3>New Message</h3>
-                    <p>You have received a new message from your supervisor</p>
-                    <span class="notification-time">4 hours ago</span>
+                    <h3>{{ 'summaryNotifications.page.newMessage' | translate }}</h3>
+                    <p>{{ 'summaryNotifications.page.newMessageText' | translate }}</p>
+                    <span class="notification-time">{{ 'summaryNotifications.page.hoursAgo' | translate: { count: 4 } }}</span>
                 </div>
             </div>
 
             <div class="notification-item">
                 <div class="notification-icon">📋</div>
                 <div class="notification-content">
-                    <h3>Task Reminder</h3>
-                    <p>You have pending tasks that need attention</p>
-                    <span class="notification-time">1 day ago</span>
+                    <h3>{{ 'summaryNotifications.page.taskReminder' | translate }}</h3>
+                    <p>{{ 'summaryNotifications.page.taskReminderText' | translate }}</p>
+                    <span class="notification-time">{{ 'summaryNotifications.page.dayAgo' | translate }}</span>
                 </div>
             </div>
         </div>

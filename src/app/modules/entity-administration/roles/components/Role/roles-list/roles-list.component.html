@@ -1,15 +1,15 @@
 <div class="card">
     <div class="flex justify-content-between align-items-center mb-4">
-        <h2>Manage Roles</h2>
+        <h2>{{ 'entityRoles.list.title' | translate }}</h2>
         <p-button (onClick)="navigateToNew()" [disabled]="!!(isLoading$ | async)">
             <ng-container *ngIf="isLoading$ | async">
                 <span class="indicator-progress" [style.display]="'block'">
-                    Please wait
+                    {{ 'entityRoles.list.pleaseWait' | translate }}
                     <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
                 </span>
             </ng-container>
             <ng-container *ngIf="(isLoading$ | async) === false">
-                <span>Add New Role</span>
+                <span>{{ 'entityRoles.list.addNew' | translate }}</span>
             </ng-container>
         </p-button>
     </div>
@@ -23,10 +23,10 @@
 
             <ng-template pTemplate="header">
                 <tr>
-                    <th style="width: 50px;">Id</th>
-                    <th style="width: 200px;">Title</th>
-                    <th style="width: 300px;">Description</th>
-                    <th style="width: 150px; text-align: start !important;">Actions</th>
+                    <th style="width: 50px;">{{ 'entityRoles.list.table.id' | translate }}</th>
+                    <th style="width: 200px;">{{ 'entityRoles.list.table.title' | translate }}</th>
+                    <th style="width: 300px;">{{ 'entityRoles.list.table.description' | translate }}</th>
+                    <th style="width: 150px; text-align: start !important;">{{ 'entityRoles.list.table.actions' | translate }}</th>
                 </tr>
             </ng-template>
 
@@ -59,8 +59,7 @@
                             <p-skeleton height="3rem" width="100%" class="line-height-3"></p-skeleton>
                         </ng-container>
                         <ng-template #normalDescription>
-                            <span class="text-600 line-height-3 description-text">{{ role.description || 'No description
-                                provided.' }}</span>
+                            <span class="text-600 line-height-3 description-text">{{ role.description || ('entityRoles.list.noDescription' | translate) }}</span>
                         </ng-template>
                     </td>
                     <td class="text-start">
@@ -80,7 +79,7 @@
 
             <ng-template pTemplate="emptymessage">
                 <tr>
-                    <td colspan="4" class="text-center">No roles found</td>
+                    <td colspan="4" class="text-center">{{ 'entityRoles.list.noRoles' | translate }}</td>
                 </tr>
             </ng-template>
         </p-table>
@@ -92,27 +91,25 @@
 <p-dialog [(visible)]="deleteRoleDialog" [modal]="true" [style]="{ width: '450px' }" [closable]="true"
     [draggable]="false" [resizable]="false">
     <ng-template pTemplate="header">
-        <h3>Delete Role</h3>
+        <h3>{{ 'entityRoles.list.deleteDialog.title' | translate }}</h3>
     </ng-template>
     <div class="flex flex-column gap-3">
-        <p>
-            Are you sure you want to delete <strong>{{ currentRoleForDelete?.title }}</strong>?
-        </p>
-        <p class="text-red-500 font-semibold">This action cannot be undone.</p>
+        <p>{{ 'entityRoles.list.deleteDialog.message' | translate: { title: currentRoleForDelete?.title } }}</p>
+        <p class="text-red-500 font-semibold">{{ 'entityRoles.list.deleteDialog.cannotUndo' | translate }}</p>
     </div>
     <ng-template pTemplate="footer">
-        <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="onCancelDeleteDialog()"
+        <p-button [label]="'entityRoles.list.deleteDialog.cancel' | translate" icon="pi pi-times" class="p-button-text" (onClick)="onCancelDeleteDialog()"
             [disabled]="!!(isLoading$ | async)">
         </p-button>
         <p-button class="p-button-danger" (onClick)="deleteRole()" [disabled]="!!(isLoading$ | async)">
             <ng-container *ngIf="isLoading$ | async">
                 <span class="indicator-progress" [style.display]="'block'">
-                    Please wait
+                    {{ 'entityRoles.list.pleaseWait' | translate }}
                     <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
                 </span>
             </ng-container>
             <ng-container *ngIf="(isLoading$ | async) === false">
-                <span>Delete</span>
+                <span>{{ 'entityRoles.list.deleteDialog.delete' | translate }}</span>
             </ng-container>
         </p-button>
     </ng-template>
