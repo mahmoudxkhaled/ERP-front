@@ -1,20 +1,73 @@
 <div class="card">
     <!-- Header -->
     <div class="flex justify-content-between align-items-center mb-4">
-        <h2>Entity Details</h2>
+        <h2>
+            <ng-container *ngIf="loading; else headerTitle">
+                <p-skeleton height="2rem" width="14rem"></p-skeleton>
+            </ng-container>
+            <ng-template #headerTitle>Entity Details</ng-template>
+        </h2>
         <p-button label="Back to List" icon="pi pi-arrow-left" class="p-button-secondary" (onClick)="navigateBack()"
             [disabled]="loading">
         </p-button>
     </div>
 
-    <!-- Loading Spinner -->
-    <div *ngIf="loading" class="flex justify-content-center align-items-center" style="min-height: 200px;">
-        <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
-    </div>
-
-    <!-- Content -->
-    <div *ngIf="!loading && entityDetails">
-        <p-tabView [(activeIndex)]="activeTabIndex" class="w-full h-full">
+    <!-- Content: skeleton when loading, real content when loaded -->
+    <div *ngIf="entityId">
+        <ng-container *ngIf="loading; else realContent">
+            <p-tabView class="w-full h-full">
+                <p-tabPanel header="Basic Information & Contacts">
+                    <p-panel class="mb-5" [toggleable]="false">
+                        <ng-template pTemplate="header">
+                            <div class="flex align-items-center justify-content-between w-full">
+                                <div class="flex align-items-center gap-3">
+                                    <p-skeleton shape="circle" size="2rem"></p-skeleton>
+                                    <p-skeleton height="1.5rem" width="10rem"></p-skeleton>
+                                </div>
+                                <p-skeleton height="2.25rem" width="8rem" borderRadius="4px"></p-skeleton>
+                            </div>
+                        </ng-template>
+                        <div class="entity-profile-content">
+                            <div class="profile-hero p-5 mb-5">
+                                <div class="grid align-items-start">
+                                    <div class="col-12 md:col-4 flex justify-content-center">
+                                        <div class="identity-logo-wrapper">
+                                            <div class="identity-logo">
+                                                <p-skeleton width="100%" height="100%" borderRadius="8px"></p-skeleton>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 md:col-8">
+                                        <div class="pl-4">
+                                            <p-skeleton height="2.5rem" width="80%" class="mb-2"></p-skeleton>
+                                            <div class="flex flex-column gap-3 text-lg">
+                                                <p-skeleton height="1.25rem" width="12rem" class="mb-2"></p-skeleton>
+                                                <p-skeleton height="1.25rem" width="18rem" class="mb-2"></p-skeleton>
+                                            </div>
+                                            <div class="flex gap-3 mt-4">
+                                                <p-skeleton height="1.5rem" width="5rem" borderRadius="16px"></p-skeleton>
+                                                <p-skeleton height="1.5rem" width="5rem" borderRadius="16px"></p-skeleton>
+                                            </div>
+                                            <div class="mt-4 pt-4 border-top-1 surface-border">
+                                                <p-skeleton height="0.875rem" width="6rem" class="mb-2"></p-skeleton>
+                                                <p-skeleton height="1rem" width="100%" class="mb-1"></p-skeleton>
+                                                <p-skeleton height="1rem" width="90%"></p-skeleton>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </p-panel>
+                </p-tabPanel>
+                <p-tabPanel header="Accounts"></p-tabPanel>
+                <p-tabPanel header="Admins"></p-tabPanel>
+                <p-tabPanel header="Roles & Permissions"></p-tabPanel>
+                <p-tabPanel header="Entity Groups"></p-tabPanel>
+            </p-tabView>
+        </ng-container>
+        <ng-template #realContent>
+        <p-tabView *ngIf="entityDetails" [(activeIndex)]="activeTabIndex" class="w-full h-full">
             <!-- Tab 1: Basic Information & Contacts -->
             <p-tabPanel header="Basic Information & Contacts">
                 <!-- Section 1: Basic Information -->
@@ -80,10 +133,9 @@
                                             </div>
                                         </div>
 
-                                        <!-- Loading indicator -->
+                                        <!-- Loading indicator: skeleton when uploading -->
                                         <div *ngIf="loadingLogo" class="logo-loading-overlay">
-                                            <p-progressSpinner strokeWidth="5"
-                                                styleClass="w-3rem h-3rem"></p-progressSpinner>
+                                            <p-skeleton width="3rem" height="3rem" shape="circle"></p-skeleton>
                                         </div>
                                     </div>
                                 </div>
@@ -161,6 +213,7 @@
                     [showHeader]="false"></app-entity-groups-list>
             </p-tabPanel>
         </p-tabView>
+        </ng-template>
     </div>
 </div>
 

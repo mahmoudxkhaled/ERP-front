@@ -1,20 +1,94 @@
 <div class="card">
     <!-- Header -->
     <div class="flex justify-content-between align-items-center mb-4">
-        <h2>Role Details</h2>
+        <h2>
+            <ng-container *ngIf="loading; else headerTitle">
+                <p-skeleton height="2rem" width="12rem"></p-skeleton>
+            </ng-container>
+            <ng-template #headerTitle>Role Details</ng-template>
+        </h2>
         <p-button label="Back to List" icon="pi pi-arrow-left" class="p-button-secondary" (onClick)="navigateBack()"
             [disabled]="loading">
         </p-button>
     </div>
 
-    <!-- Loading Spinner -->
-    <div *ngIf="loading" class="flex justify-content-center align-items-center" style="min-height: 200px;">
-        <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
-    </div>
-
-    <!-- Content -->
-    <div *ngIf="!loading && roleDetails">
-        <p-tabView [(activeIndex)]="activeTabIndex" class="w-full h-full">
+    <!-- Content: skeleton when loading, real content when loaded -->
+    <div *ngIf="roleId">
+        <ng-container *ngIf="loading; else realContent">
+            <p-tabView class="w-full h-full">
+                <p-tabPanel header="Basic Information">
+                    <p-panel class="mb-5" [toggleable]="false">
+                        <ng-template pTemplate="header">
+                            <div class="flex align-items-center justify-content-between w-full">
+                                <div class="flex align-items-center gap-3">
+                                    <p-skeleton shape="circle" size="2rem"></p-skeleton>
+                                    <p-skeleton height="1.5rem" width="8rem"></p-skeleton>
+                                </div>
+                                <p-skeleton height="2.25rem" width="6rem" borderRadius="4px"></p-skeleton>
+                            </div>
+                        </ng-template>
+                        <div class="p-5">
+                            <div class="role-profile-vertical">
+                                <div class="info-item" *ngFor="let i of [1,2,3,4,5]">
+                                    <div class="info-header flex align-items-center gap-2">
+                                        <p-skeleton shape="circle" size="1.5rem"></p-skeleton>
+                                        <p-skeleton height="1rem" width="4rem"></p-skeleton>
+                                    </div>
+                                    <p-skeleton height="1.25rem" width="8rem" class="mt-2"></p-skeleton>
+                                </div>
+                            </div>
+                        </div>
+                    </p-panel>
+                </p-tabPanel>
+                <p-tabPanel header="Permissions">
+                    <div class="flex justify-content-end mb-3">
+                        <p-skeleton height="2.25rem" width="10rem" borderRadius="4px"></p-skeleton>
+                    </div>
+                    <div class="grid">
+                        <div class="col-12 md:col-6">
+                            <p-panel header="Functions" [toggleable]="false">
+                                <div class="flex flex-column gap-2">
+                                    <p-skeleton height="2rem" width="100%"></p-skeleton>
+                                    <p-skeleton height="2rem" width="90%"></p-skeleton>
+                                    <p-skeleton height="2rem" width="95%"></p-skeleton>
+                                </div>
+                            </p-panel>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <p-panel header="Modules" [toggleable]="false">
+                                <div class="flex flex-column gap-2">
+                                    <p-skeleton height="2rem" width="100%"></p-skeleton>
+                                    <p-skeleton height="2rem" width="85%"></p-skeleton>
+                                </div>
+                            </p-panel>
+                        </div>
+                    </div>
+                </p-tabPanel>
+                <p-tabPanel header="Assigned Accounts">
+                    <p-table [value]="[1,2,3,4,5,6,7,8,9,10]" [paginator]="true" [rows]="10"
+                        [rowsPerPageOptions]="[5, 10, 20, 50]" [showCurrentPageReport]="true"
+                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} accounts"
+                        styleClass="p-datatable-sm">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th style="width: 10%">Account ID</th>
+                                <th style="width: 30%">Email</th>
+                                <th style="width: 15%">Status</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body">
+                            <tr>
+                                <td><p-skeleton height="1.25rem" width="4rem"></p-skeleton></td>
+                                <td><p-skeleton height="1.25rem" width="12rem"></p-skeleton></td>
+                                <td><p-skeleton height="1.5rem" width="5rem" borderRadius="16px"></p-skeleton></td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </p-tabPanel>
+            </p-tabView>
+        </ng-container>
+        <ng-template #realContent>
+        <p-tabView *ngIf="roleDetails" [(activeIndex)]="activeTabIndex" class="w-full h-full">
             <!-- Tab 1: Basic Information -->
             <p-tabPanel header="Basic Information">
                 <p-panel class="mb-5" [toggleable]="false">
@@ -142,9 +216,9 @@
                 </div>
             </p-tabPanel>
 
-            <!-- Tab 3: Assigned Accounts -->
+            <!-- Tab 3: Assigned Accounts (skeleton inside cells when loadingAccounts) -->
             <p-tabPanel header="Assigned Accounts">
-                <p-table [value]="accountsList" [loading]="loadingAccounts" [paginator]="true" [rows]="10"
+                <p-table [value]="accountsTableValue" [paginator]="true" [rows]="10"
                     [rowsPerPageOptions]="[5, 10, 20, 50]" [showCurrentPageReport]="true"
                     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} accounts"
                     [globalFilterFields]="['email', 'accountId']" styleClass="p-datatable-sm">
@@ -157,12 +231,27 @@
                     </ng-template>
                     <ng-template pTemplate="body" let-account>
                         <tr>
-                            <td>{{ account.accountId }}</td>
-                            <td>{{ account.email }}</td>
                             <td>
-                                <p-tag [value]="account.accountState === 1 ? 'Active' : 'Inactive'"
-                                    [severity]="account.accountState === 1 ? 'success' : 'danger'">
-                                </p-tag>
+                                <ng-container *ngIf="loadingAccounts; else accountIdContent">
+                                    <p-skeleton height="1.25rem" width="4rem"></p-skeleton>
+                                </ng-container>
+                                <ng-template #accountIdContent>{{ account.accountId }}</ng-template>
+                            </td>
+                            <td>
+                                <ng-container *ngIf="loadingAccounts; else emailContent">
+                                    <p-skeleton height="1.25rem" width="12rem"></p-skeleton>
+                                </ng-container>
+                                <ng-template #emailContent>{{ account.email }}</ng-template>
+                            </td>
+                            <td>
+                                <ng-container *ngIf="loadingAccounts; else statusContent">
+                                    <p-skeleton height="1.5rem" width="5rem" borderRadius="16px"></p-skeleton>
+                                </ng-container>
+                                <ng-template #statusContent>
+                                    <p-tag [value]="account.accountState === 1 ? 'Active' : 'Inactive'"
+                                        [severity]="account.accountState === 1 ? 'success' : 'danger'">
+                                    </p-tag>
+                                </ng-template>
                             </td>
                         </tr>
                     </ng-template>
@@ -176,6 +265,7 @@
                 </p-table>
             </p-tabPanel>
         </p-tabView>
+        </ng-template>
     </div>
 </div>
 

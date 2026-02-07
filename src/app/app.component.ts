@@ -1,7 +1,9 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
 import { Chart } from 'chart.js';
 import { PrimeNGConfig } from 'primeng/api';
 import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { LanguageDirService } from './core/services/language-dir.service';
 import { LocalStorageService } from './core/services/local-storage.service';
 import { NetworkStatusService } from './core/services/network-status.service';
@@ -25,7 +27,8 @@ export class AppComponent implements OnInit, OnDestroy {
         private networkStatusService: NetworkStatusService,
         private translate: TranslationService,
         private authService: AuthService,
-        private notificationRefreshService: NotificationRefreshService
+        private notificationRefreshService: NotificationRefreshService,
+        private router: Router
     ) {
         this.refreshLoginDataPackage();
 
@@ -56,6 +59,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
     private rtlSubscription: Subscription;
     private languageSubscription: Subscription;
+    private routerSubscription: Subscription;
 
     isRtl = false;
     userLanguageCode: string | null = null;
@@ -83,6 +87,13 @@ export class AppComponent implements OnInit, OnDestroy {
         if (this.localStorage.getAccessToken()) {
             this.notificationRefreshService.requestRefresh();
         }
+
+        // Scroll smoothly to top on every route change
+        this.routerSubscription = this.router.events
+            .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+            .subscribe(() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
     }
 
     /**
@@ -122,5 +133,6 @@ export class AppComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.rtlSubscription.unsubscribe();
         this.languageSubscription.unsubscribe();
+        this.routerSubscription?.unsubscribe();
     }
 }

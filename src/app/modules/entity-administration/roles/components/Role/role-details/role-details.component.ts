@@ -31,6 +31,14 @@ export class RoleDetailsComponent implements OnInit, OnDestroy {
     loadingAccounts: boolean = false;
     editRoleDialogVisible: boolean = false;
 
+    /** Placeholder rows for Assigned Accounts table so skeleton cells show while loading. */
+    get accountsTableValue(): any[] {
+        if (this.loadingAccounts && this.accountsList.length === 0) {
+            return Array(10).fill(null).map(() => ({}));
+        }
+        return this.accountsList;
+    }
+
     accountSettings: IAccountSettings;
     isRegional: boolean = false;
 

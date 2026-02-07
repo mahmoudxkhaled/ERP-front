@@ -69,13 +69,13 @@
                 [value]="entityTableTextFilter" (input)="onEntityTableSearchInput($event)" />
         </span>
 
-        <!-- Entities Table -->
+        <!-- Entities Table (skeleton inside cells when loadingEntitiesTable) -->
         <div style="position: relative; min-height: 400px;">
-            <p-table [value]="entitiesForSelection" [paginator]="true" [first]="entityTableFirst"
+            <p-table [value]="entityTableValue" [paginator]="true" [first]="entityTableFirst"
                 [rows]="entityTableRows" [rowsPerPageOptions]="[10, 25, 50, 100]"
                 [totalRecords]="entityTableTotalRecords" [showCurrentPageReport]="true" [lazy]="true"
                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-                [loading]="loadingEntitiesTable" (onLazyLoad)="onEntityTablePageChange($event)"
+                (onLazyLoad)="onEntityTablePageChange($event)"
                 styleClass="p-datatable-sm">
 
                 <ng-template pTemplate="header">
@@ -89,10 +89,20 @@
                     <tr [class.selected-row]="isEntitySelected(entity)" (click)="selectEntity(entity)"
                         style="cursor: pointer;">
                         <td>
-                            <span class="font-semibold">{{ entity.code }}</span>
+                            <ng-container *ngIf="loadingEntitiesTable; else codeContent">
+                                <p-skeleton height="1.25rem" width="5rem"></p-skeleton>
+                            </ng-container>
+                            <ng-template #codeContent>
+                                <span class="font-semibold">{{ entity.code }}</span>
+                            </ng-template>
                         </td>
                         <td>
-                            <span class="font-semibold">{{ entity.name }}</span>
+                            <ng-container *ngIf="loadingEntitiesTable; else nameContent">
+                                <p-skeleton height="1.25rem" width="12rem"></p-skeleton>
+                            </ng-container>
+                            <ng-template #nameContent>
+                                <span class="font-semibold">{{ entity.name }}</span>
+                            </ng-template>
                         </td>
                     </tr>
                 </ng-template>

@@ -65,6 +65,9 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
             return;
         }
 
+        // Show skeleton immediately while data loads
+        this.loading = true;
+
         // Load role details to get role title
         this.loadRoleDetails();
         this.loadAvailableFunctionsAndModules();

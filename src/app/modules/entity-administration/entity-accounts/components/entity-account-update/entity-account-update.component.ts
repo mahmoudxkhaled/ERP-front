@@ -31,6 +31,14 @@ export class EntityAccountUpdateComponent implements OnInit, OnChanges, OnDestro
   loadingEntitiesTable: boolean = false;
   entitySelectionDialogVisible: boolean = false;
 
+  /** Placeholder rows for entity selection table so skeleton cells show while loading. */
+  get entityTableValue(): Entity[] {
+    if (this.loadingEntitiesTable && this.entitiesForSelection.length === 0) {
+      return Array(10).fill(null).map(() => ({} as Entity));
+    }
+    return this.entitiesForSelection;
+  }
+
   // Entity Role dropdown options
   entityRoleOptions: any[] = [];
   loadingRoles: boolean = false;
