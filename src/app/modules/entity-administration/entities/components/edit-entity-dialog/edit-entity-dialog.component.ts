@@ -2,11 +2,11 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { MessageService } from 'primeng/api';
-import { EntitiesService } from '../../../services/entities.service';
+import { EntitiesService } from '../../services/entities.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { textFieldValidator, getTextFieldError } from 'src/app/core/validators/text-field.validator';
-import { Entity } from '../../../models/entities.model';
+import { Entity } from '../../models/entities.model';
 
 @Component({
     selector: 'app-edit-entity-dialog',

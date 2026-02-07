@@ -7,10 +7,10 @@ import { EntityAccountsModule } from '../entity-accounts/entity-accounts.module'
 import { EntityGroupsModule } from '../entity-groups/entity-groups.module';
 
 // Components
-import { EntitiesListComponent } from './components/Entity/entities-list/entities-list.component';
-import { EntityContactComponent } from './components/Entity/entity-contact/entity-contact.component';
-import { EntityDetailsComponent } from './components/Entity/entity-details/entity-details.component';
-import { EntityFormComponent } from './components/Entity/entity-form/entity-form.component';
+import { EntitiesListComponent } from './components/entities-list/entities-list.component';
+import { EntityContactComponent } from './components/entity-contact/entity-contact.component';
+import { EntityDetailsComponent } from './components/entity-details/entity-details.component';
+import { EntityFormComponent } from './components/entity-form/entity-form.component';
 
 @NgModule({
     declarations: [

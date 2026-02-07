@@ -4,12 +4,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { Subscription, throwError } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
-import { EntitiesService } from '../../../services/entities.service';
+import { EntitiesService } from '../../services/entities.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { Roles } from 'src/app/core/models/system-roles';
 import { textFieldValidator, getTextFieldError, nameFieldValidator, getNameFieldError } from 'src/app/core/validators/text-field.validator';
-import { Entity } from '../../../models/entities.model';
+import { Entity } from '../../models/entities.model';
 
 type EntityFormContext = 'create' | 'update' | 'details';
 
