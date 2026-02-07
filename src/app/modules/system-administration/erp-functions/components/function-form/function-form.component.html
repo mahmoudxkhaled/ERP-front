@@ -1,7 +1,7 @@
 <div class="card">
     <div class="flex justify-content-between align-items-center mb-4">
-        <h2>{{ isEdit ? 'Edit Function' : 'Create New Function' }}</h2>
-        <p-button label="Back to List" icon="pi pi-arrow-left" class="p-button-secondary" (onClick)="cancel()"
+        <h2>{{ (isEdit ? 'systemAdministration.erpFunctions.functionForm.titleEdit' : 'systemAdministration.erpFunctions.functionForm.titleCreate') | translate }}</h2>
+        <p-button [label]="'systemAdministration.erpFunctions.functionForm.actions.backToList' | translate" icon="pi pi-arrow-left" class="p-button-secondary" (onClick)="cancel()"
             [disabled]="loading">
         </p-button>
     </div>
@@ -10,9 +10,9 @@
         <div class="flex flex-column gap-3">
             <!-- Code Field -->
             <div class="field p-fluid">
-                <label for="code">Code <span class="text-red-500">*</span></label>
+                <label for="code">{{ 'systemAdministration.erpFunctions.functionForm.fields.code' | translate }} <span class="text-red-500">*</span></label>
                 <input id="code" type="text" pInputText formControlName="code" [maxlength]="10"
-                    placeholder="Enter function code (max 10 characters)" />
+                    [placeholder]="'systemAdministration.erpFunctions.functionForm.placeholders.code' | translate" />
                 <small class="p-error" *ngIf="submitted && f['code'].invalid">
                     {{ codeError }}
                 </small>
@@ -20,9 +20,9 @@
 
             <!-- Name Field -->
             <div class="field p-fluid">
-                <label for="name">Name <span class="text-red-500">*</span></label>
+                <label for="name">{{ 'systemAdministration.erpFunctions.functionForm.fields.name' | translate }} <span class="text-red-500">*</span></label>
                 <input id="name" type="text" pInputText formControlName="name" [maxlength]="30"
-                    placeholder="Enter function name (max 30 characters)" />
+                    [placeholder]="'systemAdministration.erpFunctions.functionForm.placeholders.name' | translate" />
                 <small class="p-error" *ngIf="submitted && f['name'].invalid">
                     {{ nameError }}
                 </small>
@@ -31,15 +31,15 @@
             <!-- Is Regional Checkbox (only for edit mode) -->
             <div class="field p-fluid" *ngIf="isEdit">
                 <p-inputSwitch formControlName="isRegional" id="isRegional"></p-inputSwitch>
-                <label for="isRegional" class="ml-2">Is Regional</label>
-                <small class="block text-500 mt-1">Check this if you want to create/update a regional name</small>
+                <label for="isRegional" class="ml-2">{{ 'systemAdministration.erpFunctions.functionForm.fields.isRegional' | translate }}</label>
+                <small class="block text-500 mt-1">{{ 'systemAdministration.erpFunctions.functionForm.fields.isRegionalHint' | translate }}</small>
             </div>
 
             <!-- Default Order Field -->
             <div class="field p-fluid">
-                <label for="defaultOrder">Default Order <span class="text-red-500">*</span></label>
+                <label for="defaultOrder">{{ 'systemAdministration.erpFunctions.functionForm.fields.defaultOrder' | translate }} <span class="text-red-500">*</span></label>
                 <input id="defaultOrder" type="number" pInputText formControlName="defaultOrder" [min]="1"
-                    placeholder="Enter default order (must be > 0)" />
+                    [placeholder]="'systemAdministration.erpFunctions.functionForm.placeholders.defaultOrder' | translate" />
                 <small class="p-error" *ngIf="submitted && f['defaultOrder'].invalid">
                     {{ defaultOrderError }}
                 </small>
@@ -47,17 +47,17 @@
 
             <!-- URL Field -->
             <div class="field p-fluid">
-                <label for="url">URL</label>
+                <label for="url">{{ 'systemAdministration.erpFunctions.functionForm.fields.url' | translate }}</label>
                 <input id="url" type="text" pInputText formControlName="url"
-                    placeholder="Enter function URL (optional)" />
+                    [placeholder]="'systemAdministration.erpFunctions.functionForm.placeholders.url' | translate" />
             </div>
         </div>
 
         <!-- Action Buttons -->
         <div class="flex justify-content-end gap-2 mt-4">
-            <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="cancel()" [disabled]="loading">
+            <p-button [label]="'systemAdministration.erpFunctions.functionForm.actions.cancel' | translate" icon="pi pi-times" class="p-button-text" (onClick)="cancel()" [disabled]="loading">
             </p-button>
-            <p-button [label]="isEdit ? 'Update' : 'Create'" icon="pi pi-check" type="submit" [loading]="loading"
+            <p-button [label]="(isEdit ? 'systemAdministration.erpFunctions.functionForm.actions.update' : 'systemAdministration.erpFunctions.functionForm.actions.create') | translate" icon="pi pi-check" type="submit" [loading]="loading"
                 [disabled]="loading || form.invalid">
             </p-button>
         </div>

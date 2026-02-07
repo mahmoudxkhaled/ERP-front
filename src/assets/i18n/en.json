@@ -932,5 +932,214 @@
             "saveError": "Failed to save entity",
             "updateError": "Failed to update entity status"
         }
+    },
+    "systemAdministration": {
+        "erpFunctions": {
+            "functionDetails": {
+                "title": "Function Details",
+                "actions": {
+                    "backToList": "Back to List",
+                    "editFunction": "Edit Function"
+                },
+                "tabs": {
+                    "basicInformation": "Basic Information",
+                    "logo": "Logo"
+                },
+                "profile": "Function Profile",
+                "fields": {
+                    "functionId": "Function ID",
+                    "code": "Code",
+                    "name": "Name",
+                    "nameRegional": "Name (Regional)",
+                    "defaultOrder": "Default Order",
+                    "url": "URL",
+                    "status": "Status"
+                },
+                "logoPanel": {
+                    "header": "Function Logo",
+                    "uploadLogo": "Upload Logo",
+                    "chooseLogo": "Choose Logo",
+                    "allowedFormats": "Allowed formats: PNG, JPG, JPE, JPEG, GIF, BMP, TIFF, TIF, PICT. Recommended size: 200KB or less.",
+                    "removeLogo": "Remove Logo"
+                },
+                "activationDialog": {
+                    "activateTitle": "Activate Function",
+                    "deactivateTitle": "Deactivate Function",
+                    "activateMessage": "Are you sure you want to activate {{name}}?",
+                    "deactivateMessage": "Are you sure you want to deactivate {{name}}?",
+                    "cancel": "Cancel",
+                    "activate": "Activate",
+                    "deactivate": "Deactivate",
+                    "pleaseWait": "Please wait"
+                }
+            },
+            "functionForm": {
+                "titleCreate": "Create New Function",
+                "titleEdit": "Edit Function",
+                "actions": {
+                    "backToList": "Back to List",
+                    "cancel": "Cancel",
+                    "create": "Create",
+                    "update": "Update"
+                },
+                "fields": {
+                    "code": "Code",
+                    "name": "Name",
+                    "isRegional": "Is Regional",
+                    "isRegionalHint": "Check this if you want to create/update a regional name",
+                    "defaultOrder": "Default Order",
+                    "url": "URL"
+                },
+                "placeholders": {
+                    "code": "Enter function code (max 10 characters)",
+                    "name": "Enter function name (max 30 characters)",
+                    "defaultOrder": "Enter default order (must be > 0)",
+                    "url": "Enter function URL (optional)"
+                }
+            },
+            "functionLogo": {
+                "title": "Manage Function Logo",
+                "uploadLogo": "Upload Logo",
+                "chooseLogo": "Choose Logo",
+                "allowedFormats": "Allowed formats: PNG, JPG, JPE, JPEG, GIF, BMP, TIFF, TIF, PICT. Recommended size: 200KB or less.",
+                "removeLogo": "Remove Logo",
+                "close": "Close"
+            },
+            "functionsList": {
+                "title": "Manage Functions",
+                "addNew": "Add New Function",
+                "pleaseWait": "Please wait",
+                "searchPlaceholder": "Search by code, name, ID, or URL...",
+                "clearSearch": "Clear search",
+                "table": {
+                    "id": "Id",
+                    "code": "Code",
+                    "name": "Name",
+                    "defaultOrder": "Default Order",
+                    "url": "URL",
+                    "status": "Status",
+                    "actions": "Actions"
+                },
+                "emptyMessage": "No functions found",
+                "activationDialog": {
+                    "activateTitle": "Activate Function",
+                    "deactivateTitle": "Deactivate Function",
+                    "activateMessage": "Are you sure you want to activate {{name}}?",
+                    "deactivateMessage": "Are you sure you want to deactivate {{name}}?",
+                    "cancel": "Cancel",
+                    "activate": "Activate",
+                    "deactivate": "Deactivate",
+                    "pleaseWait": "Please wait"
+                }
+            }
+        },
+        "erpModules": {
+            "moduleDetails": {
+                "title": "Module Details",
+                "actions": {
+                    "backToList": "Back to List",
+                    "editModule": "Edit Module"
+                },
+                "tabs": {
+                    "basicInformation": "Basic Information",
+                    "logo": "Logo"
+                },
+                "profile": "Module Profile",
+                "fields": {
+                    "moduleId": "Module ID",
+                    "code": "Code",
+                    "name": "Name",
+                    "nameRegional": "Name (Regional)",
+                    "function": "Function",
+                    "loading": "Loading...",
+                    "defaultOrder": "Default Order",
+                    "url": "URL",
+                    "status": "Status"
+                },
+                "logoPanel": {
+                    "header": "Module Logo",
+                    "uploadLogo": "Upload Logo",
+                    "chooseLogo": "Choose Logo",
+                    "allowedFormats": "Allowed formats: PNG, JPG, JPE, JPEG, GIF, BMP, TIFF, TIF, PICT. Recommended size: 200KB or less.",
+                    "removeLogo": "Remove Logo"
+                },
+                "activationDialog": {
+                    "activateTitle": "Activate Module",
+                    "deactivateTitle": "Deactivate Module",
+                    "activateMessage": "Are you sure you want to activate {{name}}?",
+                    "deactivateMessage": "Are you sure you want to deactivate {{name}}?",
+                    "cancel": "Cancel",
+                    "activate": "Activate",
+                    "deactivate": "Deactivate",
+                    "pleaseWait": "Please wait"
+                }
+            },
+            "moduleForm": {
+                "titleCreate": "Create New Module",
+                "titleEdit": "Edit Module",
+                "actions": {
+                    "backToList": "Back to List",
+                    "cancel": "Cancel",
+                    "create": "Create",
+                    "update": "Update",
+                    "select": "Select"
+                },
+                "fields": {
+                    "function": "Function",
+                    "code": "Code",
+                    "name": "Name",
+                    "isRegional": "Is Regional",
+                    "isRegionalHint": "Check this if you want to create/update a regional name",
+                    "defaultOrder": "Default Order",
+                    "url": "URL"
+                },
+                "placeholders": {
+                    "selectFunction": "Select function",
+                    "code": "Enter module code (max 10 characters)",
+                    "name": "Enter module name (max 30 characters)",
+                    "defaultOrder": "Enter default order (must be > 0)",
+                    "url": "Enter module URL (optional)"
+                },
+                "functionDialog": {
+                    "title": "Select Function"
+                }
+            },
+            "moduleLogo": {
+                "title": "Manage Module Logo",
+                "uploadLogo": "Upload Logo",
+                "chooseLogo": "Choose Logo",
+                "allowedFormats": "Allowed formats: PNG, JPG, JPE, JPEG, GIF, BMP, TIFF, TIF, PICT. Recommended size: 200KB or less.",
+                "removeLogo": "Remove Logo",
+                "close": "Close"
+            },
+            "modulesList": {
+                "title": "Manage Modules",
+                "addNew": "Add New Module",
+                "pleaseWait": "Please wait",
+                "searchPlaceholder": "Search by code, name, ID, URL, or function...",
+                "clearSearch": "Clear search",
+                "table": {
+                    "id": "Id",
+                    "code": "Code",
+                    "name": "Name",
+                    "function": "Function",
+                    "defaultOrder": "Default Order",
+                    "url": "URL",
+                    "status": "Status",
+                    "actions": "Actions"
+                },
+                "emptyMessage": "No modules found",
+                "activationDialog": {
+                    "activateTitle": "Activate Module",
+                    "deactivateTitle": "Deactivate Module",
+                    "activateMessage": "Are you sure you want to activate {{name}}?",
+                    "deactivateMessage": "Are you sure you want to deactivate {{name}}?",
+                    "cancel": "Cancel",
+                    "activate": "Activate",
+                    "deactivate": "Deactivate",
+                    "pleaseWait": "Please wait"
+                }
+            }
+        }
     }
 }

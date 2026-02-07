@@ -1,15 +1,15 @@
 <div class="card">
     <div class="flex justify-content-between align-items-center mb-4">
-        <h2>Manage Functions</h2>
+        <h2>{{ 'systemAdministration.erpFunctions.functionsList.title' | translate }}</h2>
         <p-button (onClick)="navigateToNew()" [disabled]="!!(isLoading$ | async)">
             <ng-container *ngIf="isLoading$ | async">
                 <span class="indicator-progress" [style.display]="'block'">
-                    Please wait
+                    {{ 'systemAdministration.erpFunctions.functionsList.pleaseWait' | translate }}
                     <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
                 </span>
             </ng-container>
             <ng-container *ngIf="(isLoading$ | async) === false">
-                <span>Add New Function</span>
+                <span>{{ 'systemAdministration.erpFunctions.functionsList.addNew' | translate }}</span>
             </ng-container>
         </p-button>
     </div>
@@ -19,12 +19,12 @@
         <div class="p-inputgroup w-full">
             <span class="p-input-icon-left">
                 <i class="pi pi-search"></i>
-                <input type="text" pInputText placeholder="Search by code, name, ID, or URL..." 
+                <input type="text" pInputText [placeholder]="'systemAdministration.erpFunctions.functionsList.searchPlaceholder' | translate" 
                     [value]="searchText" (input)="onSearchInput($event)" class="w-full" />
             </span>
             <button *ngIf="searchText" pButton pRipple type="button" 
                 icon="pi pi-times" class="p-button-rounded p-button-text p-button-plain"
-                (click)="clearSearch()" pTooltip="Clear search">
+                (click)="clearSearch()" [pTooltip]="'systemAdministration.erpFunctions.functionsList.clearSearch' | translate">
             </button>
         </div>
     </div>
@@ -37,13 +37,13 @@
 
             <ng-template pTemplate="header">
                 <tr>
-                    <th style="width: 40px;">Id</th>
-                    <th style="width: 100px;">Code</th>
-                    <th style="width: 200px;">Name</th>
-                    <th style="width: 100px;">Default Order</th>
-                    <th style="width: 200px;">URL</th>
-                    <th style="text-align: center !important;">Status</th>
-                    <th style="width: 150px; text-align: start !important;">Actions</th>
+                    <th style="width: 40px;">{{ 'systemAdministration.erpFunctions.functionsList.table.id' | translate }}</th>
+                    <th style="width: 100px;">{{ 'systemAdministration.erpFunctions.functionsList.table.code' | translate }}</th>
+                    <th style="width: 200px;">{{ 'systemAdministration.erpFunctions.functionsList.table.name' | translate }}</th>
+                    <th style="width: 100px;">{{ 'systemAdministration.erpFunctions.functionsList.table.defaultOrder' | translate }}</th>
+                    <th style="width: 200px;">{{ 'systemAdministration.erpFunctions.functionsList.table.url' | translate }}</th>
+                    <th style="text-align: center !important;">{{ 'systemAdministration.erpFunctions.functionsList.table.status' | translate }}</th>
+                    <th style="width: 150px; text-align: start !important;">{{ 'systemAdministration.erpFunctions.functionsList.table.actions' | translate }}</th>
                 </tr>
             </ng-template>
 
@@ -118,7 +118,7 @@
 
             <ng-template pTemplate="emptymessage">
                 <tr>
-                    <td colspan="7" class="text-center">No functions found</td>
+                    <td colspan="7" class="text-center">{{ 'systemAdministration.erpFunctions.functionsList.emptyMessage' | translate }}</td>
                 </tr>
             </ng-template>
         </p-table>
@@ -130,39 +130,37 @@
 <p-dialog [(visible)]="activateFunctionDialog" [modal]="true" [style]="{ width: '500px' }" [closable]="true"
     [draggable]="false" [resizable]="false">
     <ng-template pTemplate="header">
-        <h3>{{ currentFunctionForActivation?.isActive ? 'Deactivate Function' : 'Activate Function' }}</h3>
+        <h3>{{ (currentFunctionForActivation?.isActive ? 'systemAdministration.erpFunctions.functionsList.activationDialog.deactivateTitle' : 'systemAdministration.erpFunctions.functionsList.activationDialog.activateTitle') | translate }}</h3>
     </ng-template>
     <div class="flex flex-column gap-3">
         <!-- Activation Message -->
         <ng-container *ngIf="!currentFunctionForActivation?.isActive">
             <p>
-                Are you sure you want to <strong>activate</strong> <strong>{{ currentFunctionForActivation?.name
-                    }}</strong>?
+                {{ 'systemAdministration.erpFunctions.functionsList.activationDialog.activateMessage' | translate:{ name: currentFunctionForActivation?.name } }}
             </p>
         </ng-container>
 
         <!-- Deactivation Message -->
         <ng-container *ngIf="currentFunctionForActivation?.isActive">
             <p>
-                Are you sure you want to <strong>deactivate</strong> <strong>{{ currentFunctionForActivation?.name
-                    }}</strong>?
+                {{ 'systemAdministration.erpFunctions.functionsList.activationDialog.deactivateMessage' | translate:{ name: currentFunctionForActivation?.name } }}
             </p>
         </ng-container>
     </div>
     <ng-template pTemplate="footer">
-        <p-button label="Cancel" icon="pi pi-times" class="p-button-text" (onClick)="onCancelActivationDialog()"
+        <p-button [label]="'systemAdministration.erpFunctions.functionsList.activationDialog.cancel' | translate" icon="pi pi-times" class="p-button-text" (onClick)="onCancelActivationDialog()"
             [disabled]="!!(isLoading$ | async)">
         </p-button>
         <p-button [severity]="currentFunctionForActivation?.isActive ? 'danger' : 'success'"
             (onClick)="activation(!currentFunctionForActivation?.isActive)" [disabled]="!!(isLoading$ | async)">
             <ng-container *ngIf="isLoading$ | async">
                 <span class="indicator-progress" [style.display]="'block'">
-                    Please wait
+                    {{ 'systemAdministration.erpFunctions.functionsList.activationDialog.pleaseWait' | translate }}
                     <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
                 </span>
             </ng-container>
             <ng-container *ngIf="(isLoading$ | async) === false">
-                <span>{{ currentFunctionForActivation?.isActive ? 'Deactivate' : 'Activate' }}</span>
+                <span>{{ (currentFunctionForActivation?.isActive ? 'systemAdministration.erpFunctions.functionsList.activationDialog.deactivate' : 'systemAdministration.erpFunctions.functionsList.activationDialog.activate') | translate }}</span>
             </ng-container>
         </p-button>
     </ng-template>

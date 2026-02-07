@@ -789,5 +789,214 @@
             "saveError": "فشل حفظ الشركة",
             "updateError": "فشل تحديث حالة الشركة"
         }
+    },
+    "systemAdministration": {
+        "erpFunctions": {
+            "functionDetails": {
+                "title": "تفاصيل الوظيفة",
+                "actions": {
+                    "backToList": "العودة للقائمة",
+                    "editFunction": "تعديل الوظيفة"
+                },
+                "tabs": {
+                    "basicInformation": "المعلومات الأساسية",
+                    "logo": "الشعار"
+                },
+                "profile": "ملف الوظيفة",
+                "fields": {
+                    "functionId": "معرف الوظيفة",
+                    "code": "الرمز",
+                    "name": "الاسم",
+                    "nameRegional": "الاسم (الإقليمي)",
+                    "defaultOrder": "الترتيب الافتراضي",
+                    "url": "الرابط",
+                    "status": "الحالة"
+                },
+                "logoPanel": {
+                    "header": "شعار الوظيفة",
+                    "uploadLogo": "رفع الشعار",
+                    "chooseLogo": "اختر الشعار",
+                    "allowedFormats": "الصيغ المسموحة: PNG, JPG, JPE, JPEG, GIF, BMP, TIFF, TIF, PICT. الحجم الموصى به: 200 كيلوبايت أو أقل.",
+                    "removeLogo": "إزالة الشعار"
+                },
+                "activationDialog": {
+                    "activateTitle": "تفعيل الوظيفة",
+                    "deactivateTitle": "إلغاء تفعيل الوظيفة",
+                    "activateMessage": "هل أنت متأكد أنك تريد تفعيل {{name}}؟",
+                    "deactivateMessage": "هل أنت متأكد أنك تريد إلغاء تفعيل {{name}}؟",
+                    "cancel": "إلغاء",
+                    "activate": "تفعيل",
+                    "deactivate": "إلغاء التفعيل",
+                    "pleaseWait": "يرجى الانتظار"
+                }
+            },
+            "functionForm": {
+                "titleCreate": "إنشاء وظيفة جديدة",
+                "titleEdit": "تعديل الوظيفة",
+                "actions": {
+                    "backToList": "العودة للقائمة",
+                    "cancel": "إلغاء",
+                    "create": "إنشاء",
+                    "update": "تحديث"
+                },
+                "fields": {
+                    "code": "الرمز",
+                    "name": "الاسم",
+                    "isRegional": "إقليمي",
+                    "isRegionalHint": "فعّل هذا إذا أردت إنشاء أو تحديث اسم إقليمي",
+                    "defaultOrder": "الترتيب الافتراضي",
+                    "url": "الرابط"
+                },
+                "placeholders": {
+                    "code": "أدخل رمز الوظيفة (بحد أقصى 10 أحرف)",
+                    "name": "أدخل اسم الوظيفة (بحد أقصى 30 حرفاً)",
+                    "defaultOrder": "أدخل الترتيب الافتراضي (يجب أن يكون أكبر من 0)",
+                    "url": "أدخل رابط الوظيفة (اختياري)"
+                }
+            },
+            "functionLogo": {
+                "title": "إدارة شعار الوظيفة",
+                "uploadLogo": "رفع الشعار",
+                "chooseLogo": "اختر الشعار",
+                "allowedFormats": "الصيغ المسموحة: PNG, JPG, JPE, JPEG, GIF, BMP, TIFF, TIF, PICT. الحجم الموصى به: 200 كيلوبايت أو أقل.",
+                "removeLogo": "إزالة الشعار",
+                "close": "إغلاق"
+            },
+            "functionsList": {
+                "title": "إدارة الوظائف",
+                "addNew": "إضافة وظيفة جديدة",
+                "pleaseWait": "يرجى الانتظار",
+                "searchPlaceholder": "البحث بالرمز أو الاسم أو المعرف أو الرابط...",
+                "clearSearch": "مسح البحث",
+                "table": {
+                    "id": "المعرف",
+                    "code": "الرمز",
+                    "name": "الاسم",
+                    "defaultOrder": "الترتيب الافتراضي",
+                    "url": "الرابط",
+                    "status": "الحالة",
+                    "actions": "الإجراءات"
+                },
+                "emptyMessage": "لم يتم العثور على وظائف",
+                "activationDialog": {
+                    "activateTitle": "تفعيل الوظيفة",
+                    "deactivateTitle": "إلغاء تفعيل الوظيفة",
+                    "activateMessage": "هل أنت متأكد أنك تريد تفعيل {{name}}؟",
+                    "deactivateMessage": "هل أنت متأكد أنك تريد إلغاء تفعيل {{name}}؟",
+                    "cancel": "إلغاء",
+                    "activate": "تفعيل",
+                    "deactivate": "إلغاء التفعيل",
+                    "pleaseWait": "يرجى الانتظار"
+                }
+            }
+        },
+        "erpModules": {
+            "moduleDetails": {
+                "title": "تفاصيل الوحدة",
+                "actions": {
+                    "backToList": "العودة للقائمة",
+                    "editModule": "تعديل الوحدة"
+                },
+                "tabs": {
+                    "basicInformation": "المعلومات الأساسية",
+                    "logo": "الشعار"
+                },
+                "profile": "ملف الوحدة",
+                "fields": {
+                    "moduleId": "معرف الوحدة",
+                    "code": "الرمز",
+                    "name": "الاسم",
+                    "nameRegional": "الاسم (الإقليمي)",
+                    "function": "الوظيفة",
+                    "loading": "جاري التحميل...",
+                    "defaultOrder": "الترتيب الافتراضي",
+                    "url": "الرابط",
+                    "status": "الحالة"
+                },
+                "logoPanel": {
+                    "header": "شعار الوحدة",
+                    "uploadLogo": "رفع الشعار",
+                    "chooseLogo": "اختر الشعار",
+                    "allowedFormats": "الصيغ المسموحة: PNG, JPG, JPE, JPEG, GIF, BMP, TIFF, TIF, PICT. الحجم الموصى به: 200 كيلوبايت أو أقل.",
+                    "removeLogo": "إزالة الشعار"
+                },
+                "activationDialog": {
+                    "activateTitle": "تفعيل الوحدة",
+                    "deactivateTitle": "إلغاء تفعيل الوحدة",
+                    "activateMessage": "هل أنت متأكد أنك تريد تفعيل {{name}}؟",
+                    "deactivateMessage": "هل أنت متأكد أنك تريد إلغاء تفعيل {{name}}؟",
+                    "cancel": "إلغاء",
+                    "activate": "تفعيل",
+                    "deactivate": "إلغاء التفعيل",
+                    "pleaseWait": "يرجى الانتظار"
+                }
+            },
+            "moduleForm": {
+                "titleCreate": "إنشاء وحدة جديدة",
+                "titleEdit": "تعديل الوحدة",
+                "actions": {
+                    "backToList": "العودة للقائمة",
+                    "cancel": "إلغاء",
+                    "create": "إنشاء",
+                    "update": "تحديث",
+                    "select": "اختيار"
+                },
+                "fields": {
+                    "function": "الوظيفة",
+                    "code": "الرمز",
+                    "name": "الاسم",
+                    "isRegional": "إقليمي",
+                    "isRegionalHint": "فعّل هذا إذا أردت إنشاء أو تحديث اسم إقليمي",
+                    "defaultOrder": "الترتيب الافتراضي",
+                    "url": "الرابط"
+                },
+                "placeholders": {
+                    "selectFunction": "اختر الوظيفة",
+                    "code": "أدخل رمز الوحدة (بحد أقصى 10 أحرف)",
+                    "name": "أدخل اسم الوحدة (بحد أقصى 30 حرفاً)",
+                    "defaultOrder": "أدخل الترتيب الافتراضي (يجب أن يكون أكبر من 0)",
+                    "url": "أدخل رابط الوحدة (اختياري)"
+                },
+                "functionDialog": {
+                    "title": "اختيار الوظيفة"
+                }
+            },
+            "moduleLogo": {
+                "title": "إدارة شعار الوحدة",
+                "uploadLogo": "رفع الشعار",
+                "chooseLogo": "اختر الشعار",
+                "allowedFormats": "الصيغ المسموحة: PNG, JPG, JPE, JPEG, GIF, BMP, TIFF, TIF, PICT. الحجم الموصى به: 200 كيلوبايت أو أقل.",
+                "removeLogo": "إزالة الشعار",
+                "close": "إغلاق"
+            },
+            "modulesList": {
+                "title": "إدارة الوحدات",
+                "addNew": "إضافة وحدة جديدة",
+                "pleaseWait": "يرجى الانتظار",
+                "searchPlaceholder": "البحث بالرمز أو الاسم أو المعرف أو الرابط أو الوظيفة...",
+                "clearSearch": "مسح البحث",
+                "table": {
+                    "id": "المعرف",
+                    "code": "الرمز",
+                    "name": "الاسم",
+                    "function": "الوظيفة",
+                    "defaultOrder": "الترتيب الافتراضي",
+                    "url": "الرابط",
+                    "status": "الحالة",
+                    "actions": "الإجراءات"
+                },
+                "emptyMessage": "لم يتم العثور على وحدات",
+                "activationDialog": {
+                    "activateTitle": "تفعيل الوحدة",
+                    "deactivateTitle": "إلغاء تفعيل الوحدة",
+                    "activateMessage": "هل أنت متأكد أنك تريد تفعيل {{name}}؟",
+                    "deactivateMessage": "هل أنت متأكد أنك تريد إلغاء تفعيل {{name}}؟",
+                    "cancel": "إلغاء",
+                    "activate": "تفعيل",
+                    "deactivate": "إلغاء التفعيل",
+                    "pleaseWait": "يرجى الانتظار"
+                }
+            }
+        }
     }
 }

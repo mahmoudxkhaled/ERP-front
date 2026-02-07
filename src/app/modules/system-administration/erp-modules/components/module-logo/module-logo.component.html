@@ -1,7 +1,7 @@
 <p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '600px' }" [closable]="true" [draggable]="false"
     [resizable]="false" (onHide)="onDialogHide()">
     <ng-template pTemplate="header">
-        <h3>Manage Module Logo</h3>
+        <h3>{{ 'systemAdministration.erpModules.moduleLogo.title' | translate }}</h3>
     </ng-template>
 
     <div class="flex flex-column gap-4">
@@ -33,17 +33,17 @@
 
             <div class="flex flex-column gap-3">
                 <div class="field p-fluid">
-                    <label>Upload Logo</label>
+                    <label>{{ 'systemAdministration.erpModules.moduleLogo.uploadLogo' | translate }}</label>
                     <p-fileUpload #logoUploader mode="basic" name="logo" accept="image/*" (onSelect)="onLogoUpload($event)"
-                        [maxFileSize]="2097152" chooseLabel="Choose Logo" [disabled]="loading || loadingLogo">
+                        [maxFileSize]="2097152" [chooseLabel]="'systemAdministration.erpModules.moduleLogo.chooseLogo' | translate" [disabled]="loading || loadingLogo">
                     </p-fileUpload>
                     <small class="text-500">
-                        Allowed formats: PNG, JPG, JPE, JPEG, GIF, BMP, TIFF, TIF, PICT. Recommended size: 200KB or less.
+                        {{ 'systemAdministration.erpModules.moduleLogo.allowedFormats' | translate }}
                     </small>
                 </div>
 
                 <div *ngIf="hasLogo" class="flex justify-content-center">
-                    <p-button label="Remove Logo" icon="pi pi-trash" severity="danger" (onClick)="removeLogo()"
+                    <p-button [label]="'systemAdministration.erpModules.moduleLogo.removeLogo' | translate" icon="pi pi-trash" severity="danger" (onClick)="removeLogo()"
                         [disabled]="loading">
                     </p-button>
                 </div>
@@ -53,7 +53,7 @@
 
     <ng-template pTemplate="footer">
         <div class="flex justify-content-end gap-2">
-            <p-button label="Close" icon="pi pi-times" class="p-button-text" (onClick)="closeDialog()"
+            <p-button [label]="'systemAdministration.erpModules.moduleLogo.close' | translate" icon="pi pi-times" class="p-button-text" (onClick)="closeDialog()"
                 [disabled]="loading || loadingLogo">
             </p-button>
         </div>
