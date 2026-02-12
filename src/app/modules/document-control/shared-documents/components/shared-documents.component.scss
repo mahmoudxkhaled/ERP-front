@@ -5,6 +5,18 @@
 
   .page-header {
     margin-bottom: 2rem;
+
+    .file-system-link {
+      display: inline-block;
+      margin-top: 0.5rem;
+      color: var(--p-primary-color, #3498db);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .file-system-link:hover {
+      text-decoration: underline;
+    }
     
     h1 {
       color: #2c3e50;

@@ -1,0 +1,173 @@
+.system-admin-view {
+    // max-width: 900px;
+    margin: 0 auto;
+
+    .system-admin-top {
+        align-items: start;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--p-primary-color);
+        text-decoration: none;
+        font-size: 0.875rem;
+        margin-bottom: 1.5rem;
+    }
+    .back-link:hover {
+        text-decoration: underline;
+    }
+
+    .page-header {
+        margin-bottom: 2rem;
+        text-align: start;
+        width: 100%;
+    }
+    .page-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--p-text-color);
+        margin: 0 0 0.5rem 0;
+    }
+    .page-description {
+        font-size: 0.9375rem;
+        color: var(--p-text-muted-color);
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    .block-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--p-text-color);
+        margin: 0 0 0.75rem 0;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--p-surface-200);
+    }
+
+    .kpi-section {
+        margin-bottom: 2.5rem;
+    }
+    .kpi-cards {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.25rem;
+    }
+    .kpi-card {
+        flex: 1;
+        min-width: 160px;
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        padding: 1.25rem 1.5rem;
+        border-radius: 12px;
+        background: var(--p-surface-0);
+        border: 1px solid var(--p-surface-200);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+    .kpi-icon {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: #fff;
+        flex-shrink: 0;
+    }
+    .kpi-licenses .kpi-icon { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+    .kpi-capacity .kpi-icon { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
+    .kpi-drives .kpi-icon { background: linear-gradient(135deg, #14b8a6, #0d9488); }
+    .kpi-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    .kpi-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--p-text-color);
+        line-height: 1.2;
+    }
+    .kpi-label {
+        font-size: 0.8125rem;
+        color: var(--p-text-muted-color);
+    }
+
+    .block-section {
+        margin-bottom: 2.5rem;
+    }
+    .block-card {
+        background: var(--p-surface-0);
+        border: 1px solid var(--p-surface-200);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .capacity-block {
+        .capacity-summary {
+            font-size: 0.9375rem;
+            color: var(--p-text-muted-color);
+            margin: 1rem 0 0 0;
+        }
+        .capacity-detail {
+            margin-top: 1.25rem;
+            padding: 1rem 1.25rem;
+            background: var(--p-surface-50);
+            border-radius: 8px;
+            border: 1px solid var(--p-surface-200);
+        }
+        .capacity-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            font-size: 0.9375rem;
+        }
+        .capacity-row:not(:last-child) {
+            border-bottom: 1px solid var(--p-surface-200);
+        }
+        .capacity-label {
+            color: var(--p-text-muted-color);
+        }
+        .capacity-value {
+            font-weight: 600;
+            color: var(--p-text-color);
+        }
+    }
+
+    .expiry-badge {
+        font-size: 0.8125rem;
+        padding: 0.35rem 0.65rem;
+        background: var(--p-surface-100);
+        border-radius: 6px;
+        color: var(--p-text-color);
+    }
+
+    .cell-product {
+        font-weight: 500;
+        color: var(--p-text-color);
+    }
+}
+
+::ng-deep .system-admin-view .capacity-bar.p-progressbar {
+    height: 1.25rem;
+    border-radius: 8px;
+    overflow: hidden;
+    .p-progressbar-value {
+        background: linear-gradient(90deg, var(--p-primary-500), var(--p-primary-400));
+    }
+}
+
+::ng-deep .system-admin-view .system-admin-table.p-datatable .p-datatable-tbody > tr > td {
+    padding: 0.875rem 1rem;
+}
+::ng-deep .system-admin-view .system-admin-table.p-datatable .p-datatable-thead > tr > th {
+    padding: 0.875rem 1rem;
+    background: var(--p-surface-50);
+    font-weight: 600;
+    color: var(--p-text-color);
+}

@@ -44,6 +44,12 @@ const routes: Routes = [
                 loadChildren: () => import('./modules/document-control/shared-documents/shared-documents.module').then((m) => m.SharedDocumentsModule),
             },
             {
+                path: 'document-control/file-system',
+                canActivate: [AuthGuard],
+                data: { breadcrumb: 'fileSystem' },
+                loadChildren: () => import('./modules/document-control/file-system/file-system.module').then((m) => m.FileSystemModule),
+            },
+            {
                 path: 'financials',
                 canActivate: [AuthGuard],
                 data: { breadcrumb: 'financials' },

@@ -1,0 +1,139 @@
+.entity-admin-view {
+    // max-width: 900px;
+    margin: 0 auto;
+
+    .entity-admin-top {
+        align-items: start;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--p-primary-color);
+        text-decoration: none;
+        font-size: 0.875rem;
+        margin-bottom: 1.5rem;
+    }
+    .back-link:hover {
+        text-decoration: underline;
+    }
+
+    .page-header {
+        margin-bottom: 2rem;
+        text-align: start;
+        width: 100%;
+    }
+    .page-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--p-text-color);
+        margin: 0 0 0.5rem 0;
+    }
+    .page-description {
+        font-size: 0.9375rem;
+        color: var(--p-text-muted-color);
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    .block-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--p-text-color);
+        margin: 0 0 0.75rem 0;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--p-surface-200);
+    }
+
+    .kpi-section {
+        margin-bottom: 2.5rem;
+    }
+    .kpi-cards {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.25rem;
+    }
+    .kpi-card {
+        flex: 1;
+        min-width: 160px;
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        padding: 1.25rem 1.5rem;
+        border-radius: 12px;
+        background: var(--p-surface-0);
+        border: 1px solid var(--p-surface-200);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+    .kpi-icon {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: #fff;
+        flex-shrink: 0;
+    }
+    .kpi-systems .kpi-icon { background: linear-gradient(135deg, var(--p-primary-500), var(--p-primary-600)); }
+    .kpi-folders .kpi-icon { background: linear-gradient(135deg, #22c55e, #16a34a); }
+    .kpi-permissions .kpi-icon { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+    .kpi-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    .kpi-value {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--p-text-color);
+        line-height: 1.2;
+    }
+    .kpi-label {
+        font-size: 0.8125rem;
+        color: var(--p-text-muted-color);
+    }
+
+    .block-section {
+        margin-bottom: 2.5rem;
+    }
+    .block-card {
+        background: var(--p-surface-0);
+        border: 1px solid var(--p-surface-200);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .tree-wrap {
+        overflow: auto;
+        max-height: 340px;
+        padding: 0.25rem 0;
+    }
+
+    .path-code {
+        font-size: 0.8125rem;
+        background: var(--p-surface-100);
+        padding: 0.35rem 0.5rem;
+        border-radius: 6px;
+        color: var(--p-text-color);
+    }
+
+    .cell-entity,
+    .cell-role {
+        font-weight: 500;
+        color: var(--p-text-color);
+    }
+}
+
+::ng-deep .entity-admin-view .entity-admin-table.p-datatable .p-datatable-tbody > tr > td {
+    padding: 0.875rem 1rem;
+}
+::ng-deep .entity-admin-view .entity-admin-table.p-datatable .p-datatable-thead > tr > th {
+    padding: 0.875rem 1rem;
+    background: var(--p-surface-50);
+    font-weight: 600;
+    color: var(--p-text-color);
+}

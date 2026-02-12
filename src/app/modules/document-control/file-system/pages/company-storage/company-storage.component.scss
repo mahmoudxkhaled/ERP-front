@@ -1,0 +1,122 @@
+.company-storage-view {
+    .company-storage-top {
+        align-items: start;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        color: var(--p-primary-color);
+        text-decoration: none;
+        font-size: 0.875rem;
+    }
+    .back-link:hover {
+        text-decoration: underline;
+    }
+    .section-header {
+        margin-bottom: 1.5rem;
+        text-align: start;
+        width: 100%;
+    }
+
+    .section-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--p-text-color);
+        margin: 0 0 0.25rem 0;
+    }
+
+    .section-description {
+        color: var(--p-text-muted-color);
+        font-size: 0.9375rem;
+        margin: 0;
+    }
+
+    .content-card {
+        background: var(--p-surface-0);
+        border: 1px solid var(--p-surface-200);
+        border-radius: var(--p-border-radius);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .content-card-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.875rem 1rem;
+        background: var(--p-surface-50);
+        border-bottom: 1px solid var(--p-surface-200);
+        font-weight: 600;
+        color: var(--p-text-color);
+    }
+
+    .content-card-icon {
+        color: var(--p-primary-500);
+        font-size: 1.125rem;
+    }
+
+    .content-card-title {
+        font-size: 0.9375rem;
+    }
+
+    .content-card-body {
+        padding: 1rem;
+        min-height: 0;
+    }
+
+    .storage-layout {
+        display: flex;
+        gap: 1rem;
+        min-height: 420px;
+    }
+
+    .tree-card {
+        width: 350px;
+        flex-shrink: 0;
+
+        .tree-panel {
+            overflow: auto;
+            // max-height: 380px;
+        }
+
+        .tree-node-row {
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+        .tree-node-label {
+            flex: 1;
+            min-width: 0;
+        }
+        .tree-node-actions {
+            display: inline-flex;
+            gap: 0.25rem;
+            margin-left: 0.5rem;
+        }
+    }
+
+    .files-card {
+        flex: 1;
+        min-width: 0;
+        max-width: 1000px;
+
+        .content-card-body.p-0 {
+            padding: 0;
+        }
+    }
+
+    .file-type-icon {
+        color: var(--p-text-muted-color);
+        font-size: 1.125rem;
+    }
+
+    .breadcrumb-wrap {
+        background: var(--p-surface-50);
+        padding: 0.5rem 0.75rem;
+        border-radius: var(--p-border-radius);
+        border: 1px solid var(--p-surface-200);
+    }
+}
