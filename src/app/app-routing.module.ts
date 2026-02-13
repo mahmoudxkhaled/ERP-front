@@ -41,7 +41,7 @@ const routes: Routes = [
                 path: 'document-control',
                 canActivate: [AuthGuard],
                 data: { breadcrumb: 'documentControl' },
-                loadChildren: () => import('./modules/document-control/file-system/file-system.module').then((m) => m.FileSystemModule),
+                loadChildren: () => import('./modules/document-control/document-control.module').then((m) => m.DocumentControlModule),
             },
             {
                 path: 'financials',
