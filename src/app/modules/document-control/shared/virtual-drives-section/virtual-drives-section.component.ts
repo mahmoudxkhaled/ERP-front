@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { MessageService } from 'primeng/api';
+import { MenuItem, MessageService } from 'primeng/api';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { VirtualDrivesService } from '../../services/virtual-drives.service';
 import { VirtualDrivesFilters } from '../../models/virtual-drive.model';
@@ -9,7 +9,11 @@ export interface VirtualDriveRow {
     id: number;
     name: string;
     licenseId: number;
+    /** True = Entity drive, false = Account drive (from API is_Entity). */
+    isEntity: boolean;
     capacity: number;
+    /** Free space in bytes (from API free_Space). */
+    freeSpace: number;
     active: boolean;
 }
 
@@ -37,21 +41,37 @@ export class VirtualDrivesSectionComponent implements OnInit {
     isLoading$: Observable<boolean>;
     tableLoadingSpinner = false;
 
-    // Filters (SSM mode uses all, ESM mode uses only licenseId and activeOnly)
+    // Entity filter above table (API); License ID, Drive type, Status are in table filter row (client-side)
     entityFilterOptions = [
         { label: 'Account', value: -1 },
         { label: 'Entity', value: 1 },
         { label: 'Both', value: 0 }
     ];
     entityFilter = -1;
-    licenseIdFilter = 0;
-    activeOnlyFilter = true;
+
+    /** Options for table column filter: Drive type (value matches row.isEntity). */
+    driveTypeFilterOptions = [
+        { label: 'fileSystem.admin.filterAll', value: null as boolean | null },
+        { label: 'fileSystem.admin.driveTypeEntity', value: true },
+        { label: 'fileSystem.admin.driveTypeAccount', value: false }
+    ];
+    /** Options for table column filter: Status (value matches row.active). */
+    statusFilterOptions = [
+        { label: 'fileSystem.admin.filterAll', value: null as boolean | null },
+        { label: 'fileSystem.entityAdminStatus.active', value: true },
+        { label: 'fileSystem.admin.inactive', value: false }
+    ];
 
     // Dialog visibility flags
     createDriveDialogVisible = false;
     renameDriveDialogVisible = false;
     updateCapacityDialogVisible = false;
     driveDetailsDialogVisible = false;
+    confirmStatusDialogVisible = false;
+
+    /** Drive and target state for activate/deactivate confirmation. */
+    confirmStatusDrive: VirtualDriveRow | null = null;
+    confirmStatusToActive = false;
 
     // Form values for dialogs
     newDriveName = '';
@@ -66,6 +86,13 @@ export class VirtualDrivesSectionComponent implements OnInit {
     // Data
     virtualDrives: VirtualDriveRow[] = [];
 
+    // Row menu (3-dot)
+    driveMenuItems: MenuItem[] = [];
+    selectedDriveForMenu: VirtualDriveRow | null = null;
+
+    /** Drive ID currently being toggled (activate/deactivate) so we can disable its switch. */
+    togglingDriveId: number | null = null;
+
     constructor(
         private translate: TranslationService,
         private messageService: MessageService,
@@ -79,7 +106,62 @@ export class VirtualDrivesSectionComponent implements OnInit {
         if (this.mode === 'esm') {
             this.entityFilter = 1;
         }
+        this.buildDriveMenuItems();
         this.loadVirtualDrives();
+    }
+
+    /**
+     * Build menu items for the 3-dot row menu. Called when opening the menu so the correct drive is set.
+     */
+    buildDriveMenuItems(): void {
+        const drive = this.selectedDriveForMenu;
+        this.driveMenuItems = [
+            {
+                label: this.translate.getInstant('fileSystem.admin.viewDetails'),
+                icon: 'pi pi-eye',
+                command: () => {
+                    if (drive) this.showDriveDetailsDialog(drive);
+                }
+            },
+            {
+                label: this.translate.getInstant('fileSystem.admin.renameDrive'),
+                icon: 'pi pi-pencil',
+                command: () => {
+                    if (drive) this.showRenameDriveDialog(drive);
+                }
+            },
+            {
+                label: this.translate.getInstant('fileSystem.admin.updateCapacity'),
+                icon: 'pi pi-chart-bar',
+                command: () => {
+                    if (drive) this.showUpdateCapacityDialog(drive);
+                }
+            }
+        ];
+        if (this.showActivateDeactivate && drive) {
+            if (drive.active) {
+                this.driveMenuItems.push({
+                    label: this.translate.getInstant('fileSystem.admin.deactivateDrive'),
+                    icon: 'pi pi-times',
+                    command: () => this.showConfirmStatusDialog(drive, false)
+                });
+            } else {
+                this.driveMenuItems.push({
+                    label: this.translate.getInstant('fileSystem.admin.activateDrive'),
+                    icon: 'pi pi-check',
+                    command: () => this.showConfirmStatusDialog(drive, true)
+                });
+            }
+        }
+    }
+
+    /**
+     * Open the 3-dot row menu for a drive.
+     */
+    openDriveMenu(menu: { toggle: (e: Event) => void }, row: VirtualDriveRow, event: Event): void {
+        this.selectedDriveForMenu = row;
+        this.buildDriveMenuItems();
+        menu.toggle(event);
     }
 
     /**
@@ -92,7 +174,9 @@ export class VirtualDrivesSectionComponent implements OnInit {
                 id: 0,
                 name: '',
                 licenseId: 0,
+                isEntity: false,
                 capacity: 0,
+                freeSpace: 0,
                 active: false
             }));
         }
@@ -121,13 +205,36 @@ export class VirtualDrivesSectionComponent implements OnInit {
     }
 
     /**
-     * Build filters object for List_Drives API from current UI state.
+     * Map a drive object from the API to VirtualDriveRow.
+     * API returns: drive_ID, name, license_ID, owner_ID, is_Entity, capacity, free_Space, is_Active.
+     */
+    private mapDriveToRow(item: any): VirtualDriveRow {
+        const id = Number(item?.drive_ID ?? item?.Drive_ID ?? 0);
+        const name = String(item?.name ?? item?.Drive_Name ?? '');
+        const licenseId = Number(item?.license_ID ?? item?.License_ID ?? 0);
+        const isEntity = Boolean(item?.is_Entity ?? item?.Is_Entity);
+        const capacity = Number(item?.capacity ?? item?.Capacity ?? 0);
+        const freeSpace = Number(item?.free_Space ?? item?.Free_Space ?? 0);
+        const active = Boolean(item?.is_Active ?? item?.Is_Active);
+        return { id, name, licenseId, isEntity, capacity, freeSpace, active };
+    }
+
+    /** Display label for drive type: Entity or Account. */
+    getDriveTypeDisplay(row: VirtualDriveRow): string {
+        return row.isEntity
+            ? this.translate.getInstant('fileSystem.admin.driveTypeEntity')
+            : this.translate.getInstant('fileSystem.admin.driveTypeAccount');
+    }
+
+    /**
+     * Build filters object for List_Drives API. Only entity is used; License ID and Status
+     * are filtered in the table (client-side) so we load all for the selected entity.
      */
     private getCurrentFilters(): VirtualDrivesFilters {
         return {
             entityFilter: this.entityFilter,
-            licenseId: this.licenseIdFilter,
-            activeOnly: this.activeOnlyFilter
+            licenseId: 0,
+            activeOnly: false
         };
     }
 
@@ -140,27 +247,17 @@ export class VirtualDrivesSectionComponent implements OnInit {
 
         this.virtualDrivesService.listDrives(filters).subscribe({
             next: (response: any) => {
+                console.log('response listDrives', response);
                 if (!response?.success) {
                     this.handleBusinessError('list', response);
                     return;
                 }
 
-                // Response.message is expected to hold drives collection.
-                const drivesRaw = response.message?.Drives || response.message || [];
+                // message can be the array of drives directly, or an object with Drives property
+                const raw = response.message;
+                const drivesRaw = Array.isArray(raw) ? raw : (raw?.Drives ?? []);
 
-                const drivesArray: any[] = Array.isArray(drivesRaw)
-                    ? drivesRaw
-                    : Object.values(drivesRaw);
-
-                this.virtualDrives = drivesArray.map((item: any) => {
-                    return {
-                        id: Number(item?.Drive_ID ?? 0),
-                        name: String(item?.Drive_Name ?? ''),
-                        licenseId: Number(item?.License_ID ?? 0),
-                        capacity: Number(item?.Capacity ?? 0),
-                        active: Boolean(item?.Is_Active)
-                    } as VirtualDriveRow;
-                });
+                this.virtualDrives = drivesRaw.map((item: any) => this.mapDriveToRow(item));
             },
             complete: () => {
                 this.tableLoadingSpinner = false;
@@ -170,6 +267,38 @@ export class VirtualDrivesSectionComponent implements OnInit {
 
     getDriveName(row: VirtualDriveRow): string {
         return row.name;
+    }
+
+    /** Bytes per GB (1024^3). Used to convert user input (GB) to API (bytes). */
+    private readonly bytesPerGb = 1024 * 1024 * 1024;
+
+    /** Convert Gigabytes to bytes for the API. User enters e.g. 20 meaning 20 GB. */
+    private gbToBytes(gb: number): number {
+        return Math.round((gb ?? 0) * this.bytesPerGb);
+    }
+
+    /** Convert bytes from API to Gigabytes for display/edit in the UI. */
+    private bytesToGb(bytes: number): number {
+        const b = bytes ?? 0;
+        if (b <= 0) return 0;
+        return Math.round(b / this.bytesPerGb);
+    }
+
+    /** Format bytes to GB or MB for display (used for capacity and free space from API). */
+    formatBytesToSize(bytes: number): string {
+        const b = bytes ?? 0;
+        const gb = b / (1024 * 1024 * 1024);
+        if (gb >= 1) return gb.toFixed(2) + ' GB';
+        const mb = b / (1024 * 1024);
+        return mb >= 1 ? (mb.toFixed(2) + ' MB') : (b / 1024).toFixed(2) + ' KB';
+    }
+
+    getCapacityDisplay(row: VirtualDriveRow): string {
+        return this.formatBytesToSize(row.capacity);
+    }
+
+    getFreeSpaceDisplay(row: VirtualDriveRow): string {
+        return this.formatBytesToSize(row.freeSpace);
     }
 
     showCreateDriveDialog(): void {
@@ -193,12 +322,15 @@ export class VirtualDrivesSectionComponent implements OnInit {
             return;
         }
 
+        // API expects capacity in bytes; user enters GB (e.g. 20 = 20 GB)
+        const capacityInBytes = this.gbToBytes(this.newDriveCapacity);
         this.virtualDrivesService.createDrive(
             this.newDriveName,
             this.newDriveLicenseId,
-            this.newDriveCapacity
+            capacityInBytes
         ).subscribe({
             next: (response: any) => {
+                console.log('response createDrive', response);
                 if (!response?.success) {
                     this.handleBusinessError('create', response);
                     return;
@@ -254,7 +386,8 @@ export class VirtualDrivesSectionComponent implements OnInit {
 
     showUpdateCapacityDialog(row: VirtualDriveRow): void {
         this.selectedDriveForCapacity = row;
-        this.updateCapacityValue = row.capacity;
+        // Show capacity in GB (API stores bytes)
+        this.updateCapacityValue = this.bytesToGb(row.capacity);
         this.updateCapacityDialogVisible = true;
     }
 
@@ -268,9 +401,11 @@ export class VirtualDrivesSectionComponent implements OnInit {
             return;
         }
 
+        // API expects capacity in bytes; user enters GB (e.g. 20 = 20 GB)
+        const capacityInBytes = this.gbToBytes(this.updateCapacityValue);
         this.virtualDrivesService.updateDriveCapacity(
             this.selectedDriveForCapacity.id,
-            this.updateCapacityValue
+            capacityInBytes
         ).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
@@ -321,6 +456,80 @@ export class VirtualDrivesSectionComponent implements OnInit {
                     detail: this.translate.getInstant('fileSystem.admin.deactivateDriveSuccess')
                 });
                 this.loadVirtualDrives();
+            }
+        });
+    }
+
+    /**
+     * Called when the status toggle is switched. Shows confirmation dialog first.
+     */
+    onStatusToggle(row: VirtualDriveRow, event: { checked?: boolean } | boolean): void {
+        const checked = typeof event === 'boolean' ? event : (event?.checked ?? false);
+        this.showConfirmStatusDialog(row, checked);
+    }
+
+    /**
+     * Show confirmation dialog before activating or deactivating a drive.
+     */
+    showConfirmStatusDialog(row: VirtualDriveRow, toActive: boolean): void {
+        this.confirmStatusDrive = row;
+        this.confirmStatusToActive = toActive;
+        this.confirmStatusDialogVisible = true;
+    }
+
+    hideConfirmStatusDialog(): void {
+        this.confirmStatusDialogVisible = false;
+        this.confirmStatusDrive = null;
+    }
+
+    /**
+     * User cancelled the activate/deactivate confirmation. Revert the toggle.
+     */
+    onCancelStatusChange(): void {
+        if (this.confirmStatusDrive) {
+            this.confirmStatusDrive.active = !this.confirmStatusToActive;
+        }
+        this.hideConfirmStatusDialog();
+    }
+
+    /**
+     * User confirmed activate/deactivate. Call the service.
+     */
+    onConfirmStatusChange(): void {
+        const row = this.confirmStatusDrive;
+        if (!row) {
+            this.hideConfirmStatusDialog();
+            return;
+        }
+        const toActive = this.confirmStatusToActive;
+        this.hideConfirmStatusDialog();
+        this.togglingDriveId = row.id;
+
+        const serviceCall = toActive
+            ? this.virtualDrivesService.activateDrive(row.id)
+            : this.virtualDrivesService.deactivateDrive(row.id);
+
+        serviceCall.subscribe({
+            next: (response: any) => {
+                if (!response?.success) {
+                    this.handleBusinessError(toActive ? 'activate' : 'deactivate', response);
+                    row.active = !toActive;
+                    return;
+                }
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Success',
+                    detail: toActive
+                        ? this.translate.getInstant('fileSystem.admin.activateDriveSuccess')
+                        : this.translate.getInstant('fileSystem.admin.deactivateDriveSuccess')
+                });
+                this.loadVirtualDrives();
+            },
+            error: () => {
+                row.active = !toActive;
+            },
+            complete: () => {
+                this.togglingDriveId = null;
             }
         });
     }

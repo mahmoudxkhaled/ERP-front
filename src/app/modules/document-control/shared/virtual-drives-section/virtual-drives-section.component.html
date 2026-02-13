@@ -1,68 +1,158 @@
-<div class="block-section">
-    <h2 class="block-title">{{ 'fileSystem.admin.virtualDrives' | translate }}</h2>
-    <div class="block-card">
-        <div class="mb-3 flex flex-wrap gap-3 align-items-center">
-            <div class="field" *ngIf="showEntityFilter">
-                <label class="mr-2">{{ 'fileSystem.admin.entityFilter' | translate }}</label>
-                <p-dropdown [options]="entityFilterOptions" [(ngModel)]="entityFilter" optionLabel="label"
-                    optionValue="value" [style]="{ width: '140px' }" (onChange)="loadVirtualDrives()"></p-dropdown>
-            </div>
-            <div class="field">
-                <label class="mr-2">{{ 'fileSystem.admin.licenseId' | translate }}</label>
-                <input pInputText type="number" [(ngModel)]="licenseIdFilter" [style]="{ width: '80px' }"
-                    (blur)="loadVirtualDrives()" />
-            </div>
-            <div class="field flex align-items-center">
-                <p-checkbox [(ngModel)]="activeOnlyFilter" [binary]="true" inputId="activeOnly"
-                    (onChange)="loadVirtualDrives()"></p-checkbox>
-                <label for="activeOnly" class="ml-2">{{ 'fileSystem.admin.activeOnly' | translate }}</label>
-            </div>
-            <p-button *ngIf="showCreateButton" [label]="'fileSystem.admin.createVirtualDrive' | translate"
-                icon="pi pi-plus" (onClick)="showCreateDriveDialog()"></p-button>
-        </div>
-        <p-table [value]="virtualDrivesTableValue" [paginator]="false"
-            styleClass="p-datatable-sm p-datatable-gridlines system-admin-table" responsiveLayout="scroll">
+<div class="card">
+    <div class="flex justify-content-between align-items-center mb-4">
+        <h2>{{ 'fileSystem.admin.virtualDrives' | translate }}</h2>
+        <p-button *ngIf="showCreateButton" [label]="'fileSystem.admin.createVirtualDrive' | translate" icon="pi pi-plus"
+            (onClick)="showCreateDriveDialog()"></p-button>
+    </div>
+
+    <!-- Entity filter only; License ID, Drive type, Status are in the table filter row below -->
+
+
+    <div style="position: relative;">
+        <p-table #drivesTable [value]="virtualDrivesTableValue" [paginator]="false" responsiveLayout="scroll"
+            [globalFilterFields]="['name', 'licenseId']">
+            <ng-template pTemplate="caption">
+                <div class="flex align-items-center justify-content-between gap-3 mb-2">
+                    <span class="p-input-icon-left flex-1 max-w-md">
+                        <i class="pi pi-search"></i>
+                        <input pInputText type="text"
+                            (input)="drivesTable.filterGlobal($any($event.target).value, 'contains')"
+                            [placeholder]="'fileSystem.admin.searchPlaceholder' | translate" class="w-full" />
+                    </span>
+                    <div class="flex align-items-center gap-2" *ngIf="showEntityFilter">
+                        <label class="font-medium mb-0">{{ 'fileSystem.admin.entityFilter' | translate }}</label>
+                        <p-dropdown [options]="entityFilterOptions" [(ngModel)]="entityFilter" optionLabel="label"
+                            optionValue="value" [style]="{ width: '10rem' }"
+                            (onChange)="loadVirtualDrives()"></p-dropdown>
+                    </div>
+                </div>
+            </ng-template>
             <ng-template pTemplate="header">
                 <tr>
-                    <th>{{ 'fileSystem.admin.driveName' | translate }}</th>
-                    <th>{{ 'fileSystem.admin.size' | translate }}</th>
-                    <th>{{ 'fileSystem.admin.status' | translate }}</th>
-                    <th style="width: 14rem">{{ 'fileSystem.companyStorage.actions' | translate }}</th>
+                    <th style="width: 200px;">{{ 'fileSystem.admin.driveName' | translate }}</th>
+                    <th style="width: 120px;">{{ 'fileSystem.admin.licenseId' | translate }}</th>
+                    <th style="width: 100px;">
+                        {{ 'fileSystem.admin.driveType' | translate }}
+                        <p-columnFilter field="isEntity" matchMode="equals" display="menu" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown [options]="driveTypeFilterOptions" [ngModel]="value"
+                                    (onChange)="filter($event.value)" optionLabel="label" optionValue="value"
+                                    [showClear]="true" [placeholder]="'fileSystem.admin.driveType' | translate"
+                                    styleClass="w-full" [ngStyle]="{ 'min-width': '12rem' }">
+                                    <ng-template let-option pTemplate="item">{{ option.label | translate
+                                        }}</ng-template>
+                                    <ng-template let-selected pTemplate="selectedLabel">
+                                        {{ selected === true ? ('fileSystem.admin.driveTypeEntity' | translate) :
+                                        (selected === false ? ('fileSystem.admin.driveTypeAccount' | translate) :
+                                        ('fileSystem.admin.driveType' | translate)) }}
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th style="width: 120px;">{{ 'fileSystem.admin.size' | translate }}</th>
+                    <th style="width: 120px;">{{ 'fileSystem.admin.freeSpace' | translate }}</th>
+                    <th style="width: 120px;" pSortableColumn="active">
+                        {{ 'fileSystem.admin.status' | translate }}
+                        <p-sortIcon field="active"></p-sortIcon>
+                        <p-columnFilter field="active" matchMode="equals" display="menu" [showMenu]="false">
+                            <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                <p-dropdown [options]="statusFilterOptions" [ngModel]="value"
+                                    (onChange)="filter($event.value)" optionLabel="label" optionValue="value"
+                                    [showClear]="true" [placeholder]="'fileSystem.admin.status' | translate"
+                                    styleClass="w-full" [ngStyle]="{ 'min-width': '12rem' }">
+                                    <ng-template let-option pTemplate="item">{{ option.label | translate
+                                        }}</ng-template>
+                                    <ng-template let-selected pTemplate="selectedLabel">
+                                        {{ selected === true ? ('fileSystem.entityAdminStatus.active' | translate) :
+                                        (selected === false ? ('fileSystem.admin.inactive' | translate) :
+                                        ('fileSystem.admin.status' | translate)) }}
+                                    </ng-template>
+                                </p-dropdown>
+                            </ng-template>
+                        </p-columnFilter>
+                    </th>
+                    <th style="width: 150px; text-align: start !important;">{{ 'fileSystem.companyStorage.actions' |
+                        translate }}</th>
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-row>
                 <tr>
-                    <td class="cell-product">{{ getDriveName(row) }}</td>
-                    <td><strong>{{ row.capacity }} GB</strong></td>
                     <td>
-                        <p-tag
-                            [value]="row.active ? ('fileSystem.entityAdminStatus.active' | translate) : ('fileSystem.admin.inactive' | translate)"
-                            [severity]="row.active ? 'success' : 'secondary'"></p-tag>
+                        <ng-container *ngIf="tableLoadingSpinner; else normalName">
+                            <p-skeleton height="1rem" width="10rem"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalName>
+                            <span class="font-semibold">{{ getDriveName(row) }}</span>
+                        </ng-template>
                     </td>
                     <td>
-                        <button pButton type="button" icon="pi pi-eye" class="p-button-text p-button-sm mr-1"
-                            [pTooltip]="'fileSystem.admin.viewDetails' | translate"
-                            (click)="showDriveDetailsDialog(row)"></button>
-                        <button pButton type="button" icon="pi pi-pencil" class="p-button-text p-button-sm mr-1"
-                            [pTooltip]="'fileSystem.admin.renameDrive' | translate"
-                            (click)="showRenameDriveDialog(row)"></button>
-                        <button pButton type="button" icon="pi pi-chart-bar" class="p-button-text p-button-sm mr-1"
-                            [pTooltip]="'fileSystem.admin.updateCapacity' | translate"
-                            (click)="showUpdateCapacityDialog(row)"></button>
-                        <button pButton *ngIf="showActivateDeactivate && !row.active" type="button" icon="pi pi-check"
-                            class="p-button-text p-button-sm p-button-success mr-1"
-                            [pTooltip]="'fileSystem.admin.activateDrive' | translate"
-                            (click)="onActivateDrive(row)"></button>
-                        <button pButton *ngIf="showActivateDeactivate && row.active" type="button" icon="pi pi-times"
-                            class="p-button-text p-button-sm p-button-danger"
-                            [pTooltip]="'fileSystem.admin.deactivateDrive' | translate"
-                            (click)="onDeactivateDrive(row)"></button>
+                        <ng-container *ngIf="tableLoadingSpinner; else normalLicenseId">
+                            <p-skeleton height="1rem" width="3rem"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalLicenseId>
+                            <span>{{ row.licenseId }}</span>
+                        </ng-template>
+                    </td>
+                    <td>
+                        <ng-container *ngIf="tableLoadingSpinner; else normalDriveType">
+                            <p-skeleton height="1rem" width="4rem"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalDriveType>
+                            <span>{{ getDriveTypeDisplay(row) }}</span>
+                        </ng-template>
+                    </td>
+                    <td>
+                        <ng-container *ngIf="tableLoadingSpinner; else normalSize">
+                            <p-skeleton height="1.5rem" width="5rem" borderRadius="4px"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalSize>
+                            <strong>{{ getCapacityDisplay(row) }}</strong>
+                        </ng-template>
+                    </td>
+                    <td>
+                        <ng-container *ngIf="tableLoadingSpinner; else normalFreeSpace">
+                            <p-skeleton height="1.5rem" width="5rem" borderRadius="4px"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalFreeSpace>
+                            <strong>{{ getFreeSpaceDisplay(row) }}</strong>
+                        </ng-template>
+                    </td>
+                    <td>
+                        <ng-container *ngIf="tableLoadingSpinner; else normalStatus">
+                            <p-skeleton height="1.5rem" width="5rem" borderRadius="4px"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalStatus>
+                            <ng-container *ngIf="showActivateDeactivate; else statusTag">
+                                <p-inputSwitch [(ngModel)]="row.active" (onChange)="onStatusToggle(row, $event)"
+                                    [disabled]="togglingDriveId === row.id"
+                                    [pTooltip]="row.active ? ('fileSystem.admin.deactivateDrive' | translate) : ('fileSystem.admin.activateDrive' | translate)">
+                                </p-inputSwitch>
+                            </ng-container>
+                            <ng-template #statusTag>
+                                <p-tag
+                                    [value]="row.active ? ('fileSystem.entityAdminStatus.active' | translate) : ('fileSystem.admin.inactive' | translate)"
+                                    [severity]="row.active ? 'success' : 'secondary'"></p-tag>
+                            </ng-template>
+                        </ng-template>
+                    </td>
+                    <td class="text-start">
+                        <ng-container *ngIf="tableLoadingSpinner; else normalActions">
+                            <p-skeleton height="2rem" width="2rem" borderRadius="50%"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalActions>
+                            <button pButton pRipple type="button" icon="pi pi-ellipsis-v"
+                                class="p-button-rounded p-button-text p-button-plain"
+                                (click)="openDriveMenu(rowMenu, row, $event)">
+                            </button>
+                            <p-menu #rowMenu [model]="driveMenuItems" [popup]="true" [appendTo]="'body'"></p-menu>
+                        </ng-template>
                     </td>
                 </tr>
             </ng-template>
             <ng-template pTemplate="emptymessage">
                 <tr>
-                    <td colspan="4" class="text-center p-4 text-500">{{ 'fileSystem.entityAdmin.noOwnedDrives' | translate }}</td>
+                    <td colspan="7" class="text-center">{{ 'fileSystem.entityAdmin.noOwnedDrives' | translate }}</td>
                 </tr>
             </ng-template>
         </p-table>
@@ -85,7 +175,8 @@
         </div>
         <div class="field">
             <label for="newDriveCapacity">{{ 'fileSystem.admin.capacity' | translate }}</label>
-            <input pInputText type="number" id="newDriveCapacity" [(ngModel)]="newDriveCapacity" class="w-full mt-2" />
+            <input pInputText type="number" id="newDriveCapacity" [(ngModel)]="newDriveCapacity" class="w-full mt-2"
+                [placeholder]="'fileSystem.admin.capacityPlaceholder' | translate" />
         </div>
     </div>
     <ng-template pTemplate="footer">
@@ -121,7 +212,7 @@
         <div class="field">
             <label for="updateCapacityValue">{{ 'fileSystem.admin.newCapacity' | translate }}</label>
             <input pInputText type="number" id="updateCapacityValue" [(ngModel)]="updateCapacityValue"
-                class="w-full mt-2" />
+                class="w-full mt-2" [placeholder]="'fileSystem.admin.capacityPlaceholder' | translate" />
         </div>
     </div>
     <ng-template pTemplate="footer">
@@ -133,22 +224,65 @@
 
 <!-- Drive Details Dialog -->
 <p-dialog [header]="'fileSystem.admin.driveDetailsTitle' | translate" [(visible)]="driveDetailsDialogVisible"
-    [modal]="true" [style]="{ width: '400px' }" (onHide)="hideDriveDetailsDialog()" [draggable]="false"
-    [resizable]="false">
-    <div class="p-fluid" *ngIf="selectedDriveForDetails">
-        <div class="field"><label>{{ 'fileSystem.admin.driveName' | translate }}</label>
-            <p>{{ getDriveName(selectedDriveForDetails) }}</p>
+    [modal]="true" [style]="{ width: '420px' }" (onHide)="hideDriveDetailsDialog()" [draggable]="false"
+    [resizable]="false" styleClass="drive-details-dialog">
+    <div class="drive-details-content" *ngIf="selectedDriveForDetails">
+        <div class="drive-details-row drive-details-name">
+            <span class="drive-details-label">{{ 'fileSystem.admin.driveName' | translate }}</span>
+            <span class="drive-details-value font-semibold">{{ getDriveName(selectedDriveForDetails) }}</span>
         </div>
-        <div class="field"><label>{{ 'fileSystem.admin.size' | translate }}</label>
-            <p>{{ selectedDriveForDetails.capacity }} GB</p>
+        <div class="drive-details-divider"></div>
+        <div class="drive-details-row">
+            <span class="drive-details-label">{{ 'fileSystem.admin.licenseId' | translate }}</span>
+            <span class="drive-details-value">{{ selectedDriveForDetails.licenseId }}</span>
         </div>
-        <div class="field"><label>{{ 'fileSystem.admin.status' | translate }}</label>
-            <p>{{ selectedDriveForDetails.active ? ('fileSystem.entityAdminStatus.active' | translate) :
-                ('fileSystem.admin.inactive' | translate) }}</p>
+        <div class="drive-details-row">
+            <span class="drive-details-label">{{ 'fileSystem.admin.driveType' | translate }}</span>
+            <span class="drive-details-value">{{ getDriveTypeDisplay(selectedDriveForDetails) }}</span>
+        </div>
+        <div class="drive-details-row">
+            <span class="drive-details-label">{{ 'fileSystem.admin.size' | translate }}</span>
+            <span class="drive-details-value">{{ getCapacityDisplay(selectedDriveForDetails) }}</span>
+        </div>
+        <div class="drive-details-row">
+            <span class="drive-details-label">{{ 'fileSystem.admin.freeSpace' | translate }}</span>
+            <span class="drive-details-value">{{ getFreeSpaceDisplay(selectedDriveForDetails) }}</span>
+        </div>
+        <div class="drive-details-divider"></div>
+        <div class="drive-details-row drive-details-status-row mt-2">
+            <span class="drive-details-label">{{ 'fileSystem.admin.status' | translate }}</span>
+            <p-tag
+                [value]="selectedDriveForDetails.active ? ('fileSystem.entityAdminStatus.active' | translate) : ('fileSystem.admin.inactive' | translate)"
+                [severity]="selectedDriveForDetails.active ? 'success' : 'secondary'"></p-tag>
         </div>
     </div>
-    <ng-template pTemplate="footer">
-        <p-button [label]="'fileSystem.companyStorage.close' | translate"
+    <!-- <ng-template pTemplate="footer">
+        <p-button [label]="'fileSystem.companyStorage.close' | translate" icon="pi pi-times"
             (onClick)="hideDriveDetailsDialog()"></p-button>
+    </ng-template> -->
+</p-dialog>
+
+<!-- Confirm Activate / Deactivate Drive -->
+<p-dialog [(visible)]="confirmStatusDialogVisible" [modal]="true" [style]="{ width: '450px' }" [closable]="true"
+    [draggable]="false" [resizable]="false" (onHide)="onCancelStatusChange()">
+    <ng-template pTemplate="header">
+        <h3>{{ (confirmStatusToActive ? 'fileSystem.admin.confirmActivateDriveTitle' :
+            'fileSystem.admin.confirmDeactivateDriveTitle') | translate }}</h3>
+    </ng-template>
+    <p *ngIf="confirmStatusDrive">
+        {{ (confirmStatusToActive ? 'fileSystem.admin.confirmActivateDriveMessage' :
+        'fileSystem.admin.confirmDeactivateDriveMessage') | translate: { driveName: getDriveName(confirmStatusDrive) }
+        }}
+    </p>
+    <ng-template pTemplate="footer">
+        <p-button [label]="'fileSystem.companyStorage.close' | translate" icon="pi pi-times" class="p-button-secondary"
+            (onClick)="onCancelStatusChange()"></p-button>
+        <p-button
+            [label]="(confirmStatusToActive ? 'fileSystem.admin.activateDrive' : 'fileSystem.admin.deactivateDrive') | translate"
+            icon="pi pi-check" (onClick)="onConfirmStatusChange()"
+            [loading]="togglingDriveId === confirmStatusDrive?.id"></p-button>
     </ng-template>
 </p-dialog>
+
+<!-- Toast so messages from this section (and same injector tree) are visible -->
+<p-toast></p-toast>
