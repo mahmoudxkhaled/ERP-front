@@ -27,7 +27,11 @@ const routes: Routes = [
         loadChildren: () => import('../entity-administration/entity-groups/entity-groups.module').then((m) => m.EntityGroupsModule),
         data: { breadcrumb: 'entityGroups' }
     },
-
+    {
+        path: 'entity-storage-management',
+        loadChildren: () => import('../entity-administration/entity-storage-management/entity-storage-management.module').then((m) => m.EntityStorageManagementModule),
+        data: { breadcrumb: 'fileSystemESM' }
+    },
     { path: 'workflows', component: WorkflowsComponent, data: { breadcrumb: 'workflows' } }
 ];
 

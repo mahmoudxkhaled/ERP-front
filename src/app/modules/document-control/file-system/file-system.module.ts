@@ -10,10 +10,11 @@ import { StorageContentLayoutComponent } from './pages/storage-content-layout/st
 import { StorageContentLandingComponent } from './pages/storage-content-landing/storage-content-landing.component';
 import { CompanyStorageComponent } from './pages/company-storage/company-storage.component';
 import { SharedFilesComponent } from './pages/shared-files/shared-files.component';
-import { AdminComponent } from './pages/admin/admin.component';
-import { EntityAdministratorComponent } from './pages/entity-administrator/entity-administrator.component';
+import { AdminComponent } from './pages/system-storage-management/system-storage-management.component';
+import { EntityAdministratorComponent } from './pages/entity-storage-management/entity-storage-management.component';
 import { DcsComponent } from './pages/dcs/dcs.component';
 import { EdmsComponent } from './pages/edms/edms.component';
+import { FileSystemSharedModule } from './shared/file-system-shared.module';
 
 @NgModule({
     declarations: [
@@ -32,7 +33,8 @@ import { EdmsComponent } from './pages/edms/edms.component';
         CommonModule,
         BreadcrumbModule,
         FileSystemRoutingModule,
-        SharedModule
+        SharedModule,
+        FileSystemSharedModule
     ]
 })
 export class FileSystemModule { }

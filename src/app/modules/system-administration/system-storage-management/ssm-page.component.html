@@ -1,0 +1,168 @@
+<div class="system-admin-view">
+    <div class="system-admin-top flex flex-col gap-3">
+        <a routerLink="/system-administration" class="back-link">
+            <i class="pi pi-arrow-left"></i>
+            <span>{{ 'fileSystem.backToHome' | translate }}</span>
+        </a>
+
+        <div class="page-header">
+            <h1 class="page-title">{{ 'fileSystem.systemAdmin.title' | translate }}</h1>
+            <p class="page-description">{{ 'fileSystem.systemAdmin.description' | translate }}</p>
+        </div>
+    </div>
+
+    <div class="kpi-section">
+        <h2 class="block-title">{{ 'fileSystem.systemAdmin.overview' | translate }}</h2>
+        <div class="kpi-cards">
+            <div class="kpi-card kpi-licenses">
+                <div class="kpi-icon"><i class="pi pi-key"></i></div>
+                <div class="kpi-info">
+                    <span class="kpi-value">{{ licenses.length }}</span>
+                    <span class="kpi-label">{{ 'fileSystem.systemAdmin.activeLicenses' | translate }}</span>
+                </div>
+            </div>
+            <div class="kpi-card kpi-capacity">
+                <div class="kpi-icon"><i class="pi pi-chart-bar"></i></div>
+                <div class="kpi-info">
+                    <span class="kpi-value">{{ capacityUsedPercent }}%</span>
+                    <span class="kpi-label">{{ 'fileSystem.systemAdmin.capacityUsed' | translate }}</span>
+                </div>
+            </div>
+            <div class="kpi-card kpi-drives">
+                <div class="kpi-icon"><i class="pi pi-server"></i></div>
+                <div class="kpi-info">
+                    <span class="kpi-value">{{ virtualDrivesCount }}</span>
+                    <span class="kpi-label">{{ 'fileSystem.systemAdmin.virtualDrives' | translate }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="block-section">
+        <h2 class="block-title">{{ 'fileSystem.admin.licenses' | translate }}</h2>
+        <div class="block-card">
+            <p-table [value]="licenses" [paginator]="false"
+                styleClass="p-datatable-sm p-datatable-gridlines system-admin-table" responsiveLayout="scroll">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>{{ 'fileSystem.admin.product' | translate }}</th>
+                        <th>{{ 'fileSystem.admin.count' | translate }}</th>
+                        <th>{{ 'fileSystem.admin.expiry' | translate }}</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-row>
+                    <tr>
+                        <td class="cell-product">{{ getProductLabel(row) }}</td>
+                        <td>{{ row.count }}</td>
+                        <td><span class="expiry-badge">{{ row.expiry }}</span></td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+
+    <div class="block-section">
+        <h2 class="block-title">{{ 'fileSystem.admin.capacityUsage' | translate }}</h2>
+        <div class="block-card">
+            <div class="capacity-block">
+                <p-progressBar [value]="capacityUsedPercent" [showValue]="true"
+                    styleClass="capacity-bar"></p-progressBar>
+                <p class="capacity-summary">{{ capacityUsedLabel }}</p>
+                <div class="capacity-detail">
+                    <div class="capacity-row">
+                        <span class="capacity-label">{{ 'fileSystem.systemAdmin.used' | translate }}</span>
+                        <span class="capacity-value">325 GB</span>
+                    </div>
+                    <div class="capacity-row">
+                        <span class="capacity-label">{{ 'fileSystem.systemAdmin.total' | translate }}</span>
+                        <span class="capacity-value">500 GB</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Virtual Drives Section - Shared Component -->
+    <app-virtual-drives-section mode="ssm"></app-virtual-drives-section>
+
+    <div class="block-section">
+        <h2 class="block-title">{{ 'fileSystem.admin.trafficMonitoring' | translate }}</h2>
+        <div class="block-card">
+            <p class="mb-3">{{ 'fileSystem.admin.trafficDescription' | translate }}</p>
+            <div class="kpi-cards flex flex-wrap gap-3">
+                <div class="kpi-card kpi-licenses">
+                    <div class="kpi-icon"><i class="pi pi-upload"></i></div>
+                    <div class="kpi-info">
+                        <span class="kpi-value">{{ totalUploads }}</span>
+                        <span class="kpi-label">{{ 'fileSystem.admin.totalUploads' | translate }}</span>
+                    </div>
+                </div>
+                <div class="kpi-card kpi-capacity">
+                    <div class="kpi-icon"><i class="pi pi-download"></i></div>
+                    <div class="kpi-info">
+                        <span class="kpi-value">{{ totalDownloads }}</span>
+                        <span class="kpi-label">{{ 'fileSystem.admin.totalDownloads' | translate }}</span>
+                    </div>
+                </div>
+                <div class="kpi-card kpi-drives">
+                    <div class="kpi-icon"><i class="pi pi-file"></i></div>
+                    <div class="kpi-info">
+                        <span class="kpi-value">{{ totalFilesTraffic }}</span>
+                        <span class="kpi-label">{{ 'fileSystem.admin.totalFilesTraffic' | translate }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="block-section">
+        <h2 class="block-title">{{ 'fileSystem.admin.listFileSystems' | translate }}</h2>
+        <div class="block-card">
+            <p class="mb-3 text-500">{{ 'fileSystem.admin.createFileSystemRequiresEntityAdmin' | translate }}</p>
+            <div class="mb-3">
+                <label class="mr-2">{{ 'fileSystem.admin.driveName' | translate }}</label>
+                <p-dropdown [options]="driveOptionsForFileSystems" [(ngModel)]="selectedDriveIdForFileSystems"
+                    optionLabel="name" optionValue="id" [style]="{ width: '280px' }"
+                    placeholder="{{ 'fileSystem.admin.selectDriveToManageFileSystems' | translate }}"
+                    (onChange)="onDriveSelectedForFileSystems()"></p-dropdown>
+            </div>
+            <p-table [value]="fileSystemsInSelectedDrive" [paginator]="false"
+                styleClass="p-datatable-sm p-datatable-gridlines system-admin-table" responsiveLayout="scroll">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>{{ 'fileSystem.entityAdmin.fileSystemName' | translate }}</th>
+                        <th>{{ 'fileSystem.entityAdmin.entityName' | translate }}</th>
+                        <th>{{ 'fileSystem.entityAdmin.status' | translate }}</th>
+                        <th>{{ 'fileSystem.entityAdmin.usedCapacity' | translate }}</th>
+                        <th style="width: 10rem">{{ 'fileSystem.companyStorage.actions' | translate }}</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-row>
+                    <tr>
+                        <td>{{ getFileSystemName(row) }}</td>
+                        <td>{{ getFileSystemEntityName(row) }}</td>
+                        <td><p-tag [value]="getFileSystemStatusLabel(row)" [severity]="row.active ? 'success' : 'secondary'"></p-tag></td>
+                        <td>{{ row.usedCapacity }}</td>
+                        <td>
+                            <button pButton type="button" icon="pi pi-pencil" class="p-button-text p-button-sm mr-1"
+                                [pTooltip]="'fileSystem.entityAdmin.editFileSystem' | translate"
+                                [disabled]="!canManageFileSystems"
+                                (click)="onEditFileSystem(row)"></button>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="5" class="text-center p-4 text-500">{{ 'fileSystem.admin.selectDriveToManageFileSystems' | translate }}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+            <div class="mt-3">
+                <p-button [label]="'fileSystem.entityAdmin.createFileSystem' | translate" icon="pi pi-plus"
+                    [disabled]="!canManageFileSystems"
+                    [pTooltip]="createFileSystemButtonTooltip"
+                    (onClick)="showCreateFileSystemDialog()"></p-button>
+            </div>
+        </div>
+    </div>
+</div>

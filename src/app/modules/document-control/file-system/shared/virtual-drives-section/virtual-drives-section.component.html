@@ -1,0 +1,154 @@
+<div class="block-section">
+    <h2 class="block-title">{{ 'fileSystem.admin.virtualDrives' | translate }}</h2>
+    <div class="block-card">
+        <div class="mb-3 flex flex-wrap gap-3 align-items-center">
+            <div class="field" *ngIf="showEntityFilter">
+                <label class="mr-2">{{ 'fileSystem.admin.entityFilter' | translate }}</label>
+                <p-dropdown [options]="entityFilterOptions" [(ngModel)]="entityFilter" optionLabel="label"
+                    optionValue="value" [style]="{ width: '140px' }" (onChange)="loadVirtualDrives()"></p-dropdown>
+            </div>
+            <div class="field">
+                <label class="mr-2">{{ 'fileSystem.admin.licenseId' | translate }}</label>
+                <input pInputText type="number" [(ngModel)]="licenseIdFilter" [style]="{ width: '80px' }"
+                    (blur)="loadVirtualDrives()" />
+            </div>
+            <div class="field flex align-items-center">
+                <p-checkbox [(ngModel)]="activeOnlyFilter" [binary]="true" inputId="activeOnly"
+                    (onChange)="loadVirtualDrives()"></p-checkbox>
+                <label for="activeOnly" class="ml-2">{{ 'fileSystem.admin.activeOnly' | translate }}</label>
+            </div>
+            <p-button *ngIf="showCreateButton" [label]="'fileSystem.admin.createVirtualDrive' | translate"
+                icon="pi pi-plus" (onClick)="showCreateDriveDialog()"></p-button>
+        </div>
+        <p-table [value]="virtualDrivesTableValue" [paginator]="false"
+            styleClass="p-datatable-sm p-datatable-gridlines system-admin-table" responsiveLayout="scroll">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>{{ 'fileSystem.admin.driveName' | translate }}</th>
+                    <th>{{ 'fileSystem.admin.size' | translate }}</th>
+                    <th>{{ 'fileSystem.admin.status' | translate }}</th>
+                    <th style="width: 14rem">{{ 'fileSystem.companyStorage.actions' | translate }}</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-row>
+                <tr>
+                    <td class="cell-product">{{ getDriveName(row) }}</td>
+                    <td><strong>{{ row.capacity }} GB</strong></td>
+                    <td>
+                        <p-tag
+                            [value]="row.active ? ('fileSystem.entityAdminStatus.active' | translate) : ('fileSystem.admin.inactive' | translate)"
+                            [severity]="row.active ? 'success' : 'secondary'"></p-tag>
+                    </td>
+                    <td>
+                        <button pButton type="button" icon="pi pi-eye" class="p-button-text p-button-sm mr-1"
+                            [pTooltip]="'fileSystem.admin.viewDetails' | translate"
+                            (click)="showDriveDetailsDialog(row)"></button>
+                        <button pButton type="button" icon="pi pi-pencil" class="p-button-text p-button-sm mr-1"
+                            [pTooltip]="'fileSystem.admin.renameDrive' | translate"
+                            (click)="showRenameDriveDialog(row)"></button>
+                        <button pButton type="button" icon="pi pi-chart-bar" class="p-button-text p-button-sm mr-1"
+                            [pTooltip]="'fileSystem.admin.updateCapacity' | translate"
+                            (click)="showUpdateCapacityDialog(row)"></button>
+                        <button pButton *ngIf="showActivateDeactivate && !row.active" type="button" icon="pi pi-check"
+                            class="p-button-text p-button-sm p-button-success mr-1"
+                            [pTooltip]="'fileSystem.admin.activateDrive' | translate"
+                            (click)="onActivateDrive(row)"></button>
+                        <button pButton *ngIf="showActivateDeactivate && row.active" type="button" icon="pi pi-times"
+                            class="p-button-text p-button-sm p-button-danger"
+                            [pTooltip]="'fileSystem.admin.deactivateDrive' | translate"
+                            (click)="onDeactivateDrive(row)"></button>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="4" class="text-center p-4 text-500">{{ 'fileSystem.entityAdmin.noOwnedDrives' | translate }}</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+<!-- Create Drive Dialog -->
+<p-dialog [header]="'fileSystem.admin.createDriveDialogTitle' | translate" [(visible)]="createDriveDialogVisible"
+    [modal]="true" [style]="{ width: '400px' }" (onHide)="hideCreateDriveDialog()" [draggable]="false"
+    [resizable]="false">
+    <div class="p-fluid">
+        <div class="field mb-3">
+            <label for="newDriveName">{{ 'fileSystem.admin.driveName' | translate }}</label>
+            <input pInputText id="newDriveName" [(ngModel)]="newDriveName" class="w-full mt-2" />
+        </div>
+        <div class="field mb-3">
+            <label for="newDriveLicenseId">{{ 'fileSystem.admin.licenseId' | translate }}</label>
+            <input pInputText type="number" id="newDriveLicenseId" [(ngModel)]="newDriveLicenseId"
+                class="w-full mt-2" />
+        </div>
+        <div class="field">
+            <label for="newDriveCapacity">{{ 'fileSystem.admin.capacity' | translate }}</label>
+            <input pInputText type="number" id="newDriveCapacity" [(ngModel)]="newDriveCapacity" class="w-full mt-2" />
+        </div>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button [label]="'fileSystem.companyStorage.close' | translate" styleClass="p-button-secondary"
+            (onClick)="hideCreateDriveDialog()"></p-button>
+        <p-button [label]="'fileSystem.companyStorage.create' | translate"
+            (onClick)="onCreateDriveConfirm()"></p-button>
+    </ng-template>
+</p-dialog>
+
+<!-- Rename Drive Dialog -->
+<p-dialog [header]="'fileSystem.admin.renameDriveDialogTitle' | translate" [(visible)]="renameDriveDialogVisible"
+    [modal]="true" [style]="{ width: '400px' }" (onHide)="hideRenameDriveDialog()" [draggable]="false"
+    [resizable]="false">
+    <div class="p-fluid">
+        <div class="field">
+            <label for="renameDriveName">{{ 'fileSystem.admin.newDriveName' | translate }}</label>
+            <input pInputText id="renameDriveName" [(ngModel)]="renameDriveName" class="w-full mt-2" />
+        </div>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button [label]="'fileSystem.companyStorage.close' | translate" styleClass="p-button-secondary"
+            (onClick)="hideRenameDriveDialog()"></p-button>
+        <p-button [label]="'fileSystem.companyStorage.save' | translate" (onClick)="onRenameDriveSave()"></p-button>
+    </ng-template>
+</p-dialog>
+
+<!-- Update Capacity Dialog -->
+<p-dialog [header]="'fileSystem.admin.updateCapacityDialogTitle' | translate" [(visible)]="updateCapacityDialogVisible"
+    [modal]="true" [style]="{ width: '400px' }" (onHide)="hideUpdateCapacityDialog()" [draggable]="false"
+    [resizable]="false">
+    <div class="p-fluid">
+        <div class="field">
+            <label for="updateCapacityValue">{{ 'fileSystem.admin.newCapacity' | translate }}</label>
+            <input pInputText type="number" id="updateCapacityValue" [(ngModel)]="updateCapacityValue"
+                class="w-full mt-2" />
+        </div>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button [label]="'fileSystem.companyStorage.close' | translate" styleClass="p-button-secondary"
+            (onClick)="hideUpdateCapacityDialog()"></p-button>
+        <p-button [label]="'fileSystem.companyStorage.save' | translate" (onClick)="onUpdateCapacitySave()"></p-button>
+    </ng-template>
+</p-dialog>
+
+<!-- Drive Details Dialog -->
+<p-dialog [header]="'fileSystem.admin.driveDetailsTitle' | translate" [(visible)]="driveDetailsDialogVisible"
+    [modal]="true" [style]="{ width: '400px' }" (onHide)="hideDriveDetailsDialog()" [draggable]="false"
+    [resizable]="false">
+    <div class="p-fluid" *ngIf="selectedDriveForDetails">
+        <div class="field"><label>{{ 'fileSystem.admin.driveName' | translate }}</label>
+            <p>{{ getDriveName(selectedDriveForDetails) }}</p>
+        </div>
+        <div class="field"><label>{{ 'fileSystem.admin.size' | translate }}</label>
+            <p>{{ selectedDriveForDetails.capacity }} GB</p>
+        </div>
+        <div class="field"><label>{{ 'fileSystem.admin.status' | translate }}</label>
+            <p>{{ selectedDriveForDetails.active ? ('fileSystem.entityAdminStatus.active' | translate) :
+                ('fileSystem.admin.inactive' | translate) }}</p>
+        </div>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button [label]="'fileSystem.companyStorage.close' | translate"
+            (onClick)="hideDriveDetailsDialog()"></p-button>
+    </ng-template>
+</p-dialog>

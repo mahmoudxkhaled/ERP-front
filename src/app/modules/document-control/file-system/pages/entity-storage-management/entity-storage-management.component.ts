@@ -18,17 +18,11 @@ export interface PermissionRow {
     accessKey: string;
 }
 
-export interface OwnedVirtualDriveRow {
-    id: number;
-    name: string;
-    capacity: string;
-    active: boolean;
-}
 
 @Component({
-    selector: 'app-entity-administrator',
-    templateUrl: './entity-administrator.component.html',
-    styleUrls: ['./entity-administrator.component.scss']
+    selector: 'app-entity-storage-management',
+    templateUrl: './entity-storage-management.component.html',
+    styleUrls: ['./entity-storage-management.component.scss']
 })
 export class EntityAdministratorComponent implements OnInit {
     createFileSystemDialogVisible = false;
@@ -103,14 +97,9 @@ export class EntityAdministratorComponent implements OnInit {
         { roleKey: 'fileSystem.entityAdminRoles.allEmployees', folderPath: '/Shared', accessKey: 'fileSystem.entityAdminAccess.readDownload' }
     ];
 
-    // Virtual drives owned by the entity (placeholder data)
-    ownedVirtualDrives: OwnedVirtualDriveRow[] = [
-        { id: 1, name: 'Company Main', capacity: '500 GB', active: true },
-        { id: 2, name: 'Archive', capacity: '200 GB', active: true }
-    ];
-
+    // Placeholder for owned virtual drives count (will be updated from shared component later if needed)
     get ownedVirtualDrivesCount(): number {
-        return this.ownedVirtualDrives.length;
+        return 0;
     }
 
     // Traffic monitoring (placeholder until API)
@@ -124,7 +113,7 @@ export class EntityAdministratorComponent implements OnInit {
     constructor(
         private translate: TranslationService,
         private messageService: MessageService
-    ) {}
+    ) { }
 
     ngOnInit(): void {
         this.applyTranslationsToTree(this.folderStructure);
@@ -304,20 +293,5 @@ export class EntityAdministratorComponent implements OnInit {
 
     hideSyncUnderDevDialog(): void {
         this.syncUnderDevDialogVisible = false;
-    }
-
-    showCreateDriveUnderDevDialog(): void {
-        this.messageService.add({
-            severity: 'info',
-            summary: this.translate.getInstant('fileSystem.admin.syncUnderDevelopmentTitle'),
-            detail: this.translate.getInstant('fileSystem.admin.syncUnderDevelopmentMessage')
-        });
-    }
-
-    showDriveDetailsUnderDev(_row: OwnedVirtualDriveRow): void {
-        this.messageService.add({
-            severity: 'info',
-            summary: this.translate.getInstant('fileSystem.admin.viewDetails')
-        });
     }
 }

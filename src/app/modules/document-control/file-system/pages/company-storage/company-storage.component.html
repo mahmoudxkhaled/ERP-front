@@ -11,7 +11,8 @@
             <div class="field">
                 <label class="block mb-1">{{ 'fileSystem.companyStorageView.selectDrive' | translate }}</label>
                 <p-dropdown [options]="entityDriveOptions" [(ngModel)]="selectedDriveId" optionLabel="name"
-                    optionValue="id" [style]="{ width: '240px' }" placeholder="{{ 'fileSystem.companyStorageView.selectDrive' | translate }}"
+                    optionValue="id" [style]="{ width: '240px' }"
+                    placeholder="{{ 'fileSystem.companyStorageView.selectDrive' | translate }}"
                     (onChange)="onDriveSelected()"></p-dropdown>
             </div>
             <div class="field">
@@ -51,7 +52,8 @@
         </div>
     </div>
 
-    <p-breadcrumb *ngIf="selectedFileSystemId" [model]="breadcrumbModel" [home]="undefined" class="mb-3 breadcrumb-wrap"></p-breadcrumb>
+    <p-breadcrumb *ngIf="selectedFileSystemId" [model]="breadcrumbModel" [home]="undefined"
+        class="mb-3 breadcrumb-wrap"></p-breadcrumb>
 
     <div class="storage-layout" *ngIf="selectedFileSystemId">
         <div class="content-card tree-card">

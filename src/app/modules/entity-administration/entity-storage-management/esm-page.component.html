@@ -1,6 +1,6 @@
 <div class="entity-admin-view">
     <div class="entity-admin-top flex flex-col gap-3">
-        <a [routerLink]="['/document-control']" class="back-link">
+        <a routerLink="/company-administration" class="back-link">
             <i class="pi pi-arrow-left"></i>
             <span>{{ 'fileSystem.backToHome' | translate }}</span>
         </a>
@@ -45,43 +45,8 @@
         </div>
     </div>
 
-    <div class="block-section">
-        <h2 class="block-title">{{ 'fileSystem.entityAdmin.virtualDrivesOwned' | translate }}</h2>
-        <div class="block-card">
-            <div class="mb-3">
-                <p-button [label]="'fileSystem.admin.createVirtualDrive' | translate" icon="pi pi-plus"
-                    (onClick)="showCreateDriveUnderDevDialog()"></p-button>
-            </div>
-            <p-table [value]="ownedVirtualDrives" [paginator]="false"
-                styleClass="p-datatable-sm p-datatable-gridlines entity-admin-table" responsiveLayout="scroll">
-                <ng-template pTemplate="header">
-                    <tr>
-                        <th>{{ 'fileSystem.admin.driveName' | translate }}</th>
-                        <th>{{ 'fileSystem.admin.size' | translate }}</th>
-                        <th>{{ 'fileSystem.entityAdmin.status' | translate }}</th>
-                        <th style="width: 10rem">{{ 'fileSystem.companyStorage.actions' | translate }}</th>
-                    </tr>
-                </ng-template>
-                <ng-template pTemplate="body" let-row>
-                    <tr>
-                        <td>{{ row.name }}</td>
-                        <td>{{ row.capacity }}</td>
-                        <td><p-tag [value]="row.active ? ('fileSystem.entityAdminStatus.active' | translate) : ('fileSystem.admin.inactive' | translate)" [severity]="row.active ? 'success' : 'secondary'"></p-tag></td>
-                        <td>
-                            <button pButton type="button" icon="pi pi-eye" class="p-button-text p-button-sm mr-1"
-                                [pTooltip]="'fileSystem.admin.viewDetails' | translate"
-                                (click)="showDriveDetailsUnderDev(row)"></button>
-                        </td>
-                    </tr>
-                </ng-template>
-                <ng-template pTemplate="emptymessage">
-                    <tr>
-                        <td colspan="4" class="text-center p-4 text-500">{{ 'fileSystem.entityAdmin.noOwnedDrives' | translate }}</td>
-                    </tr>
-                </ng-template>
-            </p-table>
-        </div>
-    </div>
+    <!-- Virtual Drives Section - Shared Component -->
+    <app-virtual-drives-section mode="esm"></app-virtual-drives-section>
 
     <div class="block-section">
         <h2 class="block-title">{{ 'fileSystem.entityAdmin.synchronization' | translate }}</h2>

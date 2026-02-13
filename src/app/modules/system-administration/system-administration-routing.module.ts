@@ -12,6 +12,11 @@ const routes: Routes = [
         loadChildren: () => import('./erp-modules/erp-modules.module').then((m) => m.ErpModulesModule),
         data: { breadcrumb: 'erpModules' }
     },
+    {
+        path: 'system-storage-management',
+        loadChildren: () => import('./system-storage-management/system-storage-management.module').then((m) => m.SystemStorageManagementModule),
+        data: { breadcrumb: 'fileSystemSSM' }
+    },
     { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
 ];
 
