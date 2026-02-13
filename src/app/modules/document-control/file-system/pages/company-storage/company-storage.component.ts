@@ -82,6 +82,15 @@ export class CompanyStorageComponent implements OnInit {
     selectedFolderId: string = 'root';
     breadcrumbItems: BreadcrumbItem[] = [{ labelKey: 'fileSystem.companyStorageView.title', folderId: 'root' }];
 
+    // OSFS: Select drive then file system (owned by entity)
+    selectedDriveId: number | null = null;
+    selectedFileSystemId: number | null = null;
+    entityDriveOptions: { id: number; name: string }[] = [
+        { id: 1, name: 'Company Main' },
+        { id: 2, name: 'Archive' }
+    ];
+    fileSystemOptionsInDrive: { id: number; name: string }[] = [];
+
     folderTree: TreeNode[] = [
         {
             label: '',
@@ -145,6 +154,23 @@ export class CompanyStorageComponent implements OnInit {
 
     ngOnInit(): void {
         this.applyTranslationsToTree(this.folderTree);
+    }
+
+    onDriveSelected(): void {
+        this.selectedFileSystemId = null;
+        if (this.selectedDriveId == null) {
+            this.fileSystemOptionsInDrive = [];
+            return;
+        }
+        // Placeholder: load file systems for selected drive when API exists.
+        this.fileSystemOptionsInDrive = [
+            { id: 1, name: this.translate.getInstant('fileSystem.folders.companyStorage') },
+            { id: 2, name: this.translate.getInstant('fileSystem.admin.driveArchive') }
+        ];
+    }
+
+    onFileSystemSelected(): void {
+        // Explorer content is already bound to current state; when selectedFileSystemId is set, UI shows.
     }
 
     get currentFolderFiles(): MockFile[] {

@@ -19,6 +19,15 @@ export interface VirtualDriveRow {
     active: boolean;
 }
 
+/** File system row for SSM list (scoped by drive). */
+export interface FileSystemRow {
+    id: number;
+    nameKey: string;
+    entityNameKey: string;
+    active: boolean;
+    usedCapacity: string;
+}
+
 @Component({
     selector: 'app-admin',
     templateUrl: './admin.component.html',
@@ -44,7 +53,6 @@ export class AdminComponent implements OnInit {
     createDriveDialogVisible = false;
     renameDriveDialogVisible = false;
     updateCapacityDialogVisible = false;
-    syncUnderDevDialogVisible = false;
     driveDetailsDialogVisible = false;
 
     newDriveName = '';
@@ -63,6 +71,19 @@ export class AdminComponent implements OnInit {
 
     virtualDrives: VirtualDriveRow[] = [];
 
+    // List File Systems (scoped by selected drive)
+    selectedDriveIdForFileSystems: number | null = null;
+    fileSystemsInSelectedDrive: FileSystemRow[] = [];
+    /** Placeholder: true when a drive is selected. Role check (Entity Admin on drive) to be wired when backend supports it. */
+    get canManageFileSystems(): boolean {
+        return this.selectedDriveIdForFileSystems != null;
+    }
+
+    // Traffic monitoring (placeholder until API)
+    totalUploads = '0';
+    totalDownloads = '0';
+    totalFilesTraffic = '0';
+
     constructor(
         private translate: TranslationService,
         private messageService: MessageService,
@@ -71,9 +92,55 @@ export class AdminComponent implements OnInit {
         this.isLoading$ = this.virtualDrivesService.isLoadingSubject.asObservable();
     }
 
+    driveOptionsForFileSystems: { id: number; name: string }[] = [];
+
     ngOnInit(): void {
         this.capacityUsedLabel = this.translate.getInstant('fileSystem.systemAdmin.capacityUsedLabel');
         this.loadVirtualDrives();
+    }
+
+    private updateDriveOptionsForFileSystems(): void {
+        this.driveOptionsForFileSystems = this.virtualDrives.map((d) => ({ id: d.id, name: this.getDriveName(d) }));
+    }
+
+    onDriveSelectedForFileSystems(): void {
+        if (this.selectedDriveIdForFileSystems == null) {
+            this.fileSystemsInSelectedDrive = [];
+            return;
+        }
+        // Placeholder: load file systems for selected drive when API exists. Use mock for now.
+        this.fileSystemsInSelectedDrive = [
+            { id: 1, nameKey: 'fileSystem.admin.driveMain', entityNameKey: 'fileSystem.entityAdminEntities.mainCompany', active: true, usedCapacity: '125 GB' },
+            { id: 2, nameKey: 'fileSystem.admin.driveArchive', entityNameKey: 'fileSystem.entityAdminEntities.mainCompany', active: true, usedCapacity: '48 GB' }
+        ];
+    }
+
+    getFileSystemName(row: FileSystemRow): string {
+        return this.translate.getInstant(row.nameKey);
+    }
+
+    getFileSystemEntityName(row: FileSystemRow): string {
+        return this.translate.getInstant(row.entityNameKey);
+    }
+
+    getFileSystemStatusLabel(row: FileSystemRow): string {
+        return row.active ? this.translate.getInstant('fileSystem.entityAdminStatus.active') : this.translate.getInstant('fileSystem.admin.inactive');
+    }
+
+    onEditFileSystem(_row: FileSystemRow): void {
+        this.messageService.add({ severity: 'info', summary: this.translate.getInstant('fileSystem.entityAdmin.editFileSystem') });
+    }
+
+    get createFileSystemButtonTooltip(): string {
+        if (!this.selectedDriveIdForFileSystems) {
+            return this.translate.getInstant('fileSystem.admin.selectDriveToManageFileSystems');
+        }
+        return this.translate.getInstant('fileSystem.admin.createFileSystemRequiresEntityAdmin');
+    }
+
+    showCreateFileSystemDialog(): void {
+        if (!this.canManageFileSystems) return;
+        this.messageService.add({ severity: 'info', summary: this.translate.getInstant('fileSystem.entityAdmin.createFileSystem') });
     }
 
     getProductLabel(row: LicenseRow): string {
@@ -145,6 +212,7 @@ export class AdminComponent implements OnInit {
                         active: Boolean(item?.Is_Active)
                     } as VirtualDriveRow;
                 });
+                this.updateDriveOptionsForFileSystems();
             },
             complete: () => {
                 this.tableLoadingSpinner = false;
@@ -221,14 +289,6 @@ export class AdminComponent implements OnInit {
             severity: 'success',
             summary: this.translate.getInstant('fileSystem.admin.deactivateDriveSuccess')
         });
-    }
-
-    showSyncUnderDevDialog(): void {
-        this.syncUnderDevDialogVisible = true;
-    }
-
-    hideSyncUnderDevDialog(): void {
-        this.syncUnderDevDialogVisible = false;
     }
 
     showDriveDetailsDialog(row: VirtualDriveRow): void {

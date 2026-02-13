@@ -15,15 +15,14 @@ export interface FileSystemBox {
 })
 export class FileSystemLandingComponent {
     boxes: FileSystemBox[] = [
-        { id: 'system-admin', route: 'system-admin', labelKey: 'fileSystem.tabs.systemAdmin', icon: 'pi pi-cog' },
-        { id: 'entity-admin', route: 'entity-admin', labelKey: 'fileSystem.tabs.entityAdmin', icon: 'pi pi-building' },
-        { id: 'file-sharing', route: 'file-sharing', labelKey: 'fileSystem.tabs.fileSharing', icon: 'pi pi-share-alt' },
-        { id: 'company-storage', route: 'company-storage', labelKey: 'fileSystem.tabs.companyStorage', icon: 'pi pi-folder-open' }
+        { id: 'ssm', route: 'system-storage-management', labelKey: 'fileSystem.landing.ssm', icon: 'pi pi-cog' },
+        { id: 'esm', route: 'entity-storage-management', labelKey: 'fileSystem.landing.esm', icon: 'pi pi-building' },
+        { id: 'storage-content', route: 'storage-content-management', labelKey: 'fileSystem.landing.storageContentManagement', icon: 'pi pi-folder' }
     ];
 
     constructor(private router: Router) {}
 
     onBoxClick(box: FileSystemBox): void {
-        this.router.navigate(['/document-control/file-system', box.route]);
+        this.router.navigate(['/document-control', box.route]);
     }
 }

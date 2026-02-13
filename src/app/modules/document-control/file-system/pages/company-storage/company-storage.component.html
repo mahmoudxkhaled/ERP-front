@@ -1,16 +1,34 @@
 <div class="company-storage-view">
     <div class="company-storage-top flex flex-col gap-3">
-        <a routerLink="/document-control/file-system" class="back-link mb-3">
+        <a routerLink="/document-control/storage-content-management" class="back-link mb-3">
             <i class="pi pi-arrow-left mr-2"></i>{{ 'fileSystem.backToHome' | translate }}
         </a>
         <div class="section-header">
             <h2 class="section-title">{{ 'fileSystem.companyStorageView.title' | translate }}</h2>
             <p class="section-description">{{ 'fileSystem.companyStorageView.description' | translate }}</p>
         </div>
+        <div class="flex flex-wrap gap-3 align-items-end mb-3">
+            <div class="field">
+                <label class="block mb-1">{{ 'fileSystem.companyStorageView.selectDrive' | translate }}</label>
+                <p-dropdown [options]="entityDriveOptions" [(ngModel)]="selectedDriveId" optionLabel="name"
+                    optionValue="id" [style]="{ width: '240px' }" placeholder="{{ 'fileSystem.companyStorageView.selectDrive' | translate }}"
+                    (onChange)="onDriveSelected()"></p-dropdown>
+            </div>
+            <div class="field">
+                <label class="block mb-1">{{ 'fileSystem.companyStorageView.selectFileSystem' | translate }}</label>
+                <p-dropdown [options]="fileSystemOptionsInDrive" [(ngModel)]="selectedFileSystemId" optionLabel="name"
+                    optionValue="id" [style]="{ width: '240px' }" [disabled]="!selectedDriveId"
+                    placeholder="{{ 'fileSystem.companyStorageView.selectFileSystem' | translate }}"
+                    (onChange)="onFileSystemSelected()"></p-dropdown>
+            </div>
+        </div>
     </div>
 
+    <div class="content-card p-4 mb-3" *ngIf="!selectedFileSystemId">
+        <p class="text-500 m-0">{{ 'fileSystem.companyStorageView.selectDriveAndFileSystem' | translate }}</p>
+    </div>
 
-    <div class="toolbar-wrap mb-3">
+    <div class="toolbar-wrap mb-3" *ngIf="selectedFileSystemId">
         <div class="content-card">
             <div class="content-card-body py-2">
                 <p-toolbar styleClass="p-toolbar-flat border-0">
@@ -33,9 +51,9 @@
         </div>
     </div>
 
-    <p-breadcrumb [model]="breadcrumbModel" [home]="undefined" class="mb-3 breadcrumb-wrap"></p-breadcrumb>
+    <p-breadcrumb *ngIf="selectedFileSystemId" [model]="breadcrumbModel" [home]="undefined" class="mb-3 breadcrumb-wrap"></p-breadcrumb>
 
-    <div class="storage-layout">
+    <div class="storage-layout" *ngIf="selectedFileSystemId">
         <div class="content-card tree-card">
             <div class="content-card-header">
                 <i class="pi pi-folder content-card-icon"></i>

@@ -8,6 +8,12 @@ export interface SharedFileItem {
     permission: 'Read' | 'Write' | 'Download';
 }
 
+export interface MySharedFileSystemRow {
+    id: number;
+    name: string;
+    accessLabel: string;
+}
+
 @Component({
     selector: 'app-shared-files',
     templateUrl: './shared-files.component.html',
@@ -20,6 +26,10 @@ export class SharedFilesComponent {
         { name: 'Budget-Overview.xlsx', sharedBy: 'Finance Team', permission: 'Download' },
         { name: 'Meeting-Minutes-Jan.pdf', sharedBy: 'Mike Wilson', permission: 'Read' },
         { name: 'Contract-Draft.docx', sharedBy: 'Legal Team', permission: 'Write' }
+    ];
+
+    mySharedFileSystems: MySharedFileSystemRow[] = [
+        { id: 1, name: 'Project Share', accessLabel: 'View & Edit' }
     ];
 
     downloadProgressVisible = false;
@@ -61,5 +71,28 @@ export class SharedFilesComponent {
         if (permission === 'Write') return 'success';
         if (permission === 'Download') return 'info';
         return 'secondary';
+    }
+
+    onCreateSharedFileSystem(): void {
+        this.messageService.add({
+            severity: 'info',
+            summary: this.translate.getInstant('fileSystem.fileSharing.createSharedFileSystem')
+        });
+    }
+
+    onCopyLink(_row: MySharedFileSystemRow): void {
+        this.messageService.add({
+            severity: 'success',
+            summary: this.translate.getInstant('fileSystem.fileSharing.copyLink'),
+            detail: this.translate.getInstant('fileSystem.fileSharing.accessLinksDescription')
+        });
+    }
+
+    onCopyFromMain(mode: 'static' | 'linked'): void {
+        const key = mode === 'static' ? 'fileSystem.fileSharing.staticCopy' : 'fileSystem.fileSharing.linkedCopy';
+        this.messageService.add({
+            severity: 'info',
+            summary: this.translate.getInstant(key)
+        });
     }
 }
