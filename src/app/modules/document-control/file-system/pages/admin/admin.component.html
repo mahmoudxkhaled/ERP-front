@@ -225,12 +225,20 @@
     [modal]="true" [style]="{ width: '400px' }" (onHide)="hideDriveDetailsDialog()" [draggable]="false"
     [resizable]="false">
     <div class="p-fluid" *ngIf="selectedDriveForDetails">
-        <div class="field"><label>{{ 'fileSystem.admin.driveName' | translate }}</label><p>{{ getDriveName(selectedDriveForDetails) }}</p></div>
-        <div class="field"><label>{{ 'fileSystem.admin.size' | translate }}</label><p>{{ selectedDriveForDetails.size }}</p></div>
-        <div class="field"><label>{{ 'fileSystem.admin.status' | translate }}</label><p>{{ selectedDriveForDetails.active ? ('fileSystem.entityAdminStatus.active' | translate) : ('fileSystem.admin.inactive' | translate) }}</p></div>
+        <div class="field"><label>{{ 'fileSystem.admin.driveName' | translate }}</label>
+            <p>{{ getDriveName(selectedDriveForDetails) }}</p>
+        </div>
+        <div class="field"><label>{{ 'fileSystem.admin.size' | translate }}</label>
+            <p>{{ selectedDriveForDetails.capacity }}</p>
+        </div>
+        <div class="field"><label>{{ 'fileSystem.admin.status' | translate }}</label>
+            <p>{{ selectedDriveForDetails.active ? ('fileSystem.entityAdminStatus.active' | translate) :
+                ('fileSystem.admin.inactive' | translate) }}</p>
+        </div>
     </div>
     <ng-template pTemplate="footer">
-        <p-button [label]="'fileSystem.companyStorage.close' | translate" (onClick)="hideDriveDetailsDialog()"></p-button>
+        <p-button [label]="'fileSystem.companyStorage.close' | translate"
+            (onClick)="hideDriveDetailsDialog()"></p-button>
     </ng-template>
 </p-dialog>
 

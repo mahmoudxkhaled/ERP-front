@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { TranslationService } from 'src/app/core/services/translation.service';
+import { VirtualDrivesService } from 'src/app/modules/document-control/file-system/services/virtual-drives.service';
+import { VirtualDrivesFilters } from 'src/app/modules/document-control/file-system/models/virtual-drive.model';
 
 export interface LicenseRow {
     productKey: string;
@@ -10,8 +13,9 @@ export interface LicenseRow {
 
 export interface VirtualDriveRow {
     id: number;
-    nameKey: string;
-    size: string;
+    name: string;
+    licenseId: number;
+    capacity: number;
     active: boolean;
 }
 
@@ -23,6 +27,10 @@ export interface VirtualDriveRow {
 export class AdminComponent implements OnInit {
     capacityUsedPercent = 65;
     capacityUsedLabel = '';
+
+    // Loading state for the virtual drives table
+    isLoading$: Observable<boolean>;
+    tableLoadingSpinner = false;
 
     entityFilterOptions = [
         { label: 'Account', value: -1 },
@@ -53,19 +61,19 @@ export class AdminComponent implements OnInit {
         { productKey: 'fileSystem.admin.productStoragePack', count: 50, expiry: '2024-06-30' }
     ];
 
-    virtualDrives: VirtualDriveRow[] = [
-        { id: 1, nameKey: 'fileSystem.admin.driveMain', size: '250 GB', active: true },
-        { id: 2, nameKey: 'fileSystem.admin.driveArchive', size: '100 GB', active: true },
-        { id: 3, nameKey: 'fileSystem.admin.driveProjects', size: '150 GB', active: false }
-    ];
+    virtualDrives: VirtualDriveRow[] = [];
 
     constructor(
         private translate: TranslationService,
-        private messageService: MessageService
-    ) {}
+        private messageService: MessageService,
+        private virtualDrivesService: VirtualDrivesService
+    ) {
+        this.isLoading$ = this.virtualDrivesService.isLoadingSubject.asObservable();
+    }
 
     ngOnInit(): void {
         this.capacityUsedLabel = this.translate.getInstant('fileSystem.systemAdmin.capacityUsedLabel');
+        this.loadVirtualDrives();
     }
 
     getProductLabel(row: LicenseRow): string {
@@ -73,7 +81,75 @@ export class AdminComponent implements OnInit {
     }
 
     getDriveName(row: VirtualDriveRow): string {
-        return this.translate.getInstant(row.nameKey);
+        // For now we use the name as-is; later we can add translation if needed.
+        return row.name;
+    }
+
+    /**
+     * When loading and the drives list is empty, return placeholder rows
+     * so the table can show skeleton cells. This mirrors the Entities list style.
+     */
+    get virtualDrivesTableValue(): VirtualDriveRow[] {
+        if (this.tableLoadingSpinner && this.virtualDrives.length === 0) {
+            return Array(5).fill(null).map(() => ({
+                id: 0,
+                name: '',
+                licenseId: 0,
+                capacity: 0,
+                active: false
+            }));
+        }
+        return this.virtualDrives;
+    }
+
+    /**
+     * Build filters object for List_Drives API from current UI state.
+     */
+    private getCurrentFilters(): VirtualDrivesFilters {
+        return {
+            entityFilter: this.entityFilter,
+            licenseId: this.licenseIdFilter,
+            activeOnly: this.activeOnlyFilter
+        };
+    }
+
+    /**
+     * Load virtual drives from backend using List_Drives API.
+     */
+    loadVirtualDrives(): void {
+        const filters = this.getCurrentFilters();
+        this.tableLoadingSpinner = true;
+
+        this.virtualDrivesService.listDrives(filters).subscribe({
+            next: (response: any) => {
+                console.log('loadVirtualDrives', response);
+                if (!response?.success) {
+                    this.handleBusinessError('list', response);
+                    return;
+                }
+
+                // Response.message is expected to hold drives collection.
+                // We keep the mapping simple and defensive.
+                const drivesRaw = response.message?.Drives || response.message || [];
+
+                const drivesArray: any[] = Array.isArray(drivesRaw)
+                    ? drivesRaw
+                    : Object.values(drivesRaw);
+
+                this.virtualDrives = drivesArray.map((item: any) => {
+                    return {
+                        id: Number(item?.Drive_ID ?? 0),
+                        name: String(item?.Drive_Name ?? ''),
+                        licenseId: Number(item?.License_ID ?? 0),
+                        capacity: Number(item?.Capacity ?? 0),
+                        active: Boolean(item?.Is_Active)
+                    } as VirtualDriveRow;
+                });
+            },
+            complete: () => {
+                this.tableLoadingSpinner = false;
+            }
+        });
     }
 
     showCreateDriveDialog(): void {
@@ -163,5 +239,59 @@ export class AdminComponent implements OnInit {
     hideDriveDetailsDialog(): void {
         this.driveDetailsDialogVisible = false;
         this.selectedDriveForDetails = null;
+    }
+
+    /**
+     * Handle business error codes returned from Virtual Drives APIs.
+     * This follows the same simple pattern used in EntitiesListComponent.
+     */
+    private handleBusinessError(context: 'list', response: any): void {
+        const code = String(response?.message || '');
+        let detail = '';
+
+        switch (context) {
+            case 'list':
+                detail = this.getListErrorMessage(code) || '';
+                break;
+            default:
+                detail = '';
+        }
+
+        if (detail) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail
+            });
+        }
+
+        if (context === 'list') {
+            this.tableLoadingSpinner = false;
+        }
+    }
+
+    /**
+     * Map Virtual Drives list related error codes to a user-friendly message.
+     * We start with common storage errors and can extend if backend adds more.
+     */
+    private getListErrorMessage(code: string): string | null {
+        switch (code) {
+            case 'ERP12000':
+                return 'Access denied while listing virtual drives.';
+            case 'ERP12005':
+                return 'Missing storage access token.';
+            case 'ERP12006':
+                return 'Invalid storage access token.';
+            case 'ERP12012':
+                return 'File server database error occurred while listing drives.';
+            case 'ERP12248':
+                return 'Invalid entity filter for listing drives.';
+            case 'ERP12290':
+                return 'Invalid drive ID.';
+            case 'ERP12292':
+                return 'Access denied to the drives of this owner ID.';
+            default:
+                return null;
+        }
     }
 }
