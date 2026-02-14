@@ -10,32 +10,98 @@
                 styleClass="p-button-outlined" (onClick)="showRecycleBinDialog()"></p-button>
         </div>
 
-        <p-table [value]="fileSystems" [paginator]="false" [loading]="loadingFileSystems"
-            styleClass="p-datatable-sm p-datatable-gridlines" responsiveLayout="scroll">
+        <p-table #fileSystemsTable [value]="fileSystemsTableValue" [paginator]="false"
+            styleClass="p-datatable-sm p-datatable-gridlines" responsiveLayout="scroll" [globalFilterFields]="['name']">
+            <ng-template pTemplate="caption">
+                <div class="flex align-items-center justify-content-between gap-3 mb-2 flex-wrap">
+                    <span class="p-input-icon-left flex-1 min-w-200px max-w-md">
+                        <i class="pi pi-search"></i>
+                        <input pInputText type="text"
+                            (input)="fileSystemsTable.filterGlobal($any($event.target).value, 'contains')"
+                            [placeholder]="'fileSystem.admin.searchPlaceholderFileSystems' | translate"
+                            class="w-full" />
+                    </span>
+                    <div class="flex align-items-center gap-2 flex-wrap">
+                        <label class="font-medium mb-0">{{ 'fileSystem.admin.entityFilter' | translate }}</label>
+                        <p-dropdown [options]="entityFilterOptions" [(ngModel)]="entityFilterFileSystems"
+                            optionLabel="label" optionValue="value" [style]="{ width: '10rem' }"
+                            (onChange)="refreshList()"></p-dropdown>
+                        <label class="font-medium mb-0 ml-2">{{ 'fileSystem.admin.driveName' | translate }}</label>
+                        <p-dropdown [options]="driveOptionsWithAll" [(ngModel)]="driveFilterId" optionLabel="name"
+                            optionValue="id" [style]="{ width: '12rem' }" (onChange)="refreshList()"></p-dropdown>
+                        <div class="flex align-items-center gap-2 ml-2">
+                            <p-checkbox [(ngModel)]="activeOnlyFilter" [binary]="true" inputId="activeOnlyFs"
+                                (onChange)="refreshList()"></p-checkbox>
+                            <label for="activeOnlyFs" class="mb-0">{{ 'fileSystem.admin.activeOnly' | translate
+                                }}</label>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
             <ng-template pTemplate="header">
                 <tr>
                     <th>{{ 'fileSystem.entityAdmin.fileSystemName' | translate }}</th>
                     <th>{{ 'fileSystem.entityAdmin.fileSystemType' | translate }}</th>
                     <th>{{ 'fileSystem.admin.driveName' | translate }}</th>
+                    <th class="text-center">{{ 'fileSystem.admin.status' | translate }}</th>
                     <th style="width: 12rem">{{ 'fileSystem.companyStorage.actions' | translate }}</th>
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-row>
                 <tr>
-                    <td>{{ getFileSystemName(row) }}</td>
-                    <td>{{ getTypeName(row) }}</td>
-                    <td>{{ getDriveName(row) }}</td>
                     <td>
-                        <button pButton type="button" icon="pi pi-eye" class="p-button-text p-button-sm mr-1"
-                            [pTooltip]="'fileSystem.admin.viewDetails' | translate"
-                            (click)="showDetailsDialog(row)"></button>
-                        <button pButton type="button" icon="pi pi-pencil" class="p-button-text p-button-sm mr-1"
-                            [pTooltip]="'fileSystem.entityAdmin.editFileSystem' | translate"
-                            (click)="showEditDialog(row)"></button>
-                        <button pButton type="button" icon="pi pi-trash"
-                            class="p-button-text p-button-sm mr-1 p-button-danger"
-                            [pTooltip]="'fileSystem.entityAdmin.deleteFileSystem' | translate"
-                            (click)="showDeleteConfirm(row)"></button>
+                        <ng-container *ngIf="loadingFileSystems; else normalName">
+                            <p-skeleton height="1.25rem" width="14rem"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalName>
+                            <span class="font-semibold">{{ getFileSystemName(row) }}</span>
+                        </ng-template>
+                    </td>
+                    <td>
+                        <ng-container *ngIf="loadingFileSystems; else normalType">
+                            <p-skeleton height="1.25rem" width="6rem"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalType>
+                            <span>{{ getTypeName(row) }}</span>
+                        </ng-template>
+                    </td>
+                    <td>
+                        <ng-container *ngIf="loadingFileSystems; else normalDrive">
+                            <p-skeleton height="1.25rem" width="10rem"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalDrive>
+                            <span>{{ getDriveName(row) }}</span>
+                        </ng-template>
+                    </td>
+                    <td class="text-center">
+                        <ng-container *ngIf="loadingFileSystems; else normalStatus">
+                            <p-skeleton height="1.5rem" width="4.5rem" borderRadius="16px"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalStatus>
+                            <p-tag [value]="getStatusLabel(row)"
+                                [severity]="isFileSystemActive(row) ? 'success' : 'secondary'"></p-tag>
+                        </ng-template>
+                    </td>
+                    <td>
+                        <ng-container *ngIf="loadingFileSystems; else normalActions">
+                            <div class="flex align-items-center gap-1">
+                                <p-skeleton height="2rem" width="2rem" borderRadius="50%"></p-skeleton>
+                                <p-skeleton height="2rem" width="2rem" borderRadius="50%"></p-skeleton>
+                                <p-skeleton height="2rem" width="2rem" borderRadius="50%"></p-skeleton>
+                            </div>
+                        </ng-container>
+                        <ng-template #normalActions>
+                            <button pButton type="button" icon="pi pi-eye" class="p-button-text p-button-sm mr-1"
+                                [pTooltip]="'fileSystem.admin.viewDetails' | translate"
+                                (click)="showDetailsDialog(row)"></button>
+                            <button pButton type="button" icon="pi pi-pencil" class="p-button-text p-button-sm mr-1"
+                                [pTooltip]="'fileSystem.entityAdmin.editFileSystem' | translate"
+                                (click)="showEditDialog(row)"></button>
+                            <button pButton type="button" icon="pi pi-trash"
+                                class="p-button-text p-button-sm mr-1 p-button-danger"
+                                [pTooltip]="'fileSystem.entityAdmin.deleteFileSystem' | translate"
+                                (click)="showDeleteConfirm(row)"></button>
+                        </ng-template>
                     </td>
                 </tr>
             </ng-template>
@@ -155,7 +221,8 @@
         </div>
         <div class="drive-details-row">
             <span class="drive-details-label">{{ 'fileSystem.admin.createdAt' | translate }}</span>
-            <span class="drive-details-value">{{ detailsData.createdAt ? (detailsData.createdAt | date:'medium') : '—' }}</span>
+            <span class="drive-details-value">{{ detailsData.createdAt ? (detailsData.createdAt | date:'medium') : '—'
+                }}</span>
         </div>
         <div class="drive-details-divider"></div>
         <div class="drive-details-row drive-details-status-row mt-2">
@@ -190,7 +257,7 @@
     <p class="mb-3">{{ 'fileSystem.companyStorage.recycleBinDescription' | translate }}</p>
     <div class="field mb-3">
         <label>{{ 'fileSystem.entityAdmin.fileSystemName' | translate }}</label>
-        <p-dropdown [options]="fileSystems" [(ngModel)]="recycleBinFileSystemId" optionLabel="name"
+        <p-dropdown appendTo="body" [options]="fileSystems" [(ngModel)]="recycleBinFileSystemId" optionLabel="name"
             optionValue="file_System_ID" [style]="{ width: '100%' }"
             [placeholder]="'fileSystem.admin.selectType' | translate" (onChange)="onRecycleBinFileSystemSelect()"
             class="mt-2"></p-dropdown>

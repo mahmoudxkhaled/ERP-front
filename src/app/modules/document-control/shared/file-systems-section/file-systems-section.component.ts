@@ -31,6 +31,17 @@ export class FileSystemsSectionComponent implements OnInit {
   loadingFileSystems = false;
   driveOptions: { id: number; name: string }[] = [];
 
+  /** Entity_Filter: -1 = Account, 1 = Entity, 0 = Both. Used when calling List_File_Systems. */
+  entityFilterFileSystems = 0;
+  /** Stable reference so dropdown (onChange) does not re-fire when options are re-evaluated. */
+  entityFilterOptions: { label: string; value: number }[] = [];
+  /** Drive_ID for filter (0 = ignore / all drives). */
+  driveFilterId = 0;
+  /** Drive options for filter: "All" (0) + list from API. Stable reference to avoid loop. */
+  driveOptionsWithAll: { id: number; name: string }[] = [];
+  /** Active_Only: true = exclude deleted file systems. */
+  activeOnlyFilter = false;
+
   fileSystemTypes: { id: number; name: string }[] = [];
   loadingTypes = false;
   creatingFileSystem = false;
@@ -78,10 +89,47 @@ export class FileSystemsSectionComponent implements OnInit {
     return !!(functions?.EntAdm || functions?.SysAdm);
   }
 
+  /**
+   * When loading and the list is empty, return placeholder rows so the table can show skeleton cells.
+   */
+  get fileSystemsTableValue(): FileSystemListItem[] {
+    if (this.loadingFileSystems && this.fileSystems.length === 0) {
+      return Array(5).fill(null).map(() => ({
+        file_System_ID: 0,
+        name: '',
+        type: 0,
+        guid: '',
+        owner_ID: 0,
+        is_Entity_FS: false,
+        drive_ID: 0,
+        created_At: '',
+        created_By: 0,
+        deleted_At: '',
+        delete_Account_ID: 0
+      }));
+    }
+    return this.fileSystems;
+  }
+
   ngOnInit(): void {
+    this.buildEntityFilterOptions();
+    this.buildDriveOptionsWithAll();
     this.loadDrives();
     this.loadTypes();
     this.refreshList();
+  }
+
+  private buildEntityFilterOptions(): void {
+    this.entityFilterOptions = [
+      { label: this.translate.getInstant('fileSystem.admin.filterAccount'), value: -1 },
+      { label: this.translate.getInstant('fileSystem.admin.filterEntity'), value: 1 },
+      { label: this.translate.getInstant('fileSystem.admin.filterBoth'), value: 0 }
+    ];
+  }
+
+  private buildDriveOptionsWithAll(): void {
+    const allLabel = this.translate.getInstant('fileSystem.admin.filterAllDrives');
+    this.driveOptionsWithAll = [{ id: 0, name: allLabel }, ...this.driveOptions];
   }
 
   loadDrives(): void {
@@ -102,6 +150,7 @@ export class FileSystemsSectionComponent implements OnInit {
           id: Number(item?.Drive_ID ?? item?.drive_ID ?? 0),
           name: String(item?.Name ?? item?.name ?? '')
         })).filter((d: { id: number; name: string }) => d.id > 0);
+        this.buildDriveOptionsWithAll();
       },
       error: () => { }
     });
@@ -109,9 +158,12 @@ export class FileSystemsSectionComponent implements OnInit {
 
   refreshList(): void {
     this.loadingFileSystems = true;
-    this.fileSystemsService.listFileSystems({ entityFilter: 1, driveId: 0, activeOnly: false }).subscribe({
+    this.fileSystemsService.listFileSystems({
+      entityFilter: this.entityFilterFileSystems,
+      driveId: this.driveFilterId,
+      activeOnly: this.activeOnlyFilter
+    }).subscribe({
       next: (response: any) => {
-        console.log('response listFileSystemsEsm', response);
         this.loadingFileSystems = false;
         if (!response?.success) {
           this.handleError('list', response);
@@ -185,6 +237,13 @@ export class FileSystemsSectionComponent implements OnInit {
     const deletedAt = row?.deleted_At ?? '';
     const isDeleted = typeof deletedAt === 'string' && deletedAt !== '' && !deletedAt.startsWith('0001-01-01');
     return !isDeleted ? this.translate.getInstant('fileSystem.entityAdminStatus.active') : this.translate.getInstant('fileSystem.admin.inactive');
+  }
+
+  /** Used for Status column tag severity: active = success, inactive = secondary. */
+  isFileSystemActive(row: FileSystemListItem): boolean {
+    const deletedAt = row?.deleted_At ?? '';
+    const isDeleted = typeof deletedAt === 'string' && deletedAt !== '' && !deletedAt.startsWith('0001-01-01');
+    return !isDeleted;
   }
 
   handleError(operation: string, response: any): void {
