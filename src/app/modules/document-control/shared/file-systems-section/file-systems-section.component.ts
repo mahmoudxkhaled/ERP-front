@@ -73,7 +73,7 @@ export class FileSystemsSectionComponent implements OnInit {
     private localStorage: LocalStorageService,
     private virtualDrivesService: VirtualDrivesService,
     private fileSystemsService: FileSystemsService
-  ) {}
+  ) { }
 
   /**
    * True if current user can create an Entity file system (Entity Admin or System Admin).
@@ -123,7 +123,7 @@ export class FileSystemsSectionComponent implements OnInit {
           this.onDriveSelected();
         }
       },
-      error: () => {}
+      error: () => { }
     });
   }
 
@@ -145,6 +145,7 @@ export class FileSystemsSectionComponent implements OnInit {
         activeOnly: false
       }).subscribe({
         next: (response: any) => {
+          console.log('response listFileSystemsSsm', response);
           this.loadingFileSystems = false;
           if (!response?.success) {
             this.handleError('list', response);
@@ -162,6 +163,7 @@ export class FileSystemsSectionComponent implements OnInit {
     this.loadingFileSystems = true;
     this.fileSystemsService.listFileSystems({ entityFilter: 1, driveId: 0, activeOnly: false }).subscribe({
       next: (response: any) => {
+        console.log('response listFileSystemsEsm', response);
         this.loadingFileSystems = false;
         if (!response?.success) {
           this.handleError('list', response);
