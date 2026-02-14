@@ -3,18 +3,20 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from 'src/app/Shared/shared/shared.module';
 import { VirtualDrivesSectionComponent } from './virtual-drives-section/virtual-drives-section.component';
+import { FileSystemsSectionComponent } from './file-systems-section/file-systems-section.component';
 import { VirtualDrivesService } from '../services/virtual-drives.service';
 
 /**
  * Shared module for file system components that can be used across different modules.
- * Exports VirtualDrivesSectionComponent so it can be imported by:
+ * Exports VirtualDrivesSectionComponent and FileSystemsSectionComponent so they can be imported by:
  * - System Storage Management (SSM) module
  * - Entity Storage Management (ESM) module
- * - Any other modules that need Virtual Drives functionality
+ * - Any other modules that need Virtual Drives or File Systems functionality
  */
 @NgModule({
     declarations: [
-        VirtualDrivesSectionComponent
+        VirtualDrivesSectionComponent,
+        FileSystemsSectionComponent
     ],
     imports: [
         CommonModule,
@@ -22,7 +24,8 @@ import { VirtualDrivesService } from '../services/virtual-drives.service';
         SharedModule
     ],
     exports: [
-        VirtualDrivesSectionComponent
+        VirtualDrivesSectionComponent,
+        FileSystemsSectionComponent
     ],
     providers: [
         VirtualDrivesService

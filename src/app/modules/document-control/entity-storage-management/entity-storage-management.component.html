@@ -24,7 +24,7 @@
             <div class="kpi-card kpi-systems">
                 <div class="kpi-icon"><i class="pi pi-database"></i></div>
                 <div class="kpi-info">
-                    <span class="kpi-value">{{ entityFileSystems.length }}</span>
+                    <span class="kpi-value">{{ entityFileSystemsCount }}</span>
                     <span class="kpi-label">{{ 'fileSystem.entityAdmin.fileSystems' | translate }}</span>
                 </div>
             </div>
@@ -46,7 +46,7 @@
     </div>
 
     <!-- Virtual Drives Section - Shared Component -->
-    <app-virtual-drives-section mode="esm"></app-virtual-drives-section>
+    <!-- <app-virtual-drives-section mode="esm"></app-virtual-drives-section> -->
 
     <div class="block-section">
         <h2 class="block-title">{{ 'fileSystem.entityAdmin.synchronization' | translate }}</h2>
@@ -82,50 +82,8 @@
         </div>
     </div>
 
-    <div class="block-section">
-        <h2 class="block-title">{{ 'fileSystem.entityAdmin.fileSystemsByEntity' | translate }}</h2>
-        <div class="block-card">
-            <p class="mb-3 text-500">{{ 'fileSystem.entityAdmin.fileSystemsHostedInDrives' | translate }}</p>
-            <div class="mb-3 flex flex-wrap gap-2 align-items-center">
-                <p-button [label]="'fileSystem.entityAdmin.createFileSystem' | translate" icon="pi pi-plus"
-                    (onClick)="showCreateFileSystemDialog()"></p-button>
-                <p-button [label]="'fileSystem.companyStorage.recycleBin' | translate" icon="pi pi-replay"
-                    styleClass="p-button-outlined" (onClick)="showRecycleBinDialog()"></p-button>
-            </div>
-            <p-table [value]="entityFileSystems" [paginator]="false"
-                styleClass="p-datatable-sm p-datatable-gridlines entity-admin-table" responsiveLayout="scroll">
-                <ng-template pTemplate="header">
-                    <tr>
-                        <th>{{ 'fileSystem.entityAdmin.entityName' | translate }}</th>
-                        <th>{{ 'fileSystem.entityAdmin.fileSystemName' | translate }}</th>
-                        <th>{{ 'fileSystem.entityAdmin.status' | translate }}</th>
-                        <th>{{ 'fileSystem.entityAdmin.usedCapacity' | translate }}</th>
-                        <th style="width: 12rem">{{ 'fileSystem.companyStorage.actions' | translate }}</th>
-                    </tr>
-                </ng-template>
-                <ng-template pTemplate="body" let-row>
-                    <tr>
-                        <td class="cell-entity">{{ getEntityName(row) }}</td>
-                        <td>{{ getFileSystemName(row) }}</td>
-                        <td><p-tag [value]="getStatusLabel(row)" severity="success"></p-tag></td>
-                        <td>{{ row.usedCapacity }}</td>
-                        <td>
-                            <button pButton type="button" icon="pi pi-eye" class="p-button-text p-button-sm mr-1"
-                                [pTooltip]="'fileSystem.admin.viewDetails' | translate"
-                                (click)="showFileSystemDetailsDialog(row)"></button>
-                            <button pButton type="button" icon="pi pi-pencil" class="p-button-text p-button-sm mr-1"
-                                [pTooltip]="'fileSystem.entityAdmin.editFileSystem' | translate"
-                                (click)="showEditFileSystemDialog(row)"></button>
-                            <button pButton type="button" icon="pi pi-trash"
-                                class="p-button-text p-button-sm mr-1 p-button-danger"
-                                [pTooltip]="'fileSystem.entityAdmin.deleteFileSystem' | translate"
-                                (click)="onDeleteFileSystem(row)"></button>
-                        </td>
-                    </tr>
-                </ng-template>
-            </p-table>
-        </div>
-    </div>
+    <app-file-systems-section mode="esm"
+        (fileSystemsCountChange)="entityFileSystemsCount = $event"></app-file-systems-section>
 
     <div class="block-section">
         <h2 class="block-title">{{ 'fileSystem.entityAdmin.folderStructure' | translate }}</h2>
@@ -176,72 +134,6 @@
     </div>
 </div>
 
-<p-dialog [header]="'fileSystem.entityAdmin.createFileSystemDialogTitle' | translate"
-    [(visible)]="createFileSystemDialogVisible" [modal]="true" [style]="{ width: '450px' }"
-    (onHide)="hideCreateFileSystemDialog()" [draggable]="false" [resizable]="false">
-    <div class="p-fluid">
-        <div class="field mb-3">
-            <label>{{ 'fileSystem.entityAdmin.fileSystemName' | translate }}</label>
-            <input pInputText [(ngModel)]="newFileSystemName" class="w-full mt-2" />
-        </div>
-        <div class="field mb-3">
-            <label>{{ 'fileSystem.entityAdmin.entityName' | translate }}</label>
-            <p-dropdown [options]="entityOptions" [(ngModel)]="newFileSystemEntityKey" optionLabel="label"
-                optionValue="value" [style]="{ width: '100%' }" class="mt-2"></p-dropdown>
-        </div>
-        <div class="field">
-            <label>{{ 'fileSystem.entityAdmin.fileSystemType' | translate }}</label>
-            <p-dropdown [options]="fileSystemTypeOptions" [(ngModel)]="newFileSystemTypeKey" optionLabel="label"
-                optionValue="value" [style]="{ width: '100%' }" class="mt-2"></p-dropdown>
-        </div>
-    </div>
-    <ng-template pTemplate="footer">
-        <p-button [label]="'fileSystem.companyStorage.close' | translate" styleClass="p-button-secondary"
-            (onClick)="hideCreateFileSystemDialog()"></p-button>
-        <p-button [label]="'fileSystem.companyStorage.create' | translate"
-            (onClick)="onCreateFileSystemConfirm()"></p-button>
-    </ng-template>
-</p-dialog>
-
-<p-dialog [header]="'fileSystem.entityAdmin.fileSystemDetailsTitle' | translate"
-    [(visible)]="fileSystemDetailsDialogVisible" [modal]="true" [style]="{ width: '400px' }"
-    (onHide)="hideFileSystemDetailsDialog()" [draggable]="false" [resizable]="false">
-    <div class="p-fluid" *ngIf="selectedFileSystemForDetails">
-        <div class="field"><label>{{ 'fileSystem.entityAdmin.entityName' | translate }}</label>
-            <p>{{ getEntityName(selectedFileSystemForDetails) }}</p>
-        </div>
-        <div class="field"><label>{{ 'fileSystem.entityAdmin.fileSystemName' | translate }}</label>
-            <p>{{ getFileSystemName(selectedFileSystemForDetails) }}</p>
-        </div>
-        <div class="field"><label>{{ 'fileSystem.entityAdmin.status' | translate }}</label>
-            <p>{{ getStatusLabel(selectedFileSystemForDetails) }}</p>
-        </div>
-        <div class="field"><label>{{ 'fileSystem.entityAdmin.usedCapacity' | translate }}</label>
-            <p>{{ selectedFileSystemForDetails.usedCapacity }}</p>
-        </div>
-    </div>
-    <ng-template pTemplate="footer">
-        <p-button [label]="'fileSystem.companyStorage.close' | translate"
-            (onClick)="hideFileSystemDetailsDialog()"></p-button>
-    </ng-template>
-</p-dialog>
-
-<p-dialog [header]="'fileSystem.entityAdmin.editFileSystemDialogTitle' | translate"
-    [(visible)]="editFileSystemDialogVisible" [modal]="true" [style]="{ width: '400px' }"
-    (onHide)="hideEditFileSystemDialog()" [draggable]="false" [resizable]="false">
-    <div class="p-fluid">
-        <div class="field">
-            <label>{{ 'fileSystem.entityAdmin.fileSystemName' | translate }}</label>
-            <input pInputText [(ngModel)]="editFileSystemName" class="w-full mt-2" />
-        </div>
-    </div>
-    <ng-template pTemplate="footer">
-        <p-button [label]="'fileSystem.companyStorage.close' | translate" styleClass="p-button-secondary"
-            (onClick)="hideEditFileSystemDialog()"></p-button>
-        <p-button [label]="'fileSystem.companyStorage.save' | translate" (onClick)="onEditFileSystemSave()"></p-button>
-    </ng-template>
-</p-dialog>
-
 <p-dialog [header]="'fileSystem.entityAdmin.addPermissionDialogTitle' | translate"
     [(visible)]="addPermissionDialogVisible" [modal]="true" [style]="{ width: '450px' }"
     (onHide)="hideAddPermissionDialog()" [draggable]="false" [resizable]="false">
@@ -291,15 +183,6 @@
         <p-button [label]="'fileSystem.companyStorage.close' | translate" styleClass="p-button-secondary"
             (onClick)="hideEditPermissionDialog()"></p-button>
         <p-button [label]="'fileSystem.companyStorage.save' | translate" (onClick)="onEditPermissionSave()"></p-button>
-    </ng-template>
-</p-dialog>
-
-<p-dialog [header]="'fileSystem.companyStorage.recycleBinTitle' | translate" [(visible)]="recycleBinDialogVisible"
-    [modal]="true" [style]="{ width: '450px' }" (onHide)="hideRecycleBinDialog()" [draggable]="false"
-    [resizable]="false">
-    <p>{{ 'fileSystem.companyStorage.recycleBinDescription' | translate }}</p>
-    <ng-template pTemplate="footer">
-        <p-button [label]="'fileSystem.companyStorage.close' | translate" (onClick)="hideRecycleBinDialog()"></p-button>
     </ng-template>
 </p-dialog>
 

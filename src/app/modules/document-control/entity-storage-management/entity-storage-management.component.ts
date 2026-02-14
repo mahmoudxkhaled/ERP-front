@@ -3,21 +3,11 @@ import { TreeNode } from 'primeng/api';
 import { MessageService } from 'primeng/api';
 import { TranslationService } from 'src/app/core/services/translation.service';
 
-export interface EntityFileSystemRow {
-    id: number;
-    entityNameKey: string;
-    fileSystemNameKey: string;
-    statusKey: string;
-    usedCapacity: string;
-    deleted?: boolean;
-}
-
 export interface PermissionRow {
     roleKey: string;
     folderPath: string;
     accessKey: string;
 }
-
 
 @Component({
     selector: 'app-entity-storage-management',
@@ -25,20 +15,10 @@ export interface PermissionRow {
     styleUrls: ['./entity-storage-management.component.scss']
 })
 export class EntityAdministratorComponent implements OnInit {
-    createFileSystemDialogVisible = false;
-    fileSystemDetailsDialogVisible = false;
-    editFileSystemDialogVisible = false;
     addPermissionDialogVisible = false;
     editPermissionDialogVisible = false;
-    recycleBinDialogVisible = false;
     syncUnderDevDialogVisible = false;
 
-    newFileSystemName = '';
-    newFileSystemEntityKey = 'fileSystem.entityAdminEntities.mainCompany';
-    newFileSystemTypeKey = 'fileSystem.entityAdminFileSystemNames.companyStorage';
-    selectedFileSystemForDetails: EntityFileSystemRow | null = null;
-    selectedFileSystemForEdit: EntityFileSystemRow | null = null;
-    editFileSystemName = '';
     selectedPermissionForEdit: PermissionRow | null = null;
     newPermissionRoleKey = 'fileSystem.entityAdminRoles.financeTeam';
     newPermissionPath = '/Finance';
@@ -52,11 +32,8 @@ export class EntityAdministratorComponent implements OnInit {
     roleOptions: { labelKey: string; value: string; label: string }[] = [];
     accessOptions: { labelKey: string; value: string; label: string }[] = [];
 
-    entityFileSystems: EntityFileSystemRow[] = [
-        { id: 1, entityNameKey: 'fileSystem.entityAdminEntities.mainCompany', fileSystemNameKey: 'fileSystem.entityAdminFileSystemNames.companyStorage', statusKey: 'fileSystem.entityAdminStatus.active', usedCapacity: '125 GB' },
-        { id: 2, entityNameKey: 'fileSystem.entityAdminEntities.branchOffice', fileSystemNameKey: 'fileSystem.entityAdminFileSystemNames.branchStorage', statusKey: 'fileSystem.entityAdminStatus.active', usedCapacity: '48 GB' },
-        { id: 3, entityNameKey: 'fileSystem.entityAdminEntities.projectAlpha', fileSystemNameKey: 'fileSystem.entityAdminFileSystemNames.projectDrive', statusKey: 'fileSystem.entityAdminStatus.active', usedCapacity: '32 GB' }
-    ];
+    /** Updated by app-file-systems-section (fileSystemsCountChange). */
+    entityFileSystemsCount = 0;
 
     folderStructure: TreeNode[] = [
         {
@@ -97,23 +74,19 @@ export class EntityAdministratorComponent implements OnInit {
         { roleKey: 'fileSystem.entityAdminRoles.allEmployees', folderPath: '/Shared', accessKey: 'fileSystem.entityAdminAccess.readDownload' }
     ];
 
-    // Placeholder for owned virtual drives count (will be updated from shared component later if needed)
     get ownedVirtualDrivesCount(): number {
         return 0;
     }
 
-    // Traffic monitoring (placeholder until API)
     trafficUploads = '0';
     trafficDownloads = '0';
-
-    // Entity storage settings
     allowShareInternally = true;
     allowShareExternally = false;
 
     constructor(
         private translate: TranslationService,
         private messageService: MessageService
-    ) { }
+    ) {}
 
     ngOnInit(): void {
         this.applyTranslationsToTree(this.folderStructure);
@@ -138,26 +111,6 @@ export class EntityAdministratorComponent implements OnInit {
         ].map(o => ({ ...o, label: this.translate.getInstant(o.labelKey) }));
     }
 
-    getEntityName(row: EntityFileSystemRow): string {
-        return this.translate.getInstant(row.entityNameKey);
-    }
-
-    getFileSystemName(row: EntityFileSystemRow): string {
-        return this.translate.getInstant(row.fileSystemNameKey);
-    }
-
-    getStatusLabel(row: EntityFileSystemRow): string {
-        return this.translate.getInstant(row.statusKey);
-    }
-
-    getRoleLabel(row: PermissionRow): string {
-        return this.translate.getInstant(row.roleKey);
-    }
-
-    getAccessLabel(row: PermissionRow): string {
-        return this.translate.getInstant(row.accessKey);
-    }
-
     private applyTranslationsToTree(nodes: TreeNode[]): void {
         nodes.forEach(n => {
             const key = n.data?.labelKey;
@@ -170,66 +123,12 @@ export class EntityAdministratorComponent implements OnInit {
         });
     }
 
-    showCreateFileSystemDialog(): void {
-        this.newFileSystemName = '';
-        this.newFileSystemEntityKey = 'fileSystem.entityAdminEntities.mainCompany';
-        this.newFileSystemTypeKey = 'fileSystem.entityAdminFileSystemNames.companyStorage';
-        this.createFileSystemDialogVisible = true;
+    getRoleLabel(row: PermissionRow): string {
+        return this.translate.getInstant(row.roleKey);
     }
 
-    hideCreateFileSystemDialog(): void {
-        this.createFileSystemDialogVisible = false;
-    }
-
-    onCreateFileSystemConfirm(): void {
-        this.hideCreateFileSystemDialog();
-        this.messageService.add({
-            severity: 'success',
-            summary: this.translate.getInstant('fileSystem.entityAdmin.createFileSystemSuccess')
-        });
-    }
-
-    showFileSystemDetailsDialog(row: EntityFileSystemRow): void {
-        this.selectedFileSystemForDetails = row;
-        this.fileSystemDetailsDialogVisible = true;
-    }
-
-    hideFileSystemDetailsDialog(): void {
-        this.fileSystemDetailsDialogVisible = false;
-        this.selectedFileSystemForDetails = null;
-    }
-
-    showEditFileSystemDialog(row: EntityFileSystemRow): void {
-        this.selectedFileSystemForEdit = row;
-        this.editFileSystemName = this.getFileSystemName(row);
-        this.editFileSystemDialogVisible = true;
-    }
-
-    hideEditFileSystemDialog(): void {
-        this.editFileSystemDialogVisible = false;
-        this.selectedFileSystemForEdit = null;
-    }
-
-    onEditFileSystemSave(): void {
-        this.hideEditFileSystemDialog();
-        this.messageService.add({
-            severity: 'success',
-            summary: this.translate.getInstant('fileSystem.entityAdmin.updateFileSystemSuccess')
-        });
-    }
-
-    onDeleteFileSystem(row: EntityFileSystemRow): void {
-        this.messageService.add({
-            severity: 'success',
-            summary: this.translate.getInstant('fileSystem.entityAdmin.deleteFileSystemSuccess')
-        });
-    }
-
-    onRestoreFileSystem(row: EntityFileSystemRow): void {
-        this.messageService.add({
-            severity: 'success',
-            summary: this.translate.getInstant('fileSystem.entityAdmin.restoreFileSystemSuccess')
-        });
+    getAccessLabel(row: PermissionRow): string {
+        return this.translate.getInstant(row.accessKey);
     }
 
     showAddPermissionDialog(): void {
@@ -277,14 +176,6 @@ export class EntityAdministratorComponent implements OnInit {
             severity: 'success',
             summary: this.translate.getInstant('fileSystem.entityAdmin.deletePermissionSuccess')
         });
-    }
-
-    showRecycleBinDialog(): void {
-        this.recycleBinDialogVisible = true;
-    }
-
-    hideRecycleBinDialog(): void {
-        this.recycleBinDialogVisible = false;
     }
 
     showSyncUnderDevDialog(): void {
