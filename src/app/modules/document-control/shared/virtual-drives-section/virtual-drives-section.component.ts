@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { MenuItem, MessageService } from 'primeng/api';
 import { TranslationService } from 'src/app/core/services/translation.service';
@@ -18,11 +18,8 @@ export interface VirtualDriveRow {
 }
 
 /**
- * Shared component for displaying and managing Virtual Drives.
- * Used by both SSM (System Storage Management) and ESM (Entity Storage Management).
- *
- * Mode 'ssm' shows full filters (entity filter, license ID, active only) and all actions.
- * Mode 'esm' shows entity-owned drives only (simpler view, no entity filter).
+ * Virtual drives section for SSM (System Storage Management) only.
+ * Full filters (entity, license, drive type, status), create, rename, capacity, activate/deactivate.
  */
 @Component({
     selector: 'app-virtual-drives-section',
@@ -30,12 +27,6 @@ export interface VirtualDriveRow {
     styleUrls: ['./virtual-drives-section.component.scss']
 })
 export class VirtualDrivesSectionComponent implements OnInit {
-    /**
-     * Mode determines what filters and actions are available.
-     * 'ssm' = System Storage Management (full filters, all actions)
-     * 'esm' = Entity Storage Management (entity-owned only, simpler view)
-     */
-    @Input() mode: 'ssm' | 'esm' = 'ssm';
 
     // Loading state
     isLoading$: Observable<boolean>;
@@ -47,7 +38,8 @@ export class VirtualDrivesSectionComponent implements OnInit {
         { label: 'Entity', value: 1 },
         { label: 'Both', value: 0 }
     ];
-    entityFilter = -1;
+    /** Default: Both (show Account and Entity drives). */
+    entityFilter = 0;
 
     /** Options for table column filter: Drive type (value matches row.isEntity). */
     driveTypeFilterOptions = [
@@ -102,10 +94,6 @@ export class VirtualDrivesSectionComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        // For ESM mode, set entity filter to 1 (Entity) by default
-        if (this.mode === 'esm') {
-            this.entityFilter = 1;
-        }
         this.buildDriveMenuItems();
         this.loadVirtualDrives();
     }
@@ -138,7 +126,7 @@ export class VirtualDrivesSectionComponent implements OnInit {
                 }
             }
         ];
-        if (this.showActivateDeactivate && drive) {
+        if (drive) {
             if (drive.active) {
                 this.driveMenuItems.push({
                     label: this.translate.getInstant('fileSystem.admin.deactivateDrive'),
@@ -183,25 +171,19 @@ export class VirtualDrivesSectionComponent implements OnInit {
         return this.virtualDrives;
     }
 
-    /**
-     * Whether to show entity filter dropdown (SSM only).
-     */
+    /** Entity filter dropdown above the table. */
     get showEntityFilter(): boolean {
-        return this.mode === 'ssm';
+        return true;
     }
 
-    /**
-     * Whether to show create button (both modes, but ESM might be restricted later).
-     */
+    /** Create virtual drive button. */
     get showCreateButton(): boolean {
         return true;
     }
 
-    /**
-     * Whether to show activate/deactivate buttons (SSM only, per permissions).
-     */
+    /** Activate/deactivate drive in row and in row menu. */
     get showActivateDeactivate(): boolean {
-        return this.mode === 'ssm';
+        return true;
     }
 
     /**
@@ -247,13 +229,10 @@ export class VirtualDrivesSectionComponent implements OnInit {
 
         this.virtualDrivesService.listDrives(filters).subscribe({
             next: (response: any) => {
-                console.log('response listDrives', response);
                 if (!response?.success) {
                     this.handleBusinessError('list', response);
                     return;
                 }
-
-                // message can be the array of drives directly, or an object with Drives property
                 const raw = response.message;
                 const drivesRaw = Array.isArray(raw) ? raw : (raw?.Drives ?? []);
 
@@ -312,12 +291,24 @@ export class VirtualDrivesSectionComponent implements OnInit {
         this.createDriveDialogVisible = false;
     }
 
+    /** Max capacity in GB for new drive. */
+    readonly maxCapacityGb = 200;
+
     onCreateDriveConfirm(): void {
         if (!this.newDriveName.trim()) {
             this.messageService.add({
                 severity: 'error',
                 summary: 'Error',
                 detail: 'Drive name is required.'
+            });
+            return;
+        }
+        const capacityGb = Number(this.newDriveCapacity) || 0;
+        if (capacityGb < 1 || capacityGb > this.maxCapacityGb) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: this.translate.getInstant('fileSystem.admin.validation'),
+                detail: this.translate.getInstant('fileSystem.admin.capacityMax200Validation')
             });
             return;
         }
@@ -330,7 +321,6 @@ export class VirtualDrivesSectionComponent implements OnInit {
             capacityInBytes
         ).subscribe({
             next: (response: any) => {
-                console.log('response createDrive', response);
                 if (!response?.success) {
                     this.handleBusinessError('create', response);
                     return;
@@ -398,6 +388,15 @@ export class VirtualDrivesSectionComponent implements OnInit {
 
     onUpdateCapacitySave(): void {
         if (!this.selectedDriveForCapacity) {
+            return;
+        }
+        const capacityGb = Number(this.updateCapacityValue) || 0;
+        if (capacityGb < 1 || capacityGb > this.maxCapacityGb) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: this.translate.getInstant('fileSystem.admin.validation'),
+                detail: this.translate.getInstant('fileSystem.admin.capacityMax200Validation')
+            });
             return;
         }
 

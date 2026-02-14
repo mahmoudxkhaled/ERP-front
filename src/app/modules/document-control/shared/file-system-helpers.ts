@@ -1,8 +1,7 @@
-import { FileSystemTableRow } from '../models/file-system.model';
+import { FileSystemListItem } from '../models/file-system.model';
 
 /**
  * Format bytes to human-readable string (e.g. "1.25 GB", "512.00 MB").
- * Shared by SSM, ESM, and file-systems-section.
  */
 export function formatBytes(bytes: number): string {
   if (bytes <= 0) return '0 B';
@@ -13,25 +12,21 @@ export function formatBytes(bytes: number): string {
 }
 
 /**
- * Map API response item to FileSystemTableRow. Single implementation for SSM and ESM.
+ * Map API response item to FileSystemListItem (backend fields only).
  */
-export function mapApiResponseToFileSystemRow(item: any): FileSystemTableRow {
-  const id = Number(item?.file_System_ID ?? item?.File_System_ID ?? 0);
-  const name = String(item?.name ?? item?.Name ?? '');
-  const active = Boolean(item?.is_Active ?? item?.Is_Active ?? true);
-  const used = Number(item?.used_Capacity ?? item?.Used_Capacity ?? 0);
-  const typeId = Number(item?.type ?? item?.Type ?? 0);
-  const driveId = Number(item?.drive_ID ?? item?.Drive_ID ?? 0);
-  let entityName = item?.owner_Name ?? item?.Owner_Name ?? item?.entity_Name ?? item?.Entity_Name ?? '—';
-  if (typeof entityName !== 'string') entityName = '—';
+export function mapApiResponseToFileSystemRow(item: any): FileSystemListItem {
   return {
-    id,
-    name,
-    entityName,
-    active,
-    usedCapacity: formatBytes(used),
-    typeId,
-    driveId
+    file_System_ID: Number(item?.file_System_ID ?? item?.File_System_ID ?? 0),
+    name: String(item?.name ?? item?.Name ?? ''),
+    type: Number(item?.type ?? item?.Type ?? 0),
+    guid: String(item?.guid ?? item?.Guid ?? ''),
+    owner_ID: Number(item?.owner_ID ?? item?.Owner_ID ?? 0),
+    is_Entity_FS: Boolean(item?.is_Entity_FS ?? item?.Is_Entity_FS),
+    drive_ID: Number(item?.drive_ID ?? item?.Drive_ID ?? 0),
+    created_At: String(item?.created_At ?? item?.Created_At ?? ''),
+    created_By: Number(item?.created_By ?? item?.Created_By ?? 0),
+    deleted_At: String(item?.deleted_At ?? item?.Deleted_At ?? ''),
+    delete_Account_ID: Number(item?.delete_Account_ID ?? item?.Delete_Account_ID ?? 0)
   };
 }
 

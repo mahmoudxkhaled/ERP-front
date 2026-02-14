@@ -1,16 +1,12 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { VirtualDrivesService } from '../../services/virtual-drives.service';
 import { FileSystemsService } from '../../services/file-systems.service';
 import { VirtualDrivesFilters } from '../../models/virtual-drive.model';
-import { FileSystemTableRow, FileSystemType } from '../../models/file-system.model';
-import {
-  mapApiResponseToFileSystemRow,
-  formatBytes,
-  getFileSystemErrorDetail
-} from '../file-system-helpers';
+import { FileSystemListItem } from '../../models/file-system.model';
+import { formatBytes, getFileSystemErrorDetail } from '../file-system-helpers';
 
 /** Result for Create_File_System: Owner_ID and Is_Entity_ID derived from scope and current user. */
 export interface FileSystemOwnerContext {
@@ -19,8 +15,8 @@ export interface FileSystemOwnerContext {
 }
 
 /**
- * Shared component for listing and managing File Systems.
- * Used by SSM (by drive) and ESM (by entity). Mode controls filters and actions.
+ * File systems section for ESM and Storage & Content Management.
+ * Lists entity file systems, create/edit/delete/details, recycle bin.
  */
 @Component({
   selector: 'app-file-systems-section',
@@ -28,14 +24,12 @@ export interface FileSystemOwnerContext {
   styleUrls: ['./file-systems-section.component.scss']
 })
 export class FileSystemsSectionComponent implements OnInit {
-  @Input() mode: 'ssm' | 'esm' = 'ssm';
   /** Emits when the file systems list changes (e.g. so parent can show count in KPI). */
   @Output() fileSystemsCountChange = new EventEmitter<number>();
 
-  fileSystems: FileSystemTableRow[] = [];
+  fileSystems: FileSystemListItem[] = [];
   loadingFileSystems = false;
   driveOptions: { id: number; name: string }[] = [];
-  selectedDriveId: number | null = null;
 
   fileSystemTypes: { id: number; name: string }[] = [];
   loadingTypes = false;
@@ -58,12 +52,12 @@ export class FileSystemsSectionComponent implements OnInit {
   newFileSystemScope: 'personal' | 'entity' = 'entity';
   newFileSystemTypeId: number | null = null;
   newFileSystemDriveId: number | null = null;
-  selectedForEdit: FileSystemTableRow | null = null;
+  selectedForEdit: FileSystemListItem | null = null;
   editFileSystemName = '';
   editFileSystemTypeId: number | null = null;
-  selectedForDetails: FileSystemTableRow | null = null;
-  detailsData: { name: string; typeName: string; driveName: string; active: boolean; usedCapacity: string } | null = null;
-  selectedForDelete: FileSystemTableRow | null = null;
+  selectedForDetails: FileSystemListItem | null = null;
+  detailsData: { name: string; typeName: string; driveName: string; active: boolean; createdAt: string } | null = null;
+  selectedForDelete: FileSystemListItem | null = null;
   recycleBinFileSystemId: number | null = null;
   recycleBinContents: { folders?: any[]; files?: any[] } | null = null;
 
@@ -84,25 +78,15 @@ export class FileSystemsSectionComponent implements OnInit {
     return !!(functions?.EntAdm || functions?.SysAdm);
   }
 
-  /** SSM: true when a drive is selected and user can manage file systems (e.g. Entity Admin on that drive). */
-  get canManageFileSystems(): boolean {
-    return this.selectedDriveId != null;
-  }
-
-  get createButtonTooltip(): string {
-    return this.canManageFileSystems ? '' : this.translate.getInstant('fileSystem.admin.selectDriveToManageFileSystems');
-  }
-
   ngOnInit(): void {
     this.loadDrives();
-    if (this.mode === 'esm') {
-      this.refreshList();
-    }
+    this.loadTypes();
+    this.refreshList();
   }
 
   loadDrives(): void {
     const filters: VirtualDrivesFilters = {
-      entityFilter: this.mode === 'ssm' ? 0 : 1,
+      entityFilter: 1,
       licenseId: 0,
       activeOnly: false
     };
@@ -118,48 +102,12 @@ export class FileSystemsSectionComponent implements OnInit {
           id: Number(item?.Drive_ID ?? item?.drive_ID ?? 0),
           name: String(item?.Name ?? item?.name ?? '')
         })).filter((d: { id: number; name: string }) => d.id > 0);
-        if (this.mode === 'ssm' && this.driveOptions.length > 0 && !this.selectedDriveId) {
-          this.selectedDriveId = this.driveOptions[0].id;
-          this.onDriveSelected();
-        }
       },
       error: () => { }
     });
   }
 
-  onDriveSelected(): void {
-    this.refreshList();
-  }
-
   refreshList(): void {
-    if (this.mode === 'ssm') {
-      if (this.selectedDriveId == null) {
-        this.fileSystems = [];
-        this.fileSystemsCountChange.emit(0);
-        return;
-      }
-      this.loadingFileSystems = true;
-      this.fileSystemsService.listFileSystems({
-        entityFilter: 0,
-        driveId: this.selectedDriveId,
-        activeOnly: false
-      }).subscribe({
-        next: (response: any) => {
-          console.log('response listFileSystemsSsm', response);
-          this.loadingFileSystems = false;
-          if (!response?.success) {
-            this.handleError('list', response);
-            return;
-          }
-          const raw = response.message;
-          const list = Array.isArray(raw) ? raw : (raw?.File_Systems ?? raw?.file_Systems ?? []);
-          this.fileSystems = (list || []).map((item: any) => mapApiResponseToFileSystemRow(item));
-          this.fileSystemsCountChange.emit(this.fileSystems.length);
-        },
-        error: () => this.loadingFileSystems = false
-      });
-      return;
-    }
     this.loadingFileSystems = true;
     this.fileSystemsService.listFileSystems({ entityFilter: 1, driveId: 0, activeOnly: false }).subscribe({
       next: (response: any) => {
@@ -171,7 +119,7 @@ export class FileSystemsSectionComponent implements OnInit {
         }
         const raw = response.message;
         const list = Array.isArray(raw) ? raw : (raw?.File_Systems ?? raw?.file_Systems ?? []);
-        this.fileSystems = (list || []).map((item: any) => mapApiResponseToFileSystemRow(item));
+        this.fileSystems = (list || []).map((item: any) => this.mapItemToRow(item));
         this.fileSystemsCountChange.emit(this.fileSystems.length);
       },
       error: () => this.loadingFileSystems = false
@@ -200,16 +148,43 @@ export class FileSystemsSectionComponent implements OnInit {
     });
   }
 
-  getEntityName(row: FileSystemTableRow): string {
-    return row?.entityName ?? '—';
+  /** Map API list item to FileSystemListItem (backend fields only). */
+  private mapItemToRow(item: any): FileSystemListItem {
+    return {
+      file_System_ID: Number(item?.file_System_ID ?? item?.File_System_ID ?? 0),
+      name: String(item?.name ?? item?.Name ?? ''),
+      type: Number(item?.type ?? item?.Type ?? 0),
+      guid: String(item?.guid ?? item?.Guid ?? ''),
+      owner_ID: Number(item?.owner_ID ?? item?.Owner_ID ?? 0),
+      is_Entity_FS: Boolean(item?.is_Entity_FS ?? item?.Is_Entity_FS),
+      drive_ID: Number(item?.drive_ID ?? item?.Drive_ID ?? 0),
+      created_At: String(item?.created_At ?? item?.Created_At ?? ''),
+      created_By: Number(item?.created_By ?? item?.Created_By ?? 0),
+      deleted_At: String(item?.deleted_At ?? item?.Deleted_At ?? ''),
+      delete_Account_ID: Number(item?.delete_Account_ID ?? item?.Delete_Account_ID ?? 0)
+    };
   }
 
-  getFileSystemName(row: FileSystemTableRow): string {
+
+
+  getFileSystemName(row: FileSystemListItem): string {
     return row?.name ?? '—';
   }
 
-  getStatusLabel(row: FileSystemTableRow): string {
-    return row?.active ? this.translate.getInstant('fileSystem.entityAdminStatus.active') : this.translate.getInstant('fileSystem.admin.inactive');
+  getTypeName(row: FileSystemListItem): string {
+    const type = this.fileSystemTypes.find((t) => t.id === (row?.type ?? 0));
+    return type?.name ?? '—';
+  }
+
+  getDriveName(row: FileSystemListItem): string {
+    const drive = this.driveOptions.find((d) => d.id === (row?.drive_ID ?? 0));
+    return drive?.name ?? '—';
+  }
+
+  getStatusLabel(row: FileSystemListItem): string {
+    const deletedAt = row?.deleted_At ?? '';
+    const isDeleted = typeof deletedAt === 'string' && deletedAt !== '' && !deletedAt.startsWith('0001-01-01');
+    return !isDeleted ? this.translate.getInstant('fileSystem.entityAdminStatus.active') : this.translate.getInstant('fileSystem.admin.inactive');
   }
 
   handleError(operation: string, response: any): void {
@@ -222,7 +197,7 @@ export class FileSystemsSectionComponent implements OnInit {
   showCreateDialog(): void {
     this.newFileSystemName = '';
     this.newFileSystemTypeId = null;
-    this.newFileSystemDriveId = this.mode === 'esm' && this.driveOptions.length > 0 ? this.driveOptions[0].id : null;
+    this.newFileSystemDriveId = this.driveOptions.length > 0 ? this.driveOptions[0].id : null;
     this.newFileSystemScope = this.canChooseEntityScope ? 'entity' : 'personal';
     this.loadTypes();
     this.createDialogVisible = true;
@@ -259,7 +234,7 @@ export class FileSystemsSectionComponent implements OnInit {
       this.messageService.add({ severity: 'warn', summary: this.translate.getInstant('fileSystem.admin.validation'), detail: this.translate.getInstant('fileSystem.admin.fileSystemNameRequired') });
       return;
     }
-    const driveId = this.mode === 'ssm' ? this.selectedDriveId : this.newFileSystemDriveId;
+    const driveId = this.newFileSystemDriveId;
     if (this.newFileSystemTypeId == null || driveId == null) {
       this.messageService.add({ severity: 'warn', summary: this.translate.getInstant('fileSystem.admin.validation'), detail: this.translate.getInstant('fileSystem.admin.fileSystemTypeRequired') });
       return;
@@ -287,10 +262,10 @@ export class FileSystemsSectionComponent implements OnInit {
     });
   }
 
-  showEditDialog(row: FileSystemTableRow): void {
+  showEditDialog(row: FileSystemListItem): void {
     this.selectedForEdit = row;
     this.editFileSystemName = row.name;
-    this.editFileSystemTypeId = row.typeId ?? null;
+    this.editFileSystemTypeId = row.type ?? null;
     if (this.fileSystemTypes.length === 0) this.loadTypes();
     this.editDialogVisible = true;
   }
@@ -306,14 +281,15 @@ export class FileSystemsSectionComponent implements OnInit {
       this.messageService.add({ severity: 'warn', summary: this.translate.getInstant('fileSystem.admin.validation'), detail: this.translate.getInstant('fileSystem.admin.fileSystemNameRequired') });
       return;
     }
-    const typeId = this.editFileSystemTypeId ?? this.selectedForEdit.typeId ?? 0;
+    const typeId = this.editFileSystemTypeId ?? this.selectedForEdit.type ?? 0;
     if (typeId <= 0) {
       this.messageService.add({ severity: 'warn', summary: this.translate.getInstant('fileSystem.admin.validation'), detail: this.translate.getInstant('fileSystem.admin.fileSystemTypeRequired') });
       return;
     }
     this.savingFileSystem = true;
-    this.fileSystemsService.updateFileSystemDetails(this.selectedForEdit.id, this.editFileSystemName.trim(), typeId).subscribe({
+    this.fileSystemsService.updateFileSystemDetails(this.selectedForEdit.file_System_ID, this.editFileSystemName.trim(), typeId).subscribe({
       next: (response: any) => {
+        console.log('response updateFileSystemDetails', response);
         this.savingFileSystem = false;
         if (!response?.success) {
           this.handleError('update', response);
@@ -327,12 +303,12 @@ export class FileSystemsSectionComponent implements OnInit {
     });
   }
 
-  showDetailsDialog(row: FileSystemTableRow): void {
+  showDetailsDialog(row: FileSystemListItem): void {
     this.selectedForDetails = row;
     this.detailsData = null;
     this.detailsDialogVisible = true;
     this.detailsLoading = true;
-    this.fileSystemsService.getFileSystemDetails(row.id).subscribe({
+    this.fileSystemsService.getFileSystemDetails(row.file_System_ID).subscribe({
       next: (response: any) => {
         this.detailsLoading = false;
         if (!response?.success) {
@@ -341,11 +317,16 @@ export class FileSystemsSectionComponent implements OnInit {
         }
         const d = response?.message ?? response;
         const name = String(d?.name ?? d?.Name ?? row.name);
-        const typeName = String(d?.type_Name ?? d?.Type_Name ?? d?.typeName ?? '—');
-        const driveName = String(d?.drive_Name ?? d?.Drive_Name ?? d?.driveName ?? '—');
-        const active = Boolean(d?.is_Active ?? d?.Is_Active ?? row.active ?? true);
-        const used = Number(d?.used_Capacity ?? d?.Used_Capacity ?? 0);
-        this.detailsData = { name, typeName, driveName, active, usedCapacity: formatBytes(used) };
+        const typeId = Number(d?.type ?? d?.Type ?? row?.type ?? 0);
+        const typeName = String(d?.type_Name ?? d?.Type_Name ?? d?.typeName ?? (this.fileSystemTypes.find(t => t.id === typeId)?.name ?? '—'));
+        const driveId = Number(d?.drive_ID ?? d?.Drive_ID ?? row?.drive_ID ?? 0);
+        const drive = this.driveOptions.find(drv => drv.id === driveId);
+        const driveName = drive?.name ?? '—';
+        const deletedAt = String(d?.deleted_At ?? d?.Deleted_At ?? row?.deleted_At ?? '');
+        const isDeleted = deletedAt !== '' && !deletedAt.startsWith('0001-01-01');
+        const active = Boolean(d?.is_Active ?? d?.Is_Active ?? !isDeleted);
+        const createdAt = String(d?.created_At ?? d?.Created_At ?? row?.created_At ?? '');
+        this.detailsData = { name, typeName, driveName, active, createdAt };
       },
       error: () => this.detailsLoading = false
     });
@@ -357,7 +338,7 @@ export class FileSystemsSectionComponent implements OnInit {
     this.detailsData = null;
   }
 
-  showDeleteConfirm(row: FileSystemTableRow): void {
+  showDeleteConfirm(row: FileSystemListItem): void {
     this.selectedForDelete = row;
     this.deleteConfirmVisible = true;
   }
@@ -370,7 +351,7 @@ export class FileSystemsSectionComponent implements OnInit {
   onDeleteConfirm(): void {
     if (!this.selectedForDelete) return;
     this.deletingFileSystem = true;
-    this.fileSystemsService.deleteFileSystem(this.selectedForDelete.id).subscribe({
+    this.fileSystemsService.deleteFileSystem(this.selectedForDelete.file_System_ID).subscribe({
       next: (response: any) => {
         this.deletingFileSystem = false;
         if (!response?.success) {

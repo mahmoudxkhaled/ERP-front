@@ -168,15 +168,16 @@
             <label for="newDriveName">{{ 'fileSystem.admin.driveName' | translate }}</label>
             <input pInputText id="newDriveName" [(ngModel)]="newDriveName" class="w-full mt-2" />
         </div>
-        <div class="field mb-3">
+        <!-- <div class="field mb-3">
             <label for="newDriveLicenseId">{{ 'fileSystem.admin.licenseId' | translate }}</label>
             <input pInputText type="number" id="newDriveLicenseId" [(ngModel)]="newDriveLicenseId"
                 class="w-full mt-2" />
-        </div>
+        </div> -->
         <div class="field">
             <label for="newDriveCapacity">{{ 'fileSystem.admin.capacity' | translate }}</label>
             <input pInputText type="number" id="newDriveCapacity" [(ngModel)]="newDriveCapacity" class="w-full mt-2"
-                [placeholder]="'fileSystem.admin.capacityPlaceholder' | translate" />
+                min="1" max="200" [placeholder]="'fileSystem.admin.capacityPlaceholder' | translate" />
+            <small class="text-500 block mt-1">{{ 'fileSystem.admin.capacityMax200' | translate }}</small>
         </div>
     </div>
     <ng-template pTemplate="footer">
@@ -212,7 +213,9 @@
         <div class="field">
             <label for="updateCapacityValue">{{ 'fileSystem.admin.newCapacity' | translate }}</label>
             <input pInputText type="number" id="updateCapacityValue" [(ngModel)]="updateCapacityValue"
-                class="w-full mt-2" [placeholder]="'fileSystem.admin.capacityPlaceholder' | translate" />
+                min="1" max="200" class="w-full mt-2"
+                [placeholder]="'fileSystem.admin.capacityPlaceholder' | translate" />
+            <small class="text-500 block mt-1">{{ 'fileSystem.admin.capacityMax200' | translate }}</small>
         </div>
     </div>
     <ng-template pTemplate="footer">

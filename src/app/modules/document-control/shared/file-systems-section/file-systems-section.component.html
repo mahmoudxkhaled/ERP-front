@@ -1,21 +1,9 @@
 <div class="block-section">
-    <h2 class="block-title" *ngIf="mode === 'ssm'">{{ 'fileSystem.admin.listFileSystems' | translate }}</h2>
-    <h2 class="block-title" *ngIf="mode === 'esm'">{{ 'fileSystem.entityAdmin.fileSystemsByEntity' | translate }}</h2>
+    <h2 class="block-title">{{ 'fileSystem.entityAdmin.fileSystemsByEntity' | translate }}</h2>
     <div class="block-card">
-        <p class="mb-3 text-500" *ngIf="mode === 'ssm'">{{ 'fileSystem.admin.createFileSystemRequiresEntityAdmin' |
-            translate }}</p>
-        <p class="mb-3 text-500" *ngIf="mode === 'esm'">{{ 'fileSystem.entityAdmin.fileSystemsHostedInDrives' |
-            translate }}</p>
+        <p class="mb-3 text-500">{{ 'fileSystem.entityAdmin.fileSystemsHostedInDrives' | translate }}</p>
 
-        <div class="mb-3" *ngIf="mode === 'ssm'">
-            <label class="mr-2">{{ 'fileSystem.admin.driveName' | translate }}</label>
-            <p-dropdown [options]="driveOptions" [(ngModel)]="selectedDriveId" optionLabel="name" optionValue="id"
-                [style]="{ width: '280px' }"
-                [placeholder]="'fileSystem.admin.selectDriveToManageFileSystems' | translate"
-                (onChange)="onDriveSelected()"></p-dropdown>
-        </div>
-
-        <div class="mb-3 flex flex-wrap gap-2 align-items-center" *ngIf="mode === 'esm'">
+        <div class="mb-3 flex flex-wrap gap-2 align-items-center">
             <p-button [label]="'fileSystem.entityAdmin.createFileSystem' | translate" icon="pi pi-plus"
                 (onClick)="showCreateDialog()"></p-button>
             <p-button [label]="'fileSystem.companyStorage.recycleBin' | translate" icon="pi pi-replay"
@@ -26,50 +14,32 @@
             styleClass="p-datatable-sm p-datatable-gridlines" responsiveLayout="scroll">
             <ng-template pTemplate="header">
                 <tr>
-                    <th *ngIf="mode === 'esm'">{{ 'fileSystem.entityAdmin.entityName' | translate }}</th>
                     <th>{{ 'fileSystem.entityAdmin.fileSystemName' | translate }}</th>
-                    <th *ngIf="mode === 'ssm'">{{ 'fileSystem.entityAdmin.entityName' | translate }}</th>
-                    <th>{{ 'fileSystem.entityAdmin.status' | translate }}</th>
-                    <th>{{ 'fileSystem.entityAdmin.usedCapacity' | translate }}</th>
+                    <th>{{ 'fileSystem.entityAdmin.fileSystemType' | translate }}</th>
+                    <th>{{ 'fileSystem.admin.driveName' | translate }}</th>
                     <th style="width: 12rem">{{ 'fileSystem.companyStorage.actions' | translate }}</th>
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-row>
                 <tr>
-                    <td *ngIf="mode === 'esm'" class="cell-entity">{{ getEntityName(row) }}</td>
                     <td>{{ getFileSystemName(row) }}</td>
-                    <td *ngIf="mode === 'ssm'">{{ getEntityName(row) }}</td>
-                    <td><p-tag [value]="getStatusLabel(row)" [severity]="row.active ? 'success' : 'secondary'"></p-tag>
-                    </td>
-                    <td>{{ row.usedCapacity }}</td>
+                    <td>{{ getTypeName(row) }}</td>
+                    <td>{{ getDriveName(row) }}</td>
                     <td>
-                        <button *ngIf="mode === 'esm'" pButton type="button" icon="pi pi-eye"
-                            class="p-button-text p-button-sm mr-1"
+                        <button pButton type="button" icon="pi pi-eye" class="p-button-text p-button-sm mr-1"
                             [pTooltip]="'fileSystem.admin.viewDetails' | translate"
                             (click)="showDetailsDialog(row)"></button>
                         <button pButton type="button" icon="pi pi-pencil" class="p-button-text p-button-sm mr-1"
                             [pTooltip]="'fileSystem.entityAdmin.editFileSystem' | translate"
-                            [disabled]="mode === 'ssm' && !canManageFileSystems" (click)="showEditDialog(row)"></button>
-                        <button *ngIf="mode === 'esm'" pButton type="button" icon="pi pi-trash"
+                            (click)="showEditDialog(row)"></button>
+                        <button pButton type="button" icon="pi pi-trash"
                             class="p-button-text p-button-sm mr-1 p-button-danger"
                             [pTooltip]="'fileSystem.entityAdmin.deleteFileSystem' | translate"
                             (click)="showDeleteConfirm(row)"></button>
                     </td>
                 </tr>
             </ng-template>
-            <ng-template pTemplate="emptymessage" *ngIf="mode === 'ssm'">
-                <tr>
-                    <td [attr.colspan]="5" class="text-center p-4 text-500">{{
-                        'fileSystem.admin.selectDriveToManageFileSystems' | translate }}</td>
-                </tr>
-            </ng-template>
         </p-table>
-
-        <div class="mt-3" *ngIf="mode === 'ssm'">
-            <p-button [label]="'fileSystem.entityAdmin.createFileSystem' | translate" icon="pi pi-plus"
-                [disabled]="!canManageFileSystems" [pTooltip]="createButtonTooltip"
-                (onClick)="showCreateDialog()"></p-button>
-        </div>
     </div>
 </div>
 
@@ -81,11 +51,14 @@
             <label>{{ 'fileSystem.admin.scopeLabel' | translate }}</label>
             <div class="flex flex-column gap-2 mt-2">
                 <div class="flex align-items-center">
-                    <p-radioButton name="scope" value="personal" [(ngModel)]="newFileSystemScope" [inputId]="'scope-personal'" />
-                    <label [for]="'scope-personal'" class="ml-2">{{ 'fileSystem.admin.scopePersonal' | translate }}</label>
+                    <p-radioButton name="scope" value="personal" [(ngModel)]="newFileSystemScope"
+                        [inputId]="'scope-personal'" />
+                    <label [for]="'scope-personal'" class="ml-2">{{ 'fileSystem.admin.scopePersonal' | translate
+                        }}</label>
                 </div>
                 <div class="flex align-items-center" *ngIf="canChooseEntityScope">
-                    <p-radioButton name="scope" value="entity" [(ngModel)]="newFileSystemScope" [inputId]="'scope-entity'" />
+                    <p-radioButton name="scope" value="entity" [(ngModel)]="newFileSystemScope"
+                        [inputId]="'scope-entity'" />
                     <label [for]="'scope-entity'" class="ml-2">{{ 'fileSystem.admin.scopeEntity' | translate }}</label>
                 </div>
             </div>
@@ -94,7 +67,7 @@
             <label>{{ 'fileSystem.entityAdmin.fileSystemName' | translate }}</label>
             <input pInputText [(ngModel)]="newFileSystemName" class="w-full mt-2" />
         </div>
-        <div class="field mb-3" *ngIf="mode === 'esm'">
+        <div class="field mb-3">
             <label>{{ 'fileSystem.admin.driveName' | translate }}</label>
             <p-dropdown appendTo="body" [options]="driveOptions" [(ngModel)]="newFileSystemDriveId" optionLabel="name"
                 optionValue="id" [style]="{ width: '100%' }" [placeholder]="'fileSystem.admin.selectDrive' | translate"
@@ -138,36 +111,63 @@
     </ng-template>
 </p-dialog>
 
-<!-- Details (ESM) -->
+<!-- File System Details -->
 <p-dialog [header]="'fileSystem.entityAdmin.fileSystemDetailsTitle' | translate" [(visible)]="detailsDialogVisible"
-    [modal]="true" [style]="{ width: '400px' }" (onHide)="hideDetailsDialog()" [draggable]="false" [resizable]="false">
-    <div class="p-fluid" *ngIf="selectedForDetails">
-        <p *ngIf="detailsLoading">{{ 'fileSystem.companyStorage.loading' | translate }}</p>
-        <ng-container *ngIf="!detailsLoading && detailsData">
-            <div class="field"><label>{{ 'fileSystem.entityAdmin.entityName' | translate }}</label>
-                <p>{{ getEntityName(selectedForDetails) }}</p>
-            </div>
-            <div class="field"><label>{{ 'fileSystem.entityAdmin.fileSystemName' | translate }}</label>
-                <p>{{ detailsData.name }}</p>
-            </div>
-            <div class="field"><label>{{ 'fileSystem.entityAdmin.fileSystemType' | translate }}</label>
-                <p>{{ detailsData.typeName }}</p>
-            </div>
-            <div class="field"><label>{{ 'fileSystem.admin.driveName' | translate }}</label>
-                <p>{{ detailsData.driveName }}</p>
-            </div>
-            <div class="field"><label>{{ 'fileSystem.entityAdmin.status' | translate }}</label>
-                <p>{{ detailsData.active ? ('fileSystem.entityAdminStatus.active' | translate) :
-                    ('fileSystem.admin.inactive' | translate) }}</p>
-            </div>
-            <div class="field"><label>{{ 'fileSystem.entityAdmin.usedCapacity' | translate }}</label>
-                <p>{{ detailsData.usedCapacity }}</p>
-            </div>
-        </ng-container>
+    [modal]="true" [style]="{ width: '420px' }" (onHide)="hideDetailsDialog()" [draggable]="false" [resizable]="false"
+    styleClass="drive-details-dialog">
+    <div class="drive-details-content" *ngIf="detailsLoading">
+        <div class="drive-details-row drive-details-name">
+            <span class="drive-details-label">{{ 'fileSystem.entityAdmin.fileSystemName' | translate }}</span>
+            <p-skeleton height="1.25rem" width="10rem"></p-skeleton>
+        </div>
+        <div class="drive-details-divider"></div>
+        <div class="drive-details-row">
+            <span class="drive-details-label">{{ 'fileSystem.entityAdmin.fileSystemType' | translate }}</span>
+            <p-skeleton height="1rem" width="6rem"></p-skeleton>
+        </div>
+        <div class="drive-details-row">
+            <span class="drive-details-label">{{ 'fileSystem.admin.driveName' | translate }}</span>
+            <p-skeleton height="1rem" width="8rem"></p-skeleton>
+        </div>
+        <div class="drive-details-row">
+            <span class="drive-details-label">{{ 'fileSystem.admin.createdAt' | translate }}</span>
+            <p-skeleton height="1rem" width="8rem"></p-skeleton>
+        </div>
+        <div class="drive-details-divider"></div>
+        <div class="drive-details-row drive-details-status-row mt-2">
+            <span class="drive-details-label">{{ 'fileSystem.entityAdmin.status' | translate }}</span>
+            <p-skeleton height="1.5rem" width="4rem" borderRadius="4px"></p-skeleton>
+        </div>
     </div>
-    <ng-template pTemplate="footer">
+    <div class="drive-details-content" *ngIf="!detailsLoading && detailsData">
+        <div class="drive-details-row drive-details-name">
+            <span class="drive-details-label">{{ 'fileSystem.entityAdmin.fileSystemName' | translate }}</span>
+            <span class="drive-details-value font-semibold">{{ detailsData.name }}</span>
+        </div>
+        <div class="drive-details-divider"></div>
+        <div class="drive-details-row">
+            <span class="drive-details-label">{{ 'fileSystem.entityAdmin.fileSystemType' | translate }}</span>
+            <span class="drive-details-value">{{ detailsData.typeName }}</span>
+        </div>
+        <div class="drive-details-row">
+            <span class="drive-details-label">{{ 'fileSystem.admin.driveName' | translate }}</span>
+            <span class="drive-details-value">{{ detailsData.driveName }}</span>
+        </div>
+        <div class="drive-details-row">
+            <span class="drive-details-label">{{ 'fileSystem.admin.createdAt' | translate }}</span>
+            <span class="drive-details-value">{{ detailsData.createdAt ? (detailsData.createdAt | date:'medium') : '—' }}</span>
+        </div>
+        <div class="drive-details-divider"></div>
+        <div class="drive-details-row drive-details-status-row mt-2">
+            <span class="drive-details-label">{{ 'fileSystem.entityAdmin.status' | translate }}</span>
+            <p-tag
+                [value]="detailsData.active ? ('fileSystem.entityAdminStatus.active' | translate) : ('fileSystem.admin.inactive' | translate)"
+                [severity]="detailsData.active ? 'success' : 'secondary'"></p-tag>
+        </div>
+    </div>
+    <!-- <ng-template pTemplate="footer">
         <p-button [label]="'fileSystem.companyStorage.close' | translate" (onClick)="hideDetailsDialog()"></p-button>
-    </ng-template>
+    </ng-template> -->
 </p-dialog>
 
 <!-- Delete confirm (ESM) -->
@@ -190,9 +190,10 @@
     <p class="mb-3">{{ 'fileSystem.companyStorage.recycleBinDescription' | translate }}</p>
     <div class="field mb-3">
         <label>{{ 'fileSystem.entityAdmin.fileSystemName' | translate }}</label>
-        <p-dropdown [options]="fileSystems" [(ngModel)]="recycleBinFileSystemId" optionLabel="name" optionValue="id"
-            [style]="{ width: '100%' }" [placeholder]="'fileSystem.admin.selectType' | translate"
-            (onChange)="onRecycleBinFileSystemSelect()" class="mt-2"></p-dropdown>
+        <p-dropdown [options]="fileSystems" [(ngModel)]="recycleBinFileSystemId" optionLabel="name"
+            optionValue="file_System_ID" [style]="{ width: '100%' }"
+            [placeholder]="'fileSystem.admin.selectType' | translate" (onChange)="onRecycleBinFileSystemSelect()"
+            class="mt-2"></p-dropdown>
     </div>
     <p *ngIf="loadingRecycleBin">{{ 'fileSystem.companyStorage.loading' | translate }}</p>
     <div *ngIf="!loadingRecycleBin && recycleBinContents && recycleBinFileSystemId">

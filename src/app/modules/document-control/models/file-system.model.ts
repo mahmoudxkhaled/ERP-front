@@ -14,6 +14,23 @@ export interface FileSystemType {
 }
 
 /**
+ * File system item from List_File_Systems API (backend response only).
+ */
+export interface FileSystemListItem {
+  file_System_ID: number;
+  name: string;
+  type: number;
+  guid: string;
+  owner_ID: number;
+  is_Entity_FS: boolean;
+  drive_ID: number;
+  created_At: string;
+  created_By: number;
+  deleted_At: string;
+  delete_Account_ID: number;
+}
+
+/**
  * File system record from List_File_Systems / Get_File_System_Details (APIs #9, #11).
  */
 export interface FileSystem {
@@ -45,15 +62,3 @@ export interface FileSystemsFilters {
   activeOnly: boolean;
 }
 
-/**
- * Row type for file systems table. Used by both SSM and ESM (shared).
- */
-export interface FileSystemTableRow {
-  id: number;
-  name: string;
-  entityName: string;
-  active: boolean;
-  usedCapacity: string;
-  typeId?: number;
-  driveId?: number;
-}
