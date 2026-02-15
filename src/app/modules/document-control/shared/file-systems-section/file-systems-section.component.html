@@ -1,3 +1,4 @@
+<p-toast />
 <div class="block-section">
     <h2 class="block-title">{{ 'fileSystem.entityAdmin.fileSystemsByEntity' | translate }}</h2>
     <div class="block-card">
@@ -82,25 +83,16 @@
                                 [severity]="isFileSystemActive(row) ? 'success' : 'secondary'"></p-tag>
                         </ng-template>
                     </td>
-                    <td>
+                    <td class="text-start">
                         <ng-container *ngIf="loadingFileSystems; else normalActions">
-                            <div class="flex align-items-center gap-1">
-                                <p-skeleton height="2rem" width="2rem" borderRadius="50%"></p-skeleton>
-                                <p-skeleton height="2rem" width="2rem" borderRadius="50%"></p-skeleton>
-                                <p-skeleton height="2rem" width="2rem" borderRadius="50%"></p-skeleton>
-                            </div>
+                            <p-skeleton height="2rem" width="2rem" borderRadius="50%"></p-skeleton>
                         </ng-container>
                         <ng-template #normalActions>
-                            <button pButton type="button" icon="pi pi-eye" class="p-button-text p-button-sm mr-1"
-                                [pTooltip]="'fileSystem.admin.viewDetails' | translate"
-                                (click)="showDetailsDialog(row)"></button>
-                            <button pButton type="button" icon="pi pi-pencil" class="p-button-text p-button-sm mr-1"
-                                [pTooltip]="'fileSystem.entityAdmin.editFileSystem' | translate"
-                                (click)="showEditDialog(row)"></button>
-                            <button pButton type="button" icon="pi pi-trash"
-                                class="p-button-text p-button-sm mr-1 p-button-danger"
-                                [pTooltip]="'fileSystem.entityAdmin.deleteFileSystem' | translate"
-                                (click)="showDeleteConfirm(row)"></button>
+                            <button pButton pRipple type="button" icon="pi pi-ellipsis-v"
+                                class="p-button-rounded p-button-text p-button-plain"
+                                (click)="openFileSystemMenu(rowMenu, row, $event)">
+                            </button>
+                            <p-menu #rowMenu [model]="fileSystemMenuItems" [popup]="true" [appendTo]="'body'"></p-menu>
                         </ng-template>
                     </td>
                 </tr>
@@ -164,8 +156,8 @@
         </div>
         <div class="field">
             <label>{{ 'fileSystem.entityAdmin.fileSystemType' | translate }}</label>
-            <p-dropdown [options]="fileSystemTypes" [(ngModel)]="editFileSystemTypeId" optionLabel="name"
-                optionValue="id" [style]="{ width: '100%' }" [disabled]="loadingTypes"
+            <p-dropdown appendTo="body" [options]="fileSystemTypes" [(ngModel)]="editFileSystemTypeId"
+                optionLabel="name" optionValue="id" [style]="{ width: '100%' }" [disabled]="loadingTypes"
                 [placeholder]="'fileSystem.admin.selectType' | translate" class="mt-2"></p-dropdown>
         </div>
     </div>
@@ -247,6 +239,57 @@
             (onClick)="hideDeleteConfirm()"></p-button>
         <p-button [label]="'fileSystem.companyStorage.delete' | translate" severity="danger"
             (onClick)="onDeleteConfirm()" [loading]="deletingFileSystem"></p-button>
+    </ng-template>
+</p-dialog>
+
+<!-- Confirm: Restore deleted file system -->
+<p-dialog [header]="'fileSystem.companyStorage.confirmRestoreDeletedTitle' | translate"
+    [(visible)]="restoreDeletedConfirmVisible" [modal]="true" [style]="{ width: '420px' }"
+    (onHide)="hideRestoreDeletedConfirm()" [draggable]="false" [resizable]="false">
+    <div class="flex align-items-center gap-3 mb-3">
+        <i class="pi pi-exclamation-triangle text-2xl text-yellow-500"></i>
+        <p class="mb-0" *ngIf="selectedFileSystemForMenu">{{ 'fileSystem.companyStorage.confirmRestoreDeletedMessage' |
+            translate: { name: selectedFileSystemForMenu.name } }}</p>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button [label]="'fileSystem.companyStorage.close' | translate" styleClass="p-button-secondary"
+            (onClick)="hideRestoreDeletedConfirm()"></p-button>
+        <p-button [label]="'fileSystem.entityAdmin.restoreFileSystem' | translate" icon="pi pi-replay"
+            (onClick)="onRestoreDeletedFileSystem()" [loading]="restoringDeletedFileSystem"></p-button>
+    </ng-template>
+</p-dialog>
+
+<!-- Confirm: Restore recycle bin contents -->
+<p-dialog [header]="'fileSystem.companyStorage.confirmRestoreRecycleBinTitle' | translate"
+    [(visible)]="restoreRecycleBinConfirmVisible" [modal]="true" [style]="{ width: '420px' }"
+    (onHide)="hideRestoreRecycleBinConfirm()" [draggable]="false" [resizable]="false">
+    <div class="flex align-items-center gap-3 mb-3">
+        <i class="pi pi-info-circle text-2xl text-primary"></i>
+        <p class="mb-0" *ngIf="selectedFileSystemForMenu">{{ 'fileSystem.companyStorage.confirmRestoreRecycleBinMessage'
+            | translate: { name: selectedFileSystemForMenu.name } }}</p>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button [label]="'fileSystem.companyStorage.close' | translate" styleClass="p-button-secondary"
+            (onClick)="hideRestoreRecycleBinConfirm()"></p-button>
+        <p-button [label]="'fileSystem.companyStorage.restore' | translate" icon="pi pi-replay"
+            (onClick)="onRestoreRecycleBinFromMenu()" [loading]="restoringRecycleBin"></p-button>
+    </ng-template>
+</p-dialog>
+
+<!-- Confirm: Clear recycle bin (critical – permanent) -->
+<p-dialog [header]="'fileSystem.companyStorage.confirmClearRecycleBinTitle' | translate"
+    [(visible)]="clearRecycleBinConfirmVisible" [modal]="true" [style]="{ width: '420px' }"
+    (onHide)="hideClearRecycleBinConfirm()" [draggable]="false" [resizable]="false" styleClass="p-dialog-warning">
+    <div class="flex align-items-center gap-3 mb-3">
+        <i class="pi pi-exclamation-triangle text-2xl text-red-500"></i>
+        <p class="mb-0" *ngIf="selectedFileSystemForMenu">{{ 'fileSystem.companyStorage.confirmClearRecycleBinMessage' |
+            translate: { name: selectedFileSystemForMenu.name } }}</p>
+    </div>
+    <ng-template pTemplate="footer">
+        <p-button [label]="'fileSystem.companyStorage.close' | translate" styleClass="p-button-secondary"
+            (onClick)="hideClearRecycleBinConfirm()"></p-button>
+        <p-button [label]="'fileSystem.companyStorage.clearRecycleBin' | translate" severity="danger" icon="pi pi-trash"
+            (onClick)="onClearRecycleBinFromMenu()" [loading]="clearingRecycleBin"></p-button>
     </ng-template>
 </p-dialog>
 

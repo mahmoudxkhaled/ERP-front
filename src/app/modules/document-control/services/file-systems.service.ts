@@ -94,6 +94,7 @@ export class FileSystemsService {
   ): Observable<any> {
     this.isLoadingSubject.next(true);
     const params: string[] = [fileSystemId.toString(), name, type.toString()];
+    console.log('params update file system details', params);
     return this.apiService
       .callAPI(1124, this.getAccessToken(), params)
       .pipe(finalize(() => this.isLoadingSubject.next(false)));

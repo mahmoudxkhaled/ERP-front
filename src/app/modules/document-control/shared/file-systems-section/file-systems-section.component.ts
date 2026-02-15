@@ -1,5 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { MessageService } from 'primeng/api';
+import { MenuItem, MessageService } from 'primeng/api';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { VirtualDrivesService } from '../../services/virtual-drives.service';
@@ -71,6 +71,16 @@ export class FileSystemsSectionComponent implements OnInit {
   selectedForDelete: FileSystemListItem | null = null;
   recycleBinFileSystemId: number | null = null;
   recycleBinContents: { folders?: any[]; files?: any[] } | null = null;
+
+  /** Row menu (3-dots): selected row and menu model. */
+  fileSystemMenuItems: MenuItem[] = [];
+  selectedFileSystemForMenu: FileSystemListItem | null = null;
+  restoringDeletedFileSystem = false;
+
+  /** Confirmation dialogs for critical actions. */
+  clearRecycleBinConfirmVisible = false;
+  restoreRecycleBinConfirmVisible = false;
+  restoreDeletedConfirmVisible = false;
 
   constructor(
     private translate: TranslationService,
@@ -246,6 +256,175 @@ export class FileSystemsSectionComponent implements OnInit {
     return !isDeleted;
   }
 
+  /**
+   * Build menu items for the 3-dot row menu. Uses selectedFileSystemForMenu.
+   * Includes: View Details, Edit, Delete; Restore (if deleted); Recycle Bin, Restore contents, Clear.
+   */
+  buildFileSystemMenuItems(): void {
+    const row = this.selectedFileSystemForMenu;
+    const items: MenuItem[] = [
+      {
+        label: this.translate.getInstant('fileSystem.admin.viewDetails'),
+        icon: 'pi pi-eye',
+        command: () => { if (row) this.showDetailsDialog(row); }
+      },
+      {
+        label: this.translate.getInstant('fileSystem.entityAdmin.editFileSystem'),
+        icon: 'pi pi-pencil',
+        command: () => { if (row) this.showEditDialog(row); }
+      },
+      {
+        label: this.translate.getInstant('fileSystem.entityAdmin.deleteFileSystem'),
+        icon: 'pi pi-trash',
+        command: () => { if (row) this.showDeleteConfirm(row); }
+      }
+    ];
+    if (row && !this.isFileSystemActive(row)) {
+      items.push({
+        label: this.translate.getInstant('fileSystem.entityAdmin.restoreFileSystem'),
+        icon: 'pi pi-replay',
+        command: () => this.showRestoreDeletedConfirm()
+      });
+    }
+    items.push({ separator: true });
+    items.push({
+      label: this.translate.getInstant('fileSystem.companyStorage.openRecycleBin'),
+      icon: 'pi pi-folder-open',
+      command: () => { if (row) this.showRecycleBinDialogForFileSystem(row); }
+    });
+    items.push({
+      label: this.translate.getInstant('fileSystem.companyStorage.restoreRecycleBinContents'),
+      icon: 'pi pi-replay',
+      command: () => this.showRestoreRecycleBinConfirm()
+    });
+    items.push({
+      label: this.translate.getInstant('fileSystem.companyStorage.clearRecycleBin'),
+      icon: 'pi pi-trash',
+      command: () => this.showClearRecycleBinConfirm()
+    });
+    this.fileSystemMenuItems = items;
+  }
+
+  /** Open the 3-dot row menu for a file system. */
+  openFileSystemMenu(menu: { toggle: (e: Event) => void }, row: FileSystemListItem, event: Event): void {
+    this.selectedFileSystemForMenu = row;
+    this.buildFileSystemMenuItems();
+    menu.toggle(event);
+  }
+
+  /** Open recycle bin dialog with this file system pre-selected and load its contents. */
+  showRecycleBinDialogForFileSystem(row: FileSystemListItem): void {
+    this.recycleBinFileSystemId = row.file_System_ID;
+    this.recycleBinContents = null;
+    this.recycleBinDialogVisible = true;
+    this.onRecycleBinFileSystemSelect();
+  }
+
+  /** Show confirmation before restoring a deleted file system. */
+  showRestoreDeletedConfirm(): void {
+    this.restoreDeletedConfirmVisible = true;
+  }
+
+  hideRestoreDeletedConfirm(): void {
+    this.restoreDeletedConfirmVisible = false;
+  }
+
+  /** Show confirmation before restoring recycle bin contents (from row menu). */
+  showRestoreRecycleBinConfirm(): void {
+    this.restoreRecycleBinConfirmVisible = true;
+  }
+
+  hideRestoreRecycleBinConfirm(): void {
+    this.restoreRecycleBinConfirmVisible = false;
+  }
+
+  /** Show warning confirmation before clearing recycle bin (critical – permanent). */
+  showClearRecycleBinConfirm(): void {
+    this.clearRecycleBinConfirmVisible = true;
+  }
+
+  hideClearRecycleBinConfirm(): void {
+    this.clearRecycleBinConfirmVisible = false;
+  }
+
+  /** Restore a deleted file system (Restore_Deleted_File_System API). Called after confirm. */
+  onRestoreDeletedFileSystem(): void {
+    const row = this.selectedFileSystemForMenu;
+    if (!row) return;
+    this.restoringDeletedFileSystem = true;
+    this.fileSystemsService.restoreDeletedFileSystem(row.file_System_ID).subscribe({
+      next: (response: any) => {
+        this.restoringDeletedFileSystem = false;
+        if (!response?.success) {
+          this.handleError('restoreDeleted', response);
+          return;
+        }
+        this.messageService.add({
+          severity: 'success',
+          summary: this.translate.getInstant('fileSystem.companyStorage.restore'),
+          detail: this.translate.getInstant('fileSystem.entityAdmin.restoreFileSystemSuccess')
+        });
+        this.hideRestoreDeletedConfirm();
+        this.refreshList();
+      },
+      error: () => this.restoringDeletedFileSystem = false
+    });
+  }
+
+  /** Restore recycle bin contents for the file system selected in the row menu. Called after confirm. */
+  onRestoreRecycleBinFromMenu(): void {
+    const row = this.selectedFileSystemForMenu;
+    if (!row) return;
+    this.restoringRecycleBin = true;
+    this.fileSystemsService.restoreFileSystemRecycleBinContents(row.file_System_ID).subscribe({
+      next: (response: any) => {
+        this.restoringRecycleBin = false;
+        if (!response?.success) {
+          this.handleError('restoreRecycleBin', response);
+          return;
+        }
+        this.messageService.add({
+          severity: 'success',
+          summary: this.translate.getInstant('fileSystem.companyStorage.restore'),
+          detail: this.translate.getInstant('fileSystem.companyStorage.restoreSuccess')
+        });
+        this.hideRestoreRecycleBinConfirm();
+        if (this.recycleBinDialogVisible && this.recycleBinFileSystemId === row.file_System_ID) {
+          this.onRecycleBinFileSystemSelect();
+        }
+        this.refreshList();
+      },
+      error: () => this.restoringRecycleBin = false
+    });
+  }
+
+  /** Clear recycle bin for the file system selected in the row menu. Called after confirm. */
+  onClearRecycleBinFromMenu(): void {
+    const row = this.selectedFileSystemForMenu;
+    if (!row) return;
+    this.clearingRecycleBin = true;
+    this.fileSystemsService.clearFileSystemRecycleBin(row.file_System_ID).subscribe({
+      next: (response: any) => {
+        this.clearingRecycleBin = false;
+        if (!response?.success) {
+          this.handleError('clearRecycleBin', response);
+          return;
+        }
+        this.messageService.add({
+          severity: 'success',
+          summary: this.translate.getInstant('fileSystem.companyStorage.clearRecycleBin'),
+          detail: this.translate.getInstant('fileSystem.companyStorage.recycleBinCleared')
+        });
+        this.hideClearRecycleBinConfirm();
+        if (this.recycleBinDialogVisible && this.recycleBinFileSystemId === row.file_System_ID) {
+          this.onRecycleBinFileSystemSelect();
+        }
+        this.refreshList();
+      },
+      error: () => this.clearingRecycleBin = false
+    });
+  }
+
   handleError(operation: string, response: any): void {
     const summary = this.translate.getInstant('fileSystem.admin.errorSummary');
     const fallback = this.translate.getInstant('fileSystem.admin.errorUnknown');
@@ -340,15 +519,15 @@ export class FileSystemsSectionComponent implements OnInit {
       this.messageService.add({ severity: 'warn', summary: this.translate.getInstant('fileSystem.admin.validation'), detail: this.translate.getInstant('fileSystem.admin.fileSystemNameRequired') });
       return;
     }
-    const typeId = this.editFileSystemTypeId ?? this.selectedForEdit.type ?? 0;
-    if (typeId <= 0) {
+    // Type can be 0 (e.g. "Regular"); only null/undefined means not selected.
+    const typeId = this.editFileSystemTypeId ?? this.selectedForEdit.type;
+    if (typeId === null || typeId === undefined) {
       this.messageService.add({ severity: 'warn', summary: this.translate.getInstant('fileSystem.admin.validation'), detail: this.translate.getInstant('fileSystem.admin.fileSystemTypeRequired') });
       return;
     }
     this.savingFileSystem = true;
     this.fileSystemsService.updateFileSystemDetails(this.selectedForEdit.file_System_ID, this.editFileSystemName.trim(), typeId).subscribe({
       next: (response: any) => {
-        console.log('response updateFileSystemDetails', response);
         this.savingFileSystem = false;
         if (!response?.success) {
           this.handleError('update', response);
