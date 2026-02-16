@@ -1,5 +1,5 @@
 <p-toast />
-<div class="block-section">
+<div class="block-section card">
     <h2 class="block-title">{{ 'fileSystem.entityAdmin.fileSystemsByEntity' | translate }}</h2>
     <div class="block-card">
         <p class="mb-3 text-500">{{ 'fileSystem.entityAdmin.fileSystemsHostedInDrives' | translate }}</p>
@@ -11,8 +11,8 @@
                 styleClass="p-button-outlined" (onClick)="showRecycleBinDialog()"></p-button>
         </div>
 
-        <p-table #fileSystemsTable [value]="fileSystemsTableValue" [paginator]="false"
-            styleClass="p-datatable-sm p-datatable-gridlines" responsiveLayout="scroll" [globalFilterFields]="['name']">
+        <p-table #fileSystemsTable [value]="fileSystemsTableValue" [paginator]="false" styleClass="   "
+            responsiveLayout="scroll" [globalFilterFields]="['name']">
             <ng-template pTemplate="caption">
                 <div class="flex align-items-center justify-content-between gap-3 mb-2 flex-wrap">
                     <span class="p-input-icon-left flex-1 min-w-200px max-w-md">
@@ -231,9 +231,18 @@
 
 <!-- Delete confirm (ESM) -->
 <p-dialog [header]="'fileSystem.entityAdmin.deleteFileSystem' | translate" [(visible)]="deleteConfirmVisible"
-    [modal]="true" [style]="{ width: '400px' }" (onHide)="hideDeleteConfirm()" [draggable]="false" [resizable]="false">
-    <p *ngIf="selectedForDelete">{{ 'fileSystem.entityAdmin.confirmDeleteFileSystem' | translate: { name:
+    [modal]="true" [style]="{ width: '450px' }" (onHide)="hideDeleteConfirm()" [draggable]="false" [resizable]="false">
+    <p *ngIf="selectedForDelete" class="mb-3">{{ 'fileSystem.entityAdmin.confirmDeleteFileSystem' | translate: { name:
         selectedForDelete.name } }}</p>
+    <div class="field mb-3" *ngIf="selectedForDelete">
+        <div class="flex align-items-center gap-2">
+            <p-checkbox [(ngModel)]="deleteAllContents" [binary]="true" inputId="deleteAllContents"
+                [style]="{ cursor: 'pointer' }"></p-checkbox>
+            <label for="deleteAllContents" class="mb-0 cursor-pointer">{{ 'fileSystem.entityAdmin.deleteAllContents' |
+                translate }}</label>
+        </div>
+        <small class="text-500 block mt-2">{{ 'fileSystem.entityAdmin.deleteAllContentsHint' | translate }}</small>
+    </div>
     <ng-template pTemplate="footer">
         <p-button [label]="'fileSystem.companyStorage.close' | translate" styleClass="p-button-secondary"
             (onClick)="hideDeleteConfirm()"></p-button>

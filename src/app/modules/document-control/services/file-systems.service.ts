@@ -101,12 +101,16 @@ export class FileSystemsService {
   }
 
   /**
-   * Delete_File_System (1125). Input: File_System_ID
+   * Delete_File_System (1125). Input: File_System_ID, Delete_All_Contents
    */
-  deleteFileSystem(fileSystemId: number): Observable<any> {
+  deleteFileSystem(fileSystemId: number, deleteAllContents: boolean): Observable<any> {
     this.isLoadingSubject.next(true);
+    const params: string[] = [
+      fileSystemId.toString(),
+      deleteAllContents.toString()
+    ];
     return this.apiService
-      .callAPI(1125, this.getAccessToken(), [fileSystemId.toString()])
+      .callAPI(1125, this.getAccessToken(), params)
       .pipe(finalize(() => this.isLoadingSubject.next(false)));
   }
 

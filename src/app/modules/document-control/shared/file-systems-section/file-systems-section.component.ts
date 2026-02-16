@@ -69,6 +69,7 @@ export class FileSystemsSectionComponent implements OnInit {
   selectedForDetails: FileSystemListItem | null = null;
   detailsData: { name: string; typeName: string; driveName: string; active: boolean; createdAt: string } | null = null;
   selectedForDelete: FileSystemListItem | null = null;
+  deleteAllContents = false;
   recycleBinFileSystemId: number | null = null;
   recycleBinContents: { folders?: any[]; files?: any[] } | null = null;
 
@@ -354,6 +355,7 @@ export class FileSystemsSectionComponent implements OnInit {
     this.restoringDeletedFileSystem = true;
     this.fileSystemsService.restoreDeletedFileSystem(row.file_System_ID).subscribe({
       next: (response: any) => {
+        console.log('response restore deleted file system', response);
         this.restoringDeletedFileSystem = false;
         if (!response?.success) {
           this.handleError('restoreDeleted', response);
@@ -584,13 +586,15 @@ export class FileSystemsSectionComponent implements OnInit {
   hideDeleteConfirm(): void {
     this.deleteConfirmVisible = false;
     this.selectedForDelete = null;
+    this.deleteAllContents = false;
   }
 
   onDeleteConfirm(): void {
     if (!this.selectedForDelete) return;
     this.deletingFileSystem = true;
-    this.fileSystemsService.deleteFileSystem(this.selectedForDelete.file_System_ID).subscribe({
+    this.fileSystemsService.deleteFileSystem(this.selectedForDelete.file_System_ID, this.deleteAllContents).subscribe({
       next: (response: any) => {
+        console.log('response delete file system', response);
         this.deletingFileSystem = false;
         if (!response?.success) {
           this.handleError('delete', response);

@@ -56,7 +56,12 @@ const FILE_SYSTEM_ERROR_KEYS: Record<string, string> = {
   // File Systems (Other APIs)
   ERP12248: 'fileSystem.admin.errorInvalidEntityFilter',
   ERP12251: 'fileSystem.admin.errorInvalidFileSystemName',
-  ERP12252: 'fileSystem.admin.errorInvalidFileSystemType'
+  ERP12252: 'fileSystem.admin.errorInvalidFileSystemName',
+  ERP12255: 'fileSystem.admin.errorFileSystemInUse',
+  // FWA variants (some APIs may return FWA prefix)
+  FWA12251: 'fileSystem.admin.errorInvalidFileSystemName',
+  FWA12252: 'fileSystem.admin.errorInvalidFileSystemName',
+  FWA12255: 'fileSystem.admin.errorFileSystemInUse'
 };
 
 /**
@@ -70,13 +75,13 @@ export function getFileSystemErrorDetail(
   getMessage: (key: string) => string
 ): string {
   let code = (response?.errorCode ?? response?.message?.code ?? response?.code ?? '').toString();
-  if (!code && typeof response?.message === 'string' && /^ERP\d+$/.test(response.message)) {
+  if (!code && typeof response?.message === 'string' && /^(ERP|FWA)\d+$/.test(response.message)) {
     code = response.message;
   }
   const key = code ? FILE_SYSTEM_ERROR_KEYS[code] : null;
   if (key) return getMessage(key);
   const msg = response?.message;
   if (msg != null && typeof msg === 'object' && msg.detail) return String(msg.detail);
-  if (typeof msg === 'string' && !/^ERP\d+$/.test(msg)) return msg;
+  if (typeof msg === 'string' && !/^(ERP|FWA)\d+$/.test(msg)) return msg;
   return '';
 }
