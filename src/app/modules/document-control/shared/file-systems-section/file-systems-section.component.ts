@@ -263,7 +263,22 @@ export class FileSystemsSectionComponent implements OnInit {
    */
   buildFileSystemMenuItems(): void {
     const row = this.selectedFileSystemForMenu;
-    const items: MenuItem[] = [
+    const isDeleted = row && !this.isFileSystemActive(row);
+
+    if (isDeleted) {
+      // Deleted (Inactive) file system: only Restore is allowed.
+      this.fileSystemMenuItems = [
+        {
+          label: this.translate.getInstant('fileSystem.entityAdmin.restoreFileSystem'),
+          icon: 'pi pi-replay',
+          command: () => this.showRestoreDeletedConfirm()
+        }
+      ];
+      return;
+    }
+
+    // Active file system: full menu.
+    this.fileSystemMenuItems = [
       {
         label: this.translate.getInstant('fileSystem.admin.viewDetails'),
         icon: 'pi pi-eye',
@@ -278,32 +293,24 @@ export class FileSystemsSectionComponent implements OnInit {
         label: this.translate.getInstant('fileSystem.entityAdmin.deleteFileSystem'),
         icon: 'pi pi-trash',
         command: () => { if (row) this.showDeleteConfirm(row); }
+      },
+      { separator: true },
+      {
+        label: this.translate.getInstant('fileSystem.companyStorage.openRecycleBin'),
+        icon: 'pi pi-folder-open',
+        command: () => { if (row) this.showRecycleBinDialogForFileSystem(row); }
+      },
+      {
+        label: this.translate.getInstant('fileSystem.companyStorage.restoreRecycleBinContents'),
+        icon: 'pi pi-replay',
+        command: () => this.showRestoreRecycleBinConfirm()
+      },
+      {
+        label: this.translate.getInstant('fileSystem.companyStorage.clearRecycleBin'),
+        icon: 'pi pi-trash',
+        command: () => this.showClearRecycleBinConfirm()
       }
     ];
-    if (row && !this.isFileSystemActive(row)) {
-      items.push({
-        label: this.translate.getInstant('fileSystem.entityAdmin.restoreFileSystem'),
-        icon: 'pi pi-replay',
-        command: () => this.showRestoreDeletedConfirm()
-      });
-    }
-    items.push({ separator: true });
-    items.push({
-      label: this.translate.getInstant('fileSystem.companyStorage.openRecycleBin'),
-      icon: 'pi pi-folder-open',
-      command: () => { if (row) this.showRecycleBinDialogForFileSystem(row); }
-    });
-    items.push({
-      label: this.translate.getInstant('fileSystem.companyStorage.restoreRecycleBinContents'),
-      icon: 'pi pi-replay',
-      command: () => this.showRestoreRecycleBinConfirm()
-    });
-    items.push({
-      label: this.translate.getInstant('fileSystem.companyStorage.clearRecycleBin'),
-      icon: 'pi pi-trash',
-      command: () => this.showClearRecycleBinConfirm()
-    });
-    this.fileSystemMenuItems = items;
   }
 
   /** Open the 3-dot row menu for a file system. */
