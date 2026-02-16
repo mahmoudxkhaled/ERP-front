@@ -1,4 +1,4 @@
-<div class="company-storage-view">
+<div class="company-storage-view card">
     <div class="company-storage-top flex flex-col gap-3">
         <a routerLink="/document-control/storage-content-management" class="back-link mb-3">
             <i class="pi pi-arrow-left mr-2"></i>{{ 'fileSystem.backToHome' | translate }}
@@ -11,15 +11,15 @@
             <div class="field">
                 <label class="block mb-1">{{ 'fileSystem.companyStorageView.selectDrive' | translate }}</label>
                 <p-dropdown [options]="entityDriveOptions" [(ngModel)]="selectedDriveId" optionLabel="name"
-                    optionValue="id" [style]="{ width: '240px' }"
-                    placeholder="{{ 'fileSystem.companyStorageView.selectDrive' | translate }}"
+                    optionValue="id" [style]="{ width: '240px' }" [disabled]="loadingDrives"
+                    [placeholder]="loadingDrives ? ('fileSystem.companyStorage.loading' | translate) : ('fileSystem.companyStorageView.selectDrive' | translate)"
                     (onChange)="onDriveSelected()"></p-dropdown>
             </div>
             <div class="field">
                 <label class="block mb-1">{{ 'fileSystem.companyStorageView.selectFileSystem' | translate }}</label>
                 <p-dropdown [options]="fileSystemOptionsInDrive" [(ngModel)]="selectedFileSystemId" optionLabel="name"
-                    optionValue="id" [style]="{ width: '240px' }" [disabled]="!selectedDriveId"
-                    placeholder="{{ 'fileSystem.companyStorageView.selectFileSystem' | translate }}"
+                    optionValue="id" [style]="{ width: '240px' }" [disabled]="!selectedDriveId || loadingFileSystemsInDrive"
+                    [placeholder]="loadingFileSystemsInDrive ? ('fileSystem.companyStorage.loading' | translate) : ('fileSystem.companyStorageView.selectFileSystem' | translate)"
                     (onChange)="onFileSystemSelected()"></p-dropdown>
             </div>
         </div>
@@ -52,77 +52,8 @@
         </div>
     </div>
 
-    <p-breadcrumb *ngIf="selectedFileSystemId" [model]="breadcrumbModel" [home]="undefined"
-        class="mb-3 breadcrumb-wrap"></p-breadcrumb>
-
-    <div class="storage-layout" *ngIf="selectedFileSystemId">
-        <div class="content-card tree-card">
-            <div class="content-card-header">
-                <i class="pi pi-folder content-card-icon"></i>
-                <span class="content-card-title">{{ 'fileSystem.companyStorageView.folders' | translate }}</span>
-            </div>
-            <div class="content-card-body tree-panel">
-                <p-tree [value]="folderTree" selectionMode="single" [(selection)]="selectedNode"
-                    (onNodeSelect)="onNodeSelect($event)" [metaKeySelection]="false"
-                    styleClass="w-full border-0 company-storage-tree">
-                    <ng-template pTemplate="default" let-node>
-                        <div class="tree-node-row">
-                            <span class="tree-node-label">{{ node.label }}</span>
-                            <span class="tree-node-actions" *ngIf="!isRootNode(node)">
-                                <button pButton type="button" icon="pi pi-ellipsis-v"
-                                    class="p-button-rounded p-button-text p-button-plain p-button-sm"
-                                    (click)="openFolderMenu(folderRowMenu, node, $event)"
-                                    [pTooltip]="'fileSystem.companyStorage.actions' | translate"></button>
-                            </span>
-                        </div>
-                    </ng-template>
-                </p-tree>
-            </div>
-        </div>
-        <div class="content-card files-card">
-            <div class="content-card-header">
-                <i class="pi pi-file content-card-icon"></i>
-                <span class="content-card-title">{{ 'fileSystem.companyStorageView.files' | translate }}</span>
-            </div>
-            <div class="content-card-body p-0">
-                <p-table [value]="currentFolderFiles" [paginator]="false"
-                    styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped" responsiveLayout="scroll">
-                    <ng-template pTemplate="header">
-                        <tr>
-                            <th style="width: 3rem"></th>
-                            <th style="width: 20rem">{{ 'fileSystem.companyStorage.fileName' | translate }}</th>
-                            <th style="width: 5rem">{{ 'fileSystem.companyStorage.type' | translate }}</th>
-                            <th style="width: 7rem">{{ 'fileSystem.companyStorage.size' | translate }}</th>
-                            <th style="width: 10rem">{{ 'fileSystem.companyStorage.modified' | translate }}</th>
-                            <th style="width: 10rem">{{ 'fileSystem.companyStorage.actions' | translate }}</th>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" let-file>
-                        <tr>
-                            <td><i [class]="getFileIcon(file.type)" class="file-type-icon"
-                                    [attr.aria-hidden]="true"></i></td>
-                            <td>{{ file.name }}</td>
-                            <td>{{ file.type }}</td>
-                            <td>{{ file.size }}</td>
-                            <td>{{ file.modified }}</td>
-                            <td>
-                                <button pButton type="button" icon="pi pi-ellipsis-v"
-                                    class="p-button-rounded p-button-text p-button-plain p-button-sm"
-                                    (click)="openFileMenu(fileRowMenu, file, $event)"
-                                    [pTooltip]="'fileSystem.companyStorage.actions' | translate"></button>
-                            </td>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="emptymessage">
-                        <tr>
-                            <td colspan="7" class="text-center p-4 text-500">{{ 'fileSystem.companyStorage.noFiles' |
-                                translate }}</td>
-                        </tr>
-                    </ng-template>
-                </p-table>
-            </div>
-        </div>
-    </div>
+    <!-- Folder Management Component -->
+    <app-folder-management *ngIf="selectedFileSystemId" [fileSystemId]="selectedFileSystemId"></app-folder-management>
 
     <p-menu #folderRowMenu [model]="folderMenuItems" [popup]="true" [appendTo]="'body'"></p-menu>
     <p-menu #fileRowMenu [model]="fileMenuItems" [popup]="true" [appendTo]="'body'"></p-menu>

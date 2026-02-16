@@ -10,6 +10,7 @@ import { CompanyStorageComponent } from './company-storage/company-storage.compo
 import { SharedFilesComponent } from './shared-files/shared-files.component';
 import { DcsComponent } from './dcs/dcs.component';
 import { EdmsComponent } from './edms/edms.component';
+import { FolderManagementModule } from '../storage/folder-management/folder-management.module';
 
 @NgModule({
     declarations: [
@@ -25,7 +26,8 @@ import { EdmsComponent } from './edms/edms.component';
         RouterModule,
         BreadcrumbModule,
         SharedModule,
-        StorageContentManagementRoutingModule
+        StorageContentManagementRoutingModule,
+        FolderManagementModule
     ],
     exports: [
         StorageContentLayoutComponent

@@ -2,6 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { MenuItem, TreeNode } from 'primeng/api';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { TranslationService } from 'src/app/core/services/translation.service';
+import { VirtualDrivesService } from '../../services/virtual-drives.service';
+import { FileSystemsService } from '../../services/file-systems.service';
+import { VirtualDrivesFilters } from '../../models/virtual-drive.model';
+import { FileSystemsFilters } from '../../models/file-system.model';
 
 export interface MockFile {
     id: number;
@@ -82,14 +86,13 @@ export class CompanyStorageComponent implements OnInit {
     selectedFolderId: string = 'root';
     breadcrumbItems: BreadcrumbItem[] = [{ labelKey: 'fileSystem.companyStorageView.title', folderId: 'root' }];
 
-    // OSFS: Select drive then file system (owned by entity)
+    // OSFS: Select drive then file system (owned by entity). Loaded from List_Drives and List_File_Systems APIs.
     selectedDriveId: number | null = null;
     selectedFileSystemId: number | null = null;
-    entityDriveOptions: { id: number; name: string }[] = [
-        { id: 1, name: 'Company Main' },
-        { id: 2, name: 'Archive' }
-    ];
+    entityDriveOptions: { id: number; name: string }[] = [];
     fileSystemOptionsInDrive: { id: number; name: string }[] = [];
+    loadingDrives = false;
+    loadingFileSystemsInDrive = false;
 
     folderTree: TreeNode[] = [
         {
@@ -149,11 +152,41 @@ export class CompanyStorageComponent implements OnInit {
     constructor(
         private translate: TranslationService,
         private confirmationService: ConfirmationService,
-        private messageService: MessageService
+        private messageService: MessageService,
+        private virtualDrivesService: VirtualDrivesService,
+        private fileSystemsService: FileSystemsService
     ) {}
 
     ngOnInit(): void {
         this.applyTranslationsToTree(this.folderTree);
+        this.loadDrives();
+    }
+
+    /**
+     * Load drives from List_Drives API (entity filter = 1 for entity-owned drives).
+     */
+    loadDrives(): void {
+        this.loadingDrives = true;
+        const filters: VirtualDrivesFilters = {
+            entityFilter: 1,
+            licenseId: 0,
+            activeOnly: false
+        };
+        this.virtualDrivesService.listDrives(filters).subscribe({
+            next: (response: any) => {
+                this.loadingDrives = false;
+                if (!response?.success) {
+                    return;
+                }
+                const raw = response.message;
+                const list = Array.isArray(raw) ? raw : (raw?.Drives ?? raw?.message ?? []);
+                this.entityDriveOptions = (list || []).map((item: any) => ({
+                    id: Number(item?.Drive_ID ?? item?.drive_ID ?? 0),
+                    name: String(item?.Name ?? item?.name ?? '')
+                })).filter((d: { id: number; name: string }) => d.id > 0);
+            },
+            error: () => this.loadingDrives = false
+        });
     }
 
     onDriveSelected(): void {
@@ -162,11 +195,40 @@ export class CompanyStorageComponent implements OnInit {
             this.fileSystemOptionsInDrive = [];
             return;
         }
-        // Placeholder: load file systems for selected drive when API exists.
-        this.fileSystemOptionsInDrive = [
-            { id: 1, name: this.translate.getInstant('fileSystem.folders.companyStorage') },
-            { id: 2, name: this.translate.getInstant('fileSystem.admin.driveArchive') }
-        ];
+        this.loadFileSystemsInDrive();
+    }
+
+    /**
+     * Load file systems for the selected drive from List_File_Systems API.
+     */
+    loadFileSystemsInDrive(): void {
+        const driveId = this.selectedDriveId;
+        if (driveId == null) {
+            this.fileSystemOptionsInDrive = [];
+            return;
+        }
+        this.loadingFileSystemsInDrive = true;
+        const filters: FileSystemsFilters = {
+            entityFilter: 1,
+            driveId,
+            activeOnly: false
+        };
+        this.fileSystemsService.listFileSystems(filters).subscribe({
+            next: (response: any) => {
+                this.loadingFileSystemsInDrive = false;
+                if (!response?.success) {
+                    this.fileSystemOptionsInDrive = [];
+                    return;
+                }
+                const raw = response.message;
+                const list = Array.isArray(raw) ? raw : (raw?.File_Systems ?? raw?.file_Systems ?? []);
+                this.fileSystemOptionsInDrive = (list || []).map((item: any) => ({
+                    id: Number(item?.file_System_ID ?? item?.File_System_ID ?? 0),
+                    name: String(item?.name ?? item?.Name ?? '')
+                })).filter((fs: { id: number; name: string }) => fs.id > 0);
+            },
+            error: () => this.loadingFileSystemsInDrive = false
+        });
     }
 
     onFileSystemSelected(): void {

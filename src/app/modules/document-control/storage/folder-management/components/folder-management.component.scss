@@ -1,0 +1,81 @@
+.folder-management-container {
+  width: 100%;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.folder-layout {
+  display: flex;
+  gap: 1rem;
+  min-height: 500px;
+}
+
+.tree-panel {
+  min-width: 300px;
+  max-width: 400px;
+}
+
+.contents-panel {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-header {
+  padding: 1rem;
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.card-body {
+  padding: 1rem;
+}
+
+.folder-tree {
+  .tree-node-row {
+    width: 100%;
+    padding: 0.25rem 0;
+
+    .tree-node-label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .tree-node-actions {
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    &:hover .tree-node-actions {
+      opacity: 1;
+    }
+  }
+}
+
+.file-type-icon {
+  font-size: 1.25rem;
+  color: var(--text-color-secondary);
+}
+
+.cursor-pointer {
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--surface-hover);
+  }
+}
+
+::ng-deep {
+  .p-tree {
+    .p-tree-container {
+      .p-treenode {
+        .p-treenode-content {
+          padding: 0.25rem;
+        }
+      }
+    }
+  }
+}
