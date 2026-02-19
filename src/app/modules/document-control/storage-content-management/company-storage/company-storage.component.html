@@ -7,21 +7,21 @@
             <h2 class="section-title">{{ 'fileSystem.companyStorageView.title' | translate }}</h2>
             <p class="section-description">{{ 'fileSystem.companyStorageView.description' | translate }}</p>
         </div>
-        <div class="flex flex-wrap gap-3 align-items-end mb-3">
-            <div class="field">
-                <label class="block mb-1">{{ 'fileSystem.companyStorageView.selectDrive' | translate }}</label>
-                <p-dropdown [options]="entityDriveOptions" [(ngModel)]="selectedDriveId" optionLabel="name"
-                    optionValue="id" [style]="{ width: '240px' }" [disabled]="loadingDrives"
-                    [placeholder]="loadingDrives ? ('fileSystem.companyStorage.loading' | translate) : ('fileSystem.companyStorageView.selectDrive' | translate)"
-                    (onChange)="onDriveSelected()"></p-dropdown>
-            </div>
-            <div class="field">
-                <label class="block mb-1">{{ 'fileSystem.companyStorageView.selectFileSystem' | translate }}</label>
-                <p-dropdown [options]="fileSystemOptionsInDrive" [(ngModel)]="selectedFileSystemId" optionLabel="name"
-                    optionValue="id" [style]="{ width: '240px' }" [disabled]="!selectedDriveId || loadingFileSystemsInDrive"
-                    [placeholder]="loadingFileSystemsInDrive ? ('fileSystem.companyStorage.loading' | translate) : ('fileSystem.companyStorageView.selectFileSystem' | translate)"
-                    (onChange)="onFileSystemSelected()"></p-dropdown>
-            </div>
+    </div>
+    <div class="flex flex-wrap gap-3  mb-3 justify-content-center">
+        <div class="field">
+            <label class="block mb-1">{{ 'fileSystem.companyStorageView.selectDrive' | translate }}</label>
+            <p-dropdown [options]="entityDriveOptions" [(ngModel)]="selectedDriveId" optionLabel="name" optionValue="id"
+                [style]="{ width: '240px' }" [disabled]="loadingDrives"
+                [placeholder]="loadingDrives ? ('fileSystem.companyStorage.loading' | translate) : ('fileSystem.companyStorageView.selectDrive' | translate)"
+                (onChange)="onDriveSelected()"></p-dropdown>
+        </div>
+        <div class="field">
+            <label class="block mb-1">{{ 'fileSystem.companyStorageView.selectFileSystem' | translate }}</label>
+            <p-dropdown [options]="fileSystemOptionsInDrive" [(ngModel)]="selectedFileSystemId" optionLabel="name"
+                optionValue="id" [style]="{ width: '240px' }" [disabled]="!selectedDriveId || loadingFileSystemsInDrive"
+                [placeholder]="loadingFileSystemsInDrive ? ('fileSystem.companyStorage.loading' | translate) : ('fileSystem.companyStorageView.selectFileSystem' | translate)"
+                (onChange)="onFileSystemSelected()"></p-dropdown>
         </div>
     </div>
 

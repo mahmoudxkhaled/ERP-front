@@ -148,17 +148,41 @@ export class FolderManagementComponent implements OnInit, OnChanges {
         }
 
         const raw = response.message;
-        const structureItems: FolderStructureItem[] = Array.isArray(raw)
-          ? raw
-          : (raw?.Folders ?? raw?.folders ?? []);
-
-        // Build tree from flat structure
+        // API returns array of [Folder_ID, Parent_Folder_ID, Folder_Name]
+        const structureItems = this.normalizeFolderStructureResponse(raw);
         this.folderTreeNodes = this.buildTreeFromStructure(structureItems);
       },
       error: () => {
         this.treeLoading = false;
       }
     });
+  }
+
+  /**
+   * Normalize Get_Folder_Structure response to FolderStructureItem[].
+   * API may return array of arrays [[Folder_ID, Parent_Folder_ID, Folder_Name], ...]
+   * or array of objects with folder_ID, parent_Folder_ID, folder_Name.
+   */
+  private normalizeFolderStructureResponse(raw: any): FolderStructureItem[] {
+    if (!raw) return [];
+    const list = Array.isArray(raw) ? raw : (raw?.Folders ?? raw?.folders ?? []);
+    if (list.length === 0) return [];
+
+    const first = list[0];
+    // Array of arrays: [[id, parentId, name], ...]
+    if (Array.isArray(first)) {
+      return (list as any[][]).map((row) => ({
+        folder_ID: Number(row[0] ?? 0),
+        parent_Folder_ID: Number(row[1] ?? 0),
+        folder_Name: String(row[2] ?? '')
+      }));
+    }
+    // Array of objects
+    return list.map((item: any) => ({
+      folder_ID: Number(item?.folder_ID ?? item?.Folder_ID ?? 0),
+      parent_Folder_ID: Number(item?.parent_Folder_ID ?? item?.Parent_Folder_ID ?? 0),
+      folder_Name: String(item?.folder_Name ?? item?.Folder_Name ?? '')
+    }));
   }
 
   /**
@@ -228,37 +252,34 @@ export class FolderManagementComponent implements OnInit, OnChanges {
 
     this.folderService.getFolderContents(folderId, this.fileSystemId).subscribe({
       next: (response: any) => {
+        console.log('response loadFolderContents', response);
         this.tableLoadingSpinner = false;
         if (!response?.success) {
           this.handleBusinessError('getContents', response);
           return;
         }
 
+        // API returns message: { Folders: [...], Files: [] } with snake_case properties
         const raw = response.message;
-        const contents: FolderContents = Array.isArray(raw)
-          ? { folders: [], files: raw }
-          : raw ?? { folders: [], files: [] };
+        const contents: FolderContents = raw ?? { folders: [], files: [] };
+        const foldersList = contents.folders ?? contents.Folders ?? [];
+        const filesList = contents.files ?? contents.Files ?? [];
 
-        // Map folders and files to table rows
-        const folderRows: FolderContentRow[] = (contents.folders ?? contents.Folders ?? []).map(
-          (folder: any) => ({
-            id: Number(folder?.folder_ID ?? folder?.Folder_ID ?? 0),
-            name: String(folder?.folder_Name ?? folder?.Folder_Name ?? ''),
-            type: 'folder' as const,
-            isFolder: true
-          })
-        );
+        const folderRows: FolderContentRow[] = foldersList.map((folder: any) => ({
+          id: Number(folder?.folder_id ?? folder?.folder_ID ?? folder?.Folder_ID ?? 0),
+          name: String(folder?.folder_name ?? folder?.folder_Name ?? folder?.Folder_Name ?? ''),
+          type: 'folder' as const,
+          isFolder: true
+        }));
 
-        const fileRows: FolderContentRow[] = (contents.files ?? contents.Files ?? []).map(
-          (file: any) => ({
-            id: Number(file?.file_ID ?? file?.File_ID ?? 0),
-            name: String(file?.file_Name ?? file?.File_Name ?? ''),
-            type: 'file' as const,
-            size: file?.size ? this.formatBytes(file.size) : '',
-            modified: file?.modified_At ?? file?.Modified_At ?? '',
-            isFolder: false
-          })
-        );
+        const fileRows: FolderContentRow[] = filesList.map((file: any) => ({
+          id: Number(file?.file_id ?? file?.file_ID ?? file?.File_ID ?? 0),
+          name: String(file?.file_name ?? file?.file_Name ?? file?.File_Name ?? ''),
+          type: 'file' as const,
+          size: file?.size != null ? this.formatBytes(Number(file.size)) : '',
+          modified: String(file?.last_modified ?? file?.modified_At ?? file?.Modified_At ?? ''),
+          isFolder: false
+        }));
 
         this.folderContents = [...folderRows, ...fileRows];
       },
