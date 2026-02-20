@@ -341,7 +341,8 @@
             "downloadingFile": "Downloading {{fileName}}...",
             "downloadComplete": "Download complete",
             "remaining": "Remaining",
-            "hide": "Hide"
+            "hide": "Hide",
+            "back": "Back"
         },
         "sharedFiles": {
             "fileName": "File Name",

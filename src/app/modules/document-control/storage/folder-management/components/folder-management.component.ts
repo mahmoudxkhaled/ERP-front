@@ -27,10 +27,11 @@ export interface FolderTreeNode extends TreeNode {
 export interface FolderContentRow {
   id: number;
   name: string;
-  type: 'folder' | 'file';
+  type: 'folder' | 'file' | 'back';
   size?: string;
   modified?: string;
   isFolder: boolean;
+  isBackButton?: boolean; // Special flag for back button row
 }
 
 /**
@@ -55,6 +56,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   folderTreeNodes: TreeNode[] = [];
   selectedFolderNode: TreeNode | null = null;
   currentFolderId: number = 0; // 0 = root folder
+  parentFolderId: number = 0; // Track parent folder for back navigation
 
   // Folder contents table
   folderContents: FolderContentRow[] = [];
@@ -145,6 +147,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
       const newFileSystemId = changes['fileSystemId'].currentValue;
       if (newFileSystemId > 0) {
         this.currentFolderId = 0;
+        this.parentFolderId = 0;
         this.selectedFolderNode = null;
         this.loadFolderStructure();
         this.loadFolderContents(0);
@@ -170,6 +173,19 @@ export class FolderManagementComponent implements OnInit, OnChanges {
         isFolder: true
       }));
     }
+    
+    // Add back button row at the beginning if not in root folder
+    if (this.currentFolderId !== 0 && !this.tableLoadingSpinner) {
+      const backButtonRow: FolderContentRow = {
+        id: -1, // Special ID for back button
+        name: '',
+        type: 'back',
+        isFolder: false,
+        isBackButton: true
+      };
+      return [backButtonRow, ...this.folderContents];
+    }
+    
     return this.folderContents;
   }
 
@@ -286,12 +302,16 @@ export class FolderManagementComponent implements OnInit, OnChanges {
    * Load folder contents from Get_Folder_Contents API.
    * Shows subfolders and files in the selected folder.
    */
-  loadFolderContents(folderId: number): void {
+  loadFolderContents(folderId: number, updateParent: boolean = false): void {
     if (this.fileSystemId <= 0) {
       return;
     }
 
     this.tableLoadingSpinner = true;
+    // Update parent folder ID if needed (when navigating to a new folder)
+    if (updateParent && folderId !== this.currentFolderId) {
+      this.parentFolderId = this.currentFolderId;
+    }
     this.currentFolderId = folderId;
 
     this.folderService.getFolderContents(folderId, this.fileSystemId).subscribe({
@@ -350,6 +370,8 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   onFolderNodeSelect(event: { node: TreeNode }): void {
     const folderNode = event.node as FolderTreeNode;
     if (folderNode?.data?.folderId !== undefined) {
+      // Update parent folder ID before changing current folder
+      this.parentFolderId = this.currentFolderId;
       this.selectedFolderNode = folderNode;
       this.loadFolderContents(folderNode.data.folderId);
     }
@@ -1367,9 +1389,55 @@ export class FolderManagementComponent implements OnInit, OnChanges {
 
       const folderNode = findNodeById(this.folderTreeNodes, row.id);
       if (folderNode) {
+        // Update parent folder ID before navigating
+        this.parentFolderId = this.currentFolderId;
         this.selectedFolderNode = folderNode;
         this.onFolderNodeSelect({ node: folderNode });
       }
+    }
+  }
+
+  /**
+   * Navigate back to parent folder (like WinRAR back button).
+   */
+  goBack(): void {
+    if (this.parentFolderId === 0) {
+      // Go to root
+      this.selectedFolderNode = null;
+      this.loadFolderContents(0, false);
+      this.parentFolderId = 0;
+      return;
+    }
+
+    // Find parent folder node in tree
+    const findNodeById = (nodes: TreeNode[], id: number): TreeNode | null => {
+      for (const node of nodes) {
+        const nodeId = (node as FolderTreeNode).data?.folderId;
+        if (nodeId === id) {
+          return node;
+        }
+        if (node.children && node.children.length > 0) {
+          const found = findNodeById(node.children, id);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+
+    const parentNode = findNodeById(this.folderTreeNodes, this.parentFolderId);
+    if (parentNode) {
+      const parentFolderNode = parentNode as FolderTreeNode;
+      // Get the parent's parent folder ID for next back navigation
+      const grandParentId = parentFolderNode.data?.parentFolderId ?? 0;
+      const newParentId = grandParentId;
+      this.parentFolderId = newParentId;
+      this.selectedFolderNode = parentNode;
+      this.loadFolderContents(parentFolderNode.data.folderId, false);
+    } else {
+      // Parent not found in tree, go to root
+      this.selectedFolderNode = null;
+      this.loadFolderContents(0, false);
+      this.parentFolderId = 0;
     }
   }
 }

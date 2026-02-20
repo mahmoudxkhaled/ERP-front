@@ -341,7 +341,8 @@
             "downloadingFile": "جاري تنزيل {{fileName}}...",
             "downloadComplete": "اكتمل التنزيل",
             "remaining": "المتبقي",
-            "hide": "إخفاء"
+            "hide": "إخفاء",
+            "back": "رجوع"
         },
         "sharedFiles": {
             "fileName": "اسم الملف",

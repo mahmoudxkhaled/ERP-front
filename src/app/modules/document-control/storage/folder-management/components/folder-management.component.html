@@ -68,7 +68,23 @@
                             </tr>
                         </ng-template>
                         <ng-template pTemplate="body" let-row>
-                            <tr [class.cursor-pointer]="row.isFolder" (dblclick)="onContentRowDoubleClick(row)">
+                            <!-- Back button row -->
+                            <tr *ngIf="row.isBackButton" 
+                                class="back-button-row cursor-pointer" 
+                                (click)="goBack()">
+                                <td>
+                                    <i class="pi pi-arrow-left file-type-icon"></i>
+                                </td>
+                                <td colspan="5">
+                                    <span class="font-semibold">
+                                        {{ 'fileSystem.folderManagement.back' | translate }}
+                                    </span>
+                                </td>
+                            </tr>
+                            <!-- Regular content rows -->
+                            <tr *ngIf="!row.isBackButton" 
+                                [class.cursor-pointer]="row.isFolder" 
+                                (click)="onContentRowDoubleClick(row)">
                                 <td>
                                     <ng-container *ngIf="tableLoadingSpinner; else normalIcon">
                                         <p-skeleton height="1.5rem" width="1.5rem" borderRadius="4px"></p-skeleton>
