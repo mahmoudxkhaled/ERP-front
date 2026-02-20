@@ -17,8 +17,7 @@
                 </div>
                 <div class="card-body">
                     <p-tree [value]="folderTreeNodes" selectionMode="single" [(selection)]="selectedFolderNode"
-                        (onNodeSelect)="onFolderNodeSelect($event)" [loading]="treeLoading"
-                        styleClass="w-full border-0 folder-tree">
+                        (onNodeSelect)="onFolderNodeSelect($event)" styleClass="w-full border-0 folder-tree">
                         <ng-template pTemplate="default" let-node>
                             <div class="tree-node-row flex align-items-center justify-content-between">
                                 <span class="tree-node-label flex-1">{{ node.label }}</span>
@@ -44,9 +43,9 @@
                     <h3 class="m-0">{{ 'fileSystem.folderManagement.contents' | translate }}</h3>
                 </div>
                 <div class="card-body p-0">
-                    <p-table #contentsTable [value]="folderContentsTableValue" [loading]="tableLoadingSpinner"
-                        [paginator]="false" styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped"
-                        responsiveLayout="scroll" [globalFilterFields]="['name']">
+                    <p-table #contentsTable [value]="folderContentsTableValue" [paginator]="false"
+                        styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped" responsiveLayout="scroll"
+                        [globalFilterFields]="['name']">
                         <ng-template pTemplate="caption">
                             <div class="flex align-items-center justify-content-between mb-2">
                                 <span class="p-input-icon-left flex-1 max-w-md">
@@ -116,10 +115,7 @@
                                         <p-skeleton height="1.5rem" width="2rem" borderRadius="4px"></p-skeleton>
                                     </ng-container>
                                     <ng-template #normalActions>
-                                        <button *ngIf="!row.isFolder" 
-                                            pButton 
-                                            type="button" 
-                                            icon="pi pi-ellipsis-v"
+                                        <button *ngIf="!row.isFolder" pButton type="button" icon="pi pi-ellipsis-v"
                                             class="p-button-rounded p-button-text p-button-plain p-button-sm"
                                             (click)="openFileMenu(fileRowMenu, row, $event)"
                                             [pTooltip]="'fileSystem.folderManagement.actions' | translate">
@@ -358,7 +354,7 @@
         <p-button [label]="'fileSystem.companyStorage.close' | translate" styleClass="p-button-secondary"
             (onClick)="hideRestoreDeletedFoldersDialog()"></p-button>
         <p-button [label]="'fileSystem.folderManagement.restore' | translate"
-            (onClick)="onRestoreDeletedFoldersConfirm()"             [disabled]="selectedFoldersToRestore.length === 0"></p-button>
+            (onClick)="onRestoreDeletedFoldersConfirm()" [disabled]="selectedFoldersToRestore.length === 0"></p-button>
     </ng-template>
 </p-dialog>
 
@@ -374,7 +370,8 @@
     <div class="p-fluid" *ngIf="!fileDetailsLoading && fileDetails">
         <div class="field mb-3">
             <label class="font-semibold">{{ 'fileSystem.folderManagement.fileName' | translate }}</label>
-            <p class="mt-2 mb-0">{{ fileDetails?.file_Name || fileDetails?.file_name || fileDetails?.name || selectedFileForDetails?.name || '—' }}</p>
+            <p class="mt-2 mb-0">{{ fileDetails?.file_Name || fileDetails?.file_name || fileDetails?.name ||
+                selectedFileForDetails?.name || '—' }}</p>
         </div>
         <div class="field mb-3">
             <label class="font-semibold">{{ 'fileSystem.folderManagement.fileType' | translate }}</label>
@@ -382,11 +379,13 @@
         </div>
         <div class="field mb-3">
             <label class="font-semibold">{{ 'fileSystem.folderManagement.fileSize' | translate }}</label>
-            <p class="mt-2 mb-0">{{ fileDetails?.file_Size ? formatFileSize(fileDetails.file_Size) : (fileDetails?.size || '—') }}</p>
+            <p class="mt-2 mb-0">{{ fileDetails?.file_Size ? formatFileSize(fileDetails.file_Size) : (fileDetails?.size
+                || '—') }}</p>
         </div>
         <div class="field mb-3">
             <label class="font-semibold">{{ 'fileSystem.folderManagement.lastModified' | translate }}</label>
-            <p class="mt-2 mb-0">{{ fileDetails?.last_Modified || fileDetails?.last_modified || fileDetails?.modified || selectedFileForDetails?.modified || '—' }}</p>
+            <p class="mt-2 mb-0">{{ fileDetails?.last_Modified || fileDetails?.last_modified || fileDetails?.modified ||
+                selectedFileForDetails?.modified || '—' }}</p>
         </div>
         <div class="field mb-3" *ngIf="fileDetails?.created_At || fileDetails?.created_at">
             <label class="font-semibold">{{ 'fileSystem.folderManagement.createdAt' | translate }}</label>
@@ -401,8 +400,8 @@
 
 <!-- Rename File Dialog -->
 <p-dialog [header]="'fileSystem.folderManagement.renameFileDialogTitle' | translate"
-    [(visible)]="renameFileDialogVisible" [modal]="true" [style]="{ width: '400px' }"
-    (onHide)="hideRenameFileDialog()" [draggable]="false" [resizable]="false">
+    [(visible)]="renameFileDialogVisible" [modal]="true" [style]="{ width: '400px' }" (onHide)="hideRenameFileDialog()"
+    [draggable]="false" [resizable]="false">
     <div class="p-fluid">
         <div class="field mb-3">
             <label for="renameFileName">{{ 'fileSystem.folderManagement.fileName' | translate }}</label>
@@ -421,10 +420,9 @@
 </p-dialog>
 
 <!-- Delete File Confirmation Dialog -->
-<p-dialog [header]="'fileSystem.folderManagement.deleteFileDialogTitle' | translate" 
-    [(visible)]="deleteFileConfirmVisible"
-    [modal]="true" [style]="{ width: '450px' }" (onHide)="hideDeleteFileConfirm()" [draggable]="false"
-    [resizable]="false">
+<p-dialog [header]="'fileSystem.folderManagement.deleteFileDialogTitle' | translate"
+    [(visible)]="deleteFileConfirmVisible" [modal]="true" [style]="{ width: '450px' }"
+    (onHide)="hideDeleteFileConfirm()" [draggable]="false" [resizable]="false">
     <div class="flex align-items-center gap-3 mb-3">
         <i class="pi pi-exclamation-triangle text-2xl text-yellow-500"></i>
         <p class="mb-0" *ngIf="selectedFileForDelete">
@@ -441,3 +439,32 @@
 
 <!-- Toast for messages -->
 <p-toast></p-toast>
+
+<!-- Download progress component (fixed at bottom) -->
+<div *ngIf="downloadProgressVisible" class="download-progress-container">
+    <div class="download-progress-card card">
+        <div class="flex align-items-center gap-3 w-full">
+            <i class="pi pi-download text-primary text-xl"></i>
+            <div class="flex flex-column gap-2 flex-1">
+                <div class="flex align-items-center justify-content-between">
+                    <span class="font-semibold">
+                        {{ currentDownloadingFileName }}
+                    </span>
+                    <button pButton type="button" icon="pi pi-times" class="p-button-rounded p-button-text p-button-sm"
+                        (click)="hideDownloadProgress()" [pTooltip]="'fileSystem.folderManagement.hide' | translate">
+                    </button>
+                </div>
+                <p-progressBar [value]="downloadProgressPercent" [showValue]="true"></p-progressBar>
+                <div class="flex align-items-center justify-content-between">
+                    <small class="text-500">
+                        {{ downloadProgressPercent }}%
+                    </small>
+                    <small class="text-500" *ngIf="downloadFileSizeBytes > 0">
+                        {{ 'fileSystem.folderManagement.remaining' | translate }}: {{
+                        formatBytes(downloadRemainingBytes) }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

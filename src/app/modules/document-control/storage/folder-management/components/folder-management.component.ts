@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, firstValueFrom } from 'rxjs';
 import { MenuItem, MessageService, TreeNode } from 'primeng/api';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
@@ -116,6 +116,10 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   renameFileType = '';
   downloadProgressPercent = 0;
   downloadInProgress = false;
+  currentDownloadingFileName: string | null = null;
+  downloadProgressVisible = false;
+  downloadFileSizeBytes: number = 0;
+  downloadRemainingBytes: number = 0;
 
   constructor(
     private translate: TranslationService,
@@ -332,7 +336,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   /**
    * Format bytes to human-readable string (e.g. "1.25 GB", "512.00 MB").
    */
-  private formatBytes(bytes: number): string {
+  formatBytes(bytes: number): string {
     if (bytes <= 0) return '0 B';
     const gb = bytes / (1024 * 1024 * 1024);
     if (gb >= 1) return gb.toFixed(2) + ' GB';
@@ -636,6 +640,26 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     const accessToken = this.localStorageService.getAccessToken();
     this.downloadInProgress = true;
     this.downloadProgressPercent = 0;
+    this.currentDownloadingFileName = file.name;
+    this.downloadFileSizeBytes = 0;
+    this.downloadRemainingBytes = 0;
+    this.downloadProgressVisible = true;
+
+    // Get file details to get file size
+    try {
+      const fileDetailsResponse = await firstValueFrom(
+        this.fileService.getFileDetails(file.id, this.currentFolderId, this.fileSystemId)
+      );
+
+      if (fileDetailsResponse?.success && fileDetailsResponse?.message) {
+        const fileSize = fileDetailsResponse.message.size || fileDetailsResponse.message.file_size || 0;
+        this.downloadFileSizeBytes = Number(fileSize) || 0;
+        this.downloadRemainingBytes = this.downloadFileSizeBytes;
+      }
+    } catch (err) {
+      // If we can't get file size, continue without it
+      console.warn('Could not get file size for download progress', err);
+    }
 
     try {
       const blob = await this.fileDownloadService.downloadFile(
@@ -644,7 +668,14 @@ export class FolderManagementComponent implements OnInit, OnChanges {
         BigInt(this.currentFolderId),
         this.fileSystemId,
         (percent) => {
-          this.downloadProgressPercent = Math.round(percent);
+          const progress = Math.round(percent);
+          this.downloadProgressPercent = progress;
+
+          // Calculate remaining bytes if we have file size
+          if (this.downloadFileSizeBytes > 0) {
+            const downloadedBytes = (this.downloadFileSizeBytes * progress) / 100;
+            this.downloadRemainingBytes = Math.max(0, this.downloadFileSizeBytes - downloadedBytes);
+          }
         }
       );
 
@@ -658,6 +689,8 @@ export class FolderManagementComponent implements OnInit, OnChanges {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
 
+      // Hide progress component and show success message
+      this.downloadProgressVisible = false;
       this.messageService.add({
         severity: 'success',
         summary: this.translate.getInstant('fileSystem.folderManagement.success'),
@@ -668,6 +701,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
       const detail = getFileSystemErrorDetail(response, (key) =>
         this.translate.getInstant(key)
       );
+      this.downloadProgressVisible = false;
       this.messageService.add({
         severity: 'error',
         summary: this.translate.getInstant('fileSystem.folderManagement.error'),
@@ -676,7 +710,17 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     } finally {
       this.downloadInProgress = false;
       this.downloadProgressPercent = 0;
+      this.currentDownloadingFileName = null;
+      this.downloadFileSizeBytes = 0;
+      this.downloadRemainingBytes = 0;
     }
+  }
+
+  /**
+   * Hide download progress component.
+   */
+  hideDownloadProgress(): void {
+    this.downloadProgressVisible = false;
   }
 
   /**

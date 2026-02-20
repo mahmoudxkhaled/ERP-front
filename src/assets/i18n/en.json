@@ -337,7 +337,11 @@
             "deleteFileSuccess": "File deleted successfully.",
             "fileNameRequired": "File name is required.",
             "downloadFile": "Download",
-            "downloadFileSuccess": "File downloaded successfully."
+            "downloadFileSuccess": "File downloaded successfully.",
+            "downloadingFile": "Downloading {{fileName}}...",
+            "downloadComplete": "Download complete",
+            "remaining": "Remaining",
+            "hide": "Hide"
         },
         "sharedFiles": {
             "fileName": "File Name",

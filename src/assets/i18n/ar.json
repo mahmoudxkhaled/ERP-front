@@ -337,7 +337,11 @@
             "deleteFileSuccess": "تم حذف الملف بنجاح.",
             "fileNameRequired": "اسم الملف مطلوب.",
             "downloadFile": "تنزيل",
-            "downloadFileSuccess": "تم تنزيل الملف بنجاح."
+            "downloadFileSuccess": "تم تنزيل الملف بنجاح.",
+            "downloadingFile": "جاري تنزيل {{fileName}}...",
+            "downloadComplete": "اكتمل التنزيل",
+            "remaining": "المتبقي",
+            "hide": "إخفاء"
         },
         "sharedFiles": {
             "fileName": "اسم الملف",
