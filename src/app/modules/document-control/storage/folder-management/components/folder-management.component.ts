@@ -4,9 +4,11 @@ import { MenuItem, MessageService, TreeNode } from 'primeng/api';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { FolderService } from '../services/folder.service';
+import { FileService } from '../services/file.service';
 import { FolderStructureItem, Folder, FolderContents } from '../models/folder.model';
 import { getFileSystemErrorDetail } from 'src/app/modules/document-control/shared/file-system-helpers';
 import { FileUploadService } from 'src/app/core/file-system-lib/services/file-upload.service';
+import { FileDownloadService } from 'src/app/core/file-system-lib/services/file-download.service';
 
 /**
  * Represents a folder tree node with additional metadata.
@@ -95,11 +97,33 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   folderMenuItems: MenuItem[] = [];
   selectedFolderForMenu: FolderTreeNode | null = null;
 
+  // File menu (3-dot)
+  fileMenuItems: MenuItem[] = [];
+  selectedFileForMenu: FolderContentRow | null = null;
+
+  // File dialogs
+  fileDetailsDialogVisible = false;
+  renameFileDialogVisible = false;
+  deleteFileConfirmVisible = false;
+
+  // File operation state
+  selectedFileForDetails: FolderContentRow | null = null;
+  selectedFileForRename: FolderContentRow | null = null;
+  selectedFileForDelete: FolderContentRow | null = null;
+  fileDetails: any = null;
+  fileDetailsLoading = false;
+  renameFileName = '';
+  renameFileType = '';
+  downloadProgressPercent = 0;
+  downloadInProgress = false;
+
   constructor(
     private translate: TranslationService,
     private messageService: MessageService,
     private folderService: FolderService,
+    private fileService: FileService,
     private fileUploadService: FileUploadService,
+    private fileDownloadService: FileDownloadService,
     private localStorageService: LocalStorageService
   ) {
     this.isLoading$ = this.folderService.isLoadingSubject.asObservable();
@@ -455,7 +479,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     const input = event.target as HTMLInputElement;
     const newFiles = Array.from(input.files ?? []);
     this.uploadError = null;
-    
+
     // Add new files to existing list (avoid duplicates by name and size)
     newFiles.forEach(newFile => {
       const isDuplicate = this.selectedFiles.some(
@@ -466,7 +490,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
         this.fileUploadStatus.set(newFile.name, 'pending');
       }
     });
-    
+
     // Reset input so user can select same files again
     if (this.fileInputRef?.nativeElement) {
       this.fileInputRef.nativeElement.value = '';
@@ -527,7 +551,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     if (files && files.length > 0) {
       const newFiles = Array.from(files);
       this.uploadError = null;
-      
+
       // Add new files to existing list (avoid duplicates by name and size)
       newFiles.forEach(newFile => {
         const isDuplicate = this.selectedFiles.some(
@@ -548,11 +572,275 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     if (this.uploadInProgress) {
       return;
     }
-    
+
     // Remove file from list
     this.selectedFiles = this.selectedFiles.filter(file => file !== fileToRemove);
     // Remove from status map
     this.fileUploadStatus.delete(fileToRemove.name);
+  }
+
+  /**
+   * Build menu items for the 3-dot file menu. Called when opening the menu.
+   * Every file gets: Download, View Details, Rename, Delete.
+   */
+  buildFileMenuItems(): void {
+    const file = this.selectedFileForMenu;
+    if (!file) {
+      this.fileMenuItems = [];
+      return;
+    }
+
+    this.fileMenuItems = [
+      {
+        label: this.translate.getInstant('fileSystem.folderManagement.downloadFile'),
+        icon: 'pi pi-download',
+        command: () => this.downloadFile(file)
+      },
+      {
+        label: this.translate.getInstant('fileSystem.folderManagement.viewFileDetails'),
+        icon: 'pi pi-info-circle',
+        command: () => this.showFileDetailsDialog(file)
+      },
+      {
+        label: this.translate.getInstant('fileSystem.folderManagement.renameFile'),
+        icon: 'pi pi-pencil',
+        command: () => this.showRenameFileDialog(file)
+      },
+      { separator: true },
+      {
+        label: this.translate.getInstant('fileSystem.folderManagement.deleteFile'),
+        icon: 'pi pi-trash',
+        command: () => this.showDeleteFileConfirm(file)
+      }
+    ];
+  }
+
+  /**
+   * Show file menu at click position.
+   */
+  openFileMenu(menu: { toggle: (e: Event) => void }, file: FolderContentRow, event: Event): void {
+    event.stopPropagation();
+    this.selectedFileForMenu = file;
+    this.buildFileMenuItems();
+    menu.toggle(event);
+  }
+
+  /**
+   * Download file using FileDownloadService.
+   */
+  async downloadFile(file: FolderContentRow): Promise<void> {
+    if (this.downloadInProgress || this.fileSystemId <= 0) {
+      return;
+    }
+
+    const accessToken = this.localStorageService.getAccessToken();
+    this.downloadInProgress = true;
+    this.downloadProgressPercent = 0;
+
+    try {
+      const blob = await this.fileDownloadService.downloadFile(
+        accessToken,
+        BigInt(file.id),
+        BigInt(this.currentFolderId),
+        this.fileSystemId,
+        (percent) => {
+          this.downloadProgressPercent = Math.round(percent);
+        }
+      );
+
+      // Create download link and trigger download
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = file.name;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      this.messageService.add({
+        severity: 'success',
+        summary: this.translate.getInstant('fileSystem.folderManagement.success'),
+        detail: this.translate.getInstant('fileSystem.folderManagement.downloadFileSuccess')
+      });
+    } catch (err: unknown) {
+      const response = this.normalizeUploadError(err);
+      const detail = getFileSystemErrorDetail(response, (key) =>
+        this.translate.getInstant(key)
+      );
+      this.messageService.add({
+        severity: 'error',
+        summary: this.translate.getInstant('fileSystem.folderManagement.error'),
+        detail: detail || this.translate.getInstant('fileSystem.folderManagement.errorUnknown')
+      });
+    } finally {
+      this.downloadInProgress = false;
+      this.downloadProgressPercent = 0;
+    }
+  }
+
+  /**
+   * Show file details dialog and load file details.
+   */
+  showFileDetailsDialog(file: FolderContentRow): void {
+    this.selectedFileForDetails = file;
+    this.fileDetails = null;
+    this.fileDetailsLoading = true;
+    this.fileDetailsDialogVisible = true;
+
+    this.fileService
+      .getFileDetails(file.id, this.currentFolderId, this.fileSystemId)
+      .subscribe({
+        next: (response: any) => {
+          this.fileDetailsLoading = false;
+          if (!response?.success) {
+            this.handleFileError('getDetails', response);
+            return;
+          }
+          this.fileDetails = response.message || response;
+        },
+        error: (err) => {
+          this.fileDetailsLoading = false;
+          this.handleFileError('getDetails', err);
+        }
+      });
+  }
+
+  /**
+   * Hide file details dialog.
+   */
+  hideFileDetailsDialog(): void {
+    this.fileDetailsDialogVisible = false;
+    this.selectedFileForDetails = null;
+    this.fileDetails = null;
+  }
+
+  /**
+   * Show rename file dialog.
+   */
+  showRenameFileDialog(file: FolderContentRow): void {
+    this.selectedFileForRename = file;
+    this.renameFileName = file.name;
+    // Extract file type from name if possible, or use default
+    const nameParts = file.name.split('.');
+    this.renameFileType = nameParts.length > 1 ? nameParts[nameParts.length - 1] : '';
+    this.renameFileDialogVisible = true;
+  }
+
+  /**
+   * Hide rename file dialog.
+   */
+  hideRenameFileDialog(): void {
+    this.renameFileDialogVisible = false;
+    this.selectedFileForRename = null;
+    this.renameFileName = '';
+    this.renameFileType = '';
+  }
+
+  /**
+   * Save renamed file.
+   */
+  onRenameFileSave(): void {
+    if (!this.selectedFileForRename) {
+      return;
+    }
+
+    const fileName = (this.renameFileName || '').trim();
+    const fileType = (this.renameFileType || '').trim();
+
+    if (!fileName) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: this.translate.getInstant('fileSystem.folderManagement.validation'),
+        detail: this.translate.getInstant('fileSystem.folderManagement.fileNameRequired')
+      });
+      return;
+    }
+
+    this.fileService
+      .updateFileDetails(
+        this.selectedFileForRename.id,
+        this.currentFolderId,
+        this.fileSystemId,
+        fileName,
+        fileType
+      )
+      .subscribe({
+        next: (response: any) => {
+          if (!response?.success) {
+            this.handleFileError('update', response);
+            return;
+          }
+
+          this.messageService.add({
+            severity: 'success',
+            summary: this.translate.getInstant('fileSystem.folderManagement.success'),
+            detail: this.translate.getInstant('fileSystem.folderManagement.renameFileSuccess')
+          });
+          this.hideRenameFileDialog();
+          this.loadFolderContents(this.currentFolderId);
+        }
+      });
+  }
+
+  /**
+   * Show delete file confirmation dialog.
+   */
+  showDeleteFileConfirm(file: FolderContentRow): void {
+    this.selectedFileForDelete = file;
+    this.deleteFileConfirmVisible = true;
+  }
+
+  /**
+   * Hide delete file confirmation dialog.
+   */
+  hideDeleteFileConfirm(): void {
+    this.deleteFileConfirmVisible = false;
+    this.selectedFileForDelete = null;
+  }
+
+  /**
+   * Confirm delete file operation.
+   */
+  onDeleteFileConfirm(): void {
+    if (!this.selectedFileForDelete) {
+      return;
+    }
+
+    const fileId = this.selectedFileForDelete.id;
+    this.fileService
+      .deleteFileAllocation(fileId, this.currentFolderId, this.fileSystemId)
+      .subscribe({
+        next: (response: any) => {
+          console.log('response delete file allocation', response);
+          if (!response?.success) {
+            this.handleFileError('delete', response);
+            return;
+          }
+
+          this.messageService.add({
+            severity: 'success',
+            summary: this.translate.getInstant('fileSystem.folderManagement.success'),
+            detail: this.translate.getInstant('fileSystem.folderManagement.deleteFileSuccess')
+          });
+          this.hideDeleteFileConfirm();
+          this.loadFolderContents(this.currentFolderId);
+        }
+      });
+  }
+
+  /**
+   * Handle file operation errors.
+   */
+  private handleFileError(operation: string, response: any): void {
+    const detail = getFileSystemErrorDetail(response, (key) =>
+      this.translate.getInstant(key)
+    );
+    this.messageService.add({
+      severity: 'error',
+      summary: this.translate.getInstant('fileSystem.folderManagement.error'),
+      detail: detail || this.translate.getInstant('fileSystem.folderManagement.errorUnknown')
+    });
   }
 
   /**
@@ -573,7 +861,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
         const file = this.selectedFiles[i];
         this.currentUploadingFileName = file.name;
         this.fileUploadStatus.set(file.name, 'uploading');
-        
+
         await this.fileUploadService.uploadFile(
           file,
           accessToken,
@@ -587,7 +875,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
             this.uploadProgressPercent = Math.round(overallProgress);
           }
         );
-        
+
         // Mark file as completed after successful upload
         this.fileUploadStatus.set(file.name, 'completed');
         this.currentUploadingFileName = null;

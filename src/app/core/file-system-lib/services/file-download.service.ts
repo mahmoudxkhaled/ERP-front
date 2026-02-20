@@ -5,7 +5,7 @@ import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../../api/api.service';
 
 /** Request code for Download_Request (Files Basic). */
-const DOWNLOAD_REQUEST_CODE = 1102;
+const DOWNLOAD_REQUEST_CODE = 1111;
 
 @Injectable({
   providedIn: 'root',
