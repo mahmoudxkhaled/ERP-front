@@ -2,15 +2,16 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
-import { ApiServices } from '../../../API_Interface/ApiServices';
-import { ApiRequestTypes } from '../../../API_Interface/ApiRequestTypes';
-import { ApiResult } from '../../../API_Interface/ApiResult';
+import { ApiService } from '../../api/api.service';
+
+/** Request code for Download_Request (Files Basic). */
+const DOWNLOAD_REQUEST_CODE = 1102;
 
 @Injectable({
   providedIn: 'root',
 })
 export class FileDownloadService {
-  private readonly apiServices = inject(ApiServices);
+  private readonly apiService = inject(ApiService);
   private readonly http = inject(HttpClient);
 
   async downloadFile(
@@ -52,11 +53,9 @@ export class FileDownloadService {
       fileSystemId.toString(),
     ];
 
-    const result: ApiResult = await firstValueFrom(
-      this.apiServices.callAPI(ApiRequestTypes.Download_Request, accessToken, parameters)
-    );
-
-    const response = JSON.parse(result.Body as string) as {
+    const response = await firstValueFrom(
+      this.apiService.callAPI(DOWNLOAD_REQUEST_CODE, accessToken, parameters)
+    ) as unknown as {
       success: boolean;
       message: {
         download_Token: string;
@@ -65,7 +64,7 @@ export class FileDownloadService {
       };
     };
 
-    if (!response.success || !response.message) {
+    if (!response?.success || !response?.message) {
       throw new Error('Download request failed.');
     }
 
@@ -96,7 +95,7 @@ export class FileDownloadService {
 
       const arrayBuffer = await firstValueFrom(
         this.http.post(
-          `${this.apiServices.baseUrl}/Download`,
+          `${this.apiService.getBaseUrl()}/Download`,
           formData,
           { responseType: 'arraybuffer' as 'json' }
         )

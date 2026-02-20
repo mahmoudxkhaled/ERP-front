@@ -11,6 +11,11 @@ export class ApiService {
 
   constructor(private http: HttpClient) { }
 
+  /** Base URL for API calls; used by file-system-lib for upload/download chunk endpoints. */
+  getBaseUrl(): string {
+    return this.baseUrl;
+  }
+
   //Pack the request data to bytes array
   packRequest(requestCode: number, accessToken: string, parameters: string[]): Uint8Array {
     const encoder = new TextEncoder();

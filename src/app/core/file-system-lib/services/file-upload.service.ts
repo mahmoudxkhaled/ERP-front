@@ -2,9 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
-import { ApiServices } from '../../../API_Interface/ApiServices';
-import { ApiRequestTypes } from '../../../API_Interface/ApiRequestTypes';
-import { ApiResult } from '../../../API_Interface/ApiResult';
+import { ApiService } from '../../api/api.service';
 import { sha256FromUint8 } from '../utils/hash.util';
 import {
   UploadSession,
@@ -14,11 +12,14 @@ import {
   updateUploadedChunk,
 } from '../utils/upload-session.util';
 
+/** Request code for Upload_Request (Files Basic). */
+const UPLOAD_REQUEST_CODE = 1101;
+
 @Injectable({
   providedIn: 'root',
 })
 export class FileUploadService {
-  private readonly apiServices = inject(ApiServices);
+  private readonly apiService = inject(ApiService);
   private readonly http = inject(HttpClient);
 
   async uploadFile(
@@ -171,16 +172,11 @@ export class FileUploadService {
       folderId.toString(),
     ];
 
-    const result: ApiResult = await firstValueFrom(
-      this.apiServices.callAPI(ApiRequestTypes.Upload_Request, accessToken, parameters)
-    );
+    const response = await firstValueFrom(
+      this.apiService.callAPI(UPLOAD_REQUEST_CODE, accessToken, parameters)
+    ) as unknown as { success: boolean; message: string };
 
-    const response = JSON.parse(result.Body as string) as {
-      success: boolean;
-      message: string;
-    };
-
-    if (!response.success || !response.message) {
+    if (!response?.success || !response?.message) {
       throw new Error('Upload request failed.');
     }
 
@@ -223,7 +219,7 @@ export class FileUploadService {
         try {
           await firstValueFrom(
             this.http.post(
-              `${this.apiServices.baseUrl}/Upload?token=${uploadToken}`,
+              `${this.apiService.getBaseUrl()}/Upload?token=${uploadToken}`,
               formData
             )
           );

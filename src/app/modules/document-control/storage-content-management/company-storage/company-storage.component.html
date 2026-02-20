@@ -29,29 +29,6 @@
         <p class="text-500 m-0">{{ 'fileSystem.companyStorageView.selectDriveAndFileSystem' | translate }}</p>
     </div>
 
-    <div class="toolbar-wrap mb-3" *ngIf="selectedFileSystemId">
-        <div class="content-card">
-            <div class="content-card-body py-2">
-                <p-toolbar styleClass="p-toolbar-flat border-0">
-                    <div class="p-toolbar-group-start gap-3">
-                        <p-button [label]="'fileSystem.companyStorage.upload' | translate" icon="pi pi-upload"
-                            (onClick)="showUploadDialog()"></p-button>
-                        <p-button [label]="'fileSystem.companyStorage.newFolder' | translate" icon="pi pi-folder-plus"
-                            styleClass="p-button-secondary" (onClick)="showNewFolderDialog()"></p-button>
-                        <p-button [label]="'fileSystem.companyStorage.download' | translate" icon="pi pi-download"
-                            styleClass="p-button-secondary" (onClick)="showDownloadProgressDialog()"></p-button>
-                        <p-button [label]="'fileSystem.companyStorage.delete' | translate" icon="pi pi-trash"
-                            styleClass="p-button-secondary" [disabled]="true"></p-button>
-                        <p-button [label]="'fileSystem.companyStorage.recycleBin' | translate" icon="pi pi-replay"
-                            styleClass="p-button-secondary" (onClick)="showRecycleBinDialog()"></p-button>
-                        <p-button [label]="'fileSystem.companyStorage.allocateFile' | translate" icon="pi pi-link"
-                            styleClass="p-button-secondary" (onClick)="showAllocateFileDialog()"></p-button>
-                    </div>
-                </p-toolbar>
-            </div>
-        </div>
-    </div>
-
     <!-- Folder Management Component -->
     <app-folder-management *ngIf="selectedFileSystemId" [fileSystemId]="selectedFileSystemId"></app-folder-management>
 

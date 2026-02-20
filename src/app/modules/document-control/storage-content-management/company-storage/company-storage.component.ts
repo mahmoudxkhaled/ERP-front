@@ -184,6 +184,11 @@ export class CompanyStorageComponent implements OnInit {
                     id: Number(item?.Drive_ID ?? item?.drive_ID ?? 0),
                     name: String(item?.Name ?? item?.name ?? '')
                 })).filter((d: { id: number; name: string }) => d.id > 0);
+                // Select first drive so user always has a selection
+                if (this.entityDriveOptions.length > 0) {
+                    this.selectedDriveId = this.entityDriveOptions[0].id;
+                    this.loadFileSystemsInDrive();
+                }
             },
             error: () => this.loadingDrives = false
         });
@@ -226,6 +231,10 @@ export class CompanyStorageComponent implements OnInit {
                     id: Number(item?.file_System_ID ?? item?.File_System_ID ?? 0),
                     name: String(item?.name ?? item?.Name ?? '')
                 })).filter((fs: { id: number; name: string }) => fs.id > 0);
+                // Select first file system when still on the same drive
+                if (this.selectedDriveId === driveId && this.fileSystemOptionsInDrive.length > 0) {
+                    this.selectedFileSystemId = this.fileSystemOptionsInDrive[0].id;
+                }
             },
             error: () => this.loadingFileSystemsInDrive = false
         });

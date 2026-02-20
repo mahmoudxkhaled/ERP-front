@@ -2,9 +2,11 @@ import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/cor
 import { Observable } from 'rxjs';
 import { MenuItem, MessageService, TreeNode } from 'primeng/api';
 import { TranslationService } from 'src/app/core/services/translation.service';
+import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { FolderService } from '../services/folder.service';
 import { FolderStructureItem, Folder, FolderContents } from '../models/folder.model';
 import { getFileSystemErrorDetail } from 'src/app/modules/document-control/shared/file-system-helpers';
+import { FileUploadService } from 'src/app/core/file-system-lib/services/file-upload.service';
 
 /**
  * Represents a folder tree node with additional metadata.
@@ -58,10 +60,17 @@ export class FolderManagementComponent implements OnInit, OnChanges {
 
   // Dialog visibility flags
   createFolderDialogVisible = false;
+  uploadDialogVisible = false;
   renameFolderDialogVisible = false;
   moveFolderDialogVisible = false;
   deleteFolderConfirmVisible = false;
   restoreDeletedFoldersDialogVisible = false;
+
+  // Upload state
+  selectedFiles: File[] = [];
+  uploadProgressPercent = 0;
+  uploadInProgress = false;
+  uploadError: string | null = null;
 
   // Form values for dialogs
   newFolderName = '';
@@ -84,7 +93,9 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   constructor(
     private translate: TranslationService,
     private messageService: MessageService,
-    private folderService: FolderService
+    private folderService: FolderService,
+    private fileUploadService: FileUploadService,
+    private localStorageService: LocalStorageService
   ) {
     this.isLoading$ = this.folderService.isLoadingSubject.asObservable();
   }
@@ -313,6 +324,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
 
   /**
    * Build menu items for the 3-dot row menu. Called when opening the menu.
+   * Every folder gets: Create folder, Upload, Rename, Move, Delete.
    */
   buildFolderMenuItems(): void {
     const folder = this.selectedFolderForMenu;
@@ -323,27 +335,53 @@ export class FolderManagementComponent implements OnInit, OnChanges {
 
     this.folderMenuItems = [
       {
+        label: this.translate.getInstant('fileSystem.folderManagement.createFolder'),
+        icon: 'pi pi-plus',
+        command: () => this.showCreateFolderDialogForFolder(folder)
+      },
+      {
+        label: this.translate.getInstant('fileSystem.folderManagement.upload'),
+        icon: 'pi pi-upload',
+        command: () => this.showUploadDialogForFolder(folder)
+      },
+      { separator: true },
+      {
         label: this.translate.getInstant('fileSystem.folderManagement.renameFolder'),
         icon: 'pi pi-pencil',
-        command: () => {
-          if (folder) this.showRenameFolderDialog(folder);
-        }
+        command: () => this.showRenameFolderDialog(folder)
       },
       {
         label: this.translate.getInstant('fileSystem.folderManagement.moveFolder'),
         icon: 'pi pi-arrows-h',
-        command: () => {
-          if (folder) this.showMoveFolderDialog(folder);
-        }
+        command: () => this.showMoveFolderDialog(folder)
       },
       {
         label: this.translate.getInstant('fileSystem.folderManagement.deleteFolder'),
         icon: 'pi pi-trash',
-        command: () => {
-          if (folder) this.showDeleteFolderConfirm(folder);
-        }
+        command: () => this.showDeleteFolderConfirm(folder)
       }
     ];
+  }
+
+  /**
+   * Open create folder dialog with the clicked folder as parent.
+   */
+  showCreateFolderDialogForFolder(folder: FolderTreeNode): void {
+    const folderId = folder?.data?.folderId ?? 0;
+    this.newFolderName = '';
+    this.newFolderParentId = folderId;
+    this.createFolderDialogVisible = true;
+  }
+
+  /**
+   * Open upload dialog for the clicked folder (set as current folder and show upload).
+   */
+  showUploadDialogForFolder(folder: FolderTreeNode): void {
+    const folderId = folder?.data?.folderId ?? 0;
+    this.currentFolderId = folderId;
+    this.selectedFolderNode = folder;
+    this.loadFolderContents(folderId);
+    this.showUploadDialog();
   }
 
   /**
@@ -357,16 +395,114 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   }
 
   /**
-   * Show create folder dialog.
+   * Show create folder dialog. Always creates a new root-level (parent) folder.
    */
   showCreateFolderDialog(): void {
     this.newFolderName = '';
-    this.newFolderParentId = this.currentFolderId;
+    this.newFolderParentId = 0;
     this.createFolderDialogVisible = true;
   }
 
   hideCreateFolderDialog(): void {
     this.createFolderDialogVisible = false;
+  }
+
+  /**
+   * Show upload files dialog.
+   */
+  showUploadDialog(): void {
+    this.uploadDialogVisible = true;
+    this.selectedFiles = [];
+    this.uploadError = null;
+    this.uploadProgressPercent = 0;
+  }
+
+  hideUploadDialog(): void {
+    this.uploadDialogVisible = false;
+    this.selectedFiles = [];
+    this.uploadError = null;
+    this.uploadProgressPercent = 0;
+  }
+
+  /**
+   * Handle file input change; store selected files.
+   */
+  onFilesSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.selectedFiles = Array.from(input.files ?? []);
+    this.uploadError = null;
+  }
+
+  /**
+   * Upload selected files to the current folder.
+   */
+  async onUploadConfirm(): Promise<void> {
+    if (this.selectedFiles.length === 0 || this.fileSystemId <= 0) {
+      return;
+    }
+
+    const accessToken = this.localStorageService.getAccessToken();
+    this.uploadInProgress = true;
+    this.uploadError = null;
+
+    try {
+      for (const file of this.selectedFiles) {
+        await this.fileUploadService.uploadFile(
+          file,
+          accessToken,
+          this.fileSystemId,
+          BigInt(this.currentFolderId),
+          (percent) => {
+            this.uploadProgressPercent = percent;
+          }
+        );
+      }
+
+      this.messageService.add({
+        severity: 'success',
+        summary: this.translate.getInstant('fileSystem.folderManagement.success'),
+        detail: this.translate.getInstant('fileSystem.folderManagement.fileUploadedSuccess')
+      });
+      this.hideUploadDialog();
+      this.loadFolderContents(this.currentFolderId);
+    } catch (err: unknown) {
+      const response = this.normalizeUploadError(err);
+      const detail = getFileSystemErrorDetail(response, (key) =>
+        this.translate.getInstant(key)
+      );
+      this.uploadError = detail || this.translate.getInstant('fileSystem.folderManagement.errorUnknown');
+      this.messageService.add({
+        severity: 'error',
+        summary: this.translate.getInstant('fileSystem.folderManagement.error'),
+        detail: this.uploadError
+      });
+    } finally {
+      this.uploadInProgress = false;
+    }
+  }
+
+  /**
+   * Build a response-like object for getFileSystemErrorDetail from a thrown error.
+   */
+  private normalizeUploadError(err: unknown): Record<string, unknown> {
+    if (!err || typeof err !== 'object') {
+      return {};
+    }
+    const e = err as Record<string, unknown>;
+    if (typeof e['Body'] === 'string') {
+      try {
+        return JSON.parse(e['Body'] as string) as Record<string, unknown>;
+      } catch {
+        return { message: e['Body'] };
+      }
+    }
+    if (e['error'] && typeof e['error'] === 'object') {
+      return e['error'] as Record<string, unknown>;
+    }
+    if (typeof e['error'] === 'string') {
+      return { message: e['error'] };
+    }
+    return e;
   }
 
   /**
@@ -456,13 +592,8 @@ export class FolderManagementComponent implements OnInit, OnChanges {
           });
           this.hideRenameFolderDialog();
           this.loadFolderStructure();
-          // Refresh contents if renamed folder is currently selected
-          if (
-            this.selectedFolderForRename &&
-            this.currentFolderId === this.selectedFolderForRename.data.folderId
-          ) {
-            this.loadFolderContents(this.currentFolderId);
-          }
+          // Always refresh contents so the new name appears (e.g. when renamed folder is a child in current view)
+          this.loadFolderContents(this.currentFolderId);
         }
       });
   }
@@ -609,14 +740,15 @@ export class FolderManagementComponent implements OnInit, OnChanges {
         });
         this.hideDeleteFolderConfirm();
 
-        // If deleted folder was selected, navigate to parent
+        // If deleted folder was selected, switch view to parent
         if (this.currentFolderId === folderId) {
           this.currentFolderId = parentFolderId;
           this.selectedFolderNode = null;
-          this.loadFolderContents(parentFolderId);
         }
 
         this.loadFolderStructure();
+        // Refresh contents so table reflects the change (e.g. deleted folder disappears from list)
+        this.loadFolderContents(this.currentFolderId);
       }
     });
   }
