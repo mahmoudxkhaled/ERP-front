@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
 import { Observable } from 'rxjs';
 import { MenuItem, MessageService, TreeNode } from 'primeng/api';
 import { TranslationService } from 'src/app/core/services/translation.service';
@@ -71,6 +71,11 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   uploadProgressPercent = 0;
   uploadInProgress = false;
   uploadError: string | null = null;
+  @ViewChild('fileInput', { static: false }) fileInputRef!: ElementRef<HTMLInputElement>;
+  // Track upload status for each file: 'pending' | 'uploading' | 'completed' | 'error'
+  fileUploadStatus = new Map<string, 'pending' | 'uploading' | 'completed' | 'error'>();
+  currentUploadingFileName: string | null = null;
+  isDragOver = false;
 
   // Form values for dialogs
   newFolderName = '';
@@ -415,6 +420,9 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     this.selectedFiles = [];
     this.uploadError = null;
     this.uploadProgressPercent = 0;
+    this.fileUploadStatus.clear();
+    this.currentUploadingFileName = null;
+    this.isDragOver = false;
   }
 
   hideUploadDialog(): void {
@@ -422,15 +430,129 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     this.selectedFiles = [];
     this.uploadError = null;
     this.uploadProgressPercent = 0;
+    this.fileUploadStatus.clear();
+    this.currentUploadingFileName = null;
+    this.isDragOver = false;
+    // Reset file input so user can select same files again
+    if (this.fileInputRef?.nativeElement) {
+      this.fileInputRef.nativeElement.value = '';
+    }
   }
 
   /**
-   * Handle file input change; store selected files.
+   * Trigger file input click programmatically.
+   */
+  triggerFileInput(): void {
+    if (this.fileInputRef?.nativeElement) {
+      this.fileInputRef.nativeElement.click();
+    }
+  }
+
+  /**
+   * Handle file input change; add selected files to existing list.
    */
   onFilesSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
-    this.selectedFiles = Array.from(input.files ?? []);
+    const newFiles = Array.from(input.files ?? []);
     this.uploadError = null;
+    
+    // Add new files to existing list (avoid duplicates by name and size)
+    newFiles.forEach(newFile => {
+      const isDuplicate = this.selectedFiles.some(
+        existingFile => existingFile.name === newFile.name && existingFile.size === newFile.size
+      );
+      if (!isDuplicate) {
+        this.selectedFiles.push(newFile);
+        this.fileUploadStatus.set(newFile.name, 'pending');
+      }
+    });
+    
+    // Reset input so user can select same files again
+    if (this.fileInputRef?.nativeElement) {
+      this.fileInputRef.nativeElement.value = '';
+    }
+  }
+
+  /**
+   * Format file size in bytes to human-readable format (KB, MB, GB).
+   */
+  formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+  }
+
+  /**
+   * Get upload status for a file.
+   */
+  getFileUploadStatus(fileName: string): 'pending' | 'uploading' | 'completed' | 'error' {
+    return this.fileUploadStatus.get(fileName) || 'pending';
+  }
+
+  /**
+   * Handle drag over event - prevent default and show visual feedback.
+   */
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!this.uploadInProgress) {
+      this.isDragOver = true;
+    }
+  }
+
+  /**
+   * Handle drag leave event - remove visual feedback.
+   */
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = false;
+  }
+
+  /**
+   * Handle drop event - add dropped files to existing list.
+   */
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragOver = false;
+
+    if (this.uploadInProgress) {
+      return;
+    }
+
+    const files = event.dataTransfer?.files;
+    if (files && files.length > 0) {
+      const newFiles = Array.from(files);
+      this.uploadError = null;
+      
+      // Add new files to existing list (avoid duplicates by name and size)
+      newFiles.forEach(newFile => {
+        const isDuplicate = this.selectedFiles.some(
+          existingFile => existingFile.name === newFile.name && existingFile.size === newFile.size
+        );
+        if (!isDuplicate) {
+          this.selectedFiles.push(newFile);
+          this.fileUploadStatus.set(newFile.name, 'pending');
+        }
+      });
+    }
+  }
+
+  /**
+   * Remove a file from the selected files list.
+   */
+  removeFile(fileToRemove: File): void {
+    if (this.uploadInProgress) {
+      return;
+    }
+    
+    // Remove file from list
+    this.selectedFiles = this.selectedFiles.filter(file => file !== fileToRemove);
+    // Remove from status map
+    this.fileUploadStatus.delete(fileToRemove.name);
   }
 
   /**
@@ -444,18 +566,31 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     const accessToken = this.localStorageService.getAccessToken();
     this.uploadInProgress = true;
     this.uploadError = null;
+    const totalFiles = this.selectedFiles.length;
 
     try {
-      for (const file of this.selectedFiles) {
+      for (let i = 0; i < this.selectedFiles.length; i++) {
+        const file = this.selectedFiles[i];
+        this.currentUploadingFileName = file.name;
+        this.fileUploadStatus.set(file.name, 'uploading');
+        
         await this.fileUploadService.uploadFile(
           file,
           accessToken,
           this.fileSystemId,
           BigInt(this.currentFolderId),
           (percent) => {
-            this.uploadProgressPercent = percent;
+            // Calculate overall progress: completed files + current file progress
+            const completedFiles = Array.from(this.fileUploadStatus.values()).filter(s => s === 'completed').length;
+            const currentFileProgress = percent / 100;
+            const overallProgress = ((completedFiles + currentFileProgress) / totalFiles) * 100;
+            this.uploadProgressPercent = Math.round(overallProgress);
           }
         );
+        
+        // Mark file as completed after successful upload
+        this.fileUploadStatus.set(file.name, 'completed');
+        this.currentUploadingFileName = null;
       }
 
       this.messageService.add({
@@ -466,6 +601,11 @@ export class FolderManagementComponent implements OnInit, OnChanges {
       this.hideUploadDialog();
       this.loadFolderContents(this.currentFolderId);
     } catch (err: unknown) {
+      // Mark current file as error if upload failed
+      if (this.currentUploadingFileName) {
+        this.fileUploadStatus.set(this.currentUploadingFileName, 'error');
+        this.currentUploadingFileName = null;
+      }
       const response = this.normalizeUploadError(err);
       const detail = getFileSystemErrorDetail(response, (key) =>
         this.translate.getInstant(key)

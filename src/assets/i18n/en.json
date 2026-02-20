@@ -311,7 +311,15 @@
             "moveFolderSuccess": "Folder moved successfully.",
             "restoreFoldersSuccess": "Folders restored successfully.",
             "confirmDeleteFolder": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
-            "cannotMoveToSelfOrChild": "Cannot move folder to itself or its child folder."
+            "cannotMoveToSelfOrChild": "Cannot move folder to itself or its child folder.",
+            "selectFiles": "Select Files",
+            "dropFilesHere": "Drop files here",
+            "or": "or",
+            "selectFilesToUpload": "Select one or more files to upload",
+            "selectedFiles": "Selected Files",
+            "filesSelected": "file(s) selected",
+            "complete": "complete",
+            "removeFile": "Remove file"
         },
         "sharedFiles": {
             "fileName": "File Name",

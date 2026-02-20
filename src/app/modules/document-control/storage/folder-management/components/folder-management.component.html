@@ -131,22 +131,90 @@
 
 <!-- Upload Files Dialog -->
 <p-dialog [header]="'fileSystem.folderManagement.uploadDialogTitle' | translate" [(visible)]="uploadDialogVisible"
-    [modal]="true" [style]="{ width: '420px' }" (onHide)="hideUploadDialog()" [draggable]="false"
-    [resizable]="false" [closable]="!uploadInProgress">
+    [modal]="true" [style]="{ width: '700px' }" (onHide)="hideUploadDialog()" [draggable]="false" [resizable]="false"
+    [closable]="!uploadInProgress">
     <div class="p-fluid">
         <div class="field mb-3">
-            <label>{{ 'fileSystem.folderManagement.upload' | translate }}</label>
-            <input type="file" multiple (change)="onFilesSelected($event)" class="w-full mt-2" />
+            <label class="block mb-2 font-semibold">{{ 'fileSystem.folderManagement.upload' | translate }}</label>
+            <!-- Hidden file input -->
+            <input #fileInput type="file" multiple (change)="onFilesSelected($event)" accept="*/*"
+                style="display: none;" />
+            <!-- Drop zone with drag and drop support -->
+            <div class="file-drop-zone border-2 border-dashed border-round p-4 text-center"
+                [class.drag-over]="isDragOver" [class.disabled]="uploadInProgress" (dragover)="onDragOver($event)"
+                (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
+                <i class="pi pi-cloud-upload text-4xl text-primary mb-3 block"></i>
+                <p class="text-lg font-semibold mb-2">
+                    {{ 'fileSystem.folderManagement.dropFilesHere' | translate }}
+                </p>
+                <p class="text-500 mb-3">
+                    {{ 'fileSystem.folderManagement.or' | translate }}
+                </p>
+                <!-- Custom button to trigger file selection -->
+                <p-button [label]="'fileSystem.folderManagement.selectFiles' | translate" icon="pi pi-file"
+                    styleClass="p-button-outlined" (onClick)="triggerFileInput()" [disabled]="uploadInProgress">
+                </p-button>
+            </div>
+            <small class="text-500 block mt-2">{{ 'fileSystem.folderManagement.selectFilesToUpload' | translate
+                }}</small>
         </div>
-        <div *ngIf="selectedFiles.length > 0" class="mb-3 text-500">
-            {{ selectedFiles.length }} {{ 'fileSystem.folderManagement.typeFile' | translate }}(s) selected
+
+        <!-- Selected Files List -->
+        <div *ngIf="selectedFiles.length > 0" class="mb-3">
+            <label class="block mb-2 font-semibold">{{ 'fileSystem.folderManagement.selectedFiles' | translate
+                }}</label>
+            <div class="selected-files-list border-1 surface-border border-round p-3"
+                style="max-height: 200px; overflow-y: auto;">
+                <div *ngFor="let file of selectedFiles; let i = index"
+                    class="flex align-items-center justify-content-between mb-2 pb-2 border-bottom-1 surface-border"
+                    [class.border-bottom-0]="i === selectedFiles.length - 1">
+                    <div class="flex align-items-center gap-2 flex-1">
+                        <!-- File icon or status icon -->
+                        <i *ngIf="getFileUploadStatus(file.name) === 'pending'" class="pi pi-file text-primary"></i>
+                        <i *ngIf="getFileUploadStatus(file.name) === 'uploading'"
+                            class="pi pi-spin pi-spinner text-primary"></i>
+                        <i *ngIf="getFileUploadStatus(file.name) === 'completed'"
+                            class="pi pi-check-circle text-green-500"></i>
+                        <i *ngIf="getFileUploadStatus(file.name) === 'error'"
+                            class="pi pi-times-circle text-red-500"></i>
+                        <span class="text-sm flex-1" [title]="file.name"
+                            [class.text-green-600]="getFileUploadStatus(file.name) === 'completed'"
+                            [class.text-red-600]="getFileUploadStatus(file.name) === 'error'">
+                            {{ file.name }}
+                        </span>
+                    </div>
+                    <div class="flex align-items-center gap-2">
+                        <span class="text-xs text-500">{{ formatFileSize(file.size) }}</span>
+                        <!-- Remove button - hide when upload is in progress or file is completed -->
+                        <button
+                            *ngIf="!uploadInProgress && getFileUploadStatus(file.name) !== 'uploading' && getFileUploadStatus(file.name) !== 'completed'"
+                            type="button" class="p-button p-button-text p-button-rounded p-button-danger p-button-sm"
+                            (click)="removeFile(file)" [title]="'fileSystem.folderManagement.removeFile' | translate">
+                            <i class="pi pi-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <small class="text-500 block mt-2">
+                {{ selectedFiles.length }} {{ 'fileSystem.folderManagement.filesSelected' | translate }}
+            </small>
         </div>
+
+        <!-- Upload Progress -->
         <div *ngIf="uploadInProgress" class="field mb-3">
-            <label>{{ 'fileSystem.folderManagement.uploadProgress' | translate }}</label>
+            <label class="block mb-2 font-semibold">{{ 'fileSystem.folderManagement.uploadProgress' | translate
+                }}</label>
             <p-progressBar [value]="uploadProgressPercent" [showValue]="true" styleClass="mt-2"></p-progressBar>
+            <small class="text-500 block mt-1">{{ uploadProgressPercent }}% {{ 'fileSystem.folderManagement.complete' |
+                translate }}</small>
         </div>
-        <div *ngIf="uploadError" class="p-3 mb-3 surface-100 border-round text-red-500">
-            {{ uploadError }}
+
+        <!-- Error Message -->
+        <div *ngIf="uploadError" class="p-3 mb-3 surface-100 border-round border-1 border-red-300">
+            <div class="flex align-items-center gap-2 text-red-500">
+                <i class="pi pi-exclamation-triangle"></i>
+                <span>{{ uploadError }}</span>
+            </div>
         </div>
     </div>
     <ng-template pTemplate="footer">
@@ -158,9 +226,9 @@
 </p-dialog>
 
 <!-- Create Folder Dialog -->
-<p-dialog [header]="'fileSystem.folderManagement.createFolderDialogTitle' | translate" [(visible)]="createFolderDialogVisible"
-    [modal]="true" [style]="{ width: '400px' }" (onHide)="hideCreateFolderDialog()" [draggable]="false"
-    [resizable]="false">
+<p-dialog [header]="'fileSystem.folderManagement.createFolderDialogTitle' | translate"
+    [(visible)]="createFolderDialogVisible" [modal]="true" [style]="{ width: '400px' }"
+    (onHide)="hideCreateFolderDialog()" [draggable]="false" [resizable]="false">
     <div class="p-fluid">
         <div class="field mb-3">
             <label for="newFolderName">{{ 'fileSystem.folderManagement.folderName' | translate }}</label>
@@ -183,9 +251,9 @@
 </p-dialog>
 
 <!-- Rename Folder Dialog -->
-<p-dialog [header]="'fileSystem.folderManagement.renameFolderDialogTitle' | translate" [(visible)]="renameFolderDialogVisible"
-    [modal]="true" [style]="{ width: '400px' }" (onHide)="hideRenameFolderDialog()" [draggable]="false"
-    [resizable]="false">
+<p-dialog [header]="'fileSystem.folderManagement.renameFolderDialogTitle' | translate"
+    [(visible)]="renameFolderDialogVisible" [modal]="true" [style]="{ width: '400px' }"
+    (onHide)="hideRenameFolderDialog()" [draggable]="false" [resizable]="false">
     <div class="p-fluid">
         <div class="field">
             <label for="renameFolderName">{{ 'fileSystem.folderManagement.newFolderName' | translate }}</label>
@@ -200,9 +268,9 @@
 </p-dialog>
 
 <!-- Move Folder Dialog -->
-<p-dialog [header]="'fileSystem.folderManagement.moveFolderDialogTitle' | translate" [(visible)]="moveFolderDialogVisible"
-    [modal]="true" [style]="{ width: '500px' }" (onHide)="hideMoveFolderDialog()" [draggable]="false"
-    [resizable]="false">
+<p-dialog [header]="'fileSystem.folderManagement.moveFolderDialogTitle' | translate"
+    [(visible)]="moveFolderDialogVisible" [modal]="true" [style]="{ width: '500px' }" (onHide)="hideMoveFolderDialog()"
+    [draggable]="false" [resizable]="false">
     <div class="p-fluid">
         <div class="field mb-3">
             <label>{{ 'fileSystem.folderManagement.selectDestination' | translate }}</label>
@@ -220,12 +288,14 @@
 </p-dialog>
 
 <!-- Delete Folder Confirmation Dialog -->
-<p-dialog [header]="'fileSystem.folderManagement.deleteFolder' | translate" [(visible)]="deleteFolderConfirmVisible" [modal]="true"
-    [style]="{ width: '450px' }" (onHide)="hideDeleteFolderConfirm()" [draggable]="false" [resizable]="false">
+<p-dialog [header]="'fileSystem.folderManagement.deleteFolder' | translate" [(visible)]="deleteFolderConfirmVisible"
+    [modal]="true" [style]="{ width: '450px' }" (onHide)="hideDeleteFolderConfirm()" [draggable]="false"
+    [resizable]="false">
     <div class="flex align-items-center gap-3 mb-3">
         <i class="pi pi-exclamation-triangle text-2xl text-yellow-500"></i>
         <p class="mb-0" *ngIf="selectedFolderForDelete">
-            {{ 'fileSystem.folderManagement.confirmDeleteFolder' | translate: { name: selectedFolderForDelete.data.folderName } }}
+            {{ 'fileSystem.folderManagement.confirmDeleteFolder' | translate: { name:
+            selectedFolderForDelete.data.folderName } }}
         </p>
     </div>
     <ng-template pTemplate="footer">
@@ -270,8 +340,8 @@
     <ng-template pTemplate="footer">
         <p-button [label]="'fileSystem.companyStorage.close' | translate" styleClass="p-button-secondary"
             (onClick)="hideRestoreDeletedFoldersDialog()"></p-button>
-        <p-button [label]="'fileSystem.folderManagement.restore' | translate" (onClick)="onRestoreDeletedFoldersConfirm()"
-            [disabled]="selectedFoldersToRestore.length === 0"></p-button>
+        <p-button [label]="'fileSystem.folderManagement.restore' | translate"
+            (onClick)="onRestoreDeletedFoldersConfirm()" [disabled]="selectedFoldersToRestore.length === 0"></p-button>
     </ng-template>
 </p-dialog>
 

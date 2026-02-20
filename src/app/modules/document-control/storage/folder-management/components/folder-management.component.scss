@@ -15,8 +15,8 @@
 }
 
 .tree-panel {
-  min-width: 300px;
-  max-width: 400px;
+  min-width: 250px;
+  max-width: 250px;
 }
 
 .contents-panel {
@@ -30,7 +30,7 @@
 }
 
 .card-body {
-  padding: 1rem;
+  // padding: 1rem;
 }
 
 .folder-tree {
@@ -77,5 +77,39 @@
         }
       }
     }
+  }
+}
+
+
+::ng-deep .p-tree {
+  padding:0rem;
+}
+
+.file-drop-zone {
+  transition: all 0.3s ease;
+  background-color: var(--surface-ground);
+  cursor: pointer;
+  min-height: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  &:hover:not(.disabled) {
+    background-color: var(--surface-hover);
+    border-color: var(--primary-color);
+  }
+
+  &.drag-over {
+    background-color: var(--primary-50);
+    border-color: var(--primary-color);
+    border-style: solid;
+    transform: scale(1.02);
+  }
+
+  &.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
   }
 }

@@ -311,7 +311,15 @@
             "moveFolderSuccess": "تم نقل المجلد بنجاح.",
             "restoreFoldersSuccess": "تم استعادة المجلدات بنجاح.",
             "confirmDeleteFolder": "هل أنت متأكد من حذف \"{{name}}\"؟ لا يمكن التراجع عن هذا الإجراء.",
-            "cannotMoveToSelfOrChild": "لا يمكن نقل المجلد إلى نفسه أو إلى مجلد فرعي."
+            "cannotMoveToSelfOrChild": "لا يمكن نقل المجلد إلى نفسه أو إلى مجلد فرعي.",
+            "selectFiles": "اختر الملفات",
+            "dropFilesHere": "أسقط الملفات هنا",
+            "or": "أو",
+            "selectFilesToUpload": "اختر ملفاً واحداً أو أكثر للرفع",
+            "selectedFiles": "الملفات المحددة",
+            "filesSelected": "ملف(ات) محدد",
+            "complete": "مكتمل",
+            "removeFile": "إزالة الملف"
         },
         "sharedFiles": {
             "fileName": "اسم الملف",
