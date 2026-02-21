@@ -281,6 +281,7 @@
             "selectDestination": "Select Destination",
             "selectFileSystem": "Please select a file system to manage folders.",
             "searchPlaceholder": "Search folders and files...",
+            "searchFoldersPlaceholder": "Search folders...",
             "noContents": "No contents in this folder",
             "typeFolder": "Folder",
             "typeFile": "File",

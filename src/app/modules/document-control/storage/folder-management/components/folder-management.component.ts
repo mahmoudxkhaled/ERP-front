@@ -1407,10 +1407,10 @@ export class FolderManagementComponent implements OnInit, OnChanges {
 
   /**
    * Handle double-click on folder content row (navigate into folder).
+   * Selects the folder in the tree, expands its parent path if needed, and loads contents.
    */
   onContentRowDoubleClick(row: FolderContentRow): void {
     if (row.isFolder) {
-      // Find and select the folder node in tree, then load its contents
       const findNodeById = (nodes: TreeNode[], id: number): TreeNode | null => {
         for (const node of nodes) {
           const nodeId = (node as FolderTreeNode).data?.folderId;
@@ -1425,9 +1425,33 @@ export class FolderManagementComponent implements OnInit, OnChanges {
         return null;
       };
 
+      // Find ancestors of the folder so we can expand them (path from root to parent of target)
+      const findAncestors = (nodes: TreeNode[], targetId: number): TreeNode[] | null => {
+        for (const node of nodes) {
+          const nodeId = (node as FolderTreeNode).data?.folderId;
+          if (nodeId === targetId) {
+            return [];
+          }
+          if (node.children && node.children.length > 0) {
+            const childPath = findAncestors(node.children, targetId);
+            if (childPath !== null) {
+              return [node, ...childPath];
+            }
+          }
+        }
+        return null;
+      };
+
       const folderNode = findNodeById(this.folderTreeNodes, row.id);
       if (folderNode) {
-        // Update parent folder ID before navigating
+        // Expand all ancestors so the selected folder is visible in the tree
+        const ancestors = findAncestors(this.folderTreeNodes, row.id);
+        if (ancestors) {
+          ancestors.forEach((node) => {
+            node.expanded = true;
+          });
+        }
+
         this.parentFolderId = this.currentFolderId;
         this.selectedFolderNode = folderNode;
         this.onFolderNodeSelect({ node: folderNode });

@@ -16,11 +16,11 @@
 }
 
 .tree-panel {
-  min-width: 250px;
-  max-width: 250px;
+  min-width: 280px;
+  max-width: 320px;
   display: flex;
   flex-direction: column;
-  
+
   .card {
     flex: 1;
     display: flex;
@@ -28,17 +28,127 @@
   }
 }
 
+// Folders panel card: distinct look so it feels like the "folders" area
+.folders-panel-card {
+  border: 1px solid var(--surface-border);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  background: var(--surface-card);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+// Header with icon, aligned with content panel
+.folders-panel-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--surface-border);
+  background: var(--surface-50);
+}
+
+.folders-panel-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.folders-panel-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--border-radius);
+  background: #d4a017;
+  color: #fff;
+  flex-shrink: 0;
+
+  .pi {
+    font-size: 1.1rem;
+  }
+}
+
+.folders-panel-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.folders-panel-body {
+  padding: 0.75rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
 .contents-panel {
   flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  
+
   .card {
     flex: 1;
     display: flex;
     flex-direction: column;
   }
+}
+
+// Contents panel card: same distinct look as folders panel
+.contents-panel-card {
+  border: 1px solid var(--surface-border);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  background: var(--surface-card);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+// Contents panel header with icon (mirrors folders panel)
+.contents-panel-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--surface-border);
+  background: var(--surface-50);
+}
+
+.contents-panel-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.contents-panel-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--border-radius);
+  background: var(--primary-color);
+  color: #fff;
+  flex-shrink: 0;
+
+  .pi {
+    font-size: 1.1rem;
+  }
+}
+
+.contents-panel-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.contents-panel-body {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+// Table caption (search): padding to match folders panel body
+.contents-table-caption {
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid var(--surface-border);
+  background: var(--surface-card);
 }
 
 .card-header {
@@ -78,17 +188,30 @@
 .folder-tree {
   .tree-node-row {
     width: 100%;
-    padding: 0.25rem 0;
+    padding: 0.2rem 0;
+    min-height: 2rem;
+
+    .tree-node-content {
+      min-width: 0;
+    }
+
+    .tree-node-folder-icon {
+      color: #d4a017;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
 
     .tree-node-label {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      font-size: 0.95rem;
     }
 
     .tree-node-actions {
       opacity: 0;
       transition: opacity 0.2s;
+      flex-shrink: 0;
     }
 
     &:hover .tree-node-actions {
@@ -128,6 +251,14 @@
 
   &:hover {
     background-color: var(--primary-50);
+    // Darker text and icon on hover so they stay visible in dark mode (primary-50 can be light)
+    .back-button-label {
+      color: var(--primary-700, var(--primary-800, var(--primary-color)));
+    }
+    .back-button-icon-wrap {
+      background: var(--primary-200, var(--primary-100));
+      color: var(--primary-700, var(--primary-800, var(--primary-color)));
+    }
   }
 }
 
@@ -158,21 +289,72 @@
   }
 }
 
+// PrimeNG tree: padding and selected/hover for folder panel
 ::ng-deep {
-  .p-tree {
+  .folder-tree.p-tree {
+    padding: 0;
+    border: none;
+
+    .p-tree-filter-container {
+      margin-bottom: 0.5rem;
+
+      .p-inputtext {
+        width: 100%;
+        padding: 0.5rem 0.75rem 0.5rem 2rem;
+        font-size: 0.9rem;
+      }
+    }
+
     .p-tree-container {
       .p-treenode {
         .p-treenode-content {
-          padding: 0.25rem;
+          display: flex;
+          align-items: center;
+          min-width: 0;
+          overflow: hidden;
+          padding: 0.35rem 0.5rem;
+          border-radius: var(--border-radius);
+          transition: background-color 0.15s ease;
+        }
+
+        .p-treenode-content:hover {
+          background-color: var(--surface-hover);
+        }
+
+        .p-treenode-content.p-highlight {
+          background-color: var(--primary-50);
+          color: var(--primary-700, var(--primary-800, var(--primary-color)));
+          border-left: 3px solid var(--primary-700, var(--primary-800, var(--primary-color)));
+        }
+
+        // Darker text for selected folder label (better contrast in dark mode)
+        .p-treenode-content.p-highlight .tree-node-label {
+          color: var(--primary-700, var(--primary-800, var(--primary-color)));
+        }
+
+        // Toggler (expand/collapse arrow): keep visible and not squeezed when node is selected
+        .p-treenode-content .p-tree-toggler {
+          flex-shrink: 0;
+          margin-right: 0.35rem;
+          min-width: 2rem;
+          min-height: 2rem;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--text-color);
+
+          .pi {
+            font-size: 0.875rem;
+          }
+        }
+
+        // Darker arrow when selected (better contrast in dark mode)
+        .p-treenode-content.p-highlight .p-tree-toggler {
+          color: var(--primary-700, var(--primary-800, var(--primary-color)));
         }
       }
     }
   }
-}
-
-
-::ng-deep .p-tree {
-  padding:0rem;
 }
 
 .file-drop-zone {

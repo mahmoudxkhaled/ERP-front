@@ -11,16 +11,26 @@
     <div class="folder-layout flex gap-3">
         <!-- Left Panel: Folder Tree -->
         <div class="tree-panel flex-1">
-            <div class="card">
-                <div class="card-header mb-2">
-                    <h3 class="m-0">{{ 'fileSystem.folderManagement.folders' | translate }}</h3>
+            <div class="card folders-panel-card">
+                <div class="folders-panel-header">
+                    <div class="folders-panel-title-wrap">
+                        <span class="folders-panel-icon">
+                            <i class="pi pi-folder"></i>
+                        </span>
+                        <h3 class="folders-panel-title">{{ 'fileSystem.folderManagement.folders' | translate }}</h3>
+                    </div>
                 </div>
-                <div class="card-body">
+                <div class="card-body folders-panel-body">
                     <p-tree [value]="folderTreeNodes" selectionMode="single" [(selection)]="selectedFolderNode"
-                        (onNodeSelect)="onFolderNodeSelect($event)" styleClass="w-full border-0 folder-tree">
+                        (onNodeSelect)="onFolderNodeSelect($event)" styleClass="w-full border-0 folder-tree"
+                        [filter]="true"
+                        [filterPlaceholder]="'fileSystem.folderManagement.searchFoldersPlaceholder' | translate">
                         <ng-template pTemplate="default" let-node>
                             <div class="tree-node-row flex align-items-center justify-content-between">
-                                <span class="tree-node-label flex-1">{{ node.label }}</span>
+                                <span class="tree-node-content flex-1 flex align-items-center gap-2">
+                                    <i class="pi pi-folder tree-node-folder-icon"></i>
+                                    <span class="tree-node-label">{{ node.label }}</span>
+                                </span>
                                 <span class="tree-node-actions">
                                     <button pButton type="button" icon="pi pi-ellipsis-v"
                                         class="p-button-rounded p-button-text p-button-plain p-button-sm"
@@ -38,16 +48,21 @@
 
         <!-- Right Panel: Folder Contents Table -->
         <div class="contents-panel flex-2">
-            <div class="card">
-                <div class="card-header mb-2">
-                    <h3 class="m-0">{{ 'fileSystem.folderManagement.contents' | translate }}</h3>
+            <div class="card contents-panel-card">
+                <div class="contents-panel-header">
+                    <div class="contents-panel-title-wrap">
+                        <span class="contents-panel-icon">
+                            <i class="pi pi-inbox"></i>
+                        </span>
+                        <h3 class="contents-panel-title">{{ 'fileSystem.folderManagement.contents' | translate }}</h3>
+                    </div>
                 </div>
-                <div class="card-body p-0">
+                <div class="card-body contents-panel-body p-0">
                     <p-table #contentsTable [value]="folderContentsTableValue" [paginator]="false"
                         styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped" responsiveLayout="scroll"
                         [globalFilterFields]="['name']">
                         <ng-template pTemplate="caption">
-                            <div class="flex align-items-center justify-content-between mb-2">
+                            <div class="contents-table-caption flex align-items-center justify-content-between">
                                 <span class="p-input-icon-left flex-1 max-w-md">
                                     <i class="pi pi-search"></i>
                                     <input pInputText type="text"
