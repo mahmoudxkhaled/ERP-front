@@ -367,6 +367,20 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   }
 
   /**
+   * Format ISO date-time string for display (e.g. "Jan 03, 2026, 07:36 PM"). Day and hour with leading zero, no seconds.
+   */
+  formatDateTime(value: string | null | undefined): string {
+    if (value == null || value === '') return '—';
+    const date = new Date(value);
+    if (isNaN(date.getTime())) return '—';
+    const month = date.toLocaleString(undefined, { month: 'short' });
+    const day = date.getDate().toString().padStart(2, '0');
+    const year = date.getFullYear();
+    const time = date.toLocaleString(undefined, { hour: '2-digit', minute: '2-digit', hour12: true });
+    return `${month} ${day}, ${year}, ${time}`;
+  }
+
+  /**
    * Handle folder node selection in tree.
    */
   onFolderNodeSelect(event: { node: TreeNode }): void {

@@ -61,34 +61,34 @@
                             <tr>
                                 <th style="width: 3rem"></th>
                                 <th style="width: 20rem">{{ 'fileSystem.folderManagement.name' | translate }}</th>
-                                <th style="width: 8rem">{{ 'fileSystem.folderManagement.type' | translate }}</th>
-                                <th style="width: 10rem">{{ 'fileSystem.folderManagement.size' | translate }}</th>
+                                <th style="width: 5rem">{{ 'fileSystem.folderManagement.size' | translate }}</th>
                                 <th style="width: 12rem">{{ 'fileSystem.folderManagement.modified' | translate }}</th>
                                 <th style="width: 4rem">{{ 'fileSystem.folderManagement.actions' | translate }}</th>
                             </tr>
                         </ng-template>
                         <ng-template pTemplate="body" let-row>
-                            <!-- Back button row -->
+                            <!-- Back button row (whole row clickable) -->
                             <tr *ngIf="row.isBackButton" class="back-button-row cursor-pointer" (click)="goBack()">
-                                <td>
-                                    <i class="pi pi-arrow-left file-type-icon"></i>
-                                </td>
-                                <td colspan="5">
-                                    <span class="font-semibold">
-                                        {{ 'fileSystem.folderManagement.back' | translate }}
+                                <td class="back-button-cell-icon">
+                                    <span class="back-button-icon-wrap">
+                                        <i class="pi pi-arrow-left"></i>
                                     </span>
+                                </td>
+                                <td colspan="4" class="back-button-cell-label">
+                                    <span class="back-button-label">{{ 'fileSystem.folderManagement.back' | translate
+                                        }}</span>
                                 </td>
                             </tr>
                             <!-- Regular content rows -->
                             <tr *ngIf="!row.isBackButton" [class.cursor-pointer]="row.isFolder"
                                 (click)="onContentRowDoubleClick(row)">
-                                <td>
+                                <td class="text-center">
                                     <ng-container *ngIf="tableLoadingSpinner; else normalIcon">
                                         <p-skeleton height="1.5rem" width="1.5rem" borderRadius="4px"></p-skeleton>
                                     </ng-container>
                                     <ng-template #normalIcon>
-                                        <i [class]="row.isFolder ? 'pi pi-folder' : 'pi pi-file'"
-                                            class="file-type-icon"></i>
+                                        <i
+                                            [class]="row.isFolder ? 'pi pi-folder file-type-icon icon-folder' : 'pi pi-file file-type-icon icon-file'"></i>
                                     </ng-template>
                                 </td>
                                 <td>
@@ -97,14 +97,6 @@
                                     </ng-container>
                                     <ng-template #normalName>
                                         <span class="font-semibold">{{ getContentRowName(row) }}</span>
-                                    </ng-template>
-                                </td>
-                                <td>
-                                    <ng-container *ngIf="tableLoadingSpinner; else normalType">
-                                        <p-skeleton height="1.25rem" width="6rem"></p-skeleton>
-                                    </ng-container>
-                                    <ng-template #normalType>
-                                        <span>{{ getContentRowType(row) }}</span>
                                     </ng-template>
                                 </td>
                                 <td>
@@ -120,7 +112,8 @@
                                         <p-skeleton height="1.25rem" width="8rem"></p-skeleton>
                                     </ng-container>
                                     <ng-template #normalModified>
-                                        <span>{{ row.modified || '—' }}</span>
+                                        <span>{{ row.modified ? (row.modified | date:'MMM dd, y, hh:mm a') : '—'
+                                            }}</span>
                                     </ng-template>
                                 </td>
                                 <td>
@@ -139,7 +132,7 @@
                         </ng-template>
                         <ng-template pTemplate="emptymessage">
                             <tr>
-                                <td colspan="6" class="text-center">
+                                <td colspan="5" class="text-center">
                                     {{ 'fileSystem.folderManagement.noContents' | translate }}
                                 </td>
                             </tr>
@@ -373,31 +366,67 @@
 
 <!-- File Details Dialog -->
 <p-dialog [header]="'fileSystem.folderManagement.fileDetailsDialogTitle' | translate"
-    [(visible)]="fileDetailsDialogVisible" [modal]="true" [style]="{ width: '500px' }"
-    (onHide)="hideFileDetailsDialog()" [draggable]="false" [resizable]="false">
-    <div class="p-fluid" *ngIf="fileDetails">
-        <div class="field mb-3">
-            <label class="font-semibold">{{ 'fileSystem.folderManagement.fileName' | translate }}</label>
-            <p class="mt-2 mb-0">{{ fileDetails?.file_Name || fileDetails?.file_name || fileDetails?.name ||
-                selectedFileForDetails?.name || '—' }}</p>
+    [(visible)]="fileDetailsDialogVisible" [modal]="true" [style]="{ width: '520px' }"
+    (onHide)="hideFileDetailsDialog()" [draggable]="false" [resizable]="false" styleClass="file-details-dialog">
+    <div class="file-details-dialog-content" *ngIf="fileDetails">
+        <div class="file-details-header">
+            <div class="file-details-icon-wrap">
+                <i class="pi pi-file text-4xl text-primary"></i>
+            </div>
+            <div class="file-details-title-wrap">
+                <span class="file-details-name"
+                    [title]="fileDetails?.file_Name || fileDetails?.file_name || fileDetails?.name || selectedFileForDetails?.name">
+                    {{ fileDetails?.file_Name || fileDetails?.file_name || fileDetails?.name ||
+                    selectedFileForDetails?.name || '—' }}
+                </span>
+            </div>
         </div>
-        <div class="field mb-3">
-            <label class="font-semibold">{{ 'fileSystem.folderManagement.fileType' | translate }}</label>
-            <p class="mt-2 mb-0">{{ fileDetails?.file_Type || fileDetails?.file_type || fileDetails?.type || (selectedFileForDetails ? getContentRowType(selectedFileForDetails) : '—') || '—' }}</p>
-        </div>
-        <div class="field mb-3">
-            <label class="font-semibold">{{ 'fileSystem.folderManagement.fileSize' | translate }}</label>
-            <p class="mt-2 mb-0">{{ fileDetails?.file_Size ? formatFileSize(fileDetails.file_Size) : (fileDetails?.size
-                || selectedFileForDetails?.size || '—') }}</p>
-        </div>
-        <div class="field mb-3">
-            <label class="font-semibold">{{ 'fileSystem.folderManagement.lastModified' | translate }}</label>
-            <p class="mt-2 mb-0">{{ fileDetails?.last_Modified || fileDetails?.last_modified || fileDetails?.modified ||
-                selectedFileForDetails?.modified || '—' }}</p>
-        </div>
-        <div class="field mb-3" *ngIf="fileDetails?.created_At || fileDetails?.created_at">
-            <label class="font-semibold">{{ 'fileSystem.folderManagement.createdAt' | translate }}</label>
-            <p class="mt-2 mb-0">{{ fileDetails?.created_At || fileDetails?.created_at || '—' }}</p>
+        <div class="file-details-list">
+            <div class="file-details-row">
+                <i class="pi pi-tag file-details-row-icon"></i>
+                <div class="file-details-row-content">
+                    <span class="file-details-row-label">{{ 'fileSystem.folderManagement.fileName' | translate }}</span>
+                    <span class="file-details-row-value">{{ fileDetails?.file_Name || fileDetails?.file_name ||
+                        fileDetails?.name || selectedFileForDetails?.name || '—' }}</span>
+                </div>
+            </div>
+            <div class="file-details-row">
+                <i class="pi pi-file-edit file-details-row-icon"></i>
+                <div class="file-details-row-content">
+                    <span class="file-details-row-label">{{ 'fileSystem.folderManagement.fileType' | translate }}</span>
+                    <span class="file-details-row-value">{{ fileDetails?.file_Type || fileDetails?.file_type ||
+                        fileDetails?.type || (selectedFileForDetails ? getContentRowType(selectedFileForDetails) : '—')
+                        || '—' }}</span>
+                </div>
+            </div>
+            <div class="file-details-row">
+                <i class="pi pi-database file-details-row-icon"></i>
+                <div class="file-details-row-content">
+                    <span class="file-details-row-label">{{ 'fileSystem.folderManagement.fileSize' | translate }}</span>
+                    <span class="file-details-row-value">{{ fileDetails?.file_Size ?
+                        formatFileSize(fileDetails.file_Size) : (fileDetails?.size || selectedFileForDetails?.size ||
+                        '—') }}</span>
+                </div>
+            </div>
+            <div class="file-details-row">
+                <i class="pi pi-calendar file-details-row-icon"></i>
+                <div class="file-details-row-content">
+                    <span class="file-details-row-label">{{ 'fileSystem.folderManagement.lastModified' | translate
+                        }}</span>
+                    <span class="file-details-row-value">{{ formatDateTime(fileDetails?.last_Modified ||
+                        fileDetails?.last_modified ||
+                        fileDetails?.modified || selectedFileForDetails?.modified) }}</span>
+                </div>
+            </div>
+            <div class="file-details-row" *ngIf="fileDetails?.created_At || fileDetails?.created_at">
+                <i class="pi pi-clock file-details-row-icon"></i>
+                <div class="file-details-row-content">
+                    <span class="file-details-row-label">{{ 'fileSystem.folderManagement.createdAt' | translate
+                        }}</span>
+                    <span class="file-details-row-value">{{ formatDateTime(fileDetails?.created_At ||
+                        fileDetails?.created_at) }}</span>
+                </div>
+            </div>
         </div>
     </div>
     <ng-template pTemplate="footer">

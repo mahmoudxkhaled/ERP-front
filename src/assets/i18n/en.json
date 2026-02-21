@@ -343,6 +343,7 @@
             "remaining": "Remaining",
             "hide": "Hide",
             "back": "Back",
+            "backToParent": "Go to parent folder",
             "fileDetailsFallbackMessage": "Basic info below is from the current folder view."
         },
         "sharedFiles": {
