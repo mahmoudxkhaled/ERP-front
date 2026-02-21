@@ -232,6 +232,12 @@
   }
 }
 
+// Spinner shown while calculating folder size in the Size column
+::ng-deep .size-calc-spinner {
+  display: inline-block;
+  vertical-align: middle;
+}
+
 .cursor-pointer {
   cursor: pointer;
 

@@ -282,6 +282,8 @@
             "selectFileSystem": "يرجى اختيار نظام ملفات لإدارة المجلدات.",
             "searchPlaceholder": "البحث في المجلدات والملفات...",
             "searchFoldersPlaceholder": "البحث في المجلدات...",
+            "calculateFolderSize": "حساب حجم المجلد",
+            "calculatingSize": "جاري الحساب…",
             "noContents": "لا توجد محتويات في هذا المجلد",
             "typeFolder": "مجلد",
             "typeFile": "ملف",

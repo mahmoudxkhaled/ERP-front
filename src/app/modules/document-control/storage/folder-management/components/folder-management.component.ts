@@ -1,5 +1,6 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
-import { Observable, firstValueFrom } from 'rxjs';
+import { Component, Input, OnInit, OnChanges, SimpleChanges, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Observable, firstValueFrom, forkJoin, of } from 'rxjs';
+import { map, switchMap, catchError } from 'rxjs/operators';
 import { MenuItem, MessageService, TreeNode } from 'primeng/api';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
@@ -62,6 +63,10 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   // Folder contents table
   folderContents: FolderContentRow[] = [];
   showDeletedFolders = false;
+  /** Cache of calculated folder sizes (folderId -> formatted string). */
+  folderSizeCache = new Map<number, string>();
+  /** Folder IDs currently being calculated (show spinner). */
+  folderSizeLoading = new Set<number>();
 
   // Dialog visibility flags
   createFolderDialogVisible = false;
@@ -137,7 +142,8 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     private fileService: FileService,
     private fileUploadService: FileUploadService,
     private fileDownloadService: FileDownloadService,
-    private localStorageService: LocalStorageService
+    private localStorageService: LocalStorageService,
+    private cdr: ChangeDetectorRef
   ) {
     this.isLoading$ = this.folderService.isLoadingSubject.asObservable();
   }
@@ -323,7 +329,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
 
     this.folderService.getFolderContents(folderId, this.fileSystemId).subscribe({
       next: (response: any) => {
-        console.log('response loadFolderContents', response);
         this.tableLoadingSpinner = false;
         if (!response?.success) {
           this.handleBusinessError('getContents', response);
@@ -340,7 +345,8 @@ export class FolderManagementComponent implements OnInit, OnChanges {
           id: Number(folder?.folder_id ?? folder?.folder_ID ?? folder?.Folder_ID ?? 0),
           name: String(folder?.folder_name ?? folder?.folder_Name ?? folder?.Folder_Name ?? ''),
           type: 'folder' as const,
-          isFolder: true
+          isFolder: true,
+          modified: String(folder?.last_modified ?? folder?.last_modified_At ?? folder?.Last_Modified ?? '')
         }));
 
         const fileRows: FolderContentRow[] = filesList.map((file: any) => ({
@@ -369,6 +375,62 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     if (gb >= 1) return gb.toFixed(2) + ' GB';
     const mb = bytes / (1024 * 1024);
     return mb >= 1 ? (mb.toFixed(2) + ' MB') : (bytes / 1024).toFixed(2) + ' KB';
+  }
+
+  /**
+   * Recursively calculate total size of a folder (all files in folder and subfolders) via Get_Folder_Contents (1136).
+   * Returns total size in bytes.
+   */
+  calculateFolderSizeBytes(folderId: number): Observable<number> {
+    return this.folderService.getFolderContents(folderId, this.fileSystemId).pipe(
+      switchMap((response: any) => {
+        if (!response?.success || !response?.message) {
+          return of(0);
+        }
+        const raw = response.message;
+        const foldersList = raw.folders ?? raw.Folders ?? [];
+        const filesList = raw.files ?? raw.Files ?? [];
+        let filesSum = 0;
+        for (const file of filesList) {
+          const size = file?.size ?? file?.Size;
+          if (size != null) {
+            filesSum += Number(size);
+          }
+        }
+        if (foldersList.length === 0) {
+          return of(filesSum);
+        }
+        const subfolderObservables = foldersList.map((folder: any) => {
+          const subId = Number(folder?.folder_id ?? folder?.folder_ID ?? folder?.Folder_ID ?? 0);
+          return this.calculateFolderSizeBytes(subId).pipe(catchError(() => of(0)));
+        });
+        return forkJoin(subfolderObservables).pipe(
+          map((subTotals) => filesSum + (subTotals as number[]).reduce((a, b) => a + b, 0))
+        );
+      }),
+      catchError(() => of(0))
+    );
+  }
+
+  /**
+   * Called when user clicks the calculate-size icon on a folder row. Runs recursive size calculation and updates cache.
+   */
+  onCalculateFolderSize(row: FolderContentRow): void {
+    if (!row.isFolder || this.folderSizeLoading.has(row.id)) {
+      return;
+    }
+    this.folderSizeLoading.add(row.id);
+    this.calculateFolderSizeBytes(row.id).subscribe({
+      next: (totalBytes) => {
+        this.folderSizeCache.set(row.id, this.formatBytes(totalBytes));
+        this.folderSizeLoading.delete(row.id);
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.folderSizeLoading.delete(row.id);
+        this.cdr.markForCheck();
+      }
+    });
   }
 
   /**

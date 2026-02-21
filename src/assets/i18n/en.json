@@ -282,6 +282,8 @@
             "selectFileSystem": "Please select a file system to manage folders.",
             "searchPlaceholder": "Search folders and files...",
             "searchFoldersPlaceholder": "Search folders...",
+            "calculateFolderSize": "Calculate folder size",
+            "calculatingSize": "Calculating…",
             "noContents": "No contents in this folder",
             "typeFolder": "Folder",
             "typeFile": "File",
