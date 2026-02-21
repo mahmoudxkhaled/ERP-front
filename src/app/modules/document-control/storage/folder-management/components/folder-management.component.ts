@@ -667,21 +667,8 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     this.downloadRemainingBytes = 0;
     this.downloadProgressVisible = true;
 
-    // Get file details to get file size
-    try {
-      const fileDetailsResponse = await firstValueFrom(
-        this.fileService.getFileDetails(file.id, this.currentFolderId, this.fileSystemId)
-      );
-
-      if (fileDetailsResponse?.success && fileDetailsResponse?.message) {
-        const fileSize = fileDetailsResponse.message.size || fileDetailsResponse.message.file_size || 0;
-        this.downloadFileSizeBytes = Number(fileSize) || 0;
-        this.downloadRemainingBytes = this.downloadFileSizeBytes;
-      }
-    } catch (err) {
-      // If we can't get file size, continue without it
-      console.warn('Could not get file size for download progress', err);
-    }
+    // Skip Get_File_Details before download to avoid CORS / "Server unavailable" errors from that endpoint.
+    // Download works with Download_Request + chunk requests only; progress shows percentage only.
 
     try {
       const blob = await this.fileDownloadService.downloadFile(
@@ -758,6 +745,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
       .getFileDetails(file.id, this.currentFolderId, this.fileSystemId)
       .subscribe({
         next: (response: any) => {
+          console.log('response get file details', response);
           this.fileDetailsLoading = false;
           if (!response?.success) {
             this.handleFileError('getDetails', response);
