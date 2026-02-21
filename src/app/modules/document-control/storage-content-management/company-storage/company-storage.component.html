@@ -22,7 +22,7 @@
                 <p-dropdown [options]="fileSystemOptionsInDrive" [(ngModel)]="selectedFileSystemId" optionLabel="name"
                     optionValue="id" [style]="{ width: '100%' }"
                     [disabled]="!selectedDriveId || loadingFileSystemsInDrive"
-                    [placeholder]="loadingFileSystemsInDrive ? ('fileSystem.companyStorage.loading' | translate) : ('fileSystem.companyStorageView.selectFileSystem' | translate)"
+                    [placeholder]="(selectedDriveId && fileSystemOptionsInDrive.length === 0) ? ('fileSystem.companyStorageView.noFileSystemToSelect' | translate) : (loadingFileSystemsInDrive ? ('fileSystem.companyStorage.loading' | translate) : ('fileSystem.companyStorageView.selectFileSystem' | translate))"
                     (onChange)="onFileSystemSelected()"></p-dropdown>
             </div>
         </div>

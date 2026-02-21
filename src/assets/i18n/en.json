@@ -175,6 +175,7 @@
             "description": "List virtual drives owned by the entity, then select a drive and a file system to manage folders and files and upload or download.",
             "selectDrive": "Virtual drive (owned by entity)",
             "selectFileSystem": "File system in this drive",
+            "noFileSystemToSelect": "No file system to select",
             "selectDriveAndFileSystem": "Select a virtual drive and then a file system to manage folders and files.",
             "folders": "Folders",
             "files": "Files"

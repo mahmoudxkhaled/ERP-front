@@ -23,7 +23,7 @@ export class CompanyStorageComponent implements OnInit {
         private translate: TranslationService,
         private virtualDrivesService: VirtualDrivesService,
         private fileSystemsService: FileSystemsService
-    ) {}
+    ) { }
 
     ngOnInit(): void {
         this.loadDrives();
@@ -80,6 +80,7 @@ export class CompanyStorageComponent implements OnInit {
             return;
         }
         this.loadingFileSystemsInDrive = true;
+        this.fileSystemOptionsInDrive = [];
         const filters: FileSystemsFilters = {
             entityFilter: 1,
             driveId,
@@ -94,16 +95,26 @@ export class CompanyStorageComponent implements OnInit {
                 }
                 const raw = response.message;
                 const list = Array.isArray(raw) ? raw : (raw?.File_Systems ?? raw?.file_Systems ?? []);
-                this.fileSystemOptionsInDrive = (list || []).map((item: any) => ({
-                    id: Number(item?.file_System_ID ?? item?.File_System_ID ?? 0),
-                    name: String(item?.name ?? item?.Name ?? '')
-                })).filter((fs: { id: number; name: string }) => fs.id > 0);
+                const notDeletedAtDefault = '0001-01-01T00:00:00';
+                this.fileSystemOptionsInDrive = (list || [])
+                    .filter((item: any) => {
+                        const deletedAt = item?.deleted_At ?? item?.Deleted_At ?? '';
+                        return !deletedAt || deletedAt === notDeletedAtDefault;
+                    })
+                    .map((item: any) => ({
+                        id: Number(item?.file_System_ID ?? item?.File_System_ID ?? 0),
+                        name: String(item?.name ?? item?.Name ?? '')
+                    }))
+                    .filter((fs: { id: number; name: string }) => fs.id > 0);
                 // Select first file system when still on the same drive
                 if (this.selectedDriveId === driveId && this.fileSystemOptionsInDrive.length > 0) {
                     this.selectedFileSystemId = this.fileSystemOptionsInDrive[0].id;
                 }
             },
-            error: () => this.loadingFileSystemsInDrive = false
+            error: () => {
+                this.loadingFileSystemsInDrive = false;
+                this.fileSystemOptionsInDrive = [];
+            }
         });
     }
 
