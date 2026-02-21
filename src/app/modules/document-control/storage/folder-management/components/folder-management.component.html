@@ -337,21 +337,54 @@
 
 <!-- Move Folder Dialog -->
 <p-dialog [header]="'fileSystem.folderManagement.moveFolderDialogTitle' | translate"
-    [(visible)]="moveFolderDialogVisible" [modal]="true" [style]="{ width: '500px' }" (onHide)="hideMoveFolderDialog()"
+    [(visible)]="moveFolderDialogVisible" [modal]="true" [style]="{ width: '520px' }" (onHide)="hideMoveFolderDialog()"
     [draggable]="false" [resizable]="false">
     <div class="p-fluid">
-        <div class="field mb-3">
-            <label>{{ 'fileSystem.folderManagement.selectDestination' | translate }}</label>
-            <p-tree [value]="folderTreeNodes" selectionMode="single" [(selection)]="moveDestinationNode"
-                styleClass="w-full border-0 mt-2">
-            </p-tree>
+        <div class="flex flex-column gap-3 mb-3">
+            <label class="font-semibold">{{ 'fileSystem.folderManagement.selectDestination' | translate }}</label>
+            <div class="flex flex-column gap-2">
+                <div class="flex align-items-center gap-2">
+                    <p-radioButton name="moveDestinationKind" value="root" [(ngModel)]="moveDestinationKind"
+                        [inputId]="'moveToRoot'"></p-radioButton>
+                    <label for="moveToRoot" class="cursor-pointer mb-0">{{ 'fileSystem.folderManagement.moveToRoot' | translate }}</label>
+                </div>
+                <div class="flex align-items-center gap-2">
+                    <p-radioButton name="moveDestinationKind" value="folder" [(ngModel)]="moveDestinationKind"
+                        [inputId]="'moveIntoFolder'"></p-radioButton>
+                    <label for="moveIntoFolder" class="cursor-pointer mb-0">{{ 'fileSystem.folderManagement.moveIntoFolder' | translate }}</label>
+                </div>
+            </div>
+        </div>
+        <div class="move-dialog-tree-wrap" [class.move-dialog-tree-disabled]="moveDestinationKind === 'root'">
+            <div class="card folders-panel-card">
+                <div class="folders-panel-header">
+                    <div class="folders-panel-title-wrap">
+                        <span class="folders-panel-icon">
+                            <i class="pi pi-folder"></i>
+                        </span>
+                        <h3 class="folders-panel-title">{{ 'fileSystem.folderManagement.folders' | translate }}</h3>
+                    </div>
+                </div>
+                <div class="card-body folders-panel-body">
+                    <p-tree [value]="folderTreeNodes" selectionMode="single" [(selection)]="moveDestinationNode"
+                        styleClass="w-full border-0 folder-tree" [filter]="true"
+                        [filterPlaceholder]="'fileSystem.folderManagement.searchFoldersPlaceholder' | translate">
+                        <ng-template pTemplate="default" let-node>
+                            <div class="tree-node-row flex align-items-center gap-2">
+                                <i class="pi pi-folder tree-node-folder-icon"></i>
+                                <span class="tree-node-label">{{ node.label }}</span>
+                            </div>
+                        </ng-template>
+                    </p-tree>
+                </div>
+            </div>
         </div>
     </div>
     <ng-template pTemplate="footer">
         <p-button [label]="'fileSystem.companyStorage.close' | translate" styleClass="p-button-secondary"
             (onClick)="hideMoveFolderDialog()"></p-button>
         <p-button [label]="'fileSystem.folderManagement.move' | translate" (onClick)="onMoveFolderConfirm()"
-            [disabled]="!moveDestinationNode"></p-button>
+            [disabled]="isMoveFolderButtonDisabled"></p-button>
     </ng-template>
 </p-dialog>
 

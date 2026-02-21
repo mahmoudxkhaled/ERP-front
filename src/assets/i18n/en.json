@@ -279,6 +279,8 @@
             "newFolderName": "New Folder Name",
             "parentFolder": "Parent Folder",
             "selectDestination": "Select Destination",
+            "moveToRoot": "Move to root (top level)",
+            "moveIntoFolder": "Move into a folder",
             "selectFileSystem": "Please select a file system to manage folders.",
             "searchPlaceholder": "Search folders and files...",
             "searchFoldersPlaceholder": "Search folders...",

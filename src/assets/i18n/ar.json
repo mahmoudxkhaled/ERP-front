@@ -279,6 +279,8 @@
             "newFolderName": "اسم المجلد الجديد",
             "parentFolder": "المجلد الأب",
             "selectDestination": "اختر الوجهة",
+            "moveToRoot": "نقل إلى الجذر (المستوى الأعلى)",
+            "moveIntoFolder": "نقل إلى مجلد",
             "selectFileSystem": "يرجى اختيار نظام ملفات لإدارة المجلدات.",
             "searchPlaceholder": "البحث في المجلدات والملفات...",
             "searchFoldersPlaceholder": "البحث في المجلدات...",

@@ -98,6 +98,8 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   selectedFolderForRename: FolderTreeNode | null = null;
   selectedFolderForMove: FolderTreeNode | null = null;
   selectedFolderForDelete: FolderTreeNode | null = null;
+  /** When 'root', move to top level (no parent). When 'folder', user must select a folder in the tree. */
+  moveDestinationKind: 'root' | 'folder' = 'folder';
   moveDestinationNode: TreeNode | null = null;
   selectedFolderForRestore: FolderTreeNode | null = null;
 
@@ -1216,6 +1218,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
    */
   showMoveFolderDialog(folder: FolderTreeNode): void {
     this.selectedFolderForMove = folder;
+    this.moveDestinationKind = 'folder';
     this.moveDestinationNode = null;
     this.moveFolderDialogVisible = true;
   }
@@ -1223,19 +1226,36 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   hideMoveFolderDialog(): void {
     this.moveFolderDialogVisible = false;
     this.selectedFolderForMove = null;
+    this.moveDestinationKind = 'folder';
     this.moveDestinationNode = null;
+  }
+
+  /** Move button is enabled when destination is root, or when a folder is selected in the tree. */
+  get isMoveFolderButtonDisabled(): boolean {
+    if (this.moveDestinationKind === 'root') {
+      return false;
+    }
+    return !this.moveDestinationNode;
   }
 
   /**
    * Confirm move folder operation.
    */
   onMoveFolderConfirm(): void {
-    if (!this.selectedFolderForMove || !this.moveDestinationNode) {
+    if (!this.selectedFolderForMove) {
       return;
     }
 
-    const destinationNode = this.moveDestinationNode as FolderTreeNode;
-    const newParentId = destinationNode?.data?.folderId ?? 0;
+    let newParentId: number;
+    if (this.moveDestinationKind === 'root') {
+      newParentId = 0;
+    } else {
+      if (!this.moveDestinationNode) {
+        return;
+      }
+      const destinationNode = this.moveDestinationNode as FolderTreeNode;
+      newParentId = destinationNode?.data?.folderId ?? 0;
+    }
 
     // Validation: cannot move to itself or its children
     if (this.isDescendantOf(this.selectedFolderForMove.data.folderId, newParentId)) {

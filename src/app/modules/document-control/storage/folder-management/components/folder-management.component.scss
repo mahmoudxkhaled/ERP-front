@@ -80,6 +80,29 @@
   flex-direction: column;
 }
 
+// Move dialog: tree card wrapper so it reuses folders-panel look and stays scrollable
+.move-dialog-tree-wrap {
+  .folders-panel-card {
+    max-height: 280px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .folders-panel-body {
+    overflow: auto;
+    min-height: 0;
+  }
+
+  // When "Move to root" is selected: gray out and disable the folders section
+  &.move-dialog-tree-disabled {
+    opacity: 0.6;
+    pointer-events: none;
+    .folders-panel-card {
+      background: var(--surface-100);
+    }
+  }
+}
+
 .contents-panel {
   flex: 1;
   min-width: 0;
