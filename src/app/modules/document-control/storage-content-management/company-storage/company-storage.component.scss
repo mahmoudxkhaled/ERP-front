@@ -94,6 +94,161 @@
         max-width: 280px;
     }
 
+    // Skeleton matching folder-management layout (same structure and proportions)
+    .folder-management-skeleton {
+        padding: 1rem;
+        width: 100%;
+    }
+
+    .skeleton-toolbar {
+        display: flex;
+        align-items: center;
+    }
+
+    .skeleton-folder-layout {
+        display: flex;
+        gap: 1rem;
+        min-height: 500px;
+        align-items: stretch;
+    }
+    @media (max-width: 768px) {
+        .skeleton-folder-layout {
+            flex-direction: column;
+        }
+    }
+
+    .skeleton-tree-panel {
+        min-width: 280px;
+        max-width: 320px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .skeleton-folders-card {
+        flex: 1;
+        border: 1px solid var(--p-surface-200);
+        border-radius: var(--p-border-radius);
+        overflow: hidden;
+        background: var(--p-surface-0);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .skeleton-folders-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--p-surface-200);
+        background: var(--p-surface-50);
+    }
+
+    .skeleton-folders-icon {
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: var(--p-border-radius);
+        background: #d4a017;
+        flex-shrink: 0;
+        opacity: 0.5;
+    }
+
+    .skeleton-folders-body {
+        padding: 0.75rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .skeleton-tree-filter {
+        margin-bottom: 0.5rem !important;
+    }
+
+    .skeleton-tree-rows {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+
+    .skeleton-tree-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.35rem 0.5rem;
+    }
+
+    .skeleton-tree-row-indent {
+        padding-left: 1.75rem;
+    }
+
+    .skeleton-contents-panel {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .skeleton-contents-card {
+        flex: 1;
+        border: 1px solid var(--p-surface-200);
+        border-radius: var(--p-border-radius);
+        overflow: hidden;
+        background: var(--p-surface-0);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .skeleton-contents-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--p-surface-200);
+        background: var(--p-surface-50);
+    }
+
+    .skeleton-contents-icon {
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: var(--p-border-radius);
+        background: var(--p-primary-500);
+        flex-shrink: 0;
+        opacity: 0.5;
+    }
+
+    .skeleton-contents-caption {
+        padding: 0.75rem 1.25rem;
+        border-bottom: 1px solid var(--p-surface-200);
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .skeleton-table-wrap {
+        flex: 1;
+        overflow: auto;
+    }
+
+    .skeleton-table {
+        width: 100%;
+        border-collapse: collapse;
+        thead th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--p-surface-200);
+            background: var(--p-surface-50);
+            font-weight: 600;
+        }
+        tbody td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--p-surface-200);
+        }
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+    }
+
     .content-card {
         background: var(--p-surface-0);
         border: 1px solid var(--p-surface-200);

@@ -28,9 +28,79 @@
         </div>
     </section>
 
-    <div class="storage-empty-state" *ngIf="!selectedFileSystemId">
+    <div class="storage-empty-state" *ngIf="!selectedFileSystemId && !loadingDrives && !loadingFileSystemsInDrive">
         <i class="pi pi-inbox storage-empty-icon"></i>
         <p class="storage-empty-text">{{ 'fileSystem.companyStorageView.selectDriveAndFileSystem' | translate }}</p>
+    </div>
+
+    <!-- Skeleton while loading drive or file system (matches folder-management layout) -->
+    <div class="folder-management-skeleton card" *ngIf="(loadingDrives || loadingFileSystemsInDrive) && !selectedFileSystemId">
+        <div class="skeleton-toolbar mb-3">
+            <div class="flex align-items-center gap-2">
+                <p-skeleton width="10rem" height="2.5rem" borderRadius="6px"></p-skeleton>
+                <p-skeleton width="9rem" height="2.5rem" borderRadius="6px"></p-skeleton>
+            </div>
+        </div>
+        <div class="skeleton-folder-layout">
+            <div class="skeleton-tree-panel">
+                <div class="skeleton-folders-card">
+                    <div class="skeleton-folders-header">
+                        <span class="skeleton-folders-icon"></span>
+                        <p-skeleton width="5.5rem" height="1.1rem" borderRadius="4px"></p-skeleton>
+                    </div>
+                    <div class="skeleton-folders-body">
+                        <p-skeleton width="100%" height="2.25rem" class="skeleton-tree-filter" borderRadius="6px"></p-skeleton>
+                        <div class="skeleton-tree-rows">
+                            <div class="skeleton-tree-row"><p-skeleton width="1.25rem" height="1.25rem" borderRadius="4px"></p-skeleton><p-skeleton width="70%" height="1.25rem" borderRadius="4px"></p-skeleton></div>
+                            <div class="skeleton-tree-row skeleton-tree-row-indent"><p-skeleton width="1.25rem" height="1.25rem" borderRadius="4px"></p-skeleton><p-skeleton width="60%" height="1.25rem" borderRadius="4px"></p-skeleton></div>
+                            <div class="skeleton-tree-row skeleton-tree-row-indent"><p-skeleton width="1.25rem" height="1.25rem" borderRadius="4px"></p-skeleton><p-skeleton width="55%" height="1.25rem" borderRadius="4px"></p-skeleton></div>
+                            <div class="skeleton-tree-row"><p-skeleton width="1.25rem" height="1.25rem" borderRadius="4px"></p-skeleton><p-skeleton width="65%" height="1.25rem" borderRadius="4px"></p-skeleton></div>
+                            <div class="skeleton-tree-row skeleton-tree-row-indent"><p-skeleton width="1.25rem" height="1.25rem" borderRadius="4px"></p-skeleton><p-skeleton width="50%" height="1.25rem" borderRadius="4px"></p-skeleton></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="skeleton-contents-panel">
+                <div class="skeleton-contents-card">
+                    <div class="skeleton-contents-header">
+                        <span class="skeleton-contents-icon"></span>
+                        <p-skeleton width="4.5rem" height="1.1rem" borderRadius="4px"></p-skeleton>
+                    </div>
+                    <div class="skeleton-contents-caption">
+                        <p-skeleton width="100%" height="2.5rem" borderRadius="6px"></p-skeleton>
+                        <div class="flex gap-2 justify-content-between">
+                            <p-skeleton width="6rem" height="2rem" borderRadius="4px"></p-skeleton>
+                            <div class="flex gap-2">
+                                <p-skeleton width="6rem" height="2rem" borderRadius="4px"></p-skeleton>
+                                <p-skeleton width="8rem" height="2rem" borderRadius="4px"></p-skeleton>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="skeleton-table-wrap">
+                        <table class="skeleton-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 3rem"></th>
+                                    <th style="width: 20rem"></th>
+                                    <th style="width: 5rem; text-align: center;"></th>
+                                    <th style="width: 12rem"></th>
+                                    <th style="width: 4rem"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let i of [1,2,3,4,5,6]">
+                                    <td class="text-center"><p-skeleton height="1.5rem" width="1.5rem" borderRadius="4px"></p-skeleton></td>
+                                    <td><p-skeleton height="1.25rem" width="14rem" borderRadius="4px"></p-skeleton></td>
+                                    <td class="text-center"><p-skeleton height="1.25rem" width="4rem" borderRadius="4px"></p-skeleton></td>
+                                    <td><p-skeleton height="1.25rem" width="8rem" borderRadius="4px"></p-skeleton></td>
+                                    <td><p-skeleton height="1.5rem" width="2rem" borderRadius="4px"></p-skeleton></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Folder Management Component -->
