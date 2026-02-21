@@ -342,7 +342,8 @@
             "downloadComplete": "Download complete",
             "remaining": "Remaining",
             "hide": "Hide",
-            "back": "Back"
+            "back": "Back",
+            "fileDetailsFallbackMessage": "Basic info below is from the current folder view."
         },
         "sharedFiles": {
             "fileName": "File Name",

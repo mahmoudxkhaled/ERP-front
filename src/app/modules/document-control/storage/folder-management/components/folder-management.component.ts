@@ -114,6 +114,8 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   selectedFileForDelete: FolderContentRow | null = null;
   fileDetails: any = null;
   fileDetailsLoading = false;
+  /** Error message when Get_File_Details API fails (e.g. CORS / server unavailable). */
+  fileDetailsError: string | null = null;
   renameFileName = '';
   renameFileType = '';
   downloadProgressPercent = 0;
@@ -733,31 +735,28 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   }
 
   /**
-   * Show file details dialog and load file details.
+   * Show file details dialog using data from the folder contents row.
+   * We do not call Get_File_Details (1105) to avoid CORS / 500 errors from that endpoint.
    */
   showFileDetailsDialog(file: FolderContentRow): void {
     this.selectedFileForDetails = file;
-    this.fileDetails = null;
-    this.fileDetailsLoading = true;
+    this.fileDetailsError = null;
+    this.fileDetailsLoading = false;
     this.fileDetailsDialogVisible = true;
 
-    this.fileService
-      .getFileDetails(file.id, this.currentFolderId, this.fileSystemId)
-      .subscribe({
-        next: (response: any) => {
-          console.log('response get file details', response);
-          this.fileDetailsLoading = false;
-          if (!response?.success) {
-            this.handleFileError('getDetails', response);
-            return;
-          }
-          this.fileDetails = response.message || response;
-        },
-        error: (err) => {
-          this.fileDetailsLoading = false;
-          this.handleFileError('getDetails', err);
-        }
-      });
+    // Build details from the row so no API call is needed (avoids CORS/500 and console errors)
+    this.fileDetails = {
+      file_Name: file.name,
+      file_name: file.name,
+      name: file.name,
+      file_Type: this.getContentRowType(file),
+      file_type: this.getContentRowType(file),
+      type: file.type,
+      size: file.size,
+      last_Modified: file.modified,
+      last_modified: file.modified,
+      modified: file.modified
+    };
   }
 
   /**
@@ -767,6 +766,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     this.fileDetailsDialogVisible = false;
     this.selectedFileForDetails = null;
     this.fileDetails = null;
+    this.fileDetailsError = null;
   }
 
   /**

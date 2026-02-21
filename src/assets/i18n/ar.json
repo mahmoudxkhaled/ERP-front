@@ -342,7 +342,8 @@
             "downloadComplete": "اكتمل التنزيل",
             "remaining": "المتبقي",
             "hide": "إخفاء",
-            "back": "رجوع"
+            "back": "رجوع",
+            "fileDetailsFallbackMessage": "المعلومات الأساسية أدناه من عرض المحتويات الحالي."
         },
         "sharedFiles": {
             "fileName": "اسم الملف",
