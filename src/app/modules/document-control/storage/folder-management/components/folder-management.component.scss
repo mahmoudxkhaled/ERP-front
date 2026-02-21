@@ -592,7 +592,18 @@
 
 // Recycle bin loading skeleton: match shape of tables (headers + rows)
 .recycle-bin-skeleton {
-  .p-datatable-table {
+  .recycle-bin-skeleton-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .recycle-bin-skeleton-tab {
+    flex-shrink: 0;
+  }
+  .recycle-bin-skeleton-content {
+    margin-top: 0;
+  }
+  .recycle-bin-skeleton-table.p-datatable .p-datatable-table {
     width: 100%;
     border-collapse: collapse;
     th, td {

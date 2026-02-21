@@ -413,12 +413,32 @@
     (onHide)="hideRecycleBinDialog()" [draggable]="false" [resizable]="false">
     <div class="p-fluid">
         <div *ngIf="recycleBinLoading" class="recycle-bin-skeleton">
-            <p-panel [toggleable]="false">
-                <p-skeleton width="100%" height="2.5rem" class="mb-3" borderRadius="4px"></p-skeleton>
-                <p-skeleton width="100%" height="2.5rem" class="mb-2" borderRadius="6px"></p-skeleton>
-                <p-skeleton width="100%" height="2rem" class="mb-1" borderRadius="4px"></p-skeleton>
-                <p-skeleton width="100%" height="2rem" class="mb-1" borderRadius="4px"></p-skeleton>
-                <p-skeleton width="100%" height="2rem" class="mb-1" borderRadius="4px"></p-skeleton>
+            <p-panel [header]="'fileSystem.folderManagement.recycleBinDescription' | translate" [toggleable]="false">
+                <div class="recycle-bin-skeleton-tabs">
+                    <p-skeleton width="8rem" height="2.5rem" borderRadius="4px" class="recycle-bin-skeleton-tab"></p-skeleton>
+                    <p-skeleton width="7rem" height="2.5rem" borderRadius="4px" class="recycle-bin-skeleton-tab"></p-skeleton>
+                </div>
+                <div class="recycle-bin-skeleton-content">
+                    <div class="mb-2">
+                        <p-skeleton width="100%" height="2.5rem" borderRadius="6px"></p-skeleton>
+                    </div>
+                    <div class="recycle-bin-skeleton-table p-datatable p-datatable-sm p-datatable-striped">
+                        <table class="p-datatable-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 3rem"><p-skeleton height="1rem" width="1rem" borderRadius="4px"></p-skeleton></th>
+                                    <th><p-skeleton height="1rem" width="6rem" borderRadius="4px"></p-skeleton></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let i of [1,2,3,4,5]">
+                                    <td style="width: 3rem"><p-skeleton height="1.25rem" width="1rem" borderRadius="4px"></p-skeleton></td>
+                                    <td><p-skeleton height="1.25rem" width="100%" borderRadius="4px"></p-skeleton></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </p-panel>
         </div>
         <div *ngIf="!recycleBinLoading">
