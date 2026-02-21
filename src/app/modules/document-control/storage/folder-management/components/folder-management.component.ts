@@ -1419,6 +1419,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     this.recycleBinLoading = true;
     this.folderService.getRecycleBinContents(this.fileSystemId).subscribe({
       next: (response: any) => {
+        console.log('response get recycle bin contents', response);
         this.recycleBinLoading = false;
         if (!response?.success) {
           this.handleBusinessError('restore', response);
@@ -1435,6 +1436,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
         }));
         this.deletedFiles = filesList.map((f: any) => ({
           file_id: Number(f?.file_id ?? f?.file_ID ?? f?.File_ID ?? 0),
+          folder_id: Number(f?.folder_id ?? f?.folder_ID ?? f?.Folder_ID ?? 0),
           file_name: String(f?.file_name ?? f?.file_Name ?? f?.File_Name ?? '')
         }));
         this.cdr.markForCheck();
@@ -1470,13 +1472,16 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     const fileIds = this.selectedFilesToRestore.map(
       (f) => f.file_id ?? (f as any).file_ID ?? (f as any).File_ID ?? 0
     );
+    const folderIdsForFiles = this.selectedFilesToRestore.map(
+      (f) => f.folder_id ?? (f as any).folder_ID ?? (f as any).Folder_ID ?? 0
+    );
 
     const calls: Observable<any>[] = [];
     if (folderIds.length > 0) {
       calls.push(this.folderService.restoreDeletedFolders(folderIds, this.fileSystemId));
     }
     if (fileIds.length > 0) {
-      calls.push(this.fileService.restoreDeletedFiles(fileIds, this.fileSystemId));
+      calls.push(this.fileService.restoreDeletedFiles(fileIds, folderIdsForFiles, this.fileSystemId));
     }
 
     forkJoin(calls).subscribe({

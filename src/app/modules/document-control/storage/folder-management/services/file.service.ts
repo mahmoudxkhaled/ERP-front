@@ -100,13 +100,18 @@ export class FileService {
 
   /**
    * Restore_Deleted_Files (1146)
-   * Backend expects: File_System_ID, then List<long> File_IDs.
+   * Params: 1. List<long> File_IDs, 2. List<long> Folder_IDs, 3. int File_System_ID
    */
-  restoreDeletedFiles(fileIds: number[], fileSystemId: number): Observable<any> {
+  restoreDeletedFiles(
+    fileIds: number[],
+    folderIds: number[],
+    fileSystemId: number
+  ): Observable<any> {
     this.isLoadingSubject.next(true);
 
     const fileIdsParam = JSON.stringify(fileIds);
-    const params: string[] = [fileSystemId.toString(), fileIdsParam];
+    const folderIdsParam = JSON.stringify(folderIds);
+    const params: string[] = [fileIdsParam, folderIdsParam, fileSystemId.toString()];
 
     return this.apiService
       .callAPI(1146, this.getAccessToken(), params)
