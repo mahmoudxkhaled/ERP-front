@@ -1,32 +1,36 @@
 <div class="company-storage-view card">
-    <div class="company-storage-top flex flex-col gap-3">
-        <a routerLink="/document-control/storage-content-management" class="back-link mb-3">
-            <i class="pi pi-arrow-left mr-2"></i>{{ 'fileSystem.backToHome' | translate }}
+    <header class="storage-page-header">
+        <a routerLink="/document-control/storage-content-management" class="storage-back-link">
+            <i class="pi pi-arrow-left"></i>
+            <span>{{ 'fileSystem.backToHome' | translate }}</span>
         </a>
-        <div class="section-header">
-            <h2 class="section-title">{{ 'fileSystem.companyStorageView.title' | translate }}</h2>
-            <p class="section-description">{{ 'fileSystem.companyStorageView.description' | translate }}</p>
-        </div>
-    </div>
-    <div class="flex flex-wrap gap-3  mb-3 justify-content-center">
-        <div class="field">
-            <label class="block mb-1">{{ 'fileSystem.companyStorageView.selectDrive' | translate }}</label>
-            <p-dropdown [options]="entityDriveOptions" [(ngModel)]="selectedDriveId" optionLabel="name" optionValue="id"
-                [style]="{ width: '240px' }" [disabled]="loadingDrives"
-                [placeholder]="loadingDrives ? ('fileSystem.companyStorage.loading' | translate) : ('fileSystem.companyStorageView.selectDrive' | translate)"
-                (onChange)="onDriveSelected()"></p-dropdown>
-        </div>
-        <div class="field">
-            <label class="block mb-1">{{ 'fileSystem.companyStorageView.selectFileSystem' | translate }}</label>
-            <p-dropdown [options]="fileSystemOptionsInDrive" [(ngModel)]="selectedFileSystemId" optionLabel="name"
-                optionValue="id" [style]="{ width: '240px' }" [disabled]="!selectedDriveId || loadingFileSystemsInDrive"
-                [placeholder]="loadingFileSystemsInDrive ? ('fileSystem.companyStorage.loading' | translate) : ('fileSystem.companyStorageView.selectFileSystem' | translate)"
-                (onChange)="onFileSystemSelected()"></p-dropdown>
-        </div>
-    </div>
+        <h1 class="storage-page-title">{{ 'fileSystem.companyStorageView.title' | translate }}</h1>
+    </header>
 
-    <div class="content-card p-4 mb-3" *ngIf="!selectedFileSystemId">
-        <p class="text-500 m-0">{{ 'fileSystem.companyStorageView.selectDriveAndFileSystem' | translate }}</p>
+    <section class="storage-selector-panel">
+        <p class="storage-selector-description">{{ 'fileSystem.companyStorageView.description' | translate }}</p>
+        <div class="storage-selector-fields">
+            <div class="storage-field">
+                <label>{{ 'fileSystem.companyStorageView.selectDrive' | translate }}</label>
+                <p-dropdown [options]="entityDriveOptions" [(ngModel)]="selectedDriveId" optionLabel="name"
+                    optionValue="id" [style]="{ width: '100%' }" [disabled]="loadingDrives"
+                    [placeholder]="loadingDrives ? ('fileSystem.companyStorage.loading' | translate) : ('fileSystem.companyStorageView.selectDrive' | translate)"
+                    (onChange)="onDriveSelected()"></p-dropdown>
+            </div>
+            <div class="storage-field">
+                <label>{{ 'fileSystem.companyStorageView.selectFileSystem' | translate }}</label>
+                <p-dropdown [options]="fileSystemOptionsInDrive" [(ngModel)]="selectedFileSystemId" optionLabel="name"
+                    optionValue="id" [style]="{ width: '100%' }"
+                    [disabled]="!selectedDriveId || loadingFileSystemsInDrive"
+                    [placeholder]="loadingFileSystemsInDrive ? ('fileSystem.companyStorage.loading' | translate) : ('fileSystem.companyStorageView.selectFileSystem' | translate)"
+                    (onChange)="onFileSystemSelected()"></p-dropdown>
+            </div>
+        </div>
+    </section>
+
+    <div class="storage-empty-state" *ngIf="!selectedFileSystemId">
+        <i class="pi pi-inbox storage-empty-icon"></i>
+        <p class="storage-empty-text">{{ 'fileSystem.companyStorageView.selectDriveAndFileSystem' | translate }}</p>
     </div>
 
     <!-- Folder Management Component -->

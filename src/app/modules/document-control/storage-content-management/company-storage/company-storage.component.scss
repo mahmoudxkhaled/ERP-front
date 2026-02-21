@@ -1,35 +1,97 @@
 .company-storage-view {
-    .company-storage-top {
-        align-items: start;
+    // Page header: back link + title in one compact block
+    .storage-page-header {
+        margin-bottom: 1.25rem;
     }
 
-    .back-link {
+    .storage-back-link {
         display: inline-flex;
         align-items: center;
+        gap: 0.5rem;
         color: var(--p-primary-color);
         text-decoration: none;
         font-size: 0.875rem;
+        margin-bottom: 0.5rem;
+        transition: opacity 0.15s ease;
     }
-    .back-link:hover {
-        text-decoration: underline;
+    .storage-back-link:hover {
+        opacity: 0.85;
     }
-    .section-header {
-        margin-bottom: 1.5rem;
-        text-align: start;
-        width: 100%;
+    .storage-back-link .pi {
+        font-size: 0.875rem;
     }
 
-    .section-title {
-        font-size: 1.25rem;
+    .storage-page-title {
+        font-size: 1.5rem;
         font-weight: 600;
         color: var(--p-text-color);
-        margin: 0 0 0.25rem 0;
+        margin: 0;
+        letter-spacing: -0.02em;
     }
 
-    .section-description {
+    // Selector: one panel with description + two dropdowns
+    .storage-selector-panel {
+        background: var(--p-surface-50);
+        border: 1px solid var(--p-surface-200);
+        border-radius: var(--p-border-radius);
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .storage-selector-description {
         color: var(--p-text-muted-color);
         font-size: 0.9375rem;
+        margin: 0 0 1rem 0;
+        line-height: 1.45;
+    }
+
+    .storage-selector-fields {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
+        align-items: end;
+    }
+    @media (max-width: 640px) {
+        .storage-selector-fields {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .storage-field {
+        label {
+            display: block;
+            font-weight: 500;
+            font-size: 0.875rem;
+            color: var(--p-text-color);
+            margin-bottom: 0.375rem;
+        }
+    }
+
+    // Empty state when nothing selected
+    .storage-empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 1.5rem;
+        background: var(--p-surface-0);
+        border: 1px dashed var(--p-surface-300);
+        border-radius: var(--p-border-radius);
+        margin-bottom: 1.25rem;
+    }
+
+    .storage-empty-icon {
+        font-size: 2.5rem;
+        color: var(--p-surface-400);
+        margin-bottom: 0.75rem;
+    }
+
+    .storage-empty-text {
         margin: 0;
+        font-size: 0.9375rem;
+        color: var(--p-text-muted-color);
+        text-align: center;
+        max-width: 280px;
     }
 
     .content-card {
