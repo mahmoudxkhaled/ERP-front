@@ -165,6 +165,24 @@ export class FolderService {
   }
 
   /**
+   * Get_Total_Folder_Size (1138)
+   * Input: Folder_ID, File_System_ID
+   * Output: long Total_Size (in response.message)
+   */
+  getTotalFolderSize(folderId: number, fileSystemId: number): Observable<any> {
+    this.isLoadingSubject.next(true);
+
+    const params: string[] = [
+      folderId.toString(),
+      fileSystemId.toString(),
+    ];
+
+    return this.apiService
+      .callAPI(1138, this.getAccessToken(), params)
+      .pipe(finalize(() => this.isLoadingSubject.next(false)));
+  }
+
+  /**
    * Get_File_System_Recycle_Bin_Contents (1129)
    * Input: File_System_ID
    * Output: List Folders, List Files (in response.message)

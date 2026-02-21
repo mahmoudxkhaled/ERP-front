@@ -121,6 +121,7 @@ Filtering depends on logged-in account; **Developer** role can filter all. Also:
 | 23 | Get_Folder_Structure   | File_System_ID, One_Level_Only         | List (Folder_ID, Parent_Folder_ID, Folder_Name) |
 | 24 | Get_Folder_Contents    | Folder_ID, File_System_ID              | Folders, Files |
 | 25 | Restore_Deleted_Folders| List&lt;long&gt; Folder_IDs, File_System_ID | -          |
+| 26 | Get_Total_Folder_Size   | Folder_ID, File_System_ID               | long Total_Size |
 
 ---
 

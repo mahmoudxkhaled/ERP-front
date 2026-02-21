@@ -335,8 +335,8 @@
 
 <!-- Move Folder Dialog -->
 <p-dialog [header]="'fileSystem.folderManagement.moveFolderDialogTitle' | translate"
-    [(visible)]="moveFolderDialogVisible" [modal]="true" [style]="{ width: '520px' }" (onHide)="hideMoveFolderDialog()"
-    [draggable]="false" [resizable]="false">
+    [(visible)]="moveFolderDialogVisible" [modal]="true" [style]="{ width: '520px', height: '100vh' }"
+    (onHide)="hideMoveFolderDialog()" [draggable]="false" [resizable]="false">
     <div class="p-fluid">
         <div class="flex flex-column gap-3 mb-3">
             <label class="font-semibold">{{ 'fileSystem.folderManagement.selectDestination' | translate }}</label>
@@ -409,62 +409,102 @@
 
 <!-- Recycle Bin Dialog (deleted folders + files) -->
 <p-dialog [header]="'fileSystem.folderManagement.recycleBinDialogTitle' | translate"
-    [(visible)]="recycleBinDialogVisible" [modal]="true" [style]="{ width: '800px' }" (onHide)="hideRecycleBinDialog()"
-    [draggable]="false" [resizable]="false">
+    [(visible)]="recycleBinDialogVisible" [modal]="true" [style]="{ width: '800px', height: '100vh' }"
+    (onHide)="hideRecycleBinDialog()" [draggable]="false" [resizable]="false">
     <div class="p-fluid">
-        <p class="mb-3">{{ 'fileSystem.folderManagement.recycleBinDescription' | translate }}</p>
-        <div *ngIf="recycleBinLoading" class="flex align-items-center justify-content-center py-3">
-            <p-progressSpinner strokeWidth="4" [style]="{ width: '2rem', height: '2rem' }"></p-progressSpinner>
+        <div *ngIf="recycleBinLoading" class="recycle-bin-skeleton">
+            <p-panel [toggleable]="false">
+                <p-skeleton width="100%" height="2.5rem" class="mb-3" borderRadius="4px"></p-skeleton>
+                <p-skeleton width="100%" height="2.5rem" class="mb-2" borderRadius="6px"></p-skeleton>
+                <p-skeleton width="100%" height="2rem" class="mb-1" borderRadius="4px"></p-skeleton>
+                <p-skeleton width="100%" height="2rem" class="mb-1" borderRadius="4px"></p-skeleton>
+                <p-skeleton width="100%" height="2rem" class="mb-1" borderRadius="4px"></p-skeleton>
+            </p-panel>
         </div>
         <div *ngIf="!recycleBinLoading">
-            <div class="mb-3">
-                <label class="font-semibold block mb-2">{{ 'fileSystem.folderManagement.deletedFolders' | translate
-                    }}</label>
-                <div *ngIf="deletedFolders.length === 0" class="text-center text-500 py-2 surface-50 border-round">
-                    {{ 'fileSystem.folderManagement.noDeletedFolders' | translate }}
-                </div>
-                <p-table *ngIf="deletedFolders.length > 0" [value]="deletedFolders" [paginator]="false"
-                    selectionMode="multiple" [(selection)]="selectedFoldersToRestore" dataKey="folder_ID">
-                    <ng-template pTemplate="header">
-                        <tr>
-                            <th style="width: 3rem"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
-                            <th>{{ 'fileSystem.folderManagement.folderName' | translate }}</th>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" let-folder>
-                        <tr>
-                            <td><p-tableCheckbox [value]="folder"></p-tableCheckbox></td>
-                            <td>{{ folder.folder_Name || folder.Folder_Name }}</td>
-                        </tr>
-                    </ng-template>
-                </p-table>
-            </div>
-            <div>
-                <label class="font-semibold block mb-2">{{ 'fileSystem.folderManagement.deletedFiles' | translate
-                    }}</label>
-                <div *ngIf="deletedFiles.length === 0" class="text-center text-500 py-2 surface-50 border-round">
-                    {{ 'fileSystem.folderManagement.noDeletedFiles' | translate }}
-                </div>
-                <p-table *ngIf="deletedFiles.length > 0" [value]="deletedFiles" [paginator]="false"
-                    selectionMode="multiple" [(selection)]="selectedFilesToRestore" dataKey="file_id">
-                    <ng-template pTemplate="header">
-                        <tr>
-                            <th style="width: 3rem"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
-                            <th>{{ 'fileSystem.folderManagement.fileName' | translate }}</th>
-                            <th>{{ 'fileSystem.folderManagement.folderName' | translate }}</th>
-                            <th>{{ 'fileSystem.folderManagement.size' | translate }}</th>
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" let-file>
-                        <tr>
-                            <td><p-tableCheckbox [value]="file"></p-tableCheckbox></td>
-                            <td>{{ file.file_name }}</td>
-                            <td>{{ file.folder_name || '—' }}</td>
-                            <td>{{ formatFileSize(file.size) }}</td>
-                        </tr>
-                    </ng-template>
-                </p-table>
-            </div>
+            <p-panel [header]="'fileSystem.folderManagement.recycleBinDescription' | translate" [toggleable]="false">
+                <p-tabView>
+                    <p-tabPanel [header]="'fileSystem.folderManagement.deletedFolders' | translate">
+                        <div class="mb-2">
+                            <span class="p-input-icon-left" style="width: 100%;">
+                                <i class="pi pi-search"></i>
+                                <input pInputText type="text" [(ngModel)]="recycleBinFolderSearch"
+                                    [placeholder]="'fileSystem.folderManagement.searchFoldersPlaceholder' | translate"
+                                    class="w-full" />
+                            </span>
+                        </div>
+                        <div *ngIf="deletedFolders.length === 0"
+                            class="text-center text-500 py-2 surface-50 border-round">
+                            {{ 'fileSystem.folderManagement.noDeletedFolders' | translate }}
+                        </div>
+                        <p-table *ngIf="deletedFolders.length > 0" [value]="filteredDeletedFolders" [paginator]="true"
+                            [rows]="5" [rowsPerPageOptions]="[5, 10, 20]" selectionMode="multiple"
+                            [(selection)]="selectedFoldersToRestore" dataKey="folder_ID">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th style="width: 3rem"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
+                                    <th>{{ 'fileSystem.folderManagement.folderName' | translate }}</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-folder>
+                                <tr class="cursor-pointer" (click)="toggleRecycleBinFolderSelection(folder)">
+                                    <td (click)="$event.stopPropagation()"><p-tableCheckbox
+                                            [value]="folder"></p-tableCheckbox></td>
+                                    <td>{{ folder.folder_Name || folder.Folder_Name }}</td>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td colspan="2" class="text-center text-500">{{
+                                        'fileSystem.folderManagement.noDeletedFolders' | translate }}</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </p-tabPanel>
+                    <p-tabPanel [header]="'fileSystem.folderManagement.deletedFiles' | translate">
+                        <div class="mb-2">
+                            <span class="p-input-icon-left" style="width: 100%;">
+                                <i class="pi pi-search"></i>
+                                <input pInputText type="text" [(ngModel)]="recycleBinFileSearch"
+                                    [placeholder]="'fileSystem.folderManagement.searchFilesPlaceholder' | translate"
+                                    class="w-full" />
+                            </span>
+                        </div>
+                        <div *ngIf="deletedFiles.length === 0"
+                            class="text-center text-500 py-2 surface-50 border-round">
+                            {{ 'fileSystem.folderManagement.noDeletedFiles' | translate }}
+                        </div>
+                        <p-table *ngIf="deletedFiles.length > 0" [value]="filteredDeletedFiles" [paginator]="true"
+                            [rows]="5" [rowsPerPageOptions]="[5, 10, 20]" selectionMode="multiple"
+                            [(selection)]="selectedFilesToRestore" dataKey="file_id">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th style="width: 3rem"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
+                                    <th>{{ 'fileSystem.folderManagement.fileName' | translate }}</th>
+                                    <th>{{ 'fileSystem.folderManagement.folderName' | translate }}</th>
+                                    <th>{{ 'fileSystem.folderManagement.size' | translate }}</th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-file>
+                                <tr class="cursor-pointer" (click)="toggleRecycleBinFileSelection(file)">
+                                    <td (click)="$event.stopPropagation()"><p-tableCheckbox
+                                            [value]="file"></p-tableCheckbox></td>
+                                    <td>{{ file.file_name }}</td>
+                                    <td>{{ file.folder_name || '—' }}</td>
+                                    <td>{{ formatFileSize(file.size) }}</td>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td colspan="4" class="text-center text-500">{{
+                                        'fileSystem.folderManagement.noDeletedFiles'
+                                        | translate }}</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </p-tabPanel>
+                </p-tabView>
+            </p-panel>
         </div>
     </div>
     <ng-template pTemplate="footer">

@@ -80,15 +80,37 @@
   flex-direction: column;
 }
 
-// Move dialog: tree card wrapper so it reuses folders-panel look and stays scrollable
+// Move folder dialog: content and tree take full height of dialog
+:host ::ng-deep .move-folder-dialog .p-dialog-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.move-folder-dialog-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+// Move dialog: tree card wrapper so it reuses folders-panel look and fills remaining height
 .move-dialog-tree-wrap {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+
   .folders-panel-card {
-    max-height: 280px;
+    flex: 1;
     display: flex;
     flex-direction: column;
     min-height: 0;
   }
   .folders-panel-body {
+    flex: 1;
     overflow: auto;
     min-height: 0;
   }
@@ -566,4 +588,24 @@
   font-size: 0.95rem;
   color: var(--text-color);
   word-break: break-word;
+}
+
+// Recycle bin loading skeleton: match shape of tables (headers + rows)
+.recycle-bin-skeleton {
+  .p-datatable-table {
+    width: 100%;
+    border-collapse: collapse;
+    th, td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--surface-border, #dee2e6);
+    }
+    thead th {
+      background: var(--surface-100, #f8f9fa);
+      font-weight: 600;
+    }
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+  }
 }

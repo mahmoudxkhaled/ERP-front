@@ -1,6 +1,5 @@
 import { Component, Input, OnInit, OnChanges, SimpleChanges, ViewChild, ElementRef, ChangeDetectorRef, Inject } from '@angular/core';
 import { Observable, firstValueFrom, forkJoin, of } from 'rxjs';
-import { map, switchMap, catchError } from 'rxjs/operators';
 import { MenuItem, MessageService, TreeNode } from 'primeng/api';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
@@ -107,6 +106,10 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   recycleBinLoading = false;
   deletedFolders: Folder[] = [];
   deletedFiles: any[] = [];
+  /** Search text for deleted folders table (front-end filter). */
+  recycleBinFolderSearch = '';
+  /** Search text for deleted files table (front-end filter). */
+  recycleBinFileSearch = '';
   /** Selected folder rows (table selection). */
   selectedFoldersToRestore: Folder[] = [];
   /** Selected file rows (table selection). */
@@ -373,52 +376,24 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   }
 
   /**
-   * Recursively calculate total size of a folder (all files in folder and subfolders) via Get_Folder_Contents (1136).
-   * Returns total size in bytes.
-   */
-  calculateFolderSizeBytes(folderId: number): Observable<number> {
-    return this.folderService.getFolderContents(folderId, this.fileSystemId).pipe(
-      switchMap((response: any) => {
-        if (!response?.success || !response?.message) {
-          return of(0);
-        }
-        const raw = response.message;
-        const foldersList = raw.folders ?? raw.Folders ?? [];
-        const filesList = raw.files ?? raw.Files ?? [];
-        let filesSum = 0;
-        for (const file of filesList) {
-          const size = file?.size ?? file?.Size;
-          if (size != null) {
-            filesSum += Number(size);
-          }
-        }
-        if (foldersList.length === 0) {
-          return of(filesSum);
-        }
-        const subfolderObservables = foldersList.map((folder: any) => {
-          const subId = Number(folder?.folder_id ?? folder?.folder_ID ?? folder?.Folder_ID ?? 0);
-          return this.calculateFolderSizeBytes(subId).pipe(catchError(() => of(0)));
-        });
-        return forkJoin(subfolderObservables).pipe(
-          map((subTotals) => filesSum + (subTotals as number[]).reduce((a, b) => a + b, 0))
-        );
-      }),
-      catchError(() => of(0))
-    );
-  }
-
-  /**
-   * Called when user clicks the calculate-size icon on a folder row. Runs recursive size calculation and updates cache.
+   * Called when user clicks the calculate-size icon on a folder row.
+   * Uses Get_Total_Folder_Size API and updates the cache with formatted size.
    */
   onCalculateFolderSize(row: FolderContentRow): void {
     if (!row.isFolder || this.folderSizeLoading.has(row.id)) {
       return;
     }
     this.folderSizeLoading.add(row.id);
-    this.calculateFolderSizeBytes(row.id).subscribe({
-      next: (totalBytes) => {
-        this.folderSizeCache.set(row.id, this.formatBytes(totalBytes));
+    this.folderService.getTotalFolderSize(row.id, this.fileSystemId).subscribe({
+      next: (response: any) => {
+        console.log('response get total folder size', response);
         this.folderSizeLoading.delete(row.id);
+        if (response?.success && response?.message != null) {
+          const raw = response.message;
+          // API returns message as number (Total_Size) or object with Total_Size/total_size
+          const totalSize = typeof raw === 'number' ? raw : Number(raw?.Total_Size ?? raw?.total_size ?? 0);
+          this.folderSizeCache.set(row.id, this.formatBytes(totalSize));
+        }
         this.cdr.markForCheck();
       },
       error: () => {
@@ -1407,6 +1382,8 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     this.selectedFilesToRestore = [];
     this.deletedFolders = [];
     this.deletedFiles = [];
+    this.recycleBinFolderSearch = '';
+    this.recycleBinFileSearch = '';
   }
 
   /**
@@ -1475,8 +1452,56 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   }
 
   /** True if at least one folder or file is selected in the Recycle bin dialog. */
+  /** Toggle folder selection when user clicks anywhere on the row (recycle bin folders table). */
+  toggleRecycleBinFolderSelection(folder: Folder): void {
+    const key = folder.folder_ID ?? (folder as any).Folder_ID;
+    const idx = this.selectedFoldersToRestore.findIndex(
+      (f) => (f.folder_ID ?? (f as any).Folder_ID) === key
+    );
+    if (idx === -1) {
+      this.selectedFoldersToRestore = [...this.selectedFoldersToRestore, folder];
+    } else {
+      this.selectedFoldersToRestore = this.selectedFoldersToRestore.filter((_, i) => i !== idx);
+    }
+    this.cdr.markForCheck();
+  }
+
+  /** Toggle file selection when user clicks anywhere on the row (recycle bin files table). */
+  toggleRecycleBinFileSelection(file: any): void {
+    const key = file.file_id ?? file.file_ID ?? file.File_ID;
+    const idx = this.selectedFilesToRestore.findIndex(
+      (f) => (f.file_id ?? (f as any).file_ID ?? (f as any).File_ID) === key
+    );
+    if (idx === -1) {
+      this.selectedFilesToRestore = [...this.selectedFilesToRestore, file];
+    } else {
+      this.selectedFilesToRestore = this.selectedFilesToRestore.filter((_, i) => i !== idx);
+    }
+    this.cdr.markForCheck();
+  }
+
   get hasRecycleBinSelection(): boolean {
     return this.selectedFoldersToRestore.length > 0 || this.selectedFilesToRestore.length > 0;
+  }
+
+  /** Deleted folders filtered by search (folder name). Used for recycle bin table with pagination. */
+  get filteredDeletedFolders(): Folder[] {
+    const q = (this.recycleBinFolderSearch || '').trim().toLowerCase();
+    if (!q) return this.deletedFolders;
+    return this.deletedFolders.filter(
+      (f) => (f.folder_Name ?? (f as any).Folder_Name ?? '').toLowerCase().includes(q)
+    );
+  }
+
+  /** Deleted files filtered by search (file name or folder name). Used for recycle bin table with pagination. */
+  get filteredDeletedFiles(): any[] {
+    const q = (this.recycleBinFileSearch || '').trim().toLowerCase();
+    if (!q) return this.deletedFiles;
+    return this.deletedFiles.filter((f) => {
+      const fileName = (f.file_name ?? f.file_Name ?? '').toLowerCase();
+      const folderName = (f.folder_name ?? f.folder_Name ?? '').toLowerCase();
+      return fileName.includes(q) || folderName.includes(q);
+    });
   }
 
   /**
