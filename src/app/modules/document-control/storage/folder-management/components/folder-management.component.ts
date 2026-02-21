@@ -173,7 +173,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
         isFolder: true
       }));
     }
-    
+
     // Add back button row at the beginning if not in root folder
     if (this.currentFolderId !== 0 && !this.tableLoadingSpinner) {
       const backButtonRow: FolderContentRow = {
@@ -185,7 +185,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
       };
       return [backButtonRow, ...this.folderContents];
     }
-    
+
     return this.folderContents;
   }
 
@@ -922,6 +922,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     this.uploadError = null;
     const totalFiles = this.selectedFiles.length;
 
+    // this.uploadDialogVisible = false;
     try {
       for (let i = 0; i < this.selectedFiles.length; i++) {
         const file = this.selectedFiles[i];
@@ -947,6 +948,13 @@ export class FolderManagementComponent implements OnInit, OnChanges {
         this.currentUploadingFileName = null;
       }
 
+      // Log success info in console for debugging
+      console.log('Upload completed successfully', {
+        totalFiles,
+        files: this.selectedFiles,
+        folderId: this.currentFolderId
+      });
+
       this.messageService.add({
         severity: 'success',
         summary: this.translate.getInstant('fileSystem.folderManagement.success'),
@@ -955,6 +963,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
       this.hideUploadDialog();
       this.loadFolderContents(this.currentFolderId);
     } catch (err: unknown) {
+      console.error('Upload failed', err);
       // Mark current file as error if upload failed
       if (this.currentUploadingFileName) {
         this.fileUploadStatus.set(this.currentUploadingFileName, 'error');
@@ -964,6 +973,14 @@ export class FolderManagementComponent implements OnInit, OnChanges {
       const detail = getFileSystemErrorDetail(response, (key) =>
         this.translate.getInstant(key)
       );
+
+      // Log error details in console for debugging
+      console.error('Upload failed', {
+        error: err,
+        normalizedResponse: response,
+        detail
+      });
+
       this.uploadError = detail || this.translate.getInstant('fileSystem.folderManagement.errorUnknown');
       this.messageService.add({
         severity: 'error',
