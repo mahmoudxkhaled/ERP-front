@@ -1410,17 +1410,21 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   }
 
   /**
-   * Load recycle bin contents (deleted folders and files) via Get_File_System_Recycle_Bin_Contents.
+   * Load recycle bin contents and folder structure.
+   * Uses Get_File_System_Recycle_Bin_Contents and Get_Folder_Structure to show folder names for deleted files.
    */
   private loadRecycleBinContents(): void {
     if (this.fileSystemId <= 0) {
       return;
     }
     this.recycleBinLoading = true;
-    this.folderService.getRecycleBinContents(this.fileSystemId).subscribe({
-      next: (response: any) => {
-        console.log('response get recycle bin contents', response);
+    const recycleBin$ = this.folderService.getRecycleBinContents(this.fileSystemId);
+    const folderStructure$ = this.folderService.getFolderStructure(this.fileSystemId, false);
+
+    forkJoin({ recycleBin: recycleBin$, folderStructure: folderStructure$ }).subscribe({
+      next: (result: { recycleBin: any; folderStructure: any }) => {
         this.recycleBinLoading = false;
+        const response = result.recycleBin;
         if (!response?.success) {
           this.handleBusinessError('restore', response);
           return;
@@ -1434,11 +1438,33 @@ export class FolderManagementComponent implements OnInit, OnChanges {
           parent_Folder_ID: Number(f?.parent_folder_id ?? f?.parent_Folder_ID ?? f?.Parent_Folder_ID ?? 0),
           file_System_ID: this.fileSystemId
         }));
-        this.deletedFiles = filesList.map((f: any) => ({
-          file_id: Number(f?.file_id ?? f?.file_ID ?? f?.File_ID ?? 0),
-          folder_id: Number(f?.folder_id ?? f?.folder_ID ?? f?.Folder_ID ?? 0),
-          file_name: String(f?.file_name ?? f?.file_Name ?? f?.File_Name ?? '')
-        }));
+
+        // Build folder_id -> folder_name from Get_Folder_Structure (all folders in file system)
+        const folderIdToName: Record<number, string> = {};
+        if (result.folderStructure?.success && result.folderStructure?.message) {
+          const structureItems = this.normalizeFolderStructureResponse(result.folderStructure.message);
+          structureItems.forEach((item) => {
+            const id = item.folder_ID ?? (item as any).Folder_ID ?? 0;
+            const name = item.folder_Name ?? (item as any).Folder_Name ?? '';
+            if (id) folderIdToName[id] = name;
+          });
+        }
+        // Add names for deleted folders (in case they are no longer in Get_Folder_Structure)
+        this.deletedFolders.forEach((fold) => {
+          folderIdToName[fold.folder_ID] = fold.folder_Name;
+        });
+
+        this.deletedFiles = filesList.map((f: any) => {
+          const folderId = Number(f?.folder_id ?? f?.folder_ID ?? f?.Folder_ID ?? 0);
+          const sizeBytes = Number(f?.size ?? f?.Size ?? 0);
+          return {
+            file_id: Number(f?.file_id ?? f?.file_ID ?? f?.File_ID ?? 0),
+            folder_id: folderId,
+            folder_name: folderIdToName[folderId] ?? '',
+            file_name: String(f?.file_name ?? f?.file_Name ?? f?.File_Name ?? ''),
+            size: sizeBytes
+          };
+        });
         this.cdr.markForCheck();
       },
       error: () => {

@@ -74,9 +74,8 @@
                                 </div>
                                 <div class="flex align-items-center justify-content-between gap-2 flex-wrap">
                                     <button *ngIf="currentFolderId !== 0" pButton type="button"
-                                        [label]="'fileSystem.folderManagement.back' | translate"
-                                        icon="pi pi-arrow-left" class="p-button-sm p-button-outlined"
-                                        (click)="goBack()"></button>
+                                        [label]="'fileSystem.folderManagement.back' | translate" icon="pi pi-arrow-left"
+                                        class="p-button-sm p-button-outlined" (click)="goBack()"></button>
                                     <span *ngIf="currentFolderId === 0"></span>
                                     <div class="flex gap-2 ml-auto">
                                         <button pButton type="button"
@@ -103,8 +102,7 @@
                         </ng-template>
                         <ng-template pTemplate="body" let-row>
                             <!-- Content rows -->
-                            <tr [class.cursor-pointer]="row.isFolder"
-                                (click)="onContentRowDoubleClick(row)">
+                            <tr [class.cursor-pointer]="row.isFolder" (click)="onContentRowDoubleClick(row)">
                                 <td class="text-center">
                                     <ng-container *ngIf="tableLoadingSpinner; else normalIcon">
                                         <p-skeleton height="1.5rem" width="1.5rem" borderRadius="4px"></p-skeleton>
@@ -346,12 +344,14 @@
                 <div class="flex align-items-center gap-2">
                     <p-radioButton name="moveDestinationKind" value="root" [(ngModel)]="moveDestinationKind"
                         [inputId]="'moveToRoot'"></p-radioButton>
-                    <label for="moveToRoot" class="cursor-pointer mb-0">{{ 'fileSystem.folderManagement.moveToRoot' | translate }}</label>
+                    <label for="moveToRoot" class="cursor-pointer mb-0">{{ 'fileSystem.folderManagement.moveToRoot' |
+                        translate }}</label>
                 </div>
                 <div class="flex align-items-center gap-2">
                     <p-radioButton name="moveDestinationKind" value="folder" [(ngModel)]="moveDestinationKind"
                         [inputId]="'moveIntoFolder'"></p-radioButton>
-                    <label for="moveIntoFolder" class="cursor-pointer mb-0">{{ 'fileSystem.folderManagement.moveIntoFolder' | translate }}</label>
+                    <label for="moveIntoFolder" class="cursor-pointer mb-0">{{
+                        'fileSystem.folderManagement.moveIntoFolder' | translate }}</label>
                 </div>
             </div>
         </div>
@@ -409,8 +409,8 @@
 
 <!-- Recycle Bin Dialog (deleted folders + files) -->
 <p-dialog [header]="'fileSystem.folderManagement.recycleBinDialogTitle' | translate"
-    [(visible)]="recycleBinDialogVisible" [modal]="true" [style]="{ width: '560px' }"
-    (onHide)="hideRecycleBinDialog()" [draggable]="false" [resizable]="false">
+    [(visible)]="recycleBinDialogVisible" [modal]="true" [style]="{ width: '800px' }" (onHide)="hideRecycleBinDialog()"
+    [draggable]="false" [resizable]="false">
     <div class="p-fluid">
         <p class="mb-3">{{ 'fileSystem.folderManagement.recycleBinDescription' | translate }}</p>
         <div *ngIf="recycleBinLoading" class="flex align-items-center justify-content-center py-3">
@@ -418,7 +418,8 @@
         </div>
         <div *ngIf="!recycleBinLoading">
             <div class="mb-3">
-                <label class="font-semibold block mb-2">{{ 'fileSystem.folderManagement.deletedFolders' | translate }}</label>
+                <label class="font-semibold block mb-2">{{ 'fileSystem.folderManagement.deletedFolders' | translate
+                    }}</label>
                 <div *ngIf="deletedFolders.length === 0" class="text-center text-500 py-2 surface-50 border-round">
                     {{ 'fileSystem.folderManagement.noDeletedFolders' | translate }}
                 </div>
@@ -439,7 +440,8 @@
                 </p-table>
             </div>
             <div>
-                <label class="font-semibold block mb-2">{{ 'fileSystem.folderManagement.deletedFiles' | translate }}</label>
+                <label class="font-semibold block mb-2">{{ 'fileSystem.folderManagement.deletedFiles' | translate
+                    }}</label>
                 <div *ngIf="deletedFiles.length === 0" class="text-center text-500 py-2 surface-50 border-round">
                     {{ 'fileSystem.folderManagement.noDeletedFiles' | translate }}
                 </div>
@@ -449,12 +451,16 @@
                         <tr>
                             <th style="width: 3rem"><p-tableHeaderCheckbox></p-tableHeaderCheckbox></th>
                             <th>{{ 'fileSystem.folderManagement.fileName' | translate }}</th>
+                            <th>{{ 'fileSystem.folderManagement.folderName' | translate }}</th>
+                            <th>{{ 'fileSystem.folderManagement.size' | translate }}</th>
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-file>
                         <tr>
                             <td><p-tableCheckbox [value]="file"></p-tableCheckbox></td>
-                            <td>{{ file.file_name || file.file_Name || file.File_Name }}</td>
+                            <td>{{ file.file_name }}</td>
+                            <td>{{ file.folder_name || '—' }}</td>
+                            <td>{{ formatFileSize(file.size) }}</td>
                         </tr>
                     </ng-template>
                 </p-table>
