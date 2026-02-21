@@ -187,18 +187,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
       }));
     }
 
-    // Add back button row at the beginning if not in root folder
-    if (this.currentFolderId !== 0 && !this.tableLoadingSpinner) {
-      const backButtonRow: FolderContentRow = {
-        id: -1, // Special ID for back button
-        name: '',
-        type: 'back',
-        isFolder: false,
-        isBackButton: true
-      };
-      return [backButtonRow, ...this.folderContents];
-    }
-
     return this.folderContents;
   }
 
@@ -527,6 +515,27 @@ export class FolderManagementComponent implements OnInit, OnChanges {
    */
   openFolderMenu(menu: { toggle: (e: Event) => void }, node: FolderTreeNode, event: Event): void {
     event.stopPropagation();
+    this.selectedFolderForMenu = node;
+    this.buildFolderMenuItems();
+    menu.toggle(event);
+  }
+
+  /**
+   * Open the 3-dot menu for a folder row in the contents table (same menu as tree folders).
+   */
+  openFolderMenuForContentRow(menu: { toggle: (e: Event) => void }, row: FolderContentRow, event: Event): void {
+    event.stopPropagation();
+    if (!row.isFolder) {
+      return;
+    }
+    const node: FolderTreeNode = {
+      data: {
+        folderId: row.id,
+        folderName: row.name,
+        parentFolderId: this.currentFolderId
+      },
+      label: row.name
+    };
     this.selectedFolderForMenu = node;
     this.buildFolderMenuItems();
     menu.toggle(event);
