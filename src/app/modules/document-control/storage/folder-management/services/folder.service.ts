@@ -165,6 +165,21 @@ export class FolderService {
   }
 
   /**
+   * Get_File_System_Recycle_Bin_Contents (1129)
+   * Input: File_System_ID
+   * Output: List Folders, List Files (in response.message)
+   */
+  getRecycleBinContents(fileSystemId: number): Observable<any> {
+    this.isLoadingSubject.next(true);
+
+    const params: string[] = [fileSystemId.toString()];
+
+    return this.apiService
+      .callAPI(1129, this.getAccessToken(), params)
+      .pipe(finalize(() => this.isLoadingSubject.next(false)));
+  }
+
+  /**
    * Restore_Deleted_Folders (1137)
    * Input: List<long> Folder_IDs, File_System_ID
    */
@@ -174,12 +189,11 @@ export class FolderService {
   ): Observable<any> {
     this.isLoadingSubject.next(true);
 
-    // Convert array to comma-separated string or pass as single parameter
-    // Based on API spec, it expects List<long>, so we'll pass as comma-separated string
-    const folderIdsString = folderIds.join(',');
+    // Backend expects List<long> for parameter 1: use JSON array string e.g. "[7,8]"
+    const folderIdsParam = JSON.stringify(folderIds);
 
     const params: string[] = [
-      folderIdsString,
+      folderIdsParam,
       fileSystemId.toString(),
     ];
 

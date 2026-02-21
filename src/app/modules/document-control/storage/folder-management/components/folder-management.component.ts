@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges, ViewChild, ElementRef, ChangeDetectorRef, Inject } from '@angular/core';
 import { Observable, firstValueFrom, forkJoin, of } from 'rxjs';
 import { map, switchMap, catchError } from 'rxjs/operators';
 import { MenuItem, MessageService, TreeNode } from 'primeng/api';
@@ -74,7 +74,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   renameFolderDialogVisible = false;
   moveFolderDialogVisible = false;
   deleteFolderConfirmVisible = false;
-  restoreDeletedFoldersDialogVisible = false;
 
   // Upload state
   selectedFiles: File[] = [];
@@ -103,9 +102,15 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   moveDestinationNode: TreeNode | null = null;
   selectedFolderForRestore: FolderTreeNode | null = null;
 
-  // Restore deleted folders
+  // Recycle bin (deleted folders + files)
+  recycleBinDialogVisible = false;
+  recycleBinLoading = false;
   deletedFolders: Folder[] = [];
-  selectedFoldersToRestore: number[] = [];
+  deletedFiles: any[] = [];
+  /** Selected folder rows (table selection). */
+  selectedFoldersToRestore: Folder[] = [];
+  /** Selected file rows (table selection). */
+  selectedFilesToRestore: any[] = [];
 
   // Row menu (3-dot)
   folderMenuItems: MenuItem[] = [];
@@ -140,7 +145,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   constructor(
     private translate: TranslationService,
     private messageService: MessageService,
-    private folderService: FolderService,
+    @Inject(FolderService) private folderService: FolderService,
     private fileService: FileService,
     private fileUploadService: FileUploadService,
     private fileDownloadService: FileDownloadService,
@@ -1387,62 +1392,113 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   }
 
   /**
-   * Show restore deleted folders dialog.
+   * Show Recycle bin dialog and load deleted folders and files.
    */
-  showRestoreDeletedFoldersDialog(): void {
-    this.restoreDeletedFoldersDialogVisible = true;
+  showRecycleBinDialog(): void {
+    this.recycleBinDialogVisible = true;
     this.selectedFoldersToRestore = [];
-    this.loadDeletedFolders();
+    this.selectedFilesToRestore = [];
+    this.loadRecycleBinContents();
   }
 
-  hideRestoreDeletedFoldersDialog(): void {
-    this.restoreDeletedFoldersDialogVisible = false;
+  hideRecycleBinDialog(): void {
+    this.recycleBinDialogVisible = false;
     this.selectedFoldersToRestore = [];
+    this.selectedFilesToRestore = [];
     this.deletedFolders = [];
+    this.deletedFiles = [];
   }
 
   /**
-   * Load deleted folders (placeholder - API may need to be called differently).
+   * Load recycle bin contents (deleted folders and files) via Get_File_System_Recycle_Bin_Contents.
    */
-  private loadDeletedFolders(): void {
-    // This would typically call an API to get deleted folders
-    // For now, we'll leave it empty as the API spec doesn't explicitly mention
-    // a "List_Deleted_Folders" endpoint - restore uses folder IDs directly
-    this.deletedFolders = [];
+  private loadRecycleBinContents(): void {
+    if (this.fileSystemId <= 0) {
+      return;
+    }
+    this.recycleBinLoading = true;
+    this.folderService.getRecycleBinContents(this.fileSystemId).subscribe({
+      next: (response: any) => {
+        this.recycleBinLoading = false;
+        if (!response?.success) {
+          this.handleBusinessError('restore', response);
+          return;
+        }
+        const raw = response.message ?? {};
+        const foldersList = raw.folders ?? raw.Folders ?? [];
+        const filesList = raw.files ?? raw.Files ?? [];
+        this.deletedFolders = foldersList.map((f: any) => ({
+          folder_ID: Number(f?.folder_id ?? f?.folder_ID ?? f?.Folder_ID ?? 0),
+          folder_Name: String(f?.folder_name ?? f?.folder_Name ?? f?.Folder_Name ?? ''),
+          parent_Folder_ID: Number(f?.parent_folder_id ?? f?.parent_Folder_ID ?? f?.Parent_Folder_ID ?? 0),
+          file_System_ID: this.fileSystemId
+        }));
+        this.deletedFiles = filesList.map((f: any) => ({
+          file_id: Number(f?.file_id ?? f?.file_ID ?? f?.File_ID ?? 0),
+          file_name: String(f?.file_name ?? f?.file_Name ?? f?.File_Name ?? '')
+        }));
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.recycleBinLoading = false;
+        this.handleBusinessError('restore', {});
+      }
+    });
+  }
+
+  /** True if at least one folder or file is selected in the Recycle bin dialog. */
+  get hasRecycleBinSelection(): boolean {
+    return this.selectedFoldersToRestore.length > 0 || this.selectedFilesToRestore.length > 0;
   }
 
   /**
-   * Restore selected deleted folders.
+   * Restore selected deleted folders and/or files.
    */
-  onRestoreDeletedFoldersConfirm(): void {
-    if (this.selectedFoldersToRestore.length === 0) {
+  onRestoreRecycleBinConfirm(): void {
+    if (!this.hasRecycleBinSelection) {
       this.messageService.add({
         severity: 'warn',
         summary: this.translate.getInstant('fileSystem.folderManagement.validation'),
-        detail: this.translate.getInstant('fileSystem.folderManagement.selectFoldersToRestore')
+        detail: this.translate.getInstant('fileSystem.folderManagement.selectItemsToRestore')
       });
       return;
     }
 
-    this.folderService
-      .restoreDeletedFolders(this.selectedFoldersToRestore, this.fileSystemId)
-      .subscribe({
-        next: (response: any) => {
-          if (!response?.success) {
-            this.handleBusinessError('restore', response);
-            return;
-          }
+    const folderIds = this.selectedFoldersToRestore.map(
+      (f) => f.folder_ID ?? (f as any).Folder_ID ?? 0
+    );
+    const fileIds = this.selectedFilesToRestore.map(
+      (f) => f.file_id ?? (f as any).file_ID ?? (f as any).File_ID ?? 0
+    );
 
-          this.messageService.add({
-            severity: 'success',
-            summary: this.translate.getInstant('fileSystem.folderManagement.success'),
-            detail: this.translate.getInstant('fileSystem.folderManagement.restoreFoldersSuccess')
-          });
-          this.hideRestoreDeletedFoldersDialog();
-          this.loadFolderStructure();
-          this.loadFolderContents(this.currentFolderId);
+    const calls: Observable<any>[] = [];
+    if (folderIds.length > 0) {
+      calls.push(this.folderService.restoreDeletedFolders(folderIds, this.fileSystemId));
+    }
+    if (fileIds.length > 0) {
+      calls.push(this.fileService.restoreDeletedFiles(fileIds, this.fileSystemId));
+    }
+
+    forkJoin(calls).subscribe({
+      next: (responses: any[]) => {
+        const failed = responses.find((r) => !r?.success);
+        if (failed) {
+          this.handleBusinessError('restore', failed);
+          return;
         }
-      });
+        this.messageService.add({
+          severity: 'success',
+          summary: this.translate.getInstant('fileSystem.folderManagement.success'),
+          detail: this.translate.getInstant('fileSystem.folderManagement.restoreRecycleBinSuccess')
+        });
+        this.hideRecycleBinDialog();
+        this.loadFolderStructure();
+        this.loadFolderContents(this.currentFolderId);
+      },
+      error: (err) => {
+        this.handleBusinessError('restore', err);
+      }
+    });
   }
 
   /**

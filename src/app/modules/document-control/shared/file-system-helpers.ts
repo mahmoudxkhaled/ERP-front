@@ -76,6 +76,7 @@ const FILE_SYSTEM_ERROR_KEYS: Record<string, string> = {
   ERP12251: 'fileSystem.admin.errorInvalidFileSystemName',
   ERP12252: 'fileSystem.admin.errorInvalidFileSystemName',
   ERP12255: 'fileSystem.admin.errorFileSystemInUse',
+  ERP12267: 'fileSystem.folderManagement.errorInvalidRestoreSelection',
   // FWA variants (some APIs may return FWA prefix)
   FWA12251: 'fileSystem.admin.errorInvalidFileSystemName',
   FWA12252: 'fileSystem.admin.errorInvalidFileSystemName',
