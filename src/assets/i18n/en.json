@@ -300,6 +300,7 @@
             "success": "Success",
             "errorUnknown": "An unknown error occurred.",
             "folderNameRequired": "Folder name is required.",
+            "folderNameInvalidFormat": "Only letters, numbers, spaces, and underscore (_) are allowed. No other special characters.",
             "createFolderSuccess": "Folder created successfully.",
             "fileUploadedSuccess": "File(s) uploaded successfully.",
             "upload": "Upload",

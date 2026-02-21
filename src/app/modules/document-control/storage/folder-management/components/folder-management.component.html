@@ -251,7 +251,9 @@
     <div class="p-fluid">
         <div class="field mb-3">
             <label for="newFolderName">{{ 'fileSystem.folderManagement.folderName' | translate }}</label>
-            <input pInputText id="newFolderName" [(ngModel)]="newFolderName" class="w-full mt-2" />
+            <input pInputText id="newFolderName" [(ngModel)]="newFolderName" class="w-full mt-2"
+                [class.ng-invalid]="createFolderNameError" />
+            <small class="p-error block mt-1" *ngIf="createFolderNameError">{{ createFolderNameError }}</small>
         </div>
         <div class="field">
             <label>{{ 'fileSystem.folderManagement.parentFolder' | translate }}</label>
@@ -276,7 +278,9 @@
     <div class="p-fluid">
         <div class="field">
             <label for="renameFolderName">{{ 'fileSystem.folderManagement.newFolderName' | translate }}</label>
-            <input pInputText id="renameFolderName" [(ngModel)]="renameFolderName" class="w-full mt-2" />
+            <input pInputText id="renameFolderName" [(ngModel)]="renameFolderName" class="w-full mt-2"
+                [class.ng-invalid]="renameFolderNameError" />
+            <small class="p-error block mt-1" *ngIf="renameFolderNameError">{{ renameFolderNameError }}</small>
         </div>
     </div>
     <ng-template pTemplate="footer">

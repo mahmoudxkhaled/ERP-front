@@ -300,6 +300,7 @@
             "success": "نجح",
             "errorUnknown": "حدث خطأ غير معروف.",
             "folderNameRequired": "اسم المجلد مطلوب.",
+            "folderNameInvalidFormat": "يُسمح فقط بالأحرف والأرقام والمسافات والشرطة السفلية (_). لا رموز خاصة أخرى.",
             "createFolderSuccess": "تم إنشاء المجلد بنجاح.",
             "fileUploadedSuccess": "تم رفع الملف(ات) بنجاح.",
             "upload": "رفع",

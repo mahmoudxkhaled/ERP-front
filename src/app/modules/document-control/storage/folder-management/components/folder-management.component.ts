@@ -9,6 +9,7 @@ import { FolderStructureItem, Folder, FolderContents } from '../models/folder.mo
 import { getFileSystemErrorDetail } from 'src/app/modules/document-control/shared/file-system-helpers';
 import { FileUploadService } from 'src/app/core/file-system-lib/services/file-upload.service';
 import { FileDownloadService } from 'src/app/core/file-system-lib/services/file-download.service';
+import { isFolderNameValid } from 'src/app/core/validators/folder-name.validator';
 
 /**
  * Represents a folder tree node with additional metadata.
@@ -85,6 +86,10 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   newFolderName = '';
   newFolderParentId: number = 0;
   renameFolderName = '';
+  /** Validation error for create folder name (e.g. invalid characters). */
+  createFolderNameError: string | null = null;
+  /** Validation error for rename folder name. */
+  renameFolderNameError: string | null = null;
   selectedFolderForRename: FolderTreeNode | null = null;
   selectedFolderForMove: FolderTreeNode | null = null;
   selectedFolderForDelete: FolderTreeNode | null = null;
@@ -471,11 +476,13 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   showCreateFolderDialog(): void {
     this.newFolderName = '';
     this.newFolderParentId = 0;
+    this.createFolderNameError = null;
     this.createFolderDialogVisible = true;
   }
 
   hideCreateFolderDialog(): void {
     this.createFolderDialogVisible = false;
+    this.createFolderNameError = null;
   }
 
   /**
@@ -1023,12 +1030,17 @@ export class FolderManagementComponent implements OnInit, OnChanges {
    */
   onCreateFolderConfirm(): void {
     const folderName = (this.newFolderName || '').trim();
+    this.createFolderNameError = null;
     if (!folderName) {
       this.messageService.add({
         severity: 'warn',
         summary: this.translate.getInstant('fileSystem.folderManagement.validation'),
         detail: this.translate.getInstant('fileSystem.folderManagement.folderNameRequired')
       });
+      return;
+    }
+    if (!isFolderNameValid(folderName)) {
+      this.createFolderNameError = this.translate.getInstant('fileSystem.folderManagement.folderNameInvalidFormat');
       return;
     }
 
@@ -1059,12 +1071,14 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   showRenameFolderDialog(folder: FolderTreeNode): void {
     this.selectedFolderForRename = folder;
     this.renameFolderName = folder.data.folderName;
+    this.renameFolderNameError = null;
     this.renameFolderDialogVisible = true;
   }
 
   hideRenameFolderDialog(): void {
     this.renameFolderDialogVisible = false;
     this.selectedFolderForRename = null;
+    this.renameFolderNameError = null;
   }
 
   /**
@@ -1076,12 +1090,17 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     }
 
     const folderName = (this.renameFolderName || '').trim();
+    this.renameFolderNameError = null;
     if (!folderName) {
       this.messageService.add({
         severity: 'warn',
         summary: this.translate.getInstant('fileSystem.folderManagement.validation'),
         detail: this.translate.getInstant('fileSystem.folderManagement.folderNameRequired')
       });
+      return;
+    }
+    if (!isFolderNameValid(folderName)) {
+      this.renameFolderNameError = this.translate.getInstant('fileSystem.folderManagement.folderNameInvalidFormat');
       return;
     }
 
