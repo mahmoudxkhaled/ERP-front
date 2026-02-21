@@ -347,6 +347,7 @@
             "remaining": "Remaining",
             "hide": "Hide",
             "back": "Back",
+            "uploadHere": "Upload here",
             "backToParent": "Go to parent folder",
             "fileDetailsFallbackMessage": "Basic info below is from the current folder view."
         },

@@ -288,10 +288,20 @@
 }
 
 .back-button-cell-label {
+  width: 100%;
+
   .back-button-label {
     font-weight: 600;
     font-size: 0.95rem;
     color: var(--text-color);
+  }
+
+  .flex.justify-content-between {
+    flex-shrink: 0;
+
+    button {
+      flex-shrink: 0;
+    }
   }
 }
 

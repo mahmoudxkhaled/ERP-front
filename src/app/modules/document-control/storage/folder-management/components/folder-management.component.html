@@ -72,6 +72,7 @@
                                 </span>
                             </div>
                         </ng-template>
+                        ssssssss
                         <ng-template pTemplate="header">
                             <tr>
                                 <th style="width: 3rem"></th>
@@ -91,8 +92,20 @@
                                     </span>
                                 </td>
                                 <td colspan="4" class="back-button-cell-label">
-                                    <span class="back-button-label">{{ 'fileSystem.folderManagement.back' | translate
-                                        }}</span>
+                                    <div class="flex justify-content-between align-items-center w-full gap-2">
+                                        <span class="back-button-label">{{ 'fileSystem.folderManagement.back' |
+                                            translate }}</span>
+                                        <div class="flex gap-2">
+                                            <button pButton type="button"
+                                                [label]="'fileSystem.folderManagement.uploadHere' | translate"
+                                                icon="pi pi-upload" class="p-button-sm p-button-outlined"
+                                                (click)="$event.stopPropagation(); showUploadDialog()"></button>
+                                            <button pButton type="button"
+                                                [label]="'fileSystem.folderManagement.createFolder' | translate"
+                                                icon="pi pi-plus" class="p-button-sm p-button-outlined"
+                                                (click)="$event.stopPropagation(); showCreateFolderDialogInCurrentFolder()"></button>
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
                             <!-- Regular content rows -->
@@ -121,7 +134,8 @@
                                     </ng-container>
                                     <ng-template #normalSize>
                                         <ng-container *ngIf="row.isFolder">
-                                            <span *ngIf="folderSizeLoading.has(row.id)" class="flex align-items-center justify-content-center"
+                                            <span *ngIf="folderSizeLoading.has(row.id)"
+                                                class="flex align-items-center justify-content-center"
                                                 [pTooltip]="'fileSystem.folderManagement.calculatingSize' | translate">
                                                 <p-progressSpinner strokeWidth="4" styleClass="size-calc-spinner"
                                                     [style]="{ width: '1.25rem', height: '1.25rem' }"></p-progressSpinner>

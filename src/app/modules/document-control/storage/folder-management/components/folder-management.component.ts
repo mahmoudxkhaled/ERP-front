@@ -542,6 +542,16 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     this.createFolderDialogVisible = true;
   }
 
+  /**
+   * Show create folder dialog with current folder as parent (new folder will be created inside current folder).
+   */
+  showCreateFolderDialogInCurrentFolder(): void {
+    this.newFolderName = '';
+    this.newFolderParentId = this.currentFolderId;
+    this.createFolderNameError = null;
+    this.createFolderDialogVisible = true;
+  }
+
   hideCreateFolderDialog(): void {
     this.createFolderDialogVisible = false;
     this.createFolderNameError = null;
