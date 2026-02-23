@@ -69,9 +69,10 @@ export class FileService {
       name,
       type,
     ];
+    console.log('params update file details', params);
 
     return this.apiService
-      .callAPI(1106, this.getAccessToken(), params)
+      .callAPI(1114, this.getAccessToken(), params)
       .pipe(finalize(() => this.isLoadingSubject.next(false)));
   }
 

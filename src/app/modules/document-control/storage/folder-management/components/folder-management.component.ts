@@ -907,6 +907,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
       )
       .subscribe({
         next: (response: any) => {
+          console.log('response update file details', response);
           if (!response?.success) {
             this.handleFileError('update', response);
             return;
