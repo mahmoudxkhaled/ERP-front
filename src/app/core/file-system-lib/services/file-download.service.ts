@@ -53,25 +53,44 @@ export class FileDownloadService {
       fileSystemId.toString(),
     ];
 
-    const response = await firstValueFrom(
+    const response = (await firstValueFrom(
       this.apiService.callAPI(DOWNLOAD_REQUEST_CODE, accessToken, parameters)
-    ) as unknown as {
+    )) as unknown as {
       success: boolean;
-      message: {
-        download_Token: string;
-        file_Name: string;
-        chunks_Count: number;
-      };
+      message:
+        | string
+        | {
+            download_Token: string;
+            file_Name: string;
+            chunks_Count: number;
+          };
     };
 
+    console.log('Download_Request response:', response);
+
+    // If API failed (e.g. { success: false, message: "ERP12241" }), throw a response-like
+    // object so callers (folder-management component) can use getFileSystemErrorDetail
+    // with the Storage/File System API error codes.
     if (!response?.success || !response?.message) {
-      throw new Error('Download request failed.');
+      throw {
+        errorCode: typeof response?.message === 'string' ? response.message : undefined,
+        message: response?.message || 'Download request failed.',
+      };
+    }
+
+    if (typeof response.message === 'string') {
+      // Unexpected payload shape – propagate as error for generic handling.
+      throw {
+        message: response.message,
+      };
     }
 
     const { download_Token, file_Name, chunks_Count } = response.message;
 
     if (!download_Token || !file_Name || !chunks_Count) {
-      throw new Error('Download request returned invalid data.');
+      throw {
+        message: 'Download request returned invalid data.',
+      };
     }
 
     return {
@@ -102,6 +121,14 @@ export class FileDownloadService {
       );
 
       allChunks.push(arrayBuffer as ArrayBuffer);
+
+      if (currentChunk === 1 || currentChunk === chunksCount) {
+        console.log('Download_File_Chunk received:', {
+          currentChunk,
+          chunksCount,
+          bytes: (arrayBuffer as ArrayBuffer).byteLength,
+        });
+      }
 
       if (onProgress) {
         const percent = (100 * currentChunk) / chunksCount;

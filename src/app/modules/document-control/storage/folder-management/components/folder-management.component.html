@@ -96,7 +96,7 @@
                                 <th style="width: 20rem">{{ 'fileSystem.folderManagement.name' | translate }}</th>
                                 <th style="width: 5rem; text-align: center;">{{ 'fileSystem.folderManagement.size' |
                                     translate }}</th>
-                                <th style="width: 12rem">{{ 'fileSystem.folderManagement.modified' | translate }}</th>
+                                <th style="width: 12rem">{{ 'fileSystem.folderManagement.createdAt' | translate }}</th>
                                 <th style="width: 4rem">{{ 'fileSystem.folderManagement.actions' | translate }}</th>
                             </tr>
                         </ng-template>
@@ -146,11 +146,11 @@
                                     </ng-template>
                                 </td>
                                 <td>
-                                    <ng-container *ngIf="tableLoadingSpinner; else normalModified">
+                                    <ng-container *ngIf="tableLoadingSpinner; else normalCreated">
                                         <p-skeleton height="1.25rem" width="8rem"></p-skeleton>
                                     </ng-container>
-                                    <ng-template #normalModified>
-                                        <span>{{ row.modified ? (row.modified | date:'MMM dd, y, hh:mm a') : '—'
+                                    <ng-template #normalCreated>
+                                        <span>{{ row.created ? (row.created | date:'MMM dd, y, hh:mm a') : '—'
                                             }}</span>
                                     </ng-template>
                                 </td>

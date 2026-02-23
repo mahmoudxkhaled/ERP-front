@@ -30,6 +30,9 @@ export interface FolderContentRow {
   name: string;
   type: 'folder' | 'file' | 'back';
   size?: string;
+  /** Created timestamp (ISO string from API). */
+  created?: string;
+  /** Last modified timestamp (kept for dialogs/compatibility). */
   modified?: string;
   isFolder: boolean;
   isBackButton?: boolean; // Special flag for back button row
@@ -192,6 +195,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
         name: '',
         type: 'folder',
         size: '',
+        created: '',
         modified: '',
         isFolder: true
       }));
@@ -327,6 +331,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
 
     this.folderService.getFolderContents(folderId, this.fileSystemId).subscribe({
       next: (response: any) => {
+        console.log('response get folder contents', response);
         this.tableLoadingSpinner = false;
         if (!response?.success) {
           this.handleBusinessError('getContents', response);
@@ -344,6 +349,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
           name: String(folder?.folder_name ?? folder?.folder_Name ?? folder?.Folder_Name ?? ''),
           type: 'folder' as const,
           isFolder: true,
+          created: String(folder?.created_At ?? folder?.created_at ?? folder?.Created_At ?? ''),
           modified: String(folder?.last_modified ?? folder?.last_modified_At ?? folder?.Last_Modified ?? '')
         }));
 
@@ -352,6 +358,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
           name: String(file?.file_name ?? file?.file_Name ?? file?.File_Name ?? ''),
           type: 'file' as const,
           size: file?.size != null ? this.formatBytes(Number(file.size)) : '',
+          created: String(file?.created_At ?? file?.created_at ?? file?.Created_At ?? file?.created ?? ''),
           modified: String(file?.last_modified ?? file?.modified_At ?? file?.Modified_At ?? ''),
           isFolder: false
         }));
@@ -739,6 +746,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
 
   /**
    * Download file using FileDownloadService.
+   * Uses Storage/File System error codes (ERP12xxx) via handleBusinessError on failure.
    */
   async downloadFile(file: FolderContentRow): Promise<void> {
     if (this.downloadInProgress || this.fileSystemId <= 0) {
@@ -792,16 +800,10 @@ export class FolderManagementComponent implements OnInit, OnChanges {
         detail: this.translate.getInstant('fileSystem.folderManagement.downloadFileSuccess')
       });
     } catch (err: unknown) {
-      const response = this.normalizeUploadError(err);
-      const detail = getFileSystemErrorDetail(response, (key) =>
-        this.translate.getInstant(key)
-      );
       this.downloadProgressVisible = false;
-      this.messageService.add({
-        severity: 'error',
-        summary: this.translate.getInstant('fileSystem.folderManagement.error'),
-        detail: detail || this.translate.getInstant('fileSystem.folderManagement.errorUnknown')
-      });
+      const response = this.normalizeUploadError(err);
+      // Centralized business error handling (same pattern as Virtual Drives section)
+      this.handleBusinessError('download', response);
     } finally {
       this.downloadInProgress = false;
       this.downloadProgressPercent = 0;
@@ -983,6 +985,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
 
   /**
    * Upload selected files to the current folder.
+   * Uses Storage/File System error codes (ERP12xxx) via handleBusinessError on failure.
    */
   async onUploadConfirm(): Promise<void> {
     if (this.selectedFiles.length === 0 || this.fileSystemId <= 0) {
@@ -1042,23 +1045,8 @@ export class FolderManagementComponent implements OnInit, OnChanges {
         this.currentUploadingFileName = null;
       }
       const response = this.normalizeUploadError(err);
-      const detail = getFileSystemErrorDetail(response, (key) =>
-        this.translate.getInstant(key)
-      );
-
-      // Log error details in console for debugging
-      console.error('Upload failed', {
-        error: err,
-        normalizedResponse: response,
-        detail
-      });
-
-      this.uploadError = detail || this.translate.getInstant('fileSystem.folderManagement.errorUnknown');
-      this.messageService.add({
-        severity: 'error',
-        summary: this.translate.getInstant('fileSystem.folderManagement.error'),
-        detail: this.uploadError
-      });
+      // Centralized business error handling (same pattern as Virtual Drives section)
+      this.uploadError = this.handleBusinessError('upload', response);
     } finally {
       this.uploadInProgress = false;
     }
@@ -1579,7 +1567,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   }
 
   /**
-   * Handle business error codes returned from Folder APIs.
+   * Handle business error codes returned from Folder and File APIs (including upload/download).
    */
   private handleBusinessError(
     context:
@@ -1589,19 +1577,22 @@ export class FolderManagementComponent implements OnInit, OnChanges {
       | 'update'
       | 'delete'
       | 'move'
-      | 'restore',
+      | 'restore'
+      | 'upload'
+      | 'download',
     response: any
-  ): void {
+  ): string {
     const summary = this.translate.getInstant('fileSystem.folderManagement.error');
     const fallback = this.translate.getInstant('fileSystem.folderManagement.errorUnknown');
     const detail = getFileSystemErrorDetail(response, (key) =>
       this.translate.getInstant(key)
     );
+    const finalDetail = detail || fallback;
 
     this.messageService.add({
       severity: 'error',
       summary,
-      detail: detail || fallback
+      detail: finalDetail
     });
 
     if (context === 'getStructure') {
@@ -1610,6 +1601,8 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     if (context === 'getContents') {
       this.tableLoadingSpinner = false;
     }
+
+    return finalDetail;
   }
 
   /**

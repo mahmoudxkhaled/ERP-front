@@ -172,12 +172,18 @@ export class FileUploadService {
       folderId.toString(),
     ];
 
-    const response = await firstValueFrom(
+    const response = (await firstValueFrom(
       this.apiService.callAPI(UPLOAD_REQUEST_CODE, accessToken, parameters)
-    ) as unknown as { success: boolean; message: string };
+    )) as unknown as { success: boolean; message: string };
+
+    console.log('Upload_Request response:', response);
 
     if (!response?.success || !response?.message) {
-      throw new Error('Upload request failed.');
+      // Throw a response-like object so UI can map ERP error codes (e.g. ERP12227) using getFileSystemErrorDetail.
+      throw {
+        errorCode: response?.message,
+        message: response?.message || 'Upload request failed.',
+      };
     }
 
     return response.message;
@@ -217,12 +223,22 @@ export class FileUploadService {
         attempt++;
 
         try {
-          await firstValueFrom(
+          const chunkResponse = await firstValueFrom(
             this.http.post(
               `${this.apiService.getBaseUrl()}/Upload?token=${uploadToken}`,
               formData
             )
           );
+
+          if (currentChunk === startChunk || nextOffset === totalBytes) {
+            console.log('Upload_File_Chunk response:', {
+              fileName: file.name,
+              currentChunk,
+              offset,
+              nextOffset,
+              response: chunkResponse,
+            });
+          }
 
           uploaded = true;
         } catch (error: any) {
