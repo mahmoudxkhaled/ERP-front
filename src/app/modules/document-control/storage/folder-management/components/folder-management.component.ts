@@ -570,6 +570,14 @@ export class FolderManagementComponent implements OnInit, OnChanges {
 
   hideUploadDialog(): void {
     this.uploadDialogVisible = false;
+    // If an upload is in progress, keep the selected files and status so the
+    // bottom-left global progress card can continue to show them.
+    if (this.uploadInProgress) {
+      this.isDragOver = false;
+      return;
+    }
+
+    // No active upload: fully reset dialog state
     this.selectedFiles = [];
     this.uploadError = null;
     this.uploadProgressPercent = 0;
@@ -986,10 +994,39 @@ export class FolderManagementComponent implements OnInit, OnChanges {
 
   /**
    * Upload selected files to the current folder.
+   * Checks that no selected file has the same name as an existing file or folder in the current folder.
    * Uses Storage/File System error codes (ERP12xxx) via handleBusinessError on failure.
    */
   async onUploadConfirm(): Promise<void> {
     if (this.selectedFiles.length === 0 || this.fileSystemId <= 0) {
+      return;
+    }
+
+    // Names already in the current folder (files and folders) – avoid overwriting or duplicate names
+    const existingNames = new Set(
+      this.folderContents
+        .filter((row) => !row.isBackButton)
+        .map((row) => row.name.trim().toLowerCase())
+    );
+
+    const duplicateNames: string[] = [];
+    for (const file of this.selectedFiles) {
+      const name = (file.name || '').trim();
+      if (!name) continue;
+      if (existingNames.has(name.toLowerCase())) {
+        duplicateNames.push(name);
+      }
+    }
+
+    if (duplicateNames.length > 0) {
+      const namesList = duplicateNames.join(', ');
+      const messageTemplate = this.translate.getInstant('fileSystem.folderManagement.fileAlreadyExistsInFolder');
+      const detail = messageTemplate.replace('{{names}}', namesList);
+      this.messageService.add({
+        severity: 'warn',
+        summary: this.translate.getInstant('fileSystem.folderManagement.validation'),
+        detail
+      });
       return;
     }
 
@@ -998,7 +1035,8 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     this.uploadError = null;
     const totalFiles = this.selectedFiles.length;
 
-    // this.uploadDialogVisible = false;
+    // Close the upload dialog while keeping the bottom-left global progress visible
+    this.uploadDialogVisible = false;
     try {
       for (let i = 0; i < this.selectedFiles.length; i++) {
         const file = this.selectedFiles[i];

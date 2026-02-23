@@ -325,6 +325,7 @@
             "uploadDialogTitle": "Upload Files",
             "uploadProgress": "Upload progress",
             "noFileSelected": "Please select at least one file.",
+            "fileAlreadyExistsInFolder": "A file with the same name already exists in this folder. Please rename or remove the duplicate: {{names}}",
             "renameFolderSuccess": "Folder renamed successfully.",
             "deleteFolderSuccess": "Folder deleted successfully.",
             "moveFolderSuccess": "Folder moved successfully.",

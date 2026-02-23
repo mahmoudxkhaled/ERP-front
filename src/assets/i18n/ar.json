@@ -325,6 +325,7 @@
             "uploadDialogTitle": "رفع ملفات",
             "uploadProgress": "تقدم الرفع",
             "noFileSelected": "يرجى اختيار ملف واحد على الأقل.",
+            "fileAlreadyExistsInFolder": "يوجد ملف بنفس الاسم في هذا المجلد. يرجى إعادة التسمية أو إزالة المكرر: {{names}}",
             "renameFolderSuccess": "تم إعادة تسمية المجلد بنجاح.",
             "deleteFolderSuccess": "تم حذف المجلد بنجاح.",
             "moveFolderSuccess": "تم نقل المجلد بنجاح.",
