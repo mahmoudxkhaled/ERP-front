@@ -1,4 +1,23 @@
 .dcs-view {
+    position: relative;
+
+    .under-dev-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 1000;
+        background: var(--p-surface-300, #dee2e6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 5%;
+
+    }
+
+    .under-dev-text {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--p-text-color-secondary, #6c757d);
+    }
     .dcs-top {
         align-items: start;
     }

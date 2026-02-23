@@ -46,6 +46,7 @@
     "fileSystem": {
         "pageTitle": "Document Control & File System",
         "pageSubtitle": "Manage storage, sharing, and access across your organization.",
+        "underDev": "Under dev",
         "landing": {
             "chooseSection": "Choose a section",
             "ready": "Ready",

@@ -46,6 +46,7 @@
     "fileSystem": {
         "pageTitle": "التحكم في المستندات ونظام الملفات",
         "pageSubtitle": "إدارة التخزين والمشاركة والصلاحيات في المنظمة.",
+        "underDev": "قيد التطوير",
         "landing": {
             "chooseSection": "اختر قسمًا",
             "ready": "جاهز",

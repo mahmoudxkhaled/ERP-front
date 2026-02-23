@@ -97,7 +97,8 @@
                                 <th style="width: 5rem; text-align: center;">{{ 'fileSystem.folderManagement.size' |
                                     translate }}</th>
                                 <th style="width: 12rem">{{ 'fileSystem.folderManagement.createdAt' | translate }}</th>
-                                <th style="width: 4rem">{{ 'fileSystem.folderManagement.actions' | translate }}</th>
+                                <th style="width: 4rem; text-align: center;">{{ 'fileSystem.folderManagement.actions' |
+                                    translate }}</th>
                             </tr>
                         </ng-template>
                         <ng-template pTemplate="body" let-row>
@@ -154,8 +155,8 @@
                                             }}</span>
                                     </ng-template>
                                 </td>
-                                <td>
-                                    <ng-container *ngIf="tableLoadingSpinner; else normalActions">
+                                <td class="text-center">
+                                    <ng-container *ngIf="tableLoadingSpinner; else normalActions" class="text-center">
                                         <p-skeleton height="1.5rem" width="2rem" borderRadius="4px"></p-skeleton>
                                     </ng-container>
                                     <ng-template #normalActions>
