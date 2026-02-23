@@ -309,6 +309,7 @@
             "selectItemsToRestore": "Please select at least one folder or file to restore.",
             "restoreSelected": "Restore Selected",
             "restoreRecycleBinSuccess": "Selected items restored successfully.",
+            "restoreRecycleBinSkippedDueToDuplicate": "Some items were not restored because a file with the same name already exists in the target folder.",
             "errorInvalidRestoreSelection": "Invalid selection for restore. Please try again.",
             "move": "Move",
             "restore": "Restore",

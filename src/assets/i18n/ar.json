@@ -309,6 +309,7 @@
             "selectItemsToRestore": "يرجى اختيار مجلد أو ملف واحد على الأقل للاستعادة.",
             "restoreSelected": "استعادة المحدد",
             "restoreRecycleBinSuccess": "تم استعادة العناصر المحددة بنجاح.",
+            "restoreRecycleBinSkippedDueToDuplicate": "لم يتم استرجاع بعض العناصر لوجود ملف بنفس الاسم في المجلد الهدف.",
             "errorInvalidRestoreSelection": "تحديد غير صالح للاستعادة. يرجى المحاولة مرة أخرى.",
             "move": "نقل",
             "restore": "استعادة",

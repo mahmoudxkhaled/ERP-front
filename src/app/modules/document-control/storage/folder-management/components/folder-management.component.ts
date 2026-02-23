@@ -1542,11 +1542,32 @@ export class FolderManagementComponent implements OnInit, OnChanges {
           this.handleBusinessError('restore', failed);
           return;
         }
+        let skippedTotal = 0;
+        responses.forEach((r: any) => {
+          const message = r?.message ?? {};
+          const rawSkipped =
+            message.Skipped_IDs ??
+            message.skipped_IDs ??
+            message.skippedIds ??
+            [];
+          if (Array.isArray(rawSkipped)) {
+            skippedTotal += rawSkipped.length;
+          }
+        });
+
         this.messageService.add({
           severity: 'success',
           summary: this.translate.getInstant('fileSystem.folderManagement.success'),
           detail: this.translate.getInstant('fileSystem.folderManagement.restoreRecycleBinSuccess')
         });
+
+        if (skippedTotal > 0) {
+          this.messageService.add({
+            severity: 'warn',
+            summary: this.translate.getInstant('fileSystem.folderManagement.success'),
+            detail: this.translate.getInstant('fileSystem.folderManagement.restoreRecycleBinSkippedDueToDuplicate')
+          });
+        }
         this.hideRecycleBinDialog();
         this.loadFolderStructure();
         this.loadFolderContents(this.currentFolderId);
