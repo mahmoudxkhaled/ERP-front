@@ -1559,11 +1559,13 @@ export class FolderManagementComponent implements OnInit, OnChanges {
       calls.push(this.folderService.restoreDeletedFolders(folderIds, this.fileSystemId));
     }
     if (fileIds.length > 0) {
+      console.log('fileIds', fileIds);
       calls.push(this.fileService.restoreDeletedFiles(fileIds, folderIdsForFiles, this.fileSystemId));
     }
 
     forkJoin(calls).subscribe({
       next: (responses: any[]) => {
+        console.log('responses restore recycle bin', responses);
         const failed = responses.find((r) => !r?.success);
         if (failed) {
           this.handleBusinessError('restore', failed);
@@ -1577,11 +1579,11 @@ export class FolderManagementComponent implements OnInit, OnChanges {
             message.skipped_IDs ??
             message.skippedIds ??
             [];
+          console.log('message', message);
           if (Array.isArray(rawSkipped)) {
             skippedTotal += rawSkipped.length;
           }
         });
-
         this.messageService.add({
           severity: 'success',
           summary: this.translate.getInstant('fileSystem.folderManagement.success'),

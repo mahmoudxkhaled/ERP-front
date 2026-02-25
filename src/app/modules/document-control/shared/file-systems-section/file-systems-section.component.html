@@ -45,6 +45,7 @@
                     <th>{{ 'fileSystem.entityAdmin.fileSystemType' | translate }}</th>
                     <th>{{ 'fileSystem.admin.driveName' | translate }}</th>
                     <th class="text-center">{{ 'fileSystem.admin.status' | translate }}</th>
+                    <th class="text-center">{{ 'fileSystem.admin.createdAt' | translate }}</th>
                     <th style="width: 12rem">{{ 'fileSystem.companyStorage.actions' | translate }}</th>
                 </tr>
             </ng-template>
@@ -81,6 +82,14 @@
                         <ng-template #normalStatus>
                             <p-tag [value]="getStatusLabel(row)"
                                 [severity]="isFileSystemActive(row) ? 'success' : 'secondary'"></p-tag>
+                        </ng-template>
+                    </td>
+                    <td class="text-center">
+                        <ng-container *ngIf="loadingFileSystems; else normalCreatedAt">
+                            <p-skeleton height="1.25rem" width="8rem"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalCreatedAt>
+                            <span>{{ row.created_At ? (row.created_At | date:'d MMM y, h:mm a') : '—' }}</span>
                         </ng-template>
                     </td>
                     <td class="text-start">
@@ -213,7 +222,8 @@
         </div>
         <div class="drive-details-row">
             <span class="drive-details-label">{{ 'fileSystem.admin.createdAt' | translate }}</span>
-            <span class="drive-details-value">{{ detailsData.createdAt ? (detailsData.createdAt | date:'medium') : '—'
+            <span class="drive-details-value">{{ detailsData.createdAt ? (detailsData.createdAt | date:'d MMM y, h:mm
+                a') : '—'
                 }}</span>
         </div>
         <div class="drive-details-divider"></div>

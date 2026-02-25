@@ -175,6 +175,7 @@ export class FileSystemsSectionComponent implements OnInit {
       activeOnly: this.activeOnlyFilter
     }).subscribe({
       next: (response: any) => {
+        console.log('response list file systems', response);
         this.loadingFileSystems = false;
         if (!response?.success) {
           this.handleError('list', response);
