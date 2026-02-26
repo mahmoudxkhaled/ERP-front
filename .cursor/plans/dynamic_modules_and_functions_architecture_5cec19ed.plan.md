@@ -2,30 +2,30 @@
 name: Dynamic Modules and Functions Architecture
 overview: Transform the application to use dynamic menu and dashboard generation based on Functions_Details and Modules_Details from localStorage. Replace hardcoded routes with dynamic module-based routing, implement hierarchical menu structure (Functions → Modules), and create a ModuleGuard for route protection.
 todos:
-  - id: create-module-navigation-service
-    content: Create ModuleNavigationService to load, parse, and organize modules/functions from localStorage with route resolution
-    status: completed
-  - id: create-module-guard
-    content: Create ModuleGuard to validate module access before route activation
-    status: completed
-  - id: update-menu-component
-    content: Update app-menu.component.ts to generate menu dynamically from ModuleNavigationService
-    status: completed
-  - id: update-dashboard-component
-    content: Update dashboard.component.ts and HTML to display functions and modules dynamically
-    status: completed
-  - id: update-routing
-    content: Add dynamic module route in app-routing.module.ts and create dynamic-module routing module
-    status: completed
-  - id: update-models
-    content: Add URL field to IModuleDetail and create menu/dashboard helper interfaces
-    status: completed
-  - id: create-route-mapping
-    content: Create route mapping for existing modules (module code → route path)
-    status: completed
-  - id: handle-special-cases
-    content: "Handle special cases: logout command, dashboard route, disabled modules"
-    status: completed
+    - id: create-module-navigation-service
+      content: Create ModuleNavigationService to load, parse, and organize modules/functions from localStorage with route resolution
+      status: completed
+    - id: create-module-guard
+      content: Create ModuleGuard to validate module access before route activation
+      status: completed
+    - id: update-menu-component
+      content: Update app-menu.component.ts to generate menu dynamically from ModuleNavigationService
+      status: completed
+    - id: update-dashboard-component
+      content: Update dashboard.component.ts and HTML to display functions and modules dynamically
+      status: completed
+    - id: update-routing
+      content: Add dynamic module route in app-routing.module.ts and create dynamic-module routing module
+      status: completed
+    - id: update-models
+      content: Add URL field to IModuleDetail and create menu/dashboard helper interfaces
+      status: completed
+    - id: create-route-mapping
+      content: Create route mapping for existing modules (module code → route path)
+      status: completed
+    - id: handle-special-cases
+      content: "Handle special cases: logout command, dashboard route, disabled modules"
+      status: completed
 ---
 
 # Dynamic Modules and Functions Architecture
@@ -42,30 +42,30 @@ Transform the application to dynamically generate menus and dashboards from loca
 
 - **Purpose**: Central service for module navigation logic
 - **Responsibilities**:
-  - Load modules and functions from localStorage
-  - Group modules by function
-  - Sort by `Default_Order`
-  - **Route Resolution**:
-    - Convert function codes to slugs (e.g., `EntAdm` → `entity-administration`)
-    - Convert module codes to slugs (e.g., `ENTDT` → `entities`)
-    - Generate routes in format: `{functionSlug}/{moduleSlug}/{nestedRoute}`
-    - Use `URL` field from module data to extract nested route
-    - Fallback to code-to-slug mapping if URL not available
-  - Check if module route exists/is implemented
-  - Get module logo URLs
-  - Handle regional names based on `Account_Settings.Language`
-  - **Code-to-Slug Conversion**: Maintain mappings for function and module codes to URL-friendly slugs
+    - Load modules and functions from localStorage
+    - Group modules by function
+    - Sort by `Default_Order`
+    - **Route Resolution**:
+        - Convert function codes to slugs (e.g., `EntAdm` → `entity-administration`)
+        - Convert module codes to slugs (e.g., `ENTDT` → `entities`)
+        - Generate routes in format: `{functionSlug}/{moduleSlug}/{nestedRoute}`
+        - Use `URL` field from module data to extract nested route
+        - Fallback to code-to-slug mapping if URL not available
+    - Check if module route exists/is implemented
+    - Get module logo URLs
+    - Handle regional names based on `Account_Settings.Language`
+    - **Code-to-Slug Conversion**: Maintain mappings for function and module codes to URL-friendly slugs
 
 #### **ModuleGuard** (`src/app/core/guards/module.guard.ts`)
 
 - **Purpose**: Protect routes by validating module access
 - **Logic**:
-  - Extract `functionCode` and `moduleCode` from route params (e.g., `/company-administration/entities/list`)
-  - Convert slugs back to codes using `ModuleNavigationService`
-  - Check if function exists in `Functions_Details`
-  - Check if module exists in `Modules_Details` and belongs to the function
-  - Check if module is active
-  - Redirect to dashboard if module not found/inactive
+    - Extract `functionCode` and `moduleCode` from route params (e.g., `/entity-administration/entities/list`)
+    - Convert slugs back to codes using `ModuleNavigationService`
+    - Check if function exists in `Functions_Details`
+    - Check if module exists in `Modules_Details` and belongs to the function
+    - Check if module is active
+    - Redirect to dashboard if module not found/inactive
 
 ### 2. Data Models
 
@@ -73,29 +73,29 @@ Transform the application to dynamically generate menus and dashboards from loca
 
 - Add `URL` field to `IModuleDetail` interface (if not present)
 - Create helper interfaces for menu/dashboard items:
-  ```typescript
-  export interface IMenuFunction {
-    code: string;
-    name: string;
-    nameRegional: string;
-    defaultOrder: number;
-    icon?: string; // module logo URL
-    modules: IMenuModule[];
-  }
-  
-  export interface IMenuModule {
-    code: string;
-    name: string;
-    nameRegional: string;
-    defaultOrder: number;
-    route: string; // Format: /{functionSlug}/{moduleSlug}/{nestedRoute}
-    icon?: string;
-    isImplemented: boolean;
-    moduleId: number;
-    functionCode: string; // Parent function code
-  }
-  ```
 
+    ```typescript
+    export interface IMenuFunction {
+        code: string;
+        name: string;
+        nameRegional: string;
+        defaultOrder: number;
+        icon?: string; // module logo URL
+        modules: IMenuModule[];
+    }
+
+    export interface IMenuModule {
+        code: string;
+        name: string;
+        nameRegional: string;
+        defaultOrder: number;
+        route: string; // Format: /{functionSlug}/{moduleSlug}/{nestedRoute}
+        icon?: string;
+        isImplemented: boolean;
+        moduleId: number;
+        functionCode: string; // Parent function code
+    }
+    ```
 
 ### 3. Dynamic Menu Component
 
@@ -104,23 +104,22 @@ Transform the application to dynamically generate menus and dashboards from loca
 - Remove hardcoded menu structure
 - Inject `ModuleNavigationService`
 - Call `buildMenu()` to generate menu from localStorage:
-  ```typescript
-  buildMenu(): void {
-    const functions = this.moduleNavigationService.getFunctionsWithModules();
-    this.model = functions.map(func => ({
-      label: this.getDisplayName(func),
-      icon: func.icon || 'fa fa-folder',
-      items: func.modules.map(module => ({
-        label: this.getDisplayName(module),
-        icon: module.icon || 'fa fa-file',
-        routerLink: module.isImplemented ? [module.route] : null,
-        disabled: !module.isImplemented,
-        command: !module.isImplemented ? () => this.showComingSoon(module) : null
-      }))
-    }));
-  }
-  ```
-
+    ```typescript
+    buildMenu(): void {
+      const functions = this.moduleNavigationService.getFunctionsWithModules();
+      this.model = functions.map(func => ({
+        label: this.getDisplayName(func),
+        icon: func.icon || 'fa fa-folder',
+        items: func.modules.map(module => ({
+          label: this.getDisplayName(module),
+          icon: module.icon || 'fa fa-file',
+          routerLink: module.isImplemented ? [module.route] : null,
+          disabled: !module.isImplemented,
+          command: !module.isImplemented ? () => this.showComingSoon(module) : null
+        }))
+      }));
+    }
+    ```
 
 ### 4. Dynamic Dashboard Component
 
@@ -129,12 +128,11 @@ Transform the application to dynamically generate menus and dashboards from loca
 - Remove hardcoded categories
 - Use `ModuleNavigationService` to get functions with modules
 - Generate dashboard sections dynamically:
-  ```typescript
-  getDashboardCategories(): IMenuFunction[] {
-    return this.moduleNavigationService.getFunctionsWithModules();
-  }
-  ```
-
+    ```typescript
+    getDashboardCategories(): IMenuFunction[] {
+      return this.moduleNavigationService.getFunctionsWithModules();
+    }
+    ```
 
 #### **Update `dashboard.component.html`**
 
@@ -160,19 +158,18 @@ Routes follow the pattern: `{functionCode}/{moduleCode}/{nestedRoute}`
 #### **Update `app-routing.module.ts`**
 
 - Add dynamic catch-all route for function/module pattern:
-  ```typescript
-  {
-    path: ':functionCode/:moduleCode',
-    canActivate: [AuthGuard, ModuleGuard],
-    loadChildren: () => import('./modules/dynamic-module/dynamic-module.module').then(m => m.DynamicModuleModule)
-  },
-  {
-    path: ':functionCode/:moduleCode/:nestedRoute',
-    canActivate: [AuthGuard, ModuleGuard],
-    loadChildren: () => import('./modules/dynamic-module/dynamic-module.module').then(m => m.DynamicModuleModule)
-  }
-  ```
-
+    ```typescript
+    {
+      path: ':functionCode/:moduleCode',
+      canActivate: [AuthGuard, ModuleGuard],
+      loadChildren: () => import('./modules/dynamic-module/dynamic-module.module').then(m => m.DynamicModuleModule)
+    },
+    {
+      path: ':functionCode/:moduleCode/:nestedRoute',
+      canActivate: [AuthGuard, ModuleGuard],
+      loadChildren: () => import('./modules/dynamic-module/dynamic-module.module').then(m => m.DynamicModuleModule)
+    }
+    ```
 
 #### **Create Dynamic Module Router** (`src/app/modules/dynamic-module/dynamic-module-routing.module.ts`)
 
@@ -209,68 +206,58 @@ Routes are generated as: `{functionSlug}/{moduleSlug}/{nestedRoute}`
 **Route Resolution Priority:**
 
 1. **Primary**: Use `URL` field from module API data
-
-   - Parse: Extract function slug, module slug, and nested route
-   - Example: URL = `/company-administration/entities/list` → Parse to components
+    - Parse: Extract function slug, module slug, and nested route
+    - Example: URL = `/entity-administration/entities/list` → Parse to components
 
 2. **Fallback**: Use code-to-slug mapping
-
-   - Function code → Function slug mapping
-   - Module code → Module slug mapping
-   - Combine: `{functionSlug}/{moduleSlug}`
+    - Function code → Function slug mapping
+    - Module code → Module slug mapping
+    - Combine: `{functionSlug}/{moduleSlug}`
 
 3. **Default**: Convention-based slug generation
-
-   - Convert codes to kebab-case slugs
-   - Example: `ENTDT` → `entdt` or use name-based: `Entity Details` → `entity-details`
+    - Convert codes to kebab-case slugs
+    - Example: `ENTDT` → `entdt` or use name-based: `Entity Details` → `entity-details`
 
 ### 7. Implementation Steps
 
 1. **Create ModuleNavigationService**
-
-   - Load and parse Functions_Details and Modules_Details
-   - Group modules by FunctionID
-   - Sort by Default_Order
-   - Resolve routes (URL field or mapping)
+    - Load and parse Functions_Details and Modules_Details
+    - Group modules by FunctionID
+    - Sort by Default_Order
+    - Resolve routes (URL field or mapping)
 
 2. **Create ModuleGuard**
-
-   - Validate module access
-   - Check localStorage for module existence
+    - Validate module access
+    - Check localStorage for module existence
 
 3. **Update Menu Component**
-
-   - Replace hardcoded menu with dynamic generation
-   - Handle disabled modules
-   - Load module logos
+    - Replace hardcoded menu with dynamic generation
+    - Handle disabled modules
+    - Load module logos
 
 4. **Update Dashboard Component**
-
-   - Replace hardcoded categories with dynamic generation
-   - Group modules by function
-   - Display module logos
+    - Replace hardcoded categories with dynamic generation
+    - Group modules by function
+    - Display module logos
 
 5. **Update Routing**
-
-   - Add dynamic routes: `:functionCode/:moduleCode` and `:functionCode/:moduleCode/:nestedRoute`
-   - Create dynamic module router that resolves function/module codes to actual components
-   - Map existing module routes to new dynamic structure
-   - Update all existing route definitions to use new pattern
+    - Add dynamic routes: `:functionCode/:moduleCode` and `:functionCode/:moduleCode/:nestedRoute`
+    - Create dynamic module router that resolves function/module codes to actual components
+    - Map existing module routes to new dynamic structure
+    - Update all existing route definitions to use new pattern
 
 6. **Update Models**
-
-   - Add URL to IModuleDetail if missing
-   - Create menu/dashboard interfaces
+    - Add URL to IModuleDetail if missing
+    - Create menu/dashboard interfaces
 
 7. **Handle Edge Cases**
-
-   - **Modules without URLs**: Use code-to-slug mapping to generate route
-   - **Unimplemented modules**: Show disabled state, route to "Coming Soon" component
-   - **Missing function/module codes**: Use convention-based slug generation (kebab-case)
-   - **Missing logos**: Use default icons based on function type
-   - **Regional names**: Respect `Account_Settings.Language` for display names
-   - **Nested routes**: Parse URL field to extract nested path (e.g., `/list`, `/new`, `/:id`)
-   - **Route conflicts**: Ensure function/module slug combinations are unique
+    - **Modules without URLs**: Use code-to-slug mapping to generate route
+    - **Unimplemented modules**: Show disabled state, route to "Coming Soon" component
+    - **Missing function/module codes**: Use convention-based slug generation (kebab-case)
+    - **Missing logos**: Use default icons based on function type
+    - **Regional names**: Respect `Account_Settings.Language` for display names
+    - **Nested routes**: Parse URL field to extract nested path (e.g., `/list`, `/new`, `/:id`)
+    - **Route conflicts**: Ensure function/module slug combinations are unique
 
 ### 8. Route Mapping for Existing Modules
 
@@ -298,46 +285,46 @@ private readonly MODULE_SLUG_MAP: Record<string, string> = {
   'PRF': 'profile',
   'SET': 'settings',
   'LGOT': 'logout', // Special: command, not route
-  
+
   // System Administration (SysAdm)
   'SDB': 'dashboard',
   'ERPF': 'erp-functions',
   'ERPM': 'erp-modules',
   'SCP': 'system-control-panel',
-  
+
   // Entity Administration (EntAdm)
   'ENTDT': 'entities',
   'USRACC': 'users-details',
   'WF': 'workflows',
   'EACC': 'entity-accounts',
-  
+
   // Document Control (DC)
   'SHDOC': 'shared-documents',
-  
+
   // Finance & Accounting (FIN)
   'FCOA': 'chart-of-accounts',
   'AP': 'account-payables',
   'AR': 'account-receivables',
   'GL': 'general-ledger',
-  
+
   // Human Resources (HR)
   'OC': 'organization-charts',
   'PRSN': 'personnel-details',
   'TS': 'timesheets',
-  
+
   // CRM
   'CLNT': 'clients-details',
   'EST': 'estimation',
   'TND': 'tendering',
   'MC': 'main-contracts',
   'CINV': 'customers-invoicing',
-  
+
   // SCM
   'VND': 'vendors-details',
   'PO': 'purchase-orders',
   'SC': 'subcontracts',
   'VINV': 'vendors-invoicing',
-  
+
   // Project Controls
   'WBS': 'work-breakdown-structure',
   'CBS': 'cost-breakdown-structure',
@@ -358,17 +345,17 @@ private generateRoute(functionCode: string, moduleCode: string, nestedRoute?: st
 
 ### 9. Special Cases
 
-- **Logout Module (LGOT)**: 
-  - Route: `/summary/logout` (but handle as command, not navigation)
-  - Show in menu but execute logout command instead of navigation
+- **Logout Module (LGOT)**:
+    - Route: `/summary/logout` (but handle as command, not navigation)
+    - Show in menu but execute logout command instead of navigation
 
-- **Dashboard Module (SDB)**: 
-  - Route: `/summary/dashboard` or `/` (root)
-  - Can be the default landing page
+- **Dashboard Module (SDB)**:
+    - Route: `/summary/dashboard` or `/` (root)
+    - Can be the default landing page
 
-- **Settings & Configurations (ERPF, ERPM)**: 
-  - Routes: `/system-administration/erp-functions/list` and `/system-administration/erp-modules/list`
-  - Keep as regular menu items under System Administration function
+- **Settings & Configurations (ERPF, ERPM)**:
+    - Routes: `/system-administration/erp-functions/list` and `/system-administration/erp-modules/list`
+    - Keep as regular menu items under System Administration function
 
 ### 10. Route Examples
 
@@ -378,9 +365,9 @@ Based on the provided data structure:
 
 |--------------|-------------|-----------------|---------|
 
-| `EntAdm` | `ENTDT` | `/company-administration/entities/list` | Entity Details |
+| `EntAdm` | `ENTDT` | `/entity-administration/entities/list` | Entity Details |
 
-| `EntAdm` | `USRACC` | `/company-administration/users-details` | User Accounts |
+| `EntAdm` | `USRACC` | `/entity-administration/users-details` | User Accounts |
 
 | `DBS` | `ACT` | `/summary/actions` | Actions |
 
@@ -426,14 +413,14 @@ Based on the provided data structure:
 
 **Examples:**
 
-- `/company-administration/entities/list` → Function: `EntAdm`, Module: `ENTDT`, Nested: `list`
+- `/entity-administration/entities/list` → Function: `EntAdm`, Module: `ENTDT`, Nested: `list`
 - `/summary/actions` → Function: `DBS`, Module: `ACT`, Nested: (empty)
 - `/human-resources/timesheets` → Function: `HR`, Module: `TS`, Nested: (empty)
 - `/financials/chart-of-accounts` → Function: `FIN`, Module: `FCOA`, Nested: (empty)
 
 ### URL Field Parsing
 
-When module has `URL` field (e.g., `/company-administration/entities/list`):
+When module has `URL` field (e.g., `/entity-administration/entities/list`):
 
 1. Parse to extract: function slug, module slug, nested route
 2. Use parsed components to generate route
@@ -441,25 +428,23 @@ When module has `URL` field (e.g., `/company-administration/entities/list`):
 
 ### Reverse Lookup (ModuleGuard)
 
-When route is `/company-administration/entities/list`:
+When route is `/entity-administration/entities/list`:
 
 1. Extract `functionSlug` = `company-administration`
 2. Extract `moduleSlug` = `entities`
 3. Extract `nestedRoute` = `list`
 4. Convert slugs back to codes:
-
-   - `company-administration` → `EntAdm` (function code)
-   - `entities` → `ENTDT` (module code)
+    - `company-administration` → `EntAdm` (function code)
+    - `entities` → `ENTDT` (module code)
 
 5. Validate in localStorage
 
 ## Questions to Clarify
 
 1. Should we fetch module details (including URL) on app initialization, or rely on localStorage only?
-2. For the URL field parsing - if URL is `/company-administration/entities/list`, should we:
-
-   - Parse it to extract function/module slugs, or
-   - Use it as-is and just validate it matches the pattern?
+2. For the URL field parsing - if URL is `/entity-administration/entities/list`, should we:
+    - Parse it to extract function/module slugs, or
+    - Use it as-is and just validate it matches the pattern?
 
 3. How should we handle nested routes within modules (e.g., `/list`, `/new`, `/:id`)? Should they be part of the URL field or handled separately?
 4. How should we handle module logos - fetch on-demand or cache in localStorage?

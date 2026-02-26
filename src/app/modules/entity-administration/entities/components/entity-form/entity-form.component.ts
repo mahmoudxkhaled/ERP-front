@@ -344,7 +344,7 @@ export class EntityFormComponent implements OnInit, OnDestroy {
                         summary: 'Success',
                         detail: 'Entity updated successfully.'
                     });
-                    this.router.navigate(['/company-administration/entities', this.entityId]);
+                    this.router.navigate(['/entity-administration/entities', this.entityId]);
                 },
                 complete: () => this.loading = false
             });
@@ -379,7 +379,7 @@ export class EntityFormComponent implements OnInit, OnDestroy {
                         summary: 'Success',
                         detail: 'Entity created successfully.'
                     });
-                    this.router.navigate(['/company-administration/entities/list']);
+                    this.router.navigate(['/entity-administration/entities/list']);
                 },
                 complete: () => this.loading = false
             });
@@ -389,7 +389,7 @@ export class EntityFormComponent implements OnInit, OnDestroy {
     }
 
     cancel(): void {
-        this.router.navigate(['/company-administration/entities/list']);
+        this.router.navigate(['/entity-administration/entities/list']);
     }
 
     get f() {
@@ -657,7 +657,7 @@ export class EntityFormComponent implements OnInit, OnDestroy {
                     summary: 'Success',
                     detail: 'Entity, role, and administrator account created successfully.'
                 });
-                this.router.navigate(['/company-administration/entities/list']);
+                this.router.navigate(['/entity-administration/entities/list']);
             },
             error: () => this.loading = false,
             complete: () => this.loading = false

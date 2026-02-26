@@ -87,7 +87,7 @@ export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
                     summary: 'Access Denied',
                     detail: 'Only Entity Administrators can access Entity Groups.'
                 });
-                this.router.navigate(['/company-administration']);
+                this.router.navigate(['/entity-administration']);
                 return;
             }
         }
@@ -175,7 +175,7 @@ export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
 
     viewDetails(group: Group): void {
         if (group.id) {
-            this.router.navigate(['/company-administration/entity-groups', group.id]);
+            this.router.navigate(['/entity-administration/entity-groups', group.id]);
         }
     }
 

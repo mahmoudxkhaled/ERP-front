@@ -26,7 +26,8 @@
                     <th style="width: 50px;">{{ 'entityRoles.list.table.id' | translate }}</th>
                     <th style="width: 200px;">{{ 'entityRoles.list.table.title' | translate }}</th>
                     <th style="width: 300px;">{{ 'entityRoles.list.table.description' | translate }}</th>
-                    <th style="width: 150px; text-align: start !important;">{{ 'entityRoles.list.table.actions' | translate }}</th>
+                    <th style="width: 150px; text-align: start !important;">{{ 'entityRoles.list.table.actions' |
+                        translate }}</th>
                 </tr>
             </ng-template>
 
@@ -49,7 +50,7 @@
                             </ng-container>
                             <ng-template #normalTitle>
                                 <span style="cursor: pointer;" class="font-semibold name-text"
-                                    routerLink="/company-administration/roles/{{ role.id }}">
+                                    routerLink="/entity-administration/roles/{{ role.id }}">
                                     {{ role.title }}</span>
                             </ng-template>
                         </div>
@@ -59,7 +60,8 @@
                             <p-skeleton height="3rem" width="100%" class="line-height-3"></p-skeleton>
                         </ng-container>
                         <ng-template #normalDescription>
-                            <span class="text-600 line-height-3 description-text">{{ role.description || ('entityRoles.list.noDescription' | translate) }}</span>
+                            <span class="text-600 line-height-3 description-text">{{ role.description ||
+                                ('entityRoles.list.noDescription' | translate) }}</span>
                         </ng-template>
                     </td>
                     <td class="text-start">
@@ -98,8 +100,8 @@
         <p class="text-red-500 font-semibold">{{ 'entityRoles.list.deleteDialog.cannotUndo' | translate }}</p>
     </div>
     <ng-template pTemplate="footer">
-        <p-button [label]="'entityRoles.list.deleteDialog.cancel' | translate" icon="pi pi-times" class="p-button-text" (onClick)="onCancelDeleteDialog()"
-            [disabled]="!!(isLoading$ | async)">
+        <p-button [label]="'entityRoles.list.deleteDialog.cancel' | translate" icon="pi pi-times" class="p-button-text"
+            (onClick)="onCancelDeleteDialog()" [disabled]="!!(isLoading$ | async)">
         </p-button>
         <p-button class="p-button-danger" (onClick)="deleteRole()" [disabled]="!!(isLoading$ | async)">
             <ng-container *ngIf="isLoading$ | async">

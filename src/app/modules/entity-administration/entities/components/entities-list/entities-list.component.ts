@@ -135,13 +135,13 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
 
     edit(entity: Entity): void {
         if (entity.id) {
-            this.router.navigate(['/company-administration/entities', entity.id, 'edit']);
+            this.router.navigate(['/entity-administration/entities', entity.id, 'edit']);
         }
     }
 
     viewDetails(entity: Entity): void {
         if (entity.id) {
-            this.router.navigate(['/company-administration/entities', entity.id]);
+            this.router.navigate(['/entity-administration/entities', entity.id]);
         }
     }
 
@@ -254,7 +254,7 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
     }
 
     navigateToNew(): void {
-        this.router.navigate(['/company-administration/entities/new']);
+        this.router.navigate(['/entity-administration/entities/new']);
     }
 
     onSearchInput(event: Event): void {

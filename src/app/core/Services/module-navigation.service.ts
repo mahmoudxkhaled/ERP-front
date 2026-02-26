@@ -143,7 +143,7 @@ export class ModuleNavigationService {
                 }
 
                 // Partial match - check if breadcrumb URL is a prefix of module URL
-                // e.g., '/company-administration/entities' matches '/company-administration/entities/list'
+                // e.g., '/entity-administration/entities' matches '/entity-administration/entities/list'
                 if (normalizedModuleUrl.startsWith(normalizedUrl + '/') ||
                     normalizedUrl.startsWith(normalizedModuleUrl + '/')) {
                     return module;

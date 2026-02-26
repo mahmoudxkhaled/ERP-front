@@ -172,9 +172,9 @@ export class RoleFormComponent implements OnInit, OnDestroy {
                     const queryParams = this.route.snapshot.queryParams;
                     const entityId = queryParams['entityId'];
                     if (entityId) {
-                        this.router.navigate(['/company-administration/entities', entityId]);
+                        this.router.navigate(['/entity-administration/entities', entityId]);
                     } else {
-                        this.router.navigate(['/company-administration/roles', this.roleId]);
+                        this.router.navigate(['/entity-administration/roles', this.roleId]);
                     }
                 },
                 complete: () => this.loading = false
@@ -208,11 +208,11 @@ export class RoleFormComponent implements OnInit, OnDestroy {
                 const entityIdFromQuery = queryParams['entityId'];
                 if (entityIdFromQuery) {
                     // Return to entity details
-                    this.router.navigate(['/company-administration/entities', entityIdFromQuery]);
+                    this.router.navigate(['/entity-administration/entities', entityIdFromQuery]);
                 } else if (newRoleId) {
-                    this.router.navigate(['/company-administration/roles', newRoleId]);
+                    this.router.navigate(['/entity-administration/roles', newRoleId]);
                 } else {
-                    this.router.navigate(['/company-administration/roles/list']);
+                    this.router.navigate(['/entity-administration/roles/list']);
                 }
             },
             complete: () => this.loading = false
@@ -222,7 +222,7 @@ export class RoleFormComponent implements OnInit, OnDestroy {
     }
 
     cancel(): void {
-        this.router.navigate(['/company-administration/roles/list']);
+        this.router.navigate(['/entity-administration/roles/list']);
     }
 
     get f() {

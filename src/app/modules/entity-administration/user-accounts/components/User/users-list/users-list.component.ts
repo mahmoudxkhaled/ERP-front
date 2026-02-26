@@ -117,13 +117,13 @@ export class UsersListComponent implements OnInit, OnDestroy {
 
     edit(user: User): void {
         if (user.id) {
-            this.router.navigate(['/company-administration/user-accounts', user.id, 'edit']);
+            this.router.navigate(['/entity-administration/user-accounts', user.id, 'edit']);
         }
     }
 
     viewDetails(user: User): void {
         if (user.id) {
-            this.router.navigate(['/company-administration/user-accounts', user.id]);
+            this.router.navigate(['/entity-administration/user-accounts', user.id]);
         }
     }
 
@@ -175,7 +175,7 @@ export class UsersListComponent implements OnInit, OnDestroy {
     }
 
     navigateToNew(): void {
-        this.router.navigate(['/company-administration/user-accounts/new']);
+        this.router.navigate(['/entity-administration/user-accounts/new']);
     }
 
     getUserDisplayName(user: User): string {

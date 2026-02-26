@@ -30,92 +30,92 @@ Framework: Angular 17
 
 ### 1.1 Application Information
 
--   Application Name: ERP System Frontend
--   Version: 17.0.0
--   Framework: Angular 17.0.5
--   UI Library: PrimeNG 17.2.0
--   Build Tool: Angular CLI 17.0.5
--   Language: TypeScript 5.2.2
--   Package Manager: npm
+- Application Name: ERP System Frontend
+- Version: 17.0.0
+- Framework: Angular 17.0.5
+- UI Library: PrimeNG 17.2.0
+- Build Tool: Angular CLI 17.0.5
+- Language: TypeScript 5.2.2
+- Package Manager: npm
 
 ### 1.2 Technology Stack
 
 Core Framework
 
--   Angular: 17.0.5 (Modular architecture with lazy loading)
--   TypeScript: 5.2.2 (Type-safe development)
--   RxJS: 7.8.1 (Reactive programming)
+- Angular: 17.0.5 (Modular architecture with lazy loading)
+- TypeScript: 5.2.2 (Type-safe development)
+- RxJS: 7.8.1 (Reactive programming)
 
 UI Libraries
 
--   PrimeNG: 17.2.0 (Component library)
--   PrimeFlex: 3.3.1 (CSS utility library)
--   PrimeIcons: 6.0.1 (Icon library)
--   FontAwesome: 6.4.0 (Additional icons)
+- PrimeNG: 17.2.0 (Component library)
+- PrimeFlex: 3.3.1 (CSS utility library)
+- PrimeIcons: 6.0.1 (Icon library)
+- FontAwesome: 6.4.0 (Additional icons)
 
 State Management & Storage
 
--   RxJS: Observable-based state management
--   LocalStorage: Browser-based persistence
--   Session Storage: Temporary session data
+- RxJS: Observable-based state management
+- LocalStorage: Browser-based persistence
+- Session Storage: Temporary session data
 
 HTTP & API Communication
 
--   Angular HttpClient: Native HTTP client
--   Custom API Service: Centralized API communication layer
--   Interceptors: Request/response interceptors for authentication and error handling
+- Angular HttpClient: Native HTTP client
+- Custom API Service: Centralized API communication layer
+- Interceptors: Request/response interceptors for authentication and error handling
 
 Internationalization
 
--   ngx-translate: 15.0.0 (Translation framework)
--   ngx-translate-messageformat-compiler: 7.0.0 (Message format support)
--   Supported Languages: English (en), Arabic (ar)
+- ngx-translate: 15.0.0 (Translation framework)
+- ngx-translate-messageformat-compiler: 7.0.0 (Message format support)
+- Supported Languages: English (en), Arabic (ar)
 
 Data Visualization
 
--   Chart.js: 3.9.1 (Charting library)
--   ng2-charts: 3.1.2 (Angular wrapper for Chart.js)
--   chartjs-plugin-datalabels: 2.2.0 (Chart labels)
--   chartjs-gauge: 0.3.0 (Gauge charts)
--   gauge-chart: 1.0.0 (Additional gauge support)
+- Chart.js: 3.9.1 (Charting library)
+- ng2-charts: 3.1.2 (Angular wrapper for Chart.js)
+- chartjs-plugin-datalabels: 2.2.0 (Chart labels)
+- chartjs-gauge: 0.3.0 (Gauge charts)
+- gauge-chart: 1.0.0 (Additional gauge support)
 
 Document & File Handling
 
--   jsPDF: 2.5.2 (PDF generation)
--   jspdf-autotable: 3.8.4 (PDF tables)
--   html2pdf.js: 0.9.0 (HTML to PDF conversion)
--   html2canvas: 1.4.1 (Canvas rendering)
--   pdfjs-dist: 4.3.136 (PDF.js library)
--   ExcelJS: 4.4.0 (Excel file handling)
--   file-saver: 2.0.5 (File download)
+- jsPDF: 2.5.2 (PDF generation)
+- jspdf-autotable: 3.8.4 (PDF tables)
+- html2pdf.js: 0.9.0 (HTML to PDF conversion)
+- html2canvas: 1.4.1 (Canvas rendering)
+- pdfjs-dist: 4.3.136 (PDF.js library)
+- ExcelJS: 4.4.0 (Excel file handling)
+- file-saver: 2.0.5 (File download)
 
 Rich Text Editing
 
--   ngx-editor: 17.5.4 (Rich text editor)
--   Quill: 2.0.2 (Rich text editor core)
--   Summernote: (via assets/rich-text)
+- ngx-editor: 17.5.4 (Rich text editor)
+- Quill: 2.0.2 (Rich text editor core)
+- Summernote: (via assets/rich-text)
 
 Utilities
 
--   crypto-js: 4.2.0 (Encryption utilities)
--   guid-ts: 1.1.2 (GUID generation)
--   intl-tel-input: 19.2.3 (International phone input)
--   @justin-s/ngx-intl-tel-input: 17.0.0 (Angular wrapper)
--   canvas-confetti: 1.9.3 (Confetti animations)
--   intro.js: 8.0.0-beta.1 (User onboarding)
--   turn.js: 1.0.2 (Page flip effects)
+- crypto-js: 4.2.0 (Encryption utilities)
+- guid-ts: 1.1.2 (GUID generation)
+- intl-tel-input: 19.2.3 (International phone input)
+- @justin-s/ngx-intl-tel-input: 17.0.0 (Angular wrapper)
+- canvas-confetti: 1.9.3 (Confetti animations)
+- intro.js: 8.0.0-beta.1 (User onboarding)
+- turn.js: 1.0.2 (Page flip effects)
 
 Calendar & Scheduling
 
--   @fullcalendar/angular: 6.0.3 (Calendar component)
--   @fullcalendar/core: 6.0.3
--   @fullcalendar/daygrid: 6.0.3
--   @fullcalendar/interaction: 6.0.3
--   @fullcalendar/timegrid: 6.0.3
+- @fullcalendar/angular: 6.0.3 (Calendar component)
+- @fullcalendar/core: 6.0.3
+- @fullcalendar/daygrid: 6.0.3
+- @fullcalendar/interaction: 6.0.3
+- @fullcalendar/timegrid: 6.0.3
 
 Real-time Communication
 
--   @microsoft/signalr: 8.0.7 (SignalR client)
+- @microsoft/signalr: 8.0.7 (SignalR client)
 
 ---
 
@@ -214,26 +214,26 @@ All feature modules are lazy-loaded for optimal performance. Modules are loaded 
 
 Route Protection
 
--   AuthGuard: Protects all authenticated routes by verifying token presence
--   Module Guards: Additional guards can be implemented per module for fine-grained access control
+- AuthGuard: Protects all authenticated routes by verifying token presence
+- Module Guards: Additional guards can be implemented per module for fine-grained access control
 
 Service Pattern
 
--   Singleton Services: Core services are provided in root, ensuring single instance
--   Feature Services: Module-specific services handle business logic
--   API Service: Centralized HTTP communication through `ApiService`
+- Singleton Services: Core services are provided in root, ensuring single instance
+- Feature Services: Module-specific services handle business logic
+- API Service: Centralized HTTP communication through `ApiService`
 
 Component Pattern
 
--   Presentation Components: Handle UI rendering and user interaction
--   Container Components: Manage state and business logic
--   Shared Components: Reusable across multiple modules
+- Presentation Components: Handle UI rendering and user interaction
+- Container Components: Manage state and business logic
+- Shared Components: Reusable across multiple modules
 
 State Management
 
--   RxJS Observables: Used for reactive state management
--   LocalStorage: Persistent storage for user data, tokens, and settings
--   BehaviorSubject: Used in services for state sharing
+- RxJS Observables: Used for reactive state management
+- LocalStorage: Persistent storage for user data, tokens, and settings
+- BehaviorSubject: Used in services for state sharing
 
 ---
 
@@ -356,10 +356,10 @@ Purpose: Centralized HTTP communication gateway for all backend API calls.
 
 Key Features:
 
--   Request packing: Converts request data to byte array format
--   Response unpacking: Parses byte array responses
--   Error handling: Centralized error management
--   Token management: Automatic access token handling
+- Request packing: Converts request data to byte array format
+- Response unpacking: Parses byte array responses
+- Error handling: Centralized error management
+- Token management: Automatic access token handling
 
 Usage Pattern:
 
@@ -384,15 +384,15 @@ HTTP Interceptors
 
 Error Handling Interceptor (`Interceptors/error-handling.interceptor.ts`)
 
--   Intercepts HTTP errors
--   Provides centralized error handling
--   Can show error messages or redirect
+- Intercepts HTTP errors
+- Provides centralized error handling
+- Can show error messages or redirect
 
 Loading Interceptor (`Interceptors/loading.interceptor.ts`)
 
--   Manages loading state for HTTP requests
--   Shows/hides loading indicators
--   Tracks request progress
+- Manages loading state for HTTP requests
+- Shows/hides loading indicators
+- Tracks request progress
 
 ### 4.3 Core Services Catalog
 
@@ -417,13 +417,13 @@ Account Status Model (`models/account-status.model.ts`)
 
 Contains interfaces for:
 
--   `IFunctionsDetails`: Function definitions
--   `IModulesDetails`: Module definitions
--   `IModuleDetail`: Individual module details
--   `IFunctionDetail`: Individual function details
--   `IAccountSettings`: Account configuration
--   `IMenuFunction`: Menu function structure
--   `IMenuModule`: Menu module structure
+- `IFunctionsDetails`: Function definitions
+- `IModulesDetails`: Module definitions
+- `IModuleDetail`: Individual module details
+- `IFunctionDetail`: Individual function details
+- `IAccountSettings`: Account configuration
+- `IMenuFunction`: Menu function structure
+- `IMenuModule`: Menu module structure
 
 System Roles (`models/system-roles.ts`)
 
@@ -486,9 +486,9 @@ Purpose: Main application shell that wraps all authenticated pages.
 
 Structure:
 
--   Contains sidebar, top bar, menu, and content area
--   Manages layout state (sidebar collapsed/expanded)
--   Handles responsive behavior
+- Contains sidebar, top bar, menu, and content area
+- Manages layout state (sidebar collapsed/expanded)
+- Handles responsive behavior
 
 Top Bar (`top-bar/`)
 
@@ -496,11 +496,11 @@ Purpose: Header navigation bar.
 
 Features:
 
--   User profile menu
--   Notifications
--   Search functionality
--   Theme toggle
--   Language selector
+- User profile menu
+- Notifications
+- Search functionality
+- Theme toggle
+- Language selector
 
 Sidebar (`app-sidebar/`)
 
@@ -508,9 +508,9 @@ Purpose: Left navigation sidebar.
 
 Features:
 
--   Collapsible/expandable
--   Module navigation
--   Responsive behavior
+- Collapsible/expandable
+- Module navigation
+- Responsive behavior
 
 Menu (`app-menu/`)
 
@@ -518,10 +518,10 @@ Purpose: Dynamic navigation menu system.
 
 Features:
 
--   Dynamic menu generation from Functions and Modules
--   Hierarchical menu structure
--   Active route highlighting
--   Menu state management via `AppMenuService`
+- Dynamic menu generation from Functions and Modules
+- Hierarchical menu structure
+- Active route highlighting
+- Menu state management via `AppMenuService`
 
 Breadcrumb (`app-breadcrumb/`)
 
@@ -529,9 +529,9 @@ Purpose: Navigation breadcrumb trail.
 
 Features:
 
--   Automatic generation from route data
--   Clickable navigation
--   Localized labels
+- Automatic generation from route data
+- Clickable navigation
+- Localized labels
 
 Footer (`app-footer/`)
 
@@ -539,9 +539,9 @@ Purpose: Application footer.
 
 Features:
 
--   Copyright information
--   Version display
--   Additional links
+- Copyright information
+- Version display
+- Additional links
 
 Config (`config/`)
 
@@ -549,9 +549,9 @@ Purpose: Theme and configuration panel.
 
 Features:
 
--   Theme selection
--   Layout options
--   Color scheme customization
+- Theme selection
+- Layout options
+- Color scheme customization
 
 Menu Profile (`app-menuProfile/`)
 
@@ -559,9 +559,9 @@ Purpose: User profile dropdown menu.
 
 Features:
 
--   User information display
--   Profile settings link
--   Logout option
+- User information display
+- Profile settings link
+- Logout option
 
 Right Menu (`app-rightMenu/`)
 
@@ -569,8 +569,8 @@ Purpose: Right-side navigation menu.
 
 Features:
 
--   Additional navigation options
--   Quick actions
+- Additional navigation options
+- Quick actions
 
 No Internet Overlay (`no-internet-overlay/`)
 
@@ -578,9 +578,9 @@ Purpose: Network connectivity indicator.
 
 Features:
 
--   Shows when network is offline
--   Blocks interaction when offline
--   Auto-hides when connection restored
+- Shows when network is offline
+- Blocks interaction when offline
+- Auto-hides when connection restored
 
 ---
 
@@ -630,22 +630,22 @@ auth/
 
 Routes:
 
--   `/auth` - Login page
--   `/auth/forget-password` - Password recovery
--   `/auth/reset-password` - Password reset
--   `/auth/verify-2fa/:email` - 2FA verification
--   `/auth/verify-email` - Email verification
--   `/auth/email-verified` - Email verified confirmation
--   `/auth/account-status` - Account status
+- `/auth` - Login page
+- `/auth/forget-password` - Password recovery
+- `/auth/reset-password` - Password reset
+- `/auth/verify-2fa/:email` - 2FA verification
+- `/auth/verify-email` - Email verification
+- `/auth/email-verified` - Email verified confirmation
+- `/auth/account-status` - Account status
 
 Key Features:
 
--   User login with credentials
--   Two-factor authentication (2FA)
--   Password recovery flow
--   Email verification
--   Account status checking
--   Session management
+- User login with credentials
+- Two-factor authentication (2FA)
+- Password recovery flow
+- Email verification
+- Account status checking
+- Session management
 
 6.2.2 Entity Administration Module (`entity-administration/`)
 
@@ -694,19 +694,19 @@ entity-administration/
 
 Routes:
 
--   `/company-administration` - Main route
--   `/company-administration/entities` - Entity management
--   `/company-administration/user-accounts` - User management
--   `/company-administration/roles` - Role management
--   `/company-administration/workflows` - Workflow management
+- `/company-administration` - Main route
+- `/entity-administration/entities` - Entity management
+- `/entity-administration/user-accounts` - User management
+- `/entity-administration/roles` - Role management
+- `/entity-administration/workflows` - Workflow management
 
 Key Features:
 
--   Entity (company/branch) CRUD operations
--   User account management
--   Role-based access control (RBAC)
--   Permission assignment
--   Workflow configuration
+- Entity (company/branch) CRUD operations
+- User account management
+- Role-based access control (RBAC)
+- Permission assignment
+- Workflow configuration
 
 6.2.3 System Administration Module (`system-administration/`)
 
@@ -737,22 +737,22 @@ system-administration/
 
 Routes:
 
--   `/system-administration` - Main route
--   `/system-administration/erp-functions` - Functions management
--   `/system-administration/erp-modules` - Modules management
+- `/system-administration` - Main route
+- `/system-administration/erp-functions` - Functions management
+- `/system-administration/erp-modules` - Modules management
 
 Key Features:
 
--   ERP Functions configuration
--   ERP Modules licensing and activation
--   System-wide settings
--   Control panel for system configuration
+- ERP Functions configuration
+- ERP Modules licensing and activation
+- System-wide settings
+- Control panel for system configuration
 
 Important Distinction:
 
--   ERP Functions: High-level capabilities/features of the system
--   ERP Modules: Licensed modules that can be enabled/disabled per entity
--   Angular Modules: Code organization units (folders in `src/app/modules/`)
+- ERP Functions: High-level capabilities/features of the system
+- ERP Modules: Licensed modules that can be enabled/disabled per entity
+- Angular Modules: Code organization units (folders in `src/app/modules/`)
 
 6.2.4 Customer Relation Management Module (`customer-relation-management/`)
 
@@ -771,15 +771,15 @@ customer-relation-management/
 
 Routes:
 
--   Routes are dynamically generated based on module configuration
+- Routes are dynamically generated based on module configuration
 
 Key Features:
 
--   Client database management
--   Tender creation and tracking
--   Project estimation tools
--   Contract management
--   Customer invoicing
+- Client database management
+- Tender creation and tracking
+- Project estimation tools
+- Contract management
+- Customer invoicing
 
 6.2.5 Finance & Accounting Module (`finance-accounting/`)
 
@@ -804,16 +804,16 @@ finance-accounting/
 
 Routes:
 
--   `/financials` - Main route
--   `/financials/invoices` - Invoice management
+- `/financials` - Main route
+- `/financials/invoices` - Invoice management
 
 Key Features:
 
--   General ledger entries
--   Chart of accounts hierarchy
--   Accounts payable (vendor invoices)
--   Accounts receivable (customer invoices)
--   Financial reporting
+- General ledger entries
+- Chart of accounts hierarchy
+- Accounts payable (vendor invoices)
+- Accounts receivable (customer invoices)
+- Financial reporting
 
 6.2.6 Supply Chain Management Module (`supply-chain-management/`)
 
@@ -831,14 +831,14 @@ supply-chain-management/
 
 Routes:
 
--   Routes are dynamically generated based on module configuration
+- Routes are dynamically generated based on module configuration
 
 Key Features:
 
--   Purchase order creation and tracking
--   Subcontract management
--   Vendor database
--   Vendor invoicing and payments
+- Purchase order creation and tracking
+- Subcontract management
+- Vendor database
+- Vendor invoicing and payments
 
 6.2.7 Project Controls Module (`project-controls/`)
 
@@ -858,16 +858,16 @@ project-controls/
 
 Routes:
 
--   Routes are dynamically generated based on module configuration
+- Routes are dynamically generated based on module configuration
 
 Key Features:
 
--   Project budgeting
--   Work Breakdown Structure (WBS)
--   Cost Breakdown Structure (CBS)
--   Quantity surveying
--   Cost tracking and reporting
--   Progress monitoring
+- Project budgeting
+- Work Breakdown Structure (WBS)
+- Cost Breakdown Structure (CBS)
+- Quantity surveying
+- Cost tracking and reporting
+- Progress monitoring
 
 6.2.8 Document Control Module (`document-control/`)
 
@@ -886,15 +886,15 @@ document-control/
 
 Routes:
 
--   `/document-control` - Main route
+- `/document-control` - Main route
 
 Key Features:
 
--   Document upload and storage
--   File organization
--   Document sharing
--   Version control
--   Document search
+- Document upload and storage
+- File organization
+- Document sharing
+- Version control
+- Document search
 
 6.2.9 Dashboard Module (`dashboard/`)
 
@@ -912,15 +912,15 @@ dashboard/
 
 Routes:
 
--   `/` - Root route (default dashboard)
+- `/` - Root route (default dashboard)
 
 Key Features:
 
--   Overview widgets
--   Key performance indicators (KPIs)
--   Quick access to modules
--   Recent activities
--   Dynamic module display based on user permissions
+- Overview widgets
+- Key performance indicators (KPIs)
+- Quick access to modules
+- Recent activities
+- Dynamic module display based on user permissions
 
 6.2.10 Summary Module (`summary/`)
 
@@ -952,18 +952,18 @@ summary/
 
 Routes:
 
--   `/summary` - Main route
--   `/summary/profile` - User profile
--   `/summary/settings` - User settings
--   `/summary/notifications` - Notifications
--   `/summary/actions` - User actions
+- `/summary` - Main route
+- `/summary/profile` - User profile
+- `/summary/settings` - User settings
+- `/summary/notifications` - Notifications
+- `/summary/actions` - User actions
 
 Key Features:
 
--   User profile management
--   Account settings
--   Notification center
--   Action history
+- User profile management
+- Account settings
+- Notification center
+- Action history
 
 ---
 
@@ -1024,11 +1024,11 @@ Purpose: Common Angular modules and components shared across the application.
 
 Exports:
 
--   CommonModule
--   FormsModule
--   ReactiveFormsModule
--   PrimeNG components
--   Other shared modules
+- CommonModule
+- FormsModule
+- ReactiveFormsModule
+- PrimeNG components
+- Other shared modules
 
 AppTranslateModule (`shared/app-translate.module.ts`)
 
@@ -1036,10 +1036,10 @@ Purpose: Translation module configuration.
 
 Features:
 
--   ngx-translate setup
--   HTTP loader configuration
--   Message format compiler
--   Language switching
+- ngx-translate setup
+- HTTP loader configuration
+- Message format compiler
+- Language switching
 
 ---
 
@@ -1082,57 +1082,57 @@ src/assets/
 
 Custom Icons (`customIcons/`)
 
--   Platform-specific icons (Linux, Mac, Windows)
--   Custom SVG icons for application use
+- Platform-specific icons (Linux, Mac, Windows)
+- Custom SVG icons for application use
 
 Demo Assets (`demo/`)
 
--   Data: JSON files for demo/testing purposes
-    -   `chat.json`, `countries.json`, `customers-*.json`
-    -   `files.json`, `products.json`, `tasks.json`
--   Images: Demo images for UI components
-    -   Avatars, product images, blog images
--   Styles: Demo-specific stylesheets
+- Data: JSON files for demo/testing purposes
+    - `chat.json`, `countries.json`, `customers-*.json`
+    - `files.json`, `products.json`, `tasks.json`
+- Images: Demo images for UI components
+    - Avatars, product images, blog images
+- Styles: Demo-specific stylesheets
 
 Internationalization (`i18n/`)
 
--   ar.json: Arabic translation keys and values
--   en.json: English translation keys and values
--   Format: Key-value pairs for all translatable strings
+- ar.json: Arabic translation keys and values
+- en.json: English translation keys and values
+- Format: Key-value pairs for all translatable strings
 
 Application Images (`images/`)
 
--   Company logos
--   Email verification images
--   Application branding
+- Company logos
+- Email verification images
+- Application branding
 
 Layout Assets (`layout/`)
 
--   Fonts: Custom Roboto font files (woff, woff2)
--   Images: Layout-specific images
-    -   Avatars, logos, dashboard images
-    -   Configurator images
-    -   Exception pages images
--   Styles: Theme and layout stylesheets
-    -   Layout styles (40+ SCSS files)
-    -   Theme styles (100+ SCSS files)
+- Fonts: Custom Roboto font files (woff, woff2)
+- Images: Layout-specific images
+    - Avatars, logos, dashboard images
+    - Configurator images
+    - Exception pages images
+- Styles: Theme and layout stylesheets
+    - Layout styles (40+ SCSS files)
+    - Theme styles (100+ SCSS files)
 
 Media Files (`media/`)
 
--   Various media assets
--   Icons and images for specific features
--   Logo variations
+- Various media assets
+- Icons and images for specific features
+- Logo variations
 
 PDF.js (`pdfjs/`)
 
--   PDF.js worker file for PDF rendering
--   Required for PDF viewing functionality
+- PDF.js worker file for PDF rendering
+- Required for PDF viewing functionality
 
 Rich Text Assets (`rich-text/`)
 
--   jQuery library (for Summernote)
--   Summernote editor files
--   Summernote fonts (eot, ttf, woff, woff2)
+- jQuery library (for Summernote)
+- Summernote editor files
+- Summernote fonts (eot, ttf, woff, woff2)
 
 ---
 
@@ -1163,21 +1163,21 @@ Routes Structure:
 
 Public Routes
 
--   `/auth/*` - Authentication pages (no guard)
--   `/landing` - Landing page (no guard)
--   `/notfound` - 404 page (no guard)
--   `/GetQuote` - Quote request (no guard)
+- `/auth/*` - Authentication pages (no guard)
+- `/landing` - Landing page (no guard)
+- `/notfound` - 404 page (no guard)
+- `/GetQuote` - Quote request (no guard)
 
 Protected Routes
 
 All routes under `AppLayoutComponent` are protected by `AuthGuard`:
 
--   `/` - Dashboard
--   `/summary/*` - User summary pages
--   `/system-administration/*` - System admin
--   `/company-administration/*` - Entity admin
--   `/document-control/*` - Document control
--   `/financials/*` - Finance module
+- `/` - Dashboard
+- `/summary/*` - User summary pages
+- `/system-administration/*` - System admin
+- `/entity-administration/*` - Entity admin
+- `/document-control/*` - Document control
+- `/financials/*` - Finance module
 
 ### 9.3 Module-Specific Routes
 
@@ -1235,18 +1235,18 @@ Summary Routes (`summary-routing.module.ts`)
 
 AuthGuard
 
--   Location: `core/Guards/auth.guard.ts`
--   Purpose: Verifies user authentication
--   Logic: Checks for token in localStorage
--   Applied To: All routes under AppLayoutComponent
+- Location: `core/Guards/auth.guard.ts`
+- Purpose: Verifies user authentication
+- Logic: Checks for token in localStorage
+- Applied To: All routes under AppLayoutComponent
 
 ### 9.5 Dynamic Routing
 
 The application supports dynamic module routing through `ModuleNavigationService`:
 
--   Modules are loaded based on user permissions
--   Routes are generated from Functions and Modules data
--   Menu structure reflects available modules
+- Modules are loaded based on user permissions
+- Routes are generated from Functions and Modules data
+- Menu structure reflects available modules
 
 ---
 
@@ -1258,67 +1258,67 @@ File: `angular.json`
 
 Project Configuration
 
--   Project Name: avalon-ng
--   Project Type: application
--   Root: `""`
--   Source Root: `src`
--   Prefix: `app`
+- Project Name: avalon-ng
+- Project Type: application
+- Root: `""`
+- Source Root: `src`
+- Prefix: `app`
 
 Build Options
 
--   Output Path: `dist/avalon-ng`
--   Index: `src/index.html`
--   Main: `src/main.ts`
--   Polyfills: `zone.js`
--   TSConfig: `tsconfig.app.json`
--   Inline Style Language: `scss`
+- Output Path: `dist/avalon-ng`
+- Index: `src/index.html`
+- Main: `src/main.ts`
+- Polyfills: `zone.js`
+- TSConfig: `tsconfig.app.json`
+- Inline Style Language: `scss`
 
 Assets
 
--   `src/.htaccess`
--   `src/favicon.ico`
--   `src/assets`
--   Monaco Editor assets from node_modules
+- `src/.htaccess`
+- `src/favicon.ico`
+- `src/assets`
+- Monaco Editor assets from node_modules
 
 Styles
 
--   `src/styles.scss`
--   FontAwesome CSS
--   Quill CSS
--   Intro.js CSS
--   International Tel Input CSS
--   Summernote CSS
+- `src/styles.scss`
+- FontAwesome CSS
+- Quill CSS
+- Intro.js CSS
+- International Tel Input CSS
+- Summernote CSS
 
 Scripts
 
--   Quill.js
--   jQuery
--   Summernote
--   Intro.js
+- Quill.js
+- jQuery
+- Summernote
+- Intro.js
 
 ### 10.2 Build Configurations
 
 Development Configuration
 
--   Build Optimizer: false
--   Optimization: false
--   Vendor Chunk: true
--   Extract Licenses: false
--   Source Map: false
--   Named Chunks: true
+- Build Optimizer: false
+- Optimization: false
+- Vendor Chunk: true
+- Extract Licenses: false
+- Source Map: false
+- Named Chunks: true
 
 Production Configuration
 
--   File Replacements: `environment.ts` → `environment.prod.ts`
--   Output Hashing: all
--   Budgets: - Initial: 8mb (warning/error)
-    -   Component Styles: 8mb (warning/error)
+- File Replacements: `environment.ts` → `environment.prod.ts`
+- Output Hashing: all
+- Budgets: - Initial: 8mb (warning/error)
+    - Component Styles: 8mb (warning/error)
 
 Testing Configuration
 
--   File Replacements: `environment.ts` → `environmentTest.ts`
--   Output Hashing: all
--   Budgets: Same as production
+- File Replacements: `environment.ts` → `environmentTest.ts`
+- Output Hashing: all
+- Budgets: Same as production
 
 ### 10.3 Environment Files
 
@@ -1332,14 +1332,14 @@ export const environment = {
 
 Production (`environment.prod.ts`)
 
--   Production-specific configurations
--   API endpoints
--   Feature flags
+- Production-specific configurations
+- API endpoints
+- Feature flags
 
 Test (`environmentTest.ts`)
 
--   Test environment configurations
--   Test API endpoints
+- Test environment configurations
+- Test API endpoints
 
 ---
 
@@ -1349,26 +1349,26 @@ Test (`environmentTest.ts`)
 
 Core Angular Packages
 
--   `@angular/core`: 17.0.5
--   `@angular/common`: 17.0.5
--   `@angular/forms`: 17.0.5
--   `@angular/router`: 17.0.5
--   `@angular/platform-browser`: 17.0.5
--   `@angular/platform-browser-dynamic`: 17.0.5
--   `@angular/animations`: 17.0.5
--   `@angular/cdk`: 17.0.2
+- `@angular/core`: 17.0.5
+- `@angular/common`: 17.0.5
+- `@angular/forms`: 17.0.5
+- `@angular/router`: 17.0.5
+- `@angular/platform-browser`: 17.0.5
+- `@angular/platform-browser-dynamic`: 17.0.5
+- `@angular/animations`: 17.0.5
+- `@angular/cdk`: 17.0.2
 
 UI Component Libraries
 
--   `primeng`: 17.2.0
--   `primeflex`: 3.3.1
--   `primeicons`: 6.0.1
+- `primeng`: 17.2.0
+- `primeflex`: 3.3.1
+- `primeicons`: 6.0.1
 
 Utilities
 
--   `rxjs`: 7.8.1
--   `tslib`: 2.5.0
--   `zone.js`: 0.14.0
+- `rxjs`: 7.8.1
+- `tslib`: 2.5.0
+- `zone.js`: 0.14.0
 
 ### 11.2 Internal Dependencies
 
@@ -1401,11 +1401,11 @@ graph LR
 
 Service Dependencies
 
--   ApiService: Used by all feature modules
--   LocalStorageService: Used globally for data persistence
--   ModuleNavigationService: Used by layout components
--   TranslationService: Used for i18n
--   PermissionService: Used for access control
+- ApiService: Used by all feature modules
+- LocalStorageService: Used globally for data persistence
+- ModuleNavigationService: Used by layout components
+- TranslationService: Used for i18n
+- PermissionService: Used for access control
 
 ---
 
@@ -1417,9 +1417,9 @@ Pattern: `component-name.component.{ts|html|scss}`
 
 Examples:
 
--   `login.component.ts`
--   `login.component.html`
--   `login.component.scss`
+- `login.component.ts`
+- `login.component.html`
+- `login.component.scss`
 
 ### 12.2 Service Files
 
@@ -1427,9 +1427,9 @@ Pattern: `service-name.service.ts`
 
 Examples:
 
--   `auth.service.ts`
--   `api.service.ts`
--   `local-storage.service.ts`
+- `auth.service.ts`
+- `api.service.ts`
+- `local-storage.service.ts`
 
 ### 12.3 Module Files
 
@@ -1437,9 +1437,9 @@ Pattern: `module-name.module.ts`
 
 Examples:
 
--   `auth.module.ts`
--   `dashboard.module.ts`
--   `entity-administration.module.ts`
+- `auth.module.ts`
+- `dashboard.module.ts`
+- `entity-administration.module.ts`
 
 ### 12.4 Routing Files
 
@@ -1447,9 +1447,9 @@ Pattern: `module-name-routing.module.ts`
 
 Examples:
 
--   `auth-routing.module.ts`
--   `entity-administration-routing.module.ts`
--   `financials-routing.module.ts`
+- `auth-routing.module.ts`
+- `entity-administration-routing.module.ts`
+- `financials-routing.module.ts`
 
 ### 12.5 Model Files
 
@@ -1457,9 +1457,9 @@ Pattern: `model-name.model.ts`
 
 Examples:
 
--   `account-status.model.ts`
--   `entities.model.ts`
--   `api-result.model.ts`
+- `account-status.model.ts`
+- `entities.model.ts`
+- `api-result.model.ts`
 
 ### 12.6 Guard Files
 
@@ -1467,7 +1467,7 @@ Pattern: `guard-name.guard.ts`
 
 Examples:
 
--   `auth.guard.ts`
+- `auth.guard.ts`
 
 ### 12.7 Interceptor Files
 
@@ -1475,8 +1475,8 @@ Pattern: `interceptor-name.interceptor.ts`
 
 Examples:
 
--   `error-handling.interceptor.ts`
--   `loading.interceptor.ts`
+- `error-handling.interceptor.ts`
+- `loading.interceptor.ts`
 
 ### 12.8 Pipe Files
 
@@ -1484,7 +1484,7 @@ Pattern: `pipe-name.pipe.ts`
 
 Examples:
 
--   `safe.pipe.ts`
+- `safe.pipe.ts`
 
 ### 12.9 Directive Files
 
@@ -1492,7 +1492,7 @@ Pattern: `directive-name.directive.ts`
 
 Examples:
 
--   `has-role.directive.ts`
+- `has-role.directive.ts`
 
 ### 12.10 Validator Files
 
@@ -1500,8 +1500,8 @@ Pattern: `validator-name.validator.ts`
 
 Examples:
 
--   `password-match.validator.ts`
--   `text-field.validator.ts`
+- `password-match.validator.ts`
+- `text-field.validator.ts`
 
 ---
 
@@ -1563,15 +1563,15 @@ component-name/
 
 Service Location Rules
 
--   Global Services: `src/app/core/services/`
--   Module Services: `src/app/modules/{module}/services/`
--   Shared Services: Can be in `core/services/` if used across modules
+- Global Services: `src/app/core/services/`
+- Module Services: `src/app/modules/{module}/services/`
+- Shared Services: Can be in `core/services/` if used across modules
 
 Service Naming
 
--   Use descriptive names: `user-accounts.service.ts`
--   Include module prefix if module-specific: `entities.service.ts`
--   Use `.service.ts` suffix
+- Use descriptive names: `user-accounts.service.ts`
+- Include module prefix if module-specific: `entities.service.ts`
+- Use `.service.ts` suffix
 
 ---
 

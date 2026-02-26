@@ -136,7 +136,7 @@ export class UserFormComponent implements OnInit, OnDestroy {
                         summary: 'Success',
                         detail: 'User updated successfully.'
                     });
-                    this.router.navigate(['/company-administration/user-accounts', this.userId]);
+                    this.router.navigate(['/entity-administration/user-accounts', this.userId]);
                 },
                 complete: () => this.loading = false
             });
@@ -160,9 +160,9 @@ export class UserFormComponent implements OnInit, OnDestroy {
                     detail: 'User created successfully.'
                 });
                 if (newUserId) {
-                    this.router.navigate(['/company-administration/user-accounts', newUserId]);
+                    this.router.navigate(['/entity-administration/user-accounts', newUserId]);
                 } else {
-                    this.router.navigate(['/company-administration/user-accounts/list']);
+                    this.router.navigate(['/entity-administration/user-accounts/list']);
                 }
             },
             complete: () => this.loading = false
@@ -173,9 +173,9 @@ export class UserFormComponent implements OnInit, OnDestroy {
 
     cancel(): void {
         if (this.isEdit && this.userId) {
-            this.router.navigate(['/company-administration/user-accounts', this.userId]);
+            this.router.navigate(['/entity-administration/user-accounts', this.userId]);
         } else {
-            this.router.navigate(['/company-administration/user-accounts/list']);
+            this.router.navigate(['/entity-administration/user-accounts/list']);
         }
     }
 

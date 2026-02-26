@@ -46,7 +46,7 @@ export class UserContactInfoComponent implements OnInit, OnDestroy {
                 summary: 'Error',
                 detail: 'Invalid user ID.'
             });
-            this.router.navigate(['/company-administration/user-accounts/list']);
+            this.router.navigate(['/entity-administration/user-accounts/list']);
             return;
         }
 
@@ -172,7 +172,7 @@ export class UserContactInfoComponent implements OnInit, OnDestroy {
                     summary: 'Success',
                     detail: 'Contact information updated successfully.'
                 });
-                this.router.navigate(['/company-administration/user-accounts', this.userId]);
+                this.router.navigate(['/entity-administration/user-accounts', this.userId]);
             },
             complete: () => this.loading = false
         });
@@ -181,7 +181,7 @@ export class UserContactInfoComponent implements OnInit, OnDestroy {
     }
 
     cancel(): void {
-        this.router.navigate(['/company-administration/user-accounts', this.userId]);
+        this.router.navigate(['/entity-administration/user-accounts', this.userId]);
     }
 
     get f() {

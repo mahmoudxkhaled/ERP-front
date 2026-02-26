@@ -162,7 +162,7 @@ export class RolesListComponent implements OnInit, OnDestroy, OnChanges {
             if (this._entityId && this._entityId > 0) {
                 queryParams.entityId = this._entityId;
             }
-            this.router.navigate(['/company-administration/roles', role.id], { queryParams });
+            this.router.navigate(['/entity-administration/roles', role.id], { queryParams });
         }
     }
 
@@ -219,7 +219,7 @@ export class RolesListComponent implements OnInit, OnDestroy, OnChanges {
         if (this._entityId && this._entityId > 0) {
             queryParams.entityId = this._entityId;
         }
-        this.router.navigate(['/company-administration/roles/new'], { queryParams });
+        this.router.navigate(['/entity-administration/roles/new'], { queryParams });
     }
 
     editRoleDialogVisible: boolean = false;

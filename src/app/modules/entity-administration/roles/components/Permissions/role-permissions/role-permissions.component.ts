@@ -558,7 +558,7 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
                 });
 
                 // Navigate back to role details after successful save, open Permissions tab (index 1)
-                this.router.navigate(['/company-administration/roles', this.roleId], {
+                this.router.navigate(['/entity-administration/roles', this.roleId], {
                     queryParams: { tab: 1 }
                 });
             },
@@ -572,7 +572,7 @@ export class RolePermissionsComponent implements OnInit, OnDestroy {
 
     navigateBack(): void {
         // Navigate back to role details, open Permissions tab (index 1)
-        this.router.navigate(['/company-administration/roles', this.roleId], {
+        this.router.navigate(['/entity-administration/roles', this.roleId], {
             queryParams: { tab: 1 }
         });
     }

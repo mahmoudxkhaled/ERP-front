@@ -52,7 +52,7 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
                 summary: 'Error',
                 detail: 'Invalid entity ID.'
             });
-            this.router.navigate(['/company-administration/entities/list']);
+            this.router.navigate(['/entity-administration/entities/list']);
             return;
         }
 
@@ -202,7 +202,7 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
 
     openEditEntityDialog(): void {
         if (this.entityId) {
-            this.router.navigate(['/company-administration/entities', this.entityId, 'edit']);
+            this.router.navigate(['/entity-administration/entities', this.entityId, 'edit']);
         }
     }
 
@@ -336,7 +336,7 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
     }
 
     navigateBack(): void {
-        this.router.navigate(['/company-administration/entities/list']);
+        this.router.navigate(['/entity-administration/entities/list']);
     }
 
     getEntityIdAsNumber(): number {

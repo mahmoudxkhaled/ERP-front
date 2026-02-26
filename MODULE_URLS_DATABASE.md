@@ -19,43 +19,43 @@ This document contains all URLs for functions and modules in the ERP system, org
 
 **ERP Functions Sub-routes:**
 
--   `/system-administration/erp-functions/list` - Functions list
--   `/system-administration/erp-functions/new` - Create new function
--   `/system-administration/erp-functions/:id` - Function details
--   `/system-administration/erp-functions/:id/edit` - Edit function
+- `/system-administration/erp-functions/list` - Functions list
+- `/system-administration/erp-functions/new` - Create new function
+- `/system-administration/erp-functions/:id` - Function details
+- `/system-administration/erp-functions/:id/edit` - Edit function
 
 **ERP Modules Sub-routes:**
 
--   `/system-administration/erp-modules/list` - Modules list
--   `/system-administration/erp-modules/new` - Create new module
--   `/system-administration/erp-modules/:id` - Module details
--   `/system-administration/erp-modules/:id/edit` - Edit module
+- `/system-administration/erp-modules/list` - Modules list
+- `/system-administration/erp-modules/new` - Create new module
+- `/system-administration/erp-modules/:id` - Module details
+- `/system-administration/erp-modules/:id/edit` - Edit module
 
 ### 2. Entity Administration (EntAdm - FunctionID: 3)
 
 **Base URL:** `/company-administration`
 
-| Module Code | Module Name     | URL                                       | Description                   |
-| ----------- | --------------- | ----------------------------------------- | ----------------------------- |
-| ENTDT       | Entities        | `/company-administration/entities`        | Entities management           |
-| USRACC      | User Accounts   | `/company-administration/user-accounts`   | User accounts management      |
-| WF          | Workflows       | `/company-administration/workflows`       | Workflows management          |
-| Roles       | Roles           | `/company-administration/roles`           | Roles management              |
-| EACC        | Entity Accounts | `/company-administration/entity-accounts` | Entity accounts (Coming Soon) |
+| Module Code | Module Name     | URL                                      | Description                   |
+| ----------- | --------------- | ---------------------------------------- | ----------------------------- |
+| ENTDT       | Entities        | `/entity-administration/entities`        | Entities management           |
+| USRACC      | User Accounts   | `/entity-administration/user-accounts`   | User accounts management      |
+| WF          | Workflows       | `/entity-administration/workflows`       | Workflows management          |
+| Roles       | Roles           | `/entity-administration/roles`           | Roles management              |
+| EACC        | Entity Accounts | `/entity-administration/entity-accounts` | Entity accounts (Coming Soon) |
 
 **Entities Sub-routes:**
 
--   `/company-administration/entities/list` - Entities list
--   `/company-administration/entities/new` - Create new entity
--   `/company-administration/entities/:id` - Entity details
--   `/company-administration/entities/:id/edit` - Edit entity
+- `/entity-administration/entities/list` - Entities list
+- `/entity-administration/entities/new` - Create new entity
+- `/entity-administration/entities/:id` - Entity details
+- `/entity-administration/entities/:id/edit` - Edit entity
 
 **Roles Sub-routes:**
 
--   `/company-administration/roles/list` - Roles list
--   `/company-administration/roles/new` - Create new role
--   `/company-administration/roles/:id` - Role details
--   `/company-administration/roles/:id/edit` - Edit role
+- `/entity-administration/roles/list` - Roles list
+- `/entity-administration/roles/new` - Create new role
+- `/entity-administration/roles/:id` - Role details
+- `/entity-administration/roles/:id/edit` - Edit role
 
 ### 3. Document Control (DC - FunctionID: 4)
 
@@ -173,11 +173,11 @@ INSERT INTO Modules (ModuleID, FunctionID, Code, Name, Name_Regional, Default_Or
 (9, 2, 'SCP', 'System Control Panel', 'لوحة تحكم النظام', 4, '/system-administration/system-control-panel', 0),
 
 -- Entity Administration Modules
-(10, 3, 'ENTDT', 'Entities', 'الكيانات', 1, '/company-administration/entities', 1),
-(11, 3, 'USRACC', 'User Accounts', 'حسابات المستخدمين', 2, '/company-administration/user-accounts', 1),
-(12, 3, 'WF', 'Workflows', 'سير العمل', 3, '/company-administration/workflows', 1),
-(13, 3, 'ROLES', 'Roles', 'الأدوار', 4, '/company-administration/roles', 1),
-(14, 3, 'EACC', 'Entity Accounts', 'حسابات الكيانات', 5, '/company-administration/entity-accounts', 0),
+(10, 3, 'ENTDT', 'Entities', 'الكيانات', 1, '/entity-administration/entities', 1),
+(11, 3, 'USRACC', 'User Accounts', 'حسابات المستخدمين', 2, '/entity-administration/user-accounts', 1),
+(12, 3, 'WF', 'Workflows', 'سير العمل', 3, '/entity-administration/workflows', 1),
+(13, 3, 'ROLES', 'Roles', 'الأدوار', 4, '/entity-administration/roles', 1),
+(14, 3, 'EACC', 'Entity Accounts', 'حسابات الكيانات', 5, '/entity-administration/entity-accounts', 0),
 
 -- Document Control Modules
 (15, 4, 'SHDOC', 'Shared Documents', 'المستندات المشتركة', 1, '/document-control', 1),
@@ -226,33 +226,27 @@ INSERT INTO Modules (ModuleID, FunctionID, Code, Name, Name_Regional, Default_Or
 1. **Functions**: Only 7 functions exist in the backend: SysAdm, EntAdm, DC, FIN, CRM, SCM, PC. DBS and HR are NOT functions.
 
 2. **Root Level Modules**: Summary and Human Resources modules exist at root level (not under functions):
-
     - Summary modules: ACT, NOT, PRF, SET, LGOT (under `/summary` route)
     - Human Resources modules: TS, TS_ADMIN, TS_SUP, CONTRACT, OC, PRSN (under `/human-resources` route)
 
 3. **Is_Implemented**:
-
     - `1` = Module is fully implemented
     - `0` = Module is a placeholder (Coming Soon)
 
 4. **URL Format**:
-
     - Base URLs are relative paths from the root
     - Sub-routes are appended to base URLs
     - Dynamic routes use `:id` parameter
 
 5. **Module Codes**:
-
     - Use the codes listed above for consistency
     - Some modules share codes (e.g., CINV appears in both FIN and CRM) - differentiate with suffixes if needed
 
 6. **Function Order**:
-
     - Default_Order determines display order in menus
     - Lower numbers appear first
 
 7. **Missing Routes**:
-
     - CRM, SCM, and PC functions are not yet added to main routing
     - Add them to `app-routing.module.ts` when ready to implement
 

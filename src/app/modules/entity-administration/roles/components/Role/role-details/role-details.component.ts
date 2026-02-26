@@ -65,7 +65,7 @@ export class RoleDetailsComponent implements OnInit, OnDestroy {
                 summary: 'Error',
                 detail: 'Invalid role ID.'
             });
-            this.router.navigate(['/company-administration/roles/list']);
+            this.router.navigate(['/entity-administration/roles/list']);
             return;
         }
 
@@ -268,12 +268,12 @@ export class RoleDetailsComponent implements OnInit, OnDestroy {
         const queryParams = this.route.snapshot.queryParams;
         const entityId = queryParams['entityId'];
         if (entityId) {
-            this.router.navigate(['/company-administration/entities', entityId]);
+            this.router.navigate(['/entity-administration/entities', entityId]);
         } else if (this.roleDetails?.entityId) {
             // Navigate to entity details of the role's entity
-            this.router.navigate(['/company-administration/entities', this.roleDetails.entityId]);
+            this.router.navigate(['/entity-administration/entities', this.roleDetails.entityId]);
         } else {
-            this.router.navigate(['/company-administration/roles/list']);
+            this.router.navigate(['/entity-administration/roles/list']);
         }
     }
 
@@ -287,7 +287,7 @@ export class RoleDetailsComponent implements OnInit, OnDestroy {
     }
 
     openPermissionsDialog(): void {
-        this.router.navigate(['/company-administration/roles/permissions', this.roleId]);
+        this.router.navigate(['/entity-administration/roles/permissions', this.roleId]);
     }
 
     loadAssignedAccounts(): void {

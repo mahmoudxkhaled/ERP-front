@@ -50,7 +50,7 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
                 summary: 'Error',
                 detail: 'Invalid user ID.'
             });
-            this.router.navigate(['/company-administration/user-accounts/list']);
+            this.router.navigate(['/entity-administration/user-accounts/list']);
             return;
         }
 
@@ -166,11 +166,11 @@ export class UserDetailsComponent implements OnInit, OnDestroy {
     }
 
     navigateToEdit(): void {
-        this.router.navigate(['/company-administration/user-accounts', this.userId, 'edit']);
+        this.router.navigate(['/entity-administration/user-accounts', this.userId, 'edit']);
     }
 
     navigateToContactInfo(): void {
-        this.router.navigate(['/company-administration/user-accounts', this.userId, 'contact']);
+        this.router.navigate(['/entity-administration/user-accounts', this.userId, 'contact']);
     }
 
     getUserDisplayName(): string {

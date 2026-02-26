@@ -32,7 +32,7 @@ const routes: Routes = [
                 loadChildren: () => import('./modules/system-administration/system-administration.module').then((m) => m.SystemAdministrationModule),
             },
             {
-                path: 'company-administration',
+                path: 'entity-administration',
                 canActivate: [AuthGuard],
                 data: { breadcrumb: 'companyAdministration' },
                 loadChildren: () => import('./modules/entity-administration/entity-administration.module').then((m) => m.EntityAdministrationModule),

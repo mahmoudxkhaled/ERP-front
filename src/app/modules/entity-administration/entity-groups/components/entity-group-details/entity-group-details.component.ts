@@ -45,7 +45,7 @@ export class EntityGroupDetailsComponent implements OnInit, OnDestroy {
                 summary: 'Access Denied',
                 detail: 'Only Entity Administrators can access Entity Groups.'
             });
-            this.router.navigate(['/company-administration/entity-groups/list']);
+            this.router.navigate(['/entity-administration/entity-groups/list']);
             return;
         }
 
@@ -56,7 +56,7 @@ export class EntityGroupDetailsComponent implements OnInit, OnDestroy {
                 summary: 'Error',
                 detail: 'Invalid group ID.'
             });
-            this.router.navigate(['/company-administration/entity-groups/list']);
+            this.router.navigate(['/entity-administration/entity-groups/list']);
             return;
         }
 
@@ -95,7 +95,7 @@ export class EntityGroupDetailsComponent implements OnInit, OnDestroy {
                         summary: 'Error',
                         detail: 'This is not an Entity Group.'
                     });
-                    this.router.navigate(['/company-administration/entity-groups/list']);
+                    this.router.navigate(['/entity-administration/entity-groups/list']);
                     return;
                 }
 
@@ -111,7 +111,7 @@ export class EntityGroupDetailsComponent implements OnInit, OnDestroy {
     }
 
     navigateBack(): void {
-        this.router.navigate(['/company-administration/entities', this.group?.entityId]);
+        this.router.navigate(['/entity-administration/entities', this.group?.entityId]);
     }
 
     getGroupIdAsNumber(): number {

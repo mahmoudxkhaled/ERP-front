@@ -65,7 +65,8 @@
                     <th style="width: 200px;">{{ 'entityGroups.list.table.title' | translate }}</th>
                     <th style="width: 300px;">{{ 'entityGroups.list.table.description' | translate }}</th>
                     <th style="text-align: center !important;">{{ 'entityGroups.list.table.status' | translate }}</th>
-                    <th style="width: 150px; text-align: start !important;">{{ 'entityGroups.list.table.actions' | translate }}</th>
+                    <th style="width: 150px; text-align: start !important;">{{ 'entityGroups.list.table.actions' |
+                        translate }}</th>
                 </tr>
             </ng-template>
 
@@ -88,7 +89,7 @@
                             </ng-container>
                             <ng-template #normalTitle>
                                 <span style="cursor: pointer;" class="font-semibold name-text"
-                                    routerLink="/company-administration/entity-groups/{{ group.id }}">
+                                    routerLink="/entity-administration/entity-groups/{{ group.id }}">
                                     {{ group.title }}</span>
                             </ng-template>
                         </div>
@@ -98,7 +99,8 @@
                             <p-skeleton height="3rem" width="100%" class="line-height-3"></p-skeleton>
                         </ng-container>
                         <ng-template #normalDescription>
-                            <span class="text-600 line-height-3 description-text">{{ group.description || ('entityGroups.list.noDescription' | translate) }}</span>
+                            <span class="text-600 line-height-3 description-text">{{ group.description ||
+                                ('entityGroups.list.noDescription' | translate) }}</span>
                         </ng-template>
                     </td>
 
@@ -107,7 +109,8 @@
                             <p-skeleton height="1.5rem" width="3rem" borderRadius="30px"></p-skeleton>
                         </ng-container>
                         <ng-template #normalStatus>
-                            <p-inputSwitch [formControl]="activationControls[group.id]" (onChange)="onStatusToggle(group)">
+                            <p-inputSwitch [formControl]="activationControls[group.id]"
+                                (onChange)="onStatusToggle(group)">
                             </p-inputSwitch>
                         </ng-template>
                     </td>
@@ -140,22 +143,25 @@
 <p-dialog [(visible)]="activationGroupDialog" [modal]="true" [style]="{ width: '500px' }" [closable]="true"
     [draggable]="false" [resizable]="false">
     <ng-template pTemplate="header">
-        <h3>{{ (currentGroupForActivation?.active ? 'entityGroups.list.activationDialog.deactivateTitle' : 'entityGroups.list.activationDialog.activateTitle') | translate }}</h3>
+        <h3>{{ (currentGroupForActivation?.active ? 'entityGroups.list.activationDialog.deactivateTitle' :
+            'entityGroups.list.activationDialog.activateTitle') | translate }}</h3>
     </ng-template>
     <div class="flex flex-column gap-3">
         <!-- Activation Message -->
         <ng-container *ngIf="!currentGroupForActivation?.active">
-            <p>{{ 'entityGroups.list.activationDialog.activateMessage' | translate: { title: currentGroupForActivation?.title } }}</p>
+            <p>{{ 'entityGroups.list.activationDialog.activateMessage' | translate: { title:
+                currentGroupForActivation?.title } }}</p>
         </ng-container>
 
         <!-- Deactivation Message -->
         <ng-container *ngIf="currentGroupForActivation?.active">
-            <p>{{ 'entityGroups.list.activationDialog.deactivateMessage' | translate: { title: currentGroupForActivation?.title } }}</p>
+            <p>{{ 'entityGroups.list.activationDialog.deactivateMessage' | translate: { title:
+                currentGroupForActivation?.title } }}</p>
         </ng-container>
     </div>
     <ng-template pTemplate="footer">
-        <p-button [label]="'entityGroups.list.activationDialog.cancel' | translate" icon="pi pi-times" class="p-button-text" (onClick)="onCancelActivationDialog()"
-            [disabled]="!!(isLoading$ | async)">
+        <p-button [label]="'entityGroups.list.activationDialog.cancel' | translate" icon="pi pi-times"
+            class="p-button-text" (onClick)="onCancelActivationDialog()" [disabled]="!!(isLoading$ | async)">
         </p-button>
         <p-button [severity]="currentGroupForActivation?.active ? 'danger' : 'success'"
             (onClick)="activation(!currentGroupForActivation?.active)" [disabled]="!!(isLoading$ | async)">
@@ -166,7 +172,8 @@
                 </span>
             </ng-container>
             <ng-container *ngIf="(isLoading$ | async) === false">
-                <span>{{ (currentGroupForActivation?.active ? 'entityGroups.list.activationDialog.deactivate' : 'entityGroups.list.activationDialog.activate') | translate }}</span>
+                <span>{{ (currentGroupForActivation?.active ? 'entityGroups.list.activationDialog.deactivate' :
+                    'entityGroups.list.activationDialog.activate') | translate }}</span>
             </ng-container>
         </p-button>
     </ng-template>
@@ -182,8 +189,8 @@
         <p class="text-red-500 font-semibold">{{ 'entityGroups.list.deleteDialog.cannotUndo' | translate }}</p>
     </div>
     <ng-template pTemplate="footer">
-        <p-button [label]="'entityGroups.list.deleteDialog.cancel' | translate" icon="pi pi-times" class="p-button-text" (onClick)="onCancelDeleteDialog()"
-            [disabled]="!!(isLoading$ | async)">
+        <p-button [label]="'entityGroups.list.deleteDialog.cancel' | translate" icon="pi pi-times" class="p-button-text"
+            (onClick)="onCancelDeleteDialog()" [disabled]="!!(isLoading$ | async)">
         </p-button>
         <p-button class="p-button-danger" (onClick)="deleteGroup()" [disabled]="!!(isLoading$ | async)">
             <ng-container *ngIf="isLoading$ | async">
