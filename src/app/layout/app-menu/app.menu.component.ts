@@ -35,7 +35,7 @@ export class AppMenuComponent implements OnInit {
     buildMenu(): void {
         const functions = this.moduleNavigationService.getFunctionsWithModules();
 
-        this.model = functions.map(func => ({
+        const functionItems = functions.map(func => ({
             label: this.getDisplayName(func),
             hasPermession: true,
             icon: func.icon || this.getDefaultFunctionIcon(func.code),
@@ -58,6 +58,17 @@ export class AppMenuComponent implements OnInit {
                 };
             })
         }));
+
+        // Add a Home entry at the top that always navigates to the main dashboard/home
+        this.model = [
+            {
+                label: this.translate.getInstant('layout.menu.home') || 'Home',
+                hasPermession: true,
+                icon: 'fa fa-home',
+                routerLink: ['/']
+            },
+            ...functionItems
+        ];
     }
 
 

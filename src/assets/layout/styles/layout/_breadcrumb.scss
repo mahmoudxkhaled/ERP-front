@@ -17,14 +17,14 @@
                 list-style: none;
                 gap: 0.5rem;
                 flex-wrap: wrap;
-                color: #003366 !important;
+                color: var(--text-color);
 
                 li {
                     display: flex;
                     align-items: center;
 
                     a {
-                        color: #003366;
+                        color: var(--text-color);
                         text-decoration: none;
                         transition: color 0.2s;
 
@@ -78,14 +78,14 @@
                 list-style: none;
                 gap: 0.5rem;
                 flex-wrap: wrap;
-                color:#003366 !important;
+                color: var(--text-color);
 
                 li {
                     display: flex;
                     align-items: center;
 
                     a {
-                        color: #003366;
+                        color: var(--text-color);
                         text-decoration: none;
                         transition: color 0.2s;
 

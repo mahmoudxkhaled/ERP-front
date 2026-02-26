@@ -955,6 +955,9 @@
             "logout": "تسجيل الخروج",
             "settings": "الإعدادات"
         },
+        "menu": {
+            "home": "الرئيسية"
+        },
         "config": {
             "layoutThemeScale": "مقياس التخطيط/السمة",
             "scenes": "المشاهد",

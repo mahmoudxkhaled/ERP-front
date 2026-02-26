@@ -954,6 +954,9 @@
             "logout": "Logout",
             "settings": "Settings"
         },
+        "menu": {
+            "home": "Home"
+        },
         "config": {
             "layoutThemeScale": "Layout/Theme Scale",
             "scenes": "Scenes",
