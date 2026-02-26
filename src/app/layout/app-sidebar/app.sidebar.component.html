@@ -57,8 +57,28 @@
         <button class="layout-sidebar-anchor p-link" type="button" (click)="anchor()"></button>
     </div>
     <app-menu-profile #menuProfileStart *ngIf="menuProfilePosition === 'start'"></app-menu-profile>
-    <div #menuContainer class="layout-menu-container">
-        <app-menu></app-menu>
+    <div class="layout-menu-container-wrapper">
+        <button
+            *ngIf="showScrollUp"
+            type="button"
+            class="sidebar-scroll-btn"
+            (click)="scrollMenu('up')"
+            aria-label="Scroll up">
+            <i class="pi pi-chevron-up"></i>
+        </button>
+
+        <div #menuContainer class="layout-menu-container" (scroll)="onMenuScroll()">
+            <app-menu></app-menu>
+        </div>
+
+        <button
+            *ngIf="showScrollDown"
+            type="button"
+            class="sidebar-scroll-btn"
+            (click)="scrollMenu('down')"
+            aria-label="Scroll down">
+            <i class="pi pi-chevron-down"></i>
+        </button>
     </div>
     <app-menu-profile #menuProfileEnd *ngIf="menuProfilePosition === 'end'"></app-menu-profile>
 </div>

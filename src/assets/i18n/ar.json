@@ -708,7 +708,7 @@
         },
         "labels": {
             "emailAddress": "عنوان البريد الإلكتروني",
-            "account": "الحساب",
+            "account": "حسابات المستخدمين",
             "company": "الشركة"
         },
         "placeholders": {

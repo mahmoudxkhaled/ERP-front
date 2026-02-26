@@ -3,7 +3,8 @@
 
     <div class="profile-top-bar flex justify-content-between align-items-end mb-5">
         <div class="identity-context">
-            <span class="text-primary font-bold text-xs uppercase tracking-widest mb-2 block">{{ 'dashboard.profile' | translate }}</span>
+            <span class="text-primary font-bold text-xs uppercase tracking-widest mb-2 block">{{ 'dashboard.profile' |
+                translate }}</span>
             <h1 class="text-900 text-4xl font-extrabold m-0 tracking-tight">{{ getUserDisplayName() }}</h1>
         </div>
         <div class="actions">
@@ -28,16 +29,20 @@
                     <div class="flex align-items-center gap-3 mb-4">
                         <p-tag [value]="getStatusLabel()" [severity]="getStatusSeverity()"
                             styleClass="text-xs font-bold uppercase px-3"></p-tag>
-                        <span class="text-500 font-mono text-sm">UID: {{ userDetails?.User_ID }}</span>
+                        <span class="text-500 font-mono text-sm">
+                            {{ 'profile.labels.userId' | translate }}: {{ userDetails?.User_ID }}
+                        </span>
                     </div>
 
                     <div class="grid">
                         <div class="col-12 md:col-6">
-                            <span class="text-500 text-xs font-bold uppercase block mb-1">{{ 'profile.labels.emailAddress' | translate }}</span>
+                            <span class="text-500 text-xs font-bold uppercase block mb-1">{{
+                                'profile.labels.emailAddress' | translate }}</span>
                             <span class="text-900 font-bold text-lg">{{ accountDetails?.Email || '—' }}</span>
                         </div>
                         <div class="col-12 md:col-6">
-                            <span class="text-500 text-xs font-bold uppercase block mb-1">{{ 'profile.labels.company' | translate }}</span>
+                            <span class="text-500 text-xs font-bold uppercase block mb-1">{{ 'profile.labels.company' |
+                                translate }}</span>
                             <span class="text-900 font-bold text-lg">{{ isRegional ? (entityDetails?.Name_Regional ||
                                 entityDetails?.Name || '') : (entityDetails?.Name || '—') }}</span>
                         </div>
@@ -54,19 +59,22 @@
                 </h3>
                 <div class="grid">
                     <div class="col-12 md:col-6 mb-3">
-                        <label class="font-bold text-sm text-600 block mb-2">{{ 'profile.overview.fullName' | translate }}</label>
+                        <label class="font-bold text-sm text-600 block mb-2">{{ 'profile.overview.fullName' | translate
+                            }}</label>
                         <div class="p-3   border-round font-semibold text-900">
                             {{ getFirstName() }} {{ getMiddleName() }} {{ getLastName() }}
                         </div>
                     </div>
                     <div class="col-12 md:col-6 mb-3">
-                        <label class="font-bold text-sm text-600 block mb-2">{{ 'profile.fields.gender' | translate }}</label>
+                        <label class="font-bold text-sm text-600 block mb-2">{{ 'profile.fields.gender' | translate
+                            }}</label>
                         <div class="p-3   border-round font-semibold text-900">
                             {{ getGenderLabel() }}
                         </div>
                     </div>
                     <div class="col-12 mt-2" *ngIf="accountDetails?.Description">
-                        <label class="font-bold text-sm text-600 block mb-2">{{ 'profile.labels.account' | translate }}</label>
+                        <label class="font-bold text-sm text-600 block mb-2">{{ 'profile.labels.account' | translate
+                            }}</label>
                         <div class="p-4   border-round line-height-3 text-700 italic border-left-3 border-primary">
                             "{{ accountDetails?.Description }}"
                         </div>
@@ -82,7 +90,8 @@
                     <div class="flex align-items-start gap-3" *ngIf="userContactInfo && userContactInfo.address">
                         <i class="pi pi-map-marker text-primary mt-1"></i>
                         <div>
-                            <span class="text-xs text-500 font-bold uppercase block">{{ 'profile.overview.address' | translate }}</span>
+                            <span class="text-xs text-500 font-bold uppercase block">{{ 'profile.overview.address' |
+                                translate }}</span>
                             <span class="text-900 font-medium">{{ userContactInfo.address }}</span>
                         </div>
                     </div>
@@ -90,7 +99,8 @@
                         *ngIf="userContactInfo && userContactInfo.phoneNumbers && userContactInfo.phoneNumbers.length > 0">
                         <i class="pi pi-phone text-primary mt-1"></i>
                         <div class="flex-1">
-                            <span class="text-xs text-500 font-bold uppercase block mb-2">{{ 'profile.fields.phone' | translate }}</span>
+                            <span class="text-xs text-500 font-bold uppercase block mb-2">{{ 'profile.fields.phone' |
+                                translate }}</span>
                             <ul class="list-none p-0 m-0 flex flex-column gap-2">
                                 <li *ngFor="let phone of userContactInfo.phoneNumbers" class="text-900 font-medium">
                                     {{ phone }}

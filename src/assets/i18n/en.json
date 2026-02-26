@@ -708,7 +708,7 @@
         },
         "labels": {
             "emailAddress": "Email Address",
-            "account": "Account",
+            "account": "User Accounts",
             "company": "Company"
         },
         "placeholders": {
