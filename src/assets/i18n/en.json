@@ -939,8 +939,8 @@
             "login": "Login",
             "emailVerified": "Email Verified",
             "verifyEmail": "Verify Email",
-            "resetPassword": "Reset Password",
-            "forgetPassword": "Forgot Password",
+            "resetPassword": "Reset your password",
+            "forgetPassword": "Forgot your password?",
             "verify2fa": "Verify 2FA",
             "accountStatus": "Account Status"
         },
@@ -1213,7 +1213,7 @@
                 "confirmPassword": "Confirm Password"
             },
             "actions": {
-                "submit": "Reset Now!"
+                "submit": "Reset Now"
             },
             "validations": {
                 "password": "Password is required.",

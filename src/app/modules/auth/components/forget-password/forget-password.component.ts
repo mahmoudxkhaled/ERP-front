@@ -62,7 +62,7 @@ export class ForgetPasswordComponent implements OnInit, OnDestroy {
           this.successMessage = '';
           return;
         }
-        this.successMessage = 'Please check your email for the reset link.';
+        this.successMessage = 'If you have an ERP account, you would receive a reset link via an email shortly';
         this.validationMessage = '';
 
       },
