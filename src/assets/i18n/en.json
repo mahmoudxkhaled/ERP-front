@@ -709,7 +709,8 @@
         "labels": {
             "emailAddress": "Email Address",
             "account": "User Accounts",
-            "company": "Company"
+            "company": "Company",
+            "userId": "User ID"
         },
         "placeholders": {
             "prefix": "Enter prefix (e.g., Mr., Mrs., Dr.)",
