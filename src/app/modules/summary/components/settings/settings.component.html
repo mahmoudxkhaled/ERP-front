@@ -229,11 +229,11 @@
                 <p-progressSpinner></p-progressSpinner>
             </div>
 
-            <div *ngIf="!loadingEntitySettings">
+            <div *ngIf="!loadingEntitySettings" class="under-dev-full">
                 <!-- Actual Entity Settings from API -->
                 <p-panel [header]="translate.getInstant('settings.entitySettings.title')" class="mb-4"
                     *ngIf="hasEntitySettings()">
-                    <div class="grid">
+                    <div class="grid ">
                         <!-- Dynamic fields based on API response -->
                         <div class="col-12" *ngFor="let key of getEntitySettingsKeys()">
                             <label class="block text-sm font-medium mb-2">
@@ -367,7 +367,7 @@
 
     <!-- System Settings Tab -->
     <p-tabPanel [header]="translate.getInstant('settings.tabs.systemSettings')" *appHasRole="[1, 2]">
-        <div class="p-4">
+        <div class="p-4 under-dev-full">
             <div *ngIf="loadingSystemSettings" class="flex justify-content-center align-items-center"
                 style="min-height: 300px;">
                 <p-progressSpinner></p-progressSpinner>
@@ -519,9 +519,9 @@
     </p-tabPanel>
 
     <!-- Dashboard Settings Tab -->
-    <p-tabPanel [header]="translate.getInstant('settings.tabs.dashboard')">
+    <!-- <p-tabPanel [header]="translate.getInstant('settings.tabs.dashboard')">
         <app-coming-soon></app-coming-soon>
-    </p-tabPanel>
+    </p-tabPanel> -->
 </p-tabView>
 
 <!-- Change Password Confirmation Dialog -->

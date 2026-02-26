@@ -238,7 +238,7 @@
                                         {{ 'profile.edit.linkedinPage' | translate }}
                                     </label>
                                     <input type="url" pInputText formControlName="linkedinPage"
-                                        [placeholder]="'profile.edit.linkedinPlaceholder' | translate" class="w-full"
+                                        [placeholder]="'profile.edit.linkedinPlaceholder' | translate" class="w-full social-input"
                                         [ngClass]="{'ng-invalid ng-dirty': contactInfoForm.get('linkedinPage')?.invalid && contactInfoForm.get('linkedinPage')?.touched}">
                                     <small class="p-error block mt-1"
                                         *ngIf="contactInfoForm.get('linkedinPage')?.invalid && contactInfoForm.get('linkedinPage')?.touched">
@@ -254,7 +254,7 @@
                                         {{ 'profile.edit.facebookPage' | translate }}
                                     </label>
                                     <input type="url" pInputText formControlName="facebookPage"
-                                        [placeholder]="'profile.edit.facebookPlaceholder' | translate" class="w-full"
+                                        [placeholder]="'profile.edit.facebookPlaceholder' | translate" class="w-full social-input"
                                         [ngClass]="{'ng-invalid ng-dirty': contactInfoForm.get('facebookPage')?.invalid && contactInfoForm.get('facebookPage')?.touched}">
                                     <small class="p-error block mt-1"
                                         *ngIf="contactInfoForm.get('facebookPage')?.invalid && contactInfoForm.get('facebookPage')?.touched">
@@ -270,7 +270,7 @@
                                         {{ 'profile.edit.instagramPage' | translate }}
                                     </label>
                                     <input type="url" pInputText formControlName="instagramPage"
-                                        [placeholder]="'profile.edit.instagramPlaceholder' | translate" class="w-full"
+                                        [placeholder]="'profile.edit.instagramPlaceholder' | translate" class="w-full social-input"
                                         [ngClass]="{'ng-invalid ng-dirty': contactInfoForm.get('instagramPage')?.invalid && contactInfoForm.get('instagramPage')?.touched}">
                                     <small class="p-error block mt-1"
                                         *ngIf="contactInfoForm.get('instagramPage')?.invalid && contactInfoForm.get('instagramPage')?.touched">
@@ -286,7 +286,7 @@
                                         {{ 'profile.edit.twitterPage' | translate }}
                                     </label>
                                     <input type="url" pInputText formControlName="twitterPage"
-                                        [placeholder]="'profile.edit.twitterPlaceholder' | translate" class="w-full"
+                                        [placeholder]="'profile.edit.twitterPlaceholder' | translate" class="w-full social-input"
                                         [ngClass]="{'ng-invalid ng-dirty': contactInfoForm.get('twitterPage')?.invalid && contactInfoForm.get('twitterPage')?.touched}">
                                     <small class="p-error block mt-1"
                                         *ngIf="contactInfoForm.get('twitterPage')?.invalid && contactInfoForm.get('twitterPage')?.touched">
