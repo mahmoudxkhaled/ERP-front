@@ -58,7 +58,7 @@ export class FileSystemsService {
     name: string,
     type: number,
     ownerId: number,
-    isEntityId: number,
+    isEntityId: boolean,
     driveId: number
   ): Observable<any> {
     this.isLoadingSubject.next(true);
@@ -66,9 +66,10 @@ export class FileSystemsService {
       name,
       type.toString(),
       ownerId.toString(),
-      isEntityId.toString(),
+      isEntityId ? 'true' : 'false',
       driveId.toString(),
     ];
+    console.log('params create file system', params);
     return this.apiService
       .callAPI(1122, this.getAccessToken(), params)
       .pipe(finalize(() => this.isLoadingSubject.next(false)));

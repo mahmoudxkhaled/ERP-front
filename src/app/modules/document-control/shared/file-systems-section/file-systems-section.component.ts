@@ -469,10 +469,11 @@ export class FileSystemsSectionComponent implements OnInit {
       this.newFileSystemName.trim(),
       this.newFileSystemTypeId,
       ownerId,
-      isEntityId ? 1 : 0,
+      isEntityId,
       driveId
     ).subscribe({
       next: (response: any) => {
+        console.log('response create file system', response);
         this.creatingFileSystem = false;
         if (!response?.success) {
           this.handleError('create', response);
