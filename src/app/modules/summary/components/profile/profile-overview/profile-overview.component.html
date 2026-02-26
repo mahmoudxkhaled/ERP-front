@@ -8,8 +8,12 @@
             <h1 class="text-900 text-4xl font-extrabold m-0 tracking-tight">{{ getUserDisplayName() }}</h1>
         </div>
         <div class="actions">
-            <p-button [label]="'layout.app-breadcrumb.editProfile' | translate" icon="pi pi-pencil"
-                styleClass="p-button-secondary p-button-text font-bold" (onClick)="navigateToEdit()"></p-button>
+            <p-button
+                [label]="'layout.app-breadcrumb.editProfile' | translate"
+                icon="pi pi-pencil"
+                styleClass="p-button-primary font-bold edit-profile-btn"
+                (onClick)="navigateToEdit()">
+            </p-button>
         </div>
     </div>
 
