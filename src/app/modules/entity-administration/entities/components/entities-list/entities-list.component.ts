@@ -83,6 +83,7 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
 
         const sub = this.entitiesService.listEntities(lastEntityId, this.rows, this.textFilter).subscribe({
             next: (response: any) => {
+                console.log('response', response);
                 if (!response?.success) {
                     this.handleBusinessError('list', response);
                     return;

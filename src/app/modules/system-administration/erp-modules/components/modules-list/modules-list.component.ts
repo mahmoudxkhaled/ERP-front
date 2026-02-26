@@ -98,6 +98,7 @@ export class ModulesListComponent implements OnInit, OnDestroy {
 
         const sub = this.settingsConfigurationsService.getModulesList().subscribe({
             next: (response: any) => {
+                console.log('response', response);
                 if (!response?.success) {
                     this.handleBusinessError('list', response);
                     return;
