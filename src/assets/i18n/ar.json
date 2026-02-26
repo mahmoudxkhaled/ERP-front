@@ -606,7 +606,7 @@
         "title": "الإعدادات",
         "description": "إدارة إعدادات التطبيق",
         "tabs": {
-            "accountSettings": "إعدادات الحساب",
+            "accountSettings": "إعدادات شكل وسمة الحساب",
             "layoutTheme": "إعدادات التخطيط والسمة",
             "dashboard": "إعدادات لوحة التحكم",
             "incoming": "الإعدادات القادمة",
@@ -757,11 +757,11 @@
         },
         "twoFactor": {
             "title": "المصادقة الثنائية (2FA)",
-            "status": "حالة 2FA",
+            "status": " حالة المصادقة الثنائية (2FA)",
             "enabled": "تم تفعيل المصادقة الثنائية.",
             "disabled": "تم تعطيل المصادقة الثنائية.",
-            "enable": "تفعيل 2FA",
-            "disable": "تعطيل 2FA",
+            "enable": "تفعيل المصادقة الثنائية (2FA)",
+            "disable": "تعطيل المصادقة الثنائية (2FA)",
             "dialog": {
                 "enableTitle": "تفعيل المصادقة الثنائية؟",
                 "disableTitle": "تعطيل المصادقة الثنائية؟",
@@ -770,8 +770,8 @@
                 "important": "مهم:",
                 "importantMessage": "سيتم تطبيق هذا التغيير عند تسجيل الدخول التالي.",
                 "cancel": "إلغاء",
-                "confirmEnable": "تفعيل 2FA",
-                "confirmDisable": "تعطيل 2FA"
+                "confirmEnable": "تفعيل المصادقة الثنائية (2FA)",
+                "confirmDisable": "تعطيل المصادقة الثنائية (2FA)"
             }
         },
         "actions": {
@@ -973,7 +973,7 @@
             "reveal": "كشف",
             "drawer": "درج",
             "horizontal": "أفقي",
-            "menuProfilePosition": "موضع ملف تعريف القائمة",
+            "menuProfilePosition": "موضع قائمة ملف التعريف",
             "start": "البداية",
             "end": "النهاية",
             "inputStyle": "نمط الإدخال",
