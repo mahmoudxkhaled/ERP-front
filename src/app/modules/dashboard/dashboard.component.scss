@@ -16,8 +16,8 @@
     }
 
     .module-glass-card {
-        width: 12rem;
-        height: 12rem;
+        width: 9.6rem;   // 80% of 12rem
+        height: 9.6rem;  // 80% of 12rem
         background: var(--surface-card);
         border: 1px solid var(--surface-border);
         border-radius: 16px;
@@ -25,7 +25,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 1.5rem;
+        padding: 1.2rem;
         position: relative;
         overflow: hidden;
         cursor: pointer;
@@ -39,8 +39,8 @@
             justify-content: center;
             z-index: 2;
 
-            .emoji-icon { font-size: 3rem; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
-            .img-icon { width: 3.5rem; height: 3.5rem; object-fit: contain; }
+            .emoji-icon { font-size: 2.4rem; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
+            .img-icon { width: 2.8rem; height: 2.8rem; object-fit: contain; }
         }
 
         .name-section {
@@ -80,6 +80,8 @@
             transform: translateY(-8px);
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
             border-color: #004a80;
+            // Stronger tint so it stands out in dark theme as well
+            background: rgba(0, 148, 255, 0.1);
 
             .active-bar {
                 width: 60%;

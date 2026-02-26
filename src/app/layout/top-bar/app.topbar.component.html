@@ -3,8 +3,10 @@
 
     <div class="mx-4 flex align-items-center company-info-desktop">
 
-        <img *ngIf="entityLogo" width="45" class="mx-2" [src]="entityLogo" [attr.alt]="'layout.top-bar.companyLogo' | translate" />
-        <p style="font-size: 1.2rem; font-weight: 600;"> {{ entityName }}{{ 'layout.top-bar.erpSystemSuffix' | translate }}</p>
+        <img *ngIf="entityLogo" width="45" class="mx-2" [src]="entityLogo"
+            [attr.alt]="'layout.top-bar.companyLogo' | translate" />
+        <p style="font-size: 1.2rem; font-weight: 600;"> {{ entityName }}{{ 'layout.top-bar.erpSystemSuffix' | translate
+            }}</p>
     </div>
     <div class="company-info-mobile layout-topbar-start flex justify-content-between align-items-center"
         style="margin-top: 10px">
@@ -19,7 +21,8 @@
                         ERP Logo
                     </text>
                 </svg> -->
-                <img width="70" src="../../assets/media/White-Logo.png" [attr.alt]="'layout.top-bar.companyLogo' | translate" />
+                <img width="70" src="../../assets/media/PBS.png"
+                    [attr.alt]="'layout.top-bar.companyLogo' | translate" />
                 <!-- <img src="../../assets/media/logo1.png" alt="iAware Logo" /> -->
             </a>
         </div>
@@ -41,14 +44,12 @@
             </svg> -->
         <!-- <img src="../../assets/media/logo1.png" width="100" alt="Logo" /> -->
         <!-- </a> -->
-        <img width="70" src="../../assets/media/White-Logo.png" routerLink="/" style="cursor: pointer;"
+        <img width="70" src="../../assets/media/PBS.png" routerLink="/" style="cursor: pointer;"
             [attr.alt]="'layout.top-bar.companyLogo' | translate" />
     </div>
     <div class="layout-topbar-end">
         <div class="layout-topbar-actions-end">
             <ul class="layout-topbar-items" style="align-items: center">
-
-
 
                 <li>
                     <i [class]="
