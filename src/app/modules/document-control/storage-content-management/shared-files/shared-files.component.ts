@@ -21,11 +21,11 @@ export interface MySharedFileSystemRow {
 })
 export class SharedFilesComponent {
     sharedFiles: SharedFileItem[] = [
-        { name: 'Project-Brief.pdf', sharedBy: 'John Smith', permission: 'Read' },
-        { name: 'Design-Specs.docx', sharedBy: 'Sarah Jones', permission: 'Write' },
-        { name: 'Budget-Overview.xlsx', sharedBy: 'Finance Team', permission: 'Download' },
-        { name: 'Meeting-Minutes-Jan.pdf', sharedBy: 'Mike Wilson', permission: 'Read' },
-        { name: 'Contract-Draft.docx', sharedBy: 'Legal Team', permission: 'Write' }
+        { name: 'Project-Brief.pdf', sharedBy: 'John ', permission: 'Read' },
+        { name: 'Design-Specs.docx', sharedBy: 'Sarah ', permission: 'Write' },
+        { name: 'Budget-Overview.xlsx', sharedBy: 'Finance ', permission: 'Download' },
+        { name: 'Meeting-Minutes-Jan.pdf', sharedBy: 'Hassan', permission: 'Read' },
+        { name: 'Contract-Draft.docx', sharedBy: 'Ahmed', permission: 'Write' }
     ];
 
     mySharedFileSystems: MySharedFileSystemRow[] = [
@@ -38,7 +38,7 @@ export class SharedFilesComponent {
     constructor(
         private translate: TranslationService,
         private messageService: MessageService
-    ) {}
+    ) { }
 
     onView(row: SharedFileItem): void {
         this.messageService.add({

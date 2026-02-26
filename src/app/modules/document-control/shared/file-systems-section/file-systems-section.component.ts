@@ -48,7 +48,6 @@ export class FileSystemsSectionComponent implements OnInit {
   savingFileSystem = false;
   deletingFileSystem = false;
   detailsLoading = false;
-  loadingRecycleBin = false;
   restoringRecycleBin = false;
   clearingRecycleBin = false;
 
@@ -56,7 +55,6 @@ export class FileSystemsSectionComponent implements OnInit {
   editDialogVisible = false;
   detailsDialogVisible = false;
   deleteConfirmVisible = false;
-  recycleBinDialogVisible = false;
 
   newFileSystemName = '';
   /** Scope for new file system: Personal (Account) or Entity (Company). Owner_ID is derived from this. */
@@ -70,8 +68,6 @@ export class FileSystemsSectionComponent implements OnInit {
   detailsData: { name: string; typeName: string; driveName: string; active: boolean; createdAt: string } | null = null;
   selectedForDelete: FileSystemListItem | null = null;
   deleteAllContents = false;
-  recycleBinFileSystemId: number | null = null;
-  recycleBinContents: { folders?: any[]; files?: any[] } | null = null;
 
   /** Row menu (3-dots): selected row and menu model. */
   fileSystemMenuItems: MenuItem[] = [];
@@ -297,11 +293,6 @@ export class FileSystemsSectionComponent implements OnInit {
       },
       { separator: true },
       {
-        label: this.translate.getInstant('fileSystem.companyStorage.openRecycleBin'),
-        icon: 'pi pi-folder-open',
-        command: () => { if (row) this.showRecycleBinDialogForFileSystem(row); }
-      },
-      {
         label: this.translate.getInstant('fileSystem.companyStorage.restoreRecycleBinContents'),
         icon: 'pi pi-replay',
         command: () => this.showRestoreRecycleBinConfirm()
@@ -319,14 +310,6 @@ export class FileSystemsSectionComponent implements OnInit {
     this.selectedFileSystemForMenu = row;
     this.buildFileSystemMenuItems();
     menu.toggle(event);
-  }
-
-  /** Open recycle bin dialog with this file system pre-selected and load its contents. */
-  showRecycleBinDialogForFileSystem(row: FileSystemListItem): void {
-    this.recycleBinFileSystemId = row.file_System_ID;
-    this.recycleBinContents = null;
-    this.recycleBinDialogVisible = true;
-    this.onRecycleBinFileSystemSelect();
   }
 
   /** Show confirmation before restoring a deleted file system. */
@@ -363,7 +346,6 @@ export class FileSystemsSectionComponent implements OnInit {
     this.restoringDeletedFileSystem = true;
     this.fileSystemsService.restoreDeletedFileSystem(row.file_System_ID).subscribe({
       next: (response: any) => {
-        console.log('response restore deleted file system', response);
         this.restoringDeletedFileSystem = false;
         if (!response?.success) {
           this.handleError('restoreDeleted', response);
@@ -399,9 +381,6 @@ export class FileSystemsSectionComponent implements OnInit {
           detail: this.translate.getInstant('fileSystem.companyStorage.restoreSuccess')
         });
         this.hideRestoreRecycleBinConfirm();
-        if (this.recycleBinDialogVisible && this.recycleBinFileSystemId === row.file_System_ID) {
-          this.onRecycleBinFileSystemSelect();
-        }
         this.refreshList();
       },
       error: () => this.restoringRecycleBin = false
@@ -426,9 +405,6 @@ export class FileSystemsSectionComponent implements OnInit {
           detail: this.translate.getInstant('fileSystem.companyStorage.recycleBinCleared')
         });
         this.hideClearRecycleBinConfirm();
-        if (this.recycleBinDialogVisible && this.recycleBinFileSystemId === row.file_System_ID) {
-          this.onRecycleBinFileSystemSelect();
-        }
         this.refreshList();
       },
       error: () => this.clearingRecycleBin = false
@@ -616,69 +592,4 @@ export class FileSystemsSectionComponent implements OnInit {
     });
   }
 
-  showRecycleBinDialog(): void {
-    this.recycleBinFileSystemId = null;
-    this.recycleBinContents = null;
-    this.recycleBinDialogVisible = true;
-  }
-
-  hideRecycleBinDialog(): void {
-    this.recycleBinDialogVisible = false;
-    this.recycleBinFileSystemId = null;
-    this.recycleBinContents = null;
-  }
-
-  onRecycleBinFileSystemSelect(): void {
-    if (!this.recycleBinFileSystemId) {
-      this.recycleBinContents = null;
-      return;
-    }
-    this.loadingRecycleBin = true;
-    this.fileSystemsService.getFileSystemRecycleBinContents(this.recycleBinFileSystemId).subscribe({
-      next: (response: any) => {
-        this.loadingRecycleBin = false;
-        if (!response?.success) {
-          this.handleError('recycleBin', response);
-          return;
-        }
-        const msg = response?.message;
-        this.recycleBinContents = Array.isArray(msg) ? { folders: [], files: msg } : (msg ?? { folders: [], files: [] });
-      },
-      error: () => this.loadingRecycleBin = false
-    });
-  }
-
-  onRecycleBinRestoreAll(): void {
-    if (!this.recycleBinFileSystemId) return;
-    this.restoringRecycleBin = true;
-    this.fileSystemsService.restoreFileSystemRecycleBinContents(this.recycleBinFileSystemId).subscribe({
-      next: (response: any) => {
-        this.restoringRecycleBin = false;
-        if (!response?.success) {
-          this.handleError('restoreRecycleBin', response);
-          return;
-        }
-        this.messageService.add({ severity: 'success', summary: this.translate.getInstant('fileSystem.companyStorage.restore'), detail: '' });
-        this.onRecycleBinFileSystemSelect();
-      },
-      error: () => this.restoringRecycleBin = false
-    });
-  }
-
-  onRecycleBinClear(): void {
-    if (!this.recycleBinFileSystemId) return;
-    this.clearingRecycleBin = true;
-    this.fileSystemsService.clearFileSystemRecycleBin(this.recycleBinFileSystemId).subscribe({
-      next: (response: any) => {
-        this.clearingRecycleBin = false;
-        if (!response?.success) {
-          this.handleError('clearRecycleBin', response);
-          return;
-        }
-        this.messageService.add({ severity: 'success', summary: this.translate.getInstant('fileSystem.companyStorage.clearRecycleBin'), detail: '' });
-        this.onRecycleBinFileSystemSelect();
-      },
-      error: () => this.clearingRecycleBin = false
-    });
-  }
 }

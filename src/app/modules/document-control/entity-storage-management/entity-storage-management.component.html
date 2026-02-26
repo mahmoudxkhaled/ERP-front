@@ -10,8 +10,8 @@
             <p class="page-description">{{ 'fileSystem.entityAdmin.description' | translate }}</p>
         </div>
     </div>
-    <!-- 
-    <div class="kpi-section">
+
+    <div class="kpi-section under-dev-full">
         <h2 class="block-title">{{ 'fileSystem.entityAdmin.overview' | translate }}</h2>
         <div class="kpi-cards">
             <div class="kpi-card kpi-systems">
@@ -45,9 +45,10 @@
         </div>
     </div>
 
- 
+    <app-file-systems-section (fileSystemsCountChange)="entityFileSystemsCount = $event"></app-file-systems-section>
 
-    <div class="block-section">
+
+    <div class="block-section under-dev-full">
         <h2 class="block-title">{{ 'fileSystem.entityAdmin.synchronization' | translate }}</h2>
         <div class="block-card">
             <p class="mb-3">{{ 'fileSystem.entityAdmin.syncDescription' | translate }}</p>
@@ -62,7 +63,7 @@
         </div>
     </div>
 
-    <div class="block-section">
+    <div class="block-section under-dev-full">
         <h2 class="block-title">{{ 'fileSystem.entityAdmin.entityStorageSettings' | translate }}</h2>
         <div class="block-card">
             <p class="mb-3">{{ 'fileSystem.entityAdmin.entityStorageSettingsDescription' | translate }}</p>
@@ -79,11 +80,10 @@
                 </div>
             </div>
         </div>
-    </div> -->
+    </div>
 
-    <app-file-systems-section (fileSystemsCountChange)="entityFileSystemsCount = $event"></app-file-systems-section>
 
-    <!-- <div class="block-section">
+    <!-- <div class="block-section under-dev-full">
         <h2 class="block-title">{{ 'fileSystem.entityAdmin.folderStructure' | translate }}</h2>
         <div class="block-card">
             <div class="tree-wrap">
@@ -93,7 +93,7 @@
         </div>
     </div> -->
 
-    <!-- <div class="block-section">
+    <div class="block-section under-dev-full">
         <h2 class="block-title">{{ 'fileSystem.entityAdmin.permissions' | translate }}</h2>
         <div class="block-card">
             <p class="mb-3 text-500">{{ 'fileSystem.entityAdmin.sharingExpiryDescription' | translate }}</p>
@@ -129,7 +129,7 @@
                 </ng-template>
             </p-table>
         </div>
-    </div> -->
+    </div>
 </div>
 
 <p-dialog [header]="'fileSystem.entityAdmin.addPermissionDialogTitle' | translate"

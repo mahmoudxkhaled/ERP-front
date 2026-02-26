@@ -7,8 +7,6 @@
         <div class="mb-3 flex flex-wrap gap-2 align-items-center">
             <p-button [label]="'fileSystem.entityAdmin.createFileSystem' | translate" icon="pi pi-plus"
                 (onClick)="showCreateDialog()"></p-button>
-            <p-button [label]="'fileSystem.companyStorage.recycleBin' | translate" icon="pi pi-replay"
-                styleClass="p-button-outlined" (onClick)="showRecycleBinDialog()"></p-button>
         </div>
 
         <p-table #fileSystemsTable [value]="fileSystemsTableValue" [paginator]="false" styleClass="   "
@@ -309,40 +307,5 @@
             (onClick)="hideClearRecycleBinConfirm()"></p-button>
         <p-button [label]="'fileSystem.companyStorage.clearRecycleBin' | translate" severity="danger" icon="pi pi-trash"
             (onClick)="onClearRecycleBinFromMenu()" [loading]="clearingRecycleBin"></p-button>
-    </ng-template>
-</p-dialog>
-
-<!-- Recycle bin (ESM) -->
-<p-dialog [header]="'fileSystem.companyStorage.recycleBinTitle' | translate" [(visible)]="recycleBinDialogVisible"
-    [modal]="true" [style]="{ width: '500px' }" (onHide)="hideRecycleBinDialog()" [draggable]="false"
-    [resizable]="false">
-    <p class="mb-3">{{ 'fileSystem.companyStorage.recycleBinDescription' | translate }}</p>
-    <div class="field mb-3">
-        <label>{{ 'fileSystem.entityAdmin.fileSystemName' | translate }}</label>
-        <p-dropdown appendTo="body" [options]="fileSystems" [(ngModel)]="recycleBinFileSystemId" optionLabel="name"
-            optionValue="file_System_ID" [style]="{ width: '100%' }"
-            [placeholder]="'fileSystem.admin.selectType' | translate" (onChange)="onRecycleBinFileSystemSelect()"
-            class="mt-2"></p-dropdown>
-    </div>
-    <p *ngIf="loadingRecycleBin">{{ 'fileSystem.companyStorage.loading' | translate }}</p>
-    <div *ngIf="!loadingRecycleBin && recycleBinContents && recycleBinFileSystemId">
-        <p class="mb-2"
-            *ngIf="(recycleBinContents.folders?.length || 0) + (recycleBinContents.files?.length || 0) === 0">{{
-            'fileSystem.companyStorage.recycleBinEmpty' | translate }}</p>
-        <ul *ngIf="(recycleBinContents.folders?.length || 0) + (recycleBinContents.files?.length || 0) > 0"
-            class="list-none p-0">
-            <li *ngFor="let f of recycleBinContents.folders">{{ f?.folder_Name ?? f?.Folder_Name ?? f?.name ?? '—' }}
-            </li>
-            <li *ngFor="let f of recycleBinContents.files">{{ f?.file_Name ?? f?.File_Name ?? f?.name ?? '—' }}</li>
-        </ul>
-    </div>
-    <ng-template pTemplate="footer">
-        <p-button [label]="'fileSystem.entityAdmin.restoreFileSystem' | translate" icon="pi pi-replay"
-            [disabled]="!recycleBinFileSystemId || loadingRecycleBin" (onClick)="onRecycleBinRestoreAll()"
-            [loading]="restoringRecycleBin" class="mr-2"></p-button>
-        <p-button [label]="'fileSystem.companyStorage.clearRecycleBin' | translate" severity="danger"
-            [disabled]="!recycleBinFileSystemId || loadingRecycleBin" (onClick)="onRecycleBinClear()"
-            [loading]="clearingRecycleBin"></p-button>
-        <p-button [label]="'fileSystem.companyStorage.close' | translate" (onClick)="hideRecycleBinDialog()"></p-button>
     </ng-template>
 </p-dialog>
