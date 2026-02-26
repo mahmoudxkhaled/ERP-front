@@ -7,6 +7,16 @@
         color: var(--topbar-item-text-color);
         background-color: var(--topbar-bg);
         // background-color: var(--surface-card);
+
+        .footer-company-link {
+            font-weight: bold;
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .footer-company-link:hover {
+            text-decoration: underline;
+        }
     }
 // }
 

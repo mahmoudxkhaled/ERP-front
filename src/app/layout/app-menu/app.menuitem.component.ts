@@ -3,6 +3,7 @@ import {
     Component,
     ElementRef,
     HostBinding,
+    HostListener,
     Input,
     OnDestroy,
     OnInit,
@@ -142,7 +143,8 @@ export class AppMenuitemComponent implements OnInit, OnDestroy {
         private cd: ChangeDetectorRef,
         public router: Router,
         private menuService: MenuService,
-        private appSidebar: AppSidebarComponent
+        private appSidebar: AppSidebarComponent,
+        private hostEl: ElementRef
     ) {
         this.menuSourceSubscription = this.menuService.menuSource$.subscribe((value) => {
             Promise.resolve(null).then(() => {
@@ -310,6 +312,40 @@ export class AppMenuitemComponent implements OnInit, OnDestroy {
     @HostBinding('class.active-menuitem')
     get activeClass() {
         return this.active && !this.root;
+    }
+
+    /**
+     * Close open submenu when clicking anywhere outside this menu item.
+     */
+    @HostListener('document:click', ['$event'])
+    onDocumentClick(event: MouseEvent) {
+        if (!this.active) {
+            return;
+        }
+
+        const target = event.target as HTMLElement;
+        if (this.hostEl && !this.hostEl.nativeElement.contains(target)) {
+            this.closeSubmenu();
+        }
+    }
+
+    /**
+     * Close open submenu when Escape key is pressed.
+     */
+    @HostListener('document:keydown.escape', ['$event'])
+    onEscape(event: KeyboardEvent) {
+        if (!this.active) {
+            return;
+        }
+        this.closeSubmenu();
+    }
+
+    private closeSubmenu() {
+        this.active = false;
+        // reset shared menu state so other items behave correctly
+        this.menuService.reset();
+        this.layoutService.state.menuHoverActive = false;
+        this.cd.markForCheck();
     }
 
     ngOnDestroy() {
