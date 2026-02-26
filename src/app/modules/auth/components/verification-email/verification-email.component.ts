@@ -16,7 +16,7 @@ export class VerificationEmailComponent implements OnInit, OnDestroy {
   verificationSuccess: boolean = false;
   errorMessage: string = '';
   redirectCountdown: number = 5;
-
+  yearNow = new Date().getFullYear();
   constructor(
     private route: ActivatedRoute,
     private router: Router,

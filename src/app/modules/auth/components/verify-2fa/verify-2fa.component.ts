@@ -19,7 +19,7 @@ export class Verify2FAComponent implements OnInit, OnDestroy, AfterViewInit {
   isLoading$: Observable<boolean>;
   unsubscribe: Subscription[] = [];
   @ViewChild('code1Input') code1Input!: ElementRef<HTMLInputElement>;
-
+  yearNow = new Date().getFullYear();
   constructor(
     private apiService: AuthService,
     private router: Router,

@@ -8,7 +8,7 @@
                 <img src="/assets/images/quantum_logo.png" alt="logo" />
             </div>
         </div> -->
-        <h2>Welcome to ERP</h2>
+        <h2 class="app-title">Promatech Business Suite</h2>
         <div *ngIf="hasError" class="backend-error-message">
             <i class="pi pi-exclamation-circle" style="margin-right: 10px;"></i>
             <span>
@@ -19,7 +19,7 @@
             <div class="form-group">
                 <input type="email" id="username" name="username" placeholder=" " formControlName="email" required
                     [ngClass]="{ 'is-invalid': email?.touched && email?.invalid }" />
-                <label for="username">Username</label>
+                <label for="username">Username (email)</label>
                 <div *ngIf="email?.touched && email?.errors" class="error">
                     <small *ngIf="email?.errors?.['required']">Email is required</small>
                     <small *ngIf="email?.errors?.['email']">Invalid email address</small>
@@ -38,7 +38,7 @@
                 </div>
             </div>
             <div class="flex align-items-center justify-content-center mt-4 gap-3">
-                <button class="login-btn" type="submit" [disabled]="loginCreditials.invalid || (isLoading$ | async)">
+                <button class="login-btn" type="submit" [disabled]="(isLoading$ | async)">
                     <ng-container *ngIf="isLoading$ | async">
                         <span class="indicator-progress" [style.display]="'block'">
                             {{ 'auth.login.pleaseWait' | translate }}
@@ -55,7 +55,7 @@
             <a routerLink="/auth/forget-password">Forgot Password?</a>
         </div>
         <div class="footer">
-            © {{ yearNow }} Quantum PMC LLC. All rights reserved.
+            © {{ yearNow }} Promatech LLC. All rights reserved.
         </div>
     </div>
 </div>

@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
 export class EmailVerifiedComponent implements OnInit, OnDestroy {
     private unsubscribe: Subscription[] = [];
     userEmail: string = '';
-
+    yearNow = new Date().getFullYear();
     constructor(
         private route: ActivatedRoute,
         private router: Router

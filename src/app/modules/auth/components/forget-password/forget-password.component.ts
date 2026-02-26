@@ -17,7 +17,7 @@ export class ForgetPasswordComponent implements OnInit, OnDestroy {
   successMessage: string = '';
   isLoading$: Observable<boolean>;
   unsubscribe: Subscription[] = [];
-
+  yearNow = new Date().getFullYear();
   get email() {
     return this.loginCreditials.get('email');
   }

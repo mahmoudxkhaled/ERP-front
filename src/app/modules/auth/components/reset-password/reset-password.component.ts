@@ -51,7 +51,7 @@ export class ResetPasswordComponent implements OnInit, OnDestroy {
     type: string = '';
     pageLabel: string = '';
     isLoading$: Observable<boolean>;
-
+    yearNow = new Date().getFullYear();
 
     constructor(
         private authService: AuthService,
