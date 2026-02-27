@@ -117,6 +117,8 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   selectedFoldersToRestore: Folder[] = [];
   /** Selected file rows (table selection). */
   selectedFilesToRestore: any[] = [];
+  /** File IDs that could not be restored (duplicate name in target folder). User must uncheck before restoring again. */
+  skippedFileIds = new Set<number>();
 
   // Row menu (3-dot)
   folderMenuItems: MenuItem[] = [];
@@ -1400,6 +1402,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     this.recycleBinDialogVisible = true;
     this.selectedFoldersToRestore = [];
     this.selectedFilesToRestore = [];
+    this.skippedFileIds.clear();
     this.loadRecycleBinContents();
   }
 
@@ -1407,6 +1410,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     this.recycleBinDialogVisible = false;
     this.selectedFoldersToRestore = [];
     this.selectedFilesToRestore = [];
+    this.skippedFileIds.clear();
     this.deletedFolders = [];
     this.deletedFiles = [];
     this.recycleBinFolderSearch = '';
@@ -1511,6 +1515,21 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     return this.selectedFoldersToRestore.length > 0 || this.selectedFilesToRestore.length > 0;
   }
 
+  /** Restore button is enabled only when there is selection and no skipped file is selected. */
+  get canRestoreRecycleBin(): boolean {
+    if (!this.hasRecycleBinSelection) return false;
+    const hasSkippedSelected = this.selectedFilesToRestore.some((f) =>
+      this.skippedFileIds.has(Number(f?.file_id ?? f?.file_ID ?? f?.File_ID ?? 0))
+    );
+    return !hasSkippedSelected;
+  }
+
+  /** Check if a file is in the skipped list (could not be restored due to duplicate name). */
+  isSkippedFile(file: any): boolean {
+    const id = Number(file?.file_id ?? file?.file_ID ?? file?.File_ID ?? 0);
+    return id > 0 && this.skippedFileIds.has(id);
+  }
+
   /** Deleted folders filtered by search (folder name). Used for recycle bin table with pagination. */
   get filteredDeletedFolders(): Folder[] {
     const q = (this.recycleBinFolderSearch || '').trim().toLowerCase();
@@ -1559,47 +1578,89 @@ export class FolderManagementComponent implements OnInit, OnChanges {
       calls.push(this.folderService.restoreDeletedFolders(folderIds, this.fileSystemId));
     }
     if (fileIds.length > 0) {
-      console.log('fileIds', fileIds);
       calls.push(this.fileService.restoreDeletedFiles(fileIds, folderIdsForFiles, this.fileSystemId));
     }
 
     forkJoin(calls).subscribe({
       next: (responses: any[]) => {
-        console.log('responses restore recycle bin', responses);
         const failed = responses.find((r) => !r?.success);
         if (failed) {
           this.handleBusinessError('restore', failed);
           return;
         }
-        let skippedTotal = 0;
+        const skippedFileIdsFromApi: number[] = [];
         responses.forEach((r: any) => {
-          const message = r?.message ?? {};
+          const message = r?.message;
+          // Files that could not be restored (duplicate name in target folder): API returns
+          // success: true and message: [ { file_id, folder_id }, ... ]
+          if (Array.isArray(message) && message.length > 0) {
+            const isSkippedFileList = message.some(
+              (item: any) => item?.file_id != null || item?.file_ID != null
+            );
+            if (isSkippedFileList) {
+              message.forEach((item: any) => {
+                const id = Number(item?.file_id ?? item?.file_ID ?? 0);
+                if (id > 0) skippedFileIdsFromApi.push(id);
+              });
+              return;
+            }
+          }
+          // Alternative shape: message.Skipped_IDs
           const rawSkipped =
-            message.Skipped_IDs ??
-            message.skipped_IDs ??
-            message.skippedIds ??
-            [];
-          console.log('message', message);
+            message && typeof message === 'object'
+              ? (message as any).Skipped_IDs ?? (message as any).skipped_IDs ?? (message as any).skippedIds ?? []
+              : [];
           if (Array.isArray(rawSkipped)) {
-            skippedTotal += rawSkipped.length;
+            rawSkipped.forEach((item: any) => {
+              const id = typeof item === 'number' ? item : Number(item?.file_id ?? item?.file_ID ?? item?.Item1 ?? 0);
+              if (id > 0) skippedFileIdsFromApi.push(id);
+            });
           }
         });
-        this.messageService.add({
-          severity: 'success',
-          summary: this.translate.getInstant('fileSystem.folderManagement.success'),
-          detail: this.translate.getInstant('fileSystem.folderManagement.restoreRecycleBinSuccess')
-        });
 
-        if (skippedTotal > 0) {
+        // Show success only if something was actually restored (not all selected files were skipped)
+        const allSelectedFilesWereSkipped =
+          this.selectedFilesToRestore.length > 0 &&
+          this.selectedFilesToRestore.length === skippedFileIdsFromApi.length &&
+          this.selectedFilesToRestore.every((f) => {
+            const id = Number(f?.file_id ?? f?.file_ID ?? f?.File_ID ?? 0);
+            return skippedFileIdsFromApi.includes(id);
+          });
+        const hadFoldersRestored = folderIds.length > 0;
+        const hasPartialSuccess = skippedFileIdsFromApi.length > 0 && (hadFoldersRestored || !allSelectedFilesWereSkipped);
+        if (hadFoldersRestored || !allSelectedFilesWereSkipped) {
+          const successKey = hasPartialSuccess
+            ? 'fileSystem.folderManagement.restoreRecycleBinPartialSuccess'
+            : 'fileSystem.folderManagement.restoreRecycleBinSuccess';
           this.messageService.add({
-            severity: 'warn',
+            severity: 'success',
             summary: this.translate.getInstant('fileSystem.folderManagement.success'),
-            detail: this.translate.getInstant('fileSystem.folderManagement.restoreRecycleBinSkippedDueToDuplicate')
+            detail: this.translate.getInstant(successKey)
           });
         }
-        this.hideRecycleBinDialog();
-        this.loadFolderStructure();
-        this.loadFolderContents(this.currentFolderId);
+
+        if (skippedFileIdsFromApi.length > 0) {
+          this.skippedFileIds = new Set(skippedFileIdsFromApi);
+          const skippedNames = skippedFileIdsFromApi
+            .map((id) => this.deletedFiles.find((f) => Number(f?.file_id ?? f?.file_ID ?? f?.File_ID ?? 0) === id))
+            .filter(Boolean)
+            .map((f) => f?.file_name ?? f?.file_Name ?? '?')
+            .join(', ');
+          const msgTemplate = this.translate.getInstant(
+            'fileSystem.folderManagement.uncheckSkippedFilesToRestore'
+          );
+          const detail = msgTemplate.replace('{{names}}', skippedNames);
+          this.messageService.add({
+            severity: 'warn',
+            summary: this.translate.getInstant('fileSystem.folderManagement.validation'),
+            detail
+          });
+          this.loadRecycleBinContents();
+        } else {
+          this.hideRecycleBinDialog();
+          this.loadFolderStructure();
+          this.loadFolderContents(this.currentFolderId);
+        }
       },
       error: (err) => {
         this.handleBusinessError('restore', err);

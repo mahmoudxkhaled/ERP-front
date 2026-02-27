@@ -591,6 +591,10 @@
 }
 
 // Recycle bin loading skeleton: match shape of tables (headers + rows)
+.recycle-bin-skipped-row {
+  background: rgba(255, 193, 7, 0.08);
+}
+
 .recycle-bin-skeleton {
   .recycle-bin-skeleton-tabs {
     display: flex;
