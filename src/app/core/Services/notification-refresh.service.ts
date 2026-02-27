@@ -1,24 +1,38 @@
 import { Injectable } from '@angular/core';
-import { ReplaySubject } from 'rxjs';
+import { ReplaySubject, Subject } from 'rxjs';
 
 /**
- * Used by app component to request a refresh of notifications (e.g. on page load).
- * Topbar subscribes and calls loadNotifications when requested.
- * ReplaySubject(1) so late subscribers (e.g. topbar after app init) still get the refresh.
+ * Scoped refresh for top bar and inbox independently.
+ * - Top bar bell: loads its own list on click, does not trigger inbox.
+ * - Top bar "mark all as read": notifies inbox to refresh.
+ * - Inbox mark read/delete: notifies top bar to refresh badge.
  */
 @Injectable({
     providedIn: 'root'
 })
 export class NotificationRefreshService {
-    private refreshRequested$ = new ReplaySubject<void>(1);
+    private topBarRefresh$ = new ReplaySubject<void>(1);
+    private inboxRefresh$ = new Subject<void>();
 
-    /** Call this to request that notifications be reloaded (e.g. on app init / page refresh). */
-    requestRefresh(): void {
-        this.refreshRequested$.next();
+    requestTopBarRefresh(): void {
+        this.topBarRefresh$.next();
     }
 
-    /** Subscribe to this to react when a refresh is requested. */
-    onRefreshRequested() {
-        return this.refreshRequested$.asObservable();
+    requestInboxRefresh(): void {
+        this.inboxRefresh$.next();
+    }
+
+    onTopBarRefreshRequested() {
+        return this.topBarRefresh$.asObservable();
+    }
+
+    onInboxRefreshRequested() {
+        return this.inboxRefresh$.asObservable();
+    }
+
+    /** Refreshes both. Used on app init and login. */
+    requestRefresh(): void {
+        this.topBarRefresh$.next();
+        this.inboxRefresh$.next();
     }
 }

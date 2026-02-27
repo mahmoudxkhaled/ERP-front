@@ -1,8 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
-import { Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { NotificationsService } from '../../../services/notifications.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { NotificationRefreshService } from 'src/app/core/services/notification-refresh.service';
@@ -19,7 +18,6 @@ type NotificationActionContext = 'list' | 'markRead' | 'markUnread' | 'delete' |
 })
 export class NotificationsInboxComponent implements OnInit, OnDestroy {
     notifications: AccountNotification[] = [];
-    isLoading$: Observable<boolean>;
     tableLoadingSpinner = false;
     private subscriptions: Subscription[] = [];
 
@@ -57,7 +55,6 @@ export class NotificationsInboxComponent implements OnInit, OnDestroy {
         private permissionService: PermissionService,
         private notificationRefreshService: NotificationRefreshService
     ) {
-        this.isLoading$ = this.notificationsService.isLoadingSubject.asObservable();
         const accountDetails = this.localStorageService.getAccountDetails() as IAccountDetails;
         this.currentAccountId = accountDetails?.Account_ID || 0;
         this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
@@ -69,9 +66,9 @@ export class NotificationsInboxComponent implements OnInit, OnDestroy {
         this.loadNotificationCategories();
         this.loadNotifications();
 
-        // Sync when topbar triggers refresh (e.g. Mark All as Read in dropdown)
+        // Sync when top bar does "Mark All as Read" in dropdown
         this.subscriptions.push(
-            this.notificationRefreshService.onRefreshRequested().subscribe(() => {
+            this.notificationRefreshService.onInboxRefreshRequested().subscribe(() => {
                 this.lastNotificationId = 0;
                 this.loadNotifications();
             })
@@ -230,7 +227,7 @@ export class NotificationsInboxComponent implements OnInit, OnDestroy {
                 }
 
                 notification.isRead = true;
-                this.notificationRefreshService.requestRefresh();
+                this.notificationRefreshService.requestTopBarRefresh();
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Success',
@@ -254,7 +251,7 @@ export class NotificationsInboxComponent implements OnInit, OnDestroy {
                 }
 
                 notification.isRead = false;
-                this.notificationRefreshService.requestRefresh();
+                this.notificationRefreshService.requestTopBarRefresh();
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Success',
@@ -278,7 +275,7 @@ export class NotificationsInboxComponent implements OnInit, OnDestroy {
                 }
 
                 this.notifications = this.notifications.filter(n => n.id !== notification.id);
-                this.notificationRefreshService.requestRefresh();
+                this.notificationRefreshService.requestTopBarRefresh();
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Success',

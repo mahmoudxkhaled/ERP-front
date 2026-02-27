@@ -133,9 +133,9 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
             })
         );
 
-        // Load notifications when refresh is requested (e.g. from app component on page load / refresh)
+        // Load when app init, login, or inbox changes (e.g. mark read in inbox → update top bar badge)
         this.subs.add(
-            this.notificationRefreshService.onRefreshRequested().subscribe(() => {
+            this.notificationRefreshService.onTopBarRefreshRequested().subscribe(() => {
                 if (this.currentAccountId > 0) {
                     this.loadNotifications();
                 }
@@ -404,7 +404,7 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
                         notification.isRead = true;
                         this.updateUnreadCount();
                         this.ref.detectChanges();
-                        this.notificationRefreshService.requestRefresh();
+                        this.notificationRefreshService.requestInboxRefresh();
                     }
                 }
             });
@@ -432,16 +432,16 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
 
         const unreadIds = unreadNotifications.map(n => n.id);
         const sub = this.notificationsService.markNotificationsRead(this.currentAccountId, unreadIds).subscribe({
-            next: (response: any) => {
-                if (response?.success) {
-                    this.notifications.forEach(n => {
-                        if (!n.isRead) {
-                            n.isRead = true;
-                        }
-                    });
+                next: (response: any) => {
+                    if (response?.success) {
+                        this.notifications.forEach(n => {
+                            if (!n.isRead) {
+                                n.isRead = true;
+                            }
+                        });
                     this.updateUnreadCount();
                     this.ref.detectChanges();
-                    this.notificationRefreshService.requestRefresh();
+                    this.notificationRefreshService.requestInboxRefresh();
                     this.messageService.add({
                         severity: 'success',
                         summary: 'Success',

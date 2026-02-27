@@ -55,7 +55,7 @@
             <ng-template pTemplate="body" let-notification>
                 <tr [class.unread]="!notification.isRead">
                     <td>
-                        <ng-container *ngIf="isLoading$ | async; else normalStatus">
+                        <ng-container *ngIf="tableLoadingSpinner; else normalStatus">
                             <p-skeleton height="1.5rem" width="5rem" borderRadius="4px"></p-skeleton>
                         </ng-container>
                         <ng-template #normalStatus>
@@ -65,7 +65,7 @@
                         </ng-template>
                     </td>
                     <td>
-                        <ng-container *ngIf="isLoading$ | async; else normalType">
+                        <ng-container *ngIf="tableLoadingSpinner; else normalType">
                             <p-skeleton height="1.5rem" width="5rem"></p-skeleton>
                         </ng-container>
                         <ng-template #normalType>
@@ -73,7 +73,7 @@
                         </ng-template>
                     </td>
                     <td>
-                        <ng-container *ngIf="isLoading$ | async; else normalTitle">
+                        <ng-container *ngIf="tableLoadingSpinner; else normalTitle">
                             <p-skeleton height="1rem" width="10rem"></p-skeleton>
                         </ng-container>
                         <ng-template #normalTitle>
@@ -81,7 +81,7 @@
                         </ng-template>
                     </td>
                     <td>
-                        <ng-container *ngIf="isLoading$ | async; else normalMessage">
+                        <ng-container *ngIf="tableLoadingSpinner; else normalMessage">
                             <p-skeleton height="3rem" width="100%" class="line-height-3"></p-skeleton>
                         </ng-container>
                         <ng-template #normalMessage>
@@ -89,7 +89,7 @@
                         </ng-template>
                     </td>
                     <td>
-                        <ng-container *ngIf="isLoading$ | async; else normalDate">
+                        <ng-container *ngIf="tableLoadingSpinner; else normalDate">
                             <p-skeleton height="1.5rem" width="6rem"></p-skeleton>
                         </ng-container>
                         <ng-template #normalDate>
@@ -97,7 +97,7 @@
                         </ng-template>
                     </td>
                     <td class="text-start">
-                        <ng-container *ngIf="isLoading$ | async; else normalActions">
+                        <ng-container *ngIf="tableLoadingSpinner; else normalActions">
                             <p-skeleton height="2rem" width="8rem"></p-skeleton>
                         </ng-container>
                         <ng-template #normalActions>
@@ -127,7 +127,7 @@
 
         <div class="flex justify-content-center mt-3" *ngIf="!tableLoadingSpinner && notifications.length < totalCount">
             <p-button [label]="'summaryNotifications.inbox.loadMore' | translate" icon="pi pi-arrow-down" (onClick)="loadMore()"
-                [loading]="!!(isLoading$ | async)">
+                [loading]="tableLoadingSpinner">
             </p-button>
         </div>
     </div>
