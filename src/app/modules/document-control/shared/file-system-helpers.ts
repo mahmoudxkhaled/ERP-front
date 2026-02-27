@@ -32,6 +32,7 @@ export function mapApiResponseToFileSystemRow(item: any): FileSystemListItem {
 
 /** ERP error codes for file system APIs (API doc §10 – Common + 2B). */
 const FILE_SYSTEM_ERROR_KEYS: Record<string, string> = {
+  // Common (All File Server Actions)
   ERP12000: 'fileSystem.admin.errorAccessDenied',
   ERP12001: 'fileSystem.admin.errorBlockedIpPermanent',
   ERP12002: 'fileSystem.admin.errorBlockedIpTemporary',
@@ -43,6 +44,7 @@ const FILE_SYSTEM_ERROR_KEYS: Record<string, string> = {
   ERP12010: 'fileSystem.admin.errorResponseManagement',
   ERP12011: 'fileSystem.admin.errorApiCallExecution',
   ERP12012: 'fileSystem.admin.errorFileServerDatabase',
+  // Common (2B Actions)
   ERP12240: 'fileSystem.admin.errorInvalidFileId',
   ERP12250: 'fileSystem.admin.errorInvalidFolderId',
   ERP12260: 'fileSystem.admin.errorInvalidFileSystemId',
@@ -51,6 +53,7 @@ const FILE_SYSTEM_ERROR_KEYS: Record<string, string> = {
   ERP12290: 'fileSystem.admin.errorInvalidDriveId',
   ERP12291: 'fileSystem.admin.errorDriveInactive',
   ERP12292: 'fileSystem.admin.errorAccessDeniedDriveOwner',
+  // Upload_Request
   ERP12220: 'fileSystem.admin.errorInvalidFileName',
   ERP12221: 'fileSystem.admin.errorInvalidFileType',
   ERP12222: 'fileSystem.admin.errorInvalidDateFormat',
@@ -59,6 +62,7 @@ const FILE_SYSTEM_ERROR_KEYS: Record<string, string> = {
   ERP12225: 'fileSystem.admin.errorNChunksMismatch',
   ERP12226: 'fileSystem.admin.errorInsufficientStorage',
   ERP12227: 'fileSystem.admin.errorFileExistsInFolder',
+  // Upload_File_Chunk
   ERP12230: 'fileSystem.admin.errorInvalidUploadToken',
   ERP12231: 'fileSystem.admin.errorInvalidChunkId',
   ERP12232: 'fileSystem.admin.errorInvalidOffset',
@@ -67,11 +71,13 @@ const FILE_SYSTEM_ERROR_KEYS: Record<string, string> = {
   ERP12235: 'fileSystem.admin.errorChunkHashEmpty',
   ERP12236: 'fileSystem.admin.errorChunkHashInvalid',
   ERP12237: 'fileSystem.admin.errorFileStorage',
+  // File Systems (Other APIs)
   ERP12248: 'fileSystem.admin.errorInvalidEntityFilter',
   ERP12251: 'fileSystem.admin.errorInvalidFileSystemName',
   ERP12252: 'fileSystem.admin.errorInvalidFileSystemName',
   ERP12255: 'fileSystem.admin.errorFileSystemInUse',
   ERP12267: 'fileSystem.folderManagement.errorInvalidRestoreSelection',
+  // FWA variants (some APIs may return FWA prefix)
   FWA12251: 'fileSystem.admin.errorInvalidFileSystemName',
   FWA12252: 'fileSystem.admin.errorInvalidFileSystemName',
   FWA12255: 'fileSystem.admin.errorFileSystemInUse'
