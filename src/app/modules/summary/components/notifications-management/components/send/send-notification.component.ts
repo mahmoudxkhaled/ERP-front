@@ -603,13 +603,15 @@ export class SendNotificationComponent implements OnInit, OnDestroy {
 
     private handleCreateError(response: any): void {
         const code = String(response?.message || '');
-        let detail = 'Failed to create notification.';
+        let detail: string | null = null;
         if (code === 'ERP11460') detail = 'Invalid Module ID';
         else if (code === 'ERP11461') detail = 'Invalid Notification Title';
         else if (code === 'ERP11462') detail = 'Invalid Notification Message';
         else if (code === 'ERP11463') detail = 'Invalid Reference Type';
         else if (code === 'ERP11464') detail = 'Invalid Reference ID';
-        this.messageService.add({ severity: 'error', summary: 'Error', detail });
+        if (detail) {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail });
+        }
     }
 
     private sendToTargets(notificationId: number): void {
@@ -665,12 +667,14 @@ export class SendNotificationComponent implements OnInit, OnDestroy {
 
         if (!response?.success) {
             const code = String(response?.message || '');
-            let detail = 'Failed to send notification.';
+            let detail: string | null = null;
             if (code === 'ERP11466') detail = 'Invalid Account IDs';
             else if (code === 'ERP11467') detail = 'Invalid Group IDs';
             else if (code === 'ERP11468') detail = 'Invalid Entity Role IDs';
             else if (code === 'ERP11469') detail = 'Invalid Entity IDs';
-            this.messageService.add({ severity: 'error', summary: 'Error', detail });
+            if (detail) {
+                this.messageService.add({ severity: 'error', summary: 'Error', detail });
+            }
             return;
         }
 

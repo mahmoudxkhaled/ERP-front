@@ -328,7 +328,7 @@ export class SendNotificationComponent implements OnInit, OnDestroy {
 
     handleSendError(response: any): void {
         const code = String(response?.message || '');
-        let detail = '';
+        let detail: string | null = null;
 
         switch (code) {
             case 'ERP11466':
@@ -344,14 +344,16 @@ export class SendNotificationComponent implements OnInit, OnDestroy {
                 detail = 'Invalid Entity IDs';
                 break;
             default:
-                detail = 'Failed to send notification. Please try again.';
+                detail = null;
         }
 
-        this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail
-        });
+        if (detail) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail
+            });
+        }
     }
 
     navigateBack(): void {

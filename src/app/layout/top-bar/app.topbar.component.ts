@@ -492,19 +492,7 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
     }
 
     private handleNotificationError(context: string, response: any): void {
-        const code = String(response?.message || '');
-        let detail = 'Failed to load notifications.';
-
-        if (code === 'ERP11470') {
-            detail = 'Invalid Account ID';
-        }
-
-        this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail
-        });
-
+        // Do not show toast for notification errors on home screen - fails silently
         this.loadingNotifications = false;
         this.ref.detectChanges();
     }

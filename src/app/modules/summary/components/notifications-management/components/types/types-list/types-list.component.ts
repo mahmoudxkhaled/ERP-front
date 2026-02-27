@@ -81,12 +81,7 @@ export class TypesListComponent implements OnInit, OnDestroy {
     }
 
     private handleError(response: any): void {
-        const code = String(response?.message || '');
-        this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Failed to load notification types.'
-        });
+        // Do not show generic "Failed to load" toast - fail silently
         this.resetLoadingFlags();
     }
 

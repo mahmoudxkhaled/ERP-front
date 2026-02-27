@@ -981,17 +981,19 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   }
 
   /**
-   * Handle file operation errors.
+   * Handle file operation errors. Only show toast when we have a specific error message - no generic fallback.
    */
   private handleFileError(operation: string, response: any): void {
     const detail = getFileSystemErrorDetail(response, (key) =>
       this.translate.getInstant(key)
     );
-    this.messageService.add({
-      severity: 'error',
-      summary: this.translate.getInstant('fileSystem.folderManagement.error'),
-      detail: detail || this.translate.getInstant('fileSystem.folderManagement.errorUnknown')
-    });
+    if (detail) {
+      this.messageService.add({
+        severity: 'error',
+        summary: this.translate.getInstant('fileSystem.folderManagement.error'),
+        detail
+      });
+    }
   }
 
   /**
@@ -1684,18 +1686,18 @@ export class FolderManagementComponent implements OnInit, OnChanges {
       | 'download',
     response: any
   ): string {
-    const summary = this.translate.getInstant('fileSystem.folderManagement.error');
-    const fallback = this.translate.getInstant('fileSystem.folderManagement.errorUnknown');
     const detail = getFileSystemErrorDetail(response, (key) =>
       this.translate.getInstant(key)
     );
-    const finalDetail = detail || fallback;
-
-    this.messageService.add({
-      severity: 'error',
-      summary,
-      detail: finalDetail
-    });
+    // Only show toast when we have a specific error message - no generic fallback
+    if (detail) {
+      const summary = this.translate.getInstant('fileSystem.folderManagement.error');
+      this.messageService.add({
+        severity: 'error',
+        summary,
+        detail
+      });
+    }
 
     if (context === 'getStructure') {
       this.treeLoading = false;
@@ -1704,7 +1706,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
       this.tableLoadingSpinner = false;
     }
 
-    return finalDetail;
+    return detail || '';
   }
 
   /**

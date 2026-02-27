@@ -236,17 +236,17 @@ export class GroupFormComponent implements OnInit, OnDestroy, OnChanges {
 
     private handleBusinessError(context: GroupFormContext, response: any): void | null {
         const code = String(response?.message || '');
-        let detail = '';
+        let detail: string | null = null;
 
         switch (context) {
             case 'create':
-                detail = this.getCreationErrorMessage(code) || '';
+                detail = this.getCreationErrorMessage(code);
                 break;
             case 'update':
-                detail = this.getUpdateErrorMessage(code) || '';
+                detail = this.getUpdateErrorMessage(code);
                 break;
             case 'details':
-                detail = this.getDetailsErrorMessage(code) || '';
+                detail = this.getDetailsErrorMessage(code);
                 break;
             default:
                 return null;

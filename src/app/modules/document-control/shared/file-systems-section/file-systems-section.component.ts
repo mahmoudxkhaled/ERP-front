@@ -412,10 +412,12 @@ export class FileSystemsSectionComponent implements OnInit {
   }
 
   handleError(operation: string, response: any): void {
-    const summary = this.translate.getInstant('fileSystem.admin.errorSummary');
-    const fallback = this.translate.getInstant('fileSystem.admin.errorUnknown');
     const detail = getFileSystemErrorDetail(response, (key) => this.translate.getInstant(key));
-    this.messageService.add({ severity: 'error', summary, detail: detail || fallback });
+    // Only show toast when we have a specific error message - no generic fallback
+    if (detail) {
+      const summary = this.translate.getInstant('fileSystem.admin.errorSummary');
+      this.messageService.add({ severity: 'error', summary, detail });
+    }
   }
 
   showCreateDialog(): void {

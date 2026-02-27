@@ -3,7 +3,7 @@ import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Observable, Subscription, of, EMPTY } from 'rxjs';
-import { concatMap, catchError } from 'rxjs/operators';
+import { concatMap, catchError, tap } from 'rxjs/operators';
 import { GroupsService } from '../../../services/groups.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { PermissionService } from 'src/app/core/services/permission.service';
@@ -243,14 +243,32 @@ export class GroupsListComponent implements OnInit, OnDestroy {
 
                 // Remove all members
                 return this.groupsService.removeGroupMembers(groupId, accountIds).pipe(
-                    catchError((error) => {
-                        // If removal fails, still try to delete group
-                        this.messageService.add({
-                            severity: 'warn',
-                            summary: 'Warning',
-                            detail: 'Failed to remove some members, but continuing with group deletion.',
-                            life: 3000
-                        });
+                    tap((response: any) => {
+                        if (!response?.success) {
+                            const code = String(response?.message ?? '');
+                            const detail = this.getRemoveMembersErrorMessage(code);
+                            if (detail) {
+                                this.messageService.add({
+                                    severity: 'error',
+                                    summary: 'Error',
+                                    detail,
+                                    life: 3000
+                                });
+                            }
+                        }
+                    }),
+                    catchError((err: any) => {
+                        const code = String(err?.error?.message ?? err?.error ?? err?.message ?? '');
+                        const detail = this.getRemoveMembersErrorMessage(code);
+                        if (detail) {
+                            this.messageService.add({
+                                severity: 'error',
+                                summary: 'Error',
+                                detail,
+                                life: 3000
+                            });
+                        }
+                        // Still try to delete group even if removal fails
                         return of(null);
                     })
                 );
@@ -276,13 +294,8 @@ export class GroupsListComponent implements OnInit, OnDestroy {
                 this.deleteGroupDialog = false;
                 this.loadGroups();
             },
-            error: (error) => {
-                this.messageService.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: 'An error occurred while deleting the group.',
-                    life: 3000
-                });
+            error: () => {
+                // Do not show generic error toast - fail silently
                 this.deleteGroupDialog = false;
             },
             complete: () => {
@@ -341,20 +354,20 @@ export class GroupsListComponent implements OnInit, OnDestroy {
 
     private handleBusinessError(context: GroupActionContext, response: any): void | null {
         const code = String(response?.message || '');
-        let detail = '';
+        let detail: string | null = null;
 
         switch (context) {
             case 'list':
-                detail = this.getListErrorMessage(code) || '';
+                detail = this.getListErrorMessage(code);
                 break;
             case 'activate':
-                detail = this.getActivateErrorMessage(code) || '';
+                detail = this.getActivateErrorMessage(code);
                 break;
             case 'deactivate':
-                detail = this.getDeactivateErrorMessage(code) || '';
+                detail = this.getDeactivateErrorMessage(code);
                 break;
             case 'delete':
-                detail = this.getDeleteErrorMessage(code) || '';
+                detail = this.getDeleteErrorMessage(code);
                 break;
             default:
                 return null;
@@ -405,6 +418,17 @@ export class GroupsListComponent implements OnInit, OnDestroy {
         switch (code) {
             case 'ERP11290':
                 return 'Invalid Group ID';
+            default:
+                return null;
+        }
+    }
+
+    private getRemoveMembersErrorMessage(code: string): string | null {
+        switch (code) {
+            case 'ERP11290':
+                return 'Invalid Group ID';
+            case 'ERP11288':
+                return 'Invalid one or more Account ID';
             default:
                 return null;
         }

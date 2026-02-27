@@ -283,17 +283,17 @@ export class CategoryFormComponent implements OnInit, OnDestroy, OnChanges {
 
     private handleBusinessError(context: CategoryFormContext | 'details', response: any): void | null {
         const code = String(response?.message || '');
-        let detail = '';
+        let detail: string | null = null;
 
         switch (context) {
             case 'create':
-                detail = this.getCreateErrorMessage(code) || '';
+                detail = this.getCreateErrorMessage(code);
                 break;
             case 'update':
-                detail = this.getUpdateErrorMessage(code) || '';
+                detail = this.getUpdateErrorMessage(code);
                 break;
             case 'details':
-                detail = this.getDetailsErrorMessage(code) || '';
+                detail = this.getDetailsErrorMessage(code);
                 break;
             default:
                 return null;

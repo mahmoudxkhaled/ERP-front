@@ -387,14 +387,14 @@ export class EntityNotificationsListComponent implements OnInit, OnDestroy {
 
     private handleBusinessError(context: NotificationActionContext, response: any): void | null {
         const code = String(response?.message || '');
-        let detail = '';
+        let detail: string | null = null;
 
         switch (context) {
             case 'list':
-                detail = this.getListErrorMessage(code) || '';
+                detail = this.getListErrorMessage(code);
                 break;
             case 'delete':
-                detail = this.getDeleteErrorMessage(code) || '';
+                detail = this.getDeleteErrorMessage(code);
                 break;
             default:
                 return null;

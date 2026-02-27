@@ -239,7 +239,7 @@ export class CreateNotificationComponent implements OnInit, OnDestroy {
 
     private handleBusinessError(response: any): void {
         const code = String(response?.message || '');
-        let detail = '';
+        let detail: string | null = null;
 
         switch (code) {
             case 'ERP11460':
@@ -258,14 +258,16 @@ export class CreateNotificationComponent implements OnInit, OnDestroy {
                 detail = 'Invalid Reference ID';
                 break;
             default:
-                detail = 'Failed to create notification. Please try again.';
+                detail = null;
         }
 
-        this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail
-        });
+        if (detail) {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail
+            });
+        }
         this.loading = false;
     }
 }
