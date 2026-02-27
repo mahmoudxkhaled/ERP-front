@@ -28,11 +28,9 @@ export interface VirtualDriveRow {
 })
 export class VirtualDrivesSectionComponent implements OnInit {
 
-    // Loading state
     isLoading$: Observable<boolean>;
     tableLoadingSpinner = false;
 
-    // Entity filter above table (API); License ID, Drive type, Status are in table filter row (client-side)
     entityFilterOptions = [
         { label: 'Account', value: -1 },
         { label: 'Entity', value: 1 },
@@ -54,7 +52,6 @@ export class VirtualDrivesSectionComponent implements OnInit {
         { label: 'fileSystem.admin.inactive', value: false }
     ];
 
-    // Dialog visibility flags
     createDriveDialogVisible = false;
     renameDriveDialogVisible = false;
     updateCapacityDialogVisible = false;
@@ -65,7 +62,6 @@ export class VirtualDrivesSectionComponent implements OnInit {
     confirmStatusDrive: VirtualDriveRow | null = null;
     confirmStatusToActive = false;
 
-    // Form values for dialogs
     newDriveName = '';
     newDriveLicenseId = 3;
     newDriveCapacity = 100;
@@ -75,10 +71,8 @@ export class VirtualDrivesSectionComponent implements OnInit {
     selectedDriveForCapacity: VirtualDriveRow | null = null;
     selectedDriveForDetails: VirtualDriveRow | null = null;
 
-    // Data
     virtualDrives: VirtualDriveRow[] = [];
 
-    // Row menu (3-dot)
     driveMenuItems: MenuItem[] = [];
     selectedDriveForMenu: VirtualDriveRow | null = null;
 
@@ -313,7 +307,6 @@ export class VirtualDrivesSectionComponent implements OnInit {
             return;
         }
 
-        // API expects capacity in bytes; user enters GB (e.g. 20 = 20 GB)
         const capacityInBytes = this.gbToBytes(this.newDriveCapacity);
         this.virtualDrivesService.createDrive(
             this.newDriveName,
@@ -376,7 +369,6 @@ export class VirtualDrivesSectionComponent implements OnInit {
 
     showUpdateCapacityDialog(row: VirtualDriveRow): void {
         this.selectedDriveForCapacity = row;
-        // Show capacity in GB (API stores bytes)
         this.updateCapacityValue = this.bytesToGb(row.capacity);
         this.updateCapacityDialogVisible = true;
     }
@@ -400,7 +392,6 @@ export class VirtualDrivesSectionComponent implements OnInit {
             return;
         }
 
-        // API expects capacity in bytes; user enters GB (e.g. 20 = 20 GB)
         const capacityInBytes = this.gbToBytes(this.updateCapacityValue);
         this.virtualDrivesService.updateDriveCapacity(
             this.selectedDriveForCapacity.id,

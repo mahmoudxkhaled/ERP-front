@@ -116,8 +116,6 @@ export class LoginComponent implements OnInit, OnDestroy {
         }
     }
 
-    // ERP11063
-
     handleSuccessfulLogin() {
         const userLang = this.rtlService.getLanguageFromStorage();
         this.rtlService.setUserLanguageCode(userLang);

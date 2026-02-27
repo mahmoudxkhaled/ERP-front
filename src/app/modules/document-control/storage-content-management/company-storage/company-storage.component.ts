@@ -11,7 +11,6 @@ import { FileSystemsFilters } from '../../models/file-system.model';
     styleUrls: ['./company-storage.component.scss']
 })
 export class CompanyStorageComponent implements OnInit {
-    // Select drive then file system (owned by entity). Loaded from List_Drives and List_File_Systems APIs.
     selectedDriveId: number | null = null;
     selectedFileSystemId: number | null = null;
     entityDriveOptions: { id: number; name: string }[] = [];
@@ -51,7 +50,6 @@ export class CompanyStorageComponent implements OnInit {
                     id: Number(item?.Drive_ID ?? item?.drive_ID ?? 0),
                     name: String(item?.Name ?? item?.name ?? '')
                 })).filter((d: { id: number; name: string }) => d.id > 0);
-                // Select first drive so user always has a selection
                 if (this.entityDriveOptions.length > 0) {
                     this.selectedDriveId = this.entityDriveOptions[0].id;
                     this.loadFileSystemsInDrive();
@@ -106,7 +104,6 @@ export class CompanyStorageComponent implements OnInit {
                         name: String(item?.name ?? item?.Name ?? '')
                     }))
                     .filter((fs: { id: number; name: string }) => fs.id > 0);
-                // Select first file system when still on the same drive
                 if (this.selectedDriveId === driveId && this.fileSystemOptionsInDrive.length > 0) {
                     this.selectedFileSystemId = this.fileSystemOptionsInDrive[0].id;
                 }
@@ -119,6 +116,5 @@ export class CompanyStorageComponent implements OnInit {
     }
 
     onFileSystemSelected(): void {
-        // When selectedFileSystemId is set, app-folder-management shows for that file system.
     }
 }

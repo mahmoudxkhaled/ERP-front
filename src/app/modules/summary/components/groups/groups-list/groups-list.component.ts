@@ -34,15 +34,12 @@ export class GroupsListComponent implements OnInit, OnDestroy {
     activeOnlyFilter: boolean = false;
     currentAccountId: number = 0;
 
-    // Dialog for form
     formDialogVisible: boolean = false;
     formGroupId?: number;
 
-    // Pagination (handled by PrimeNG automatically)
     first: number = 0;
     rows: number = 10;
 
-    // Search functionality
     searchText: string = '';
     filteredGroups: Group[] = [];
 
@@ -106,7 +103,7 @@ export class GroupsListComponent implements OnInit, OnDestroy {
                         title: isRegional ? (groupBackend?.title_Regional || groupBackend?.title || '') : (groupBackend?.title || ''),
                         description: isRegional ? (groupBackend?.description_Regional || groupBackend?.description || '') : (groupBackend?.description || ''),
                         entityId: groupBackend?.entityID || 0,
-                        active: Boolean(groupBackend?.isActive !== undefined ? groupBackend.isActive : true), // Default to active if not provided
+                        active: Boolean(groupBackend?.isActive !== undefined ? groupBackend.isActive : true),
                         createAccountId: groupBackend?.createAccountID || 0
                     };
                 }) : [];
@@ -222,26 +219,20 @@ export class GroupsListComponent implements OnInit, OnDestroy {
         const group = this.currentGroupForDelete;
         const groupId = Number(group.id);
 
-        // Step 1: Get all group members first
         const sub = this.groupsService.getGroupMembers(groupId, true).pipe(
-            // Step 2: Remove all members if they exist
             concatMap((membersResponse: any) => {
                 if (!membersResponse?.success) {
-                    // If we can't get members, try to delete group anyway
                     return of(null);
                 }
 
                 const membersData = membersResponse?.message || {};
-                
-                // Extract all account IDs from dictionary format: { accountId: email }
+
                 const accountIds: number[] = Object.keys(membersData).map((key) => Number(key));
 
-                // If there are no members, skip removal step
                 if (accountIds.length === 0) {
                     return of(null);
                 }
 
-                // Remove all members
                 return this.groupsService.removeGroupMembers(groupId, accountIds).pipe(
                     tap((response: any) => {
                         if (!response?.success) {
@@ -268,12 +259,10 @@ export class GroupsListComponent implements OnInit, OnDestroy {
                                 life: 3000
                             });
                         }
-                        // Still try to delete group even if removal fails
                         return of(null);
                     })
                 );
             }),
-            // Step 3: Delete the group after members are removed (or if no members)
             concatMap(() => {
                 return this.groupsService.deleteGroup(groupId);
             })
@@ -295,7 +284,6 @@ export class GroupsListComponent implements OnInit, OnDestroy {
                 this.loadGroups();
             },
             error: () => {
-                // Do not show generic error toast - fail silently
                 this.deleteGroupDialog = false;
             },
             complete: () => {
@@ -441,12 +429,10 @@ export class GroupsListComponent implements OnInit, OnDestroy {
     onPageChange(event: any): void {
         this.first = event.first;
         this.rows = event.rows;
-        // Scroll to top of table when page changes
         this.scrollToTableTop();
     }
 
     scrollToTableTop(): void {
-        // Use setTimeout to ensure the DOM has updated before scrolling
         setTimeout(() => {
             if (this.groupsTableContainer) {
                 this.groupsTableContainer.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -458,7 +444,6 @@ export class GroupsListComponent implements OnInit, OnDestroy {
         const target = event.target as HTMLInputElement;
         this.searchText = target?.value || '';
         this.applySearchFilter();
-        // Reset to first page when searching
         this.first = 0;
     }
 

@@ -81,7 +81,6 @@ export class TypesListComponent implements OnInit, OnDestroy {
     }
 
     private handleError(response: any): void {
-        // Do not show generic "Failed to load" toast - fail silently
         this.resetLoadingFlags();
     }
 

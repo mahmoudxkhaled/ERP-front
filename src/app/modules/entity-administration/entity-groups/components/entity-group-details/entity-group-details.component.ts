@@ -38,7 +38,6 @@ export class EntityGroupDetailsComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        // Check if user is Entity Admin
         if (!this.entityGroupsService.isEntityAdmin()) {
             this.messageService.add({
                 severity: 'error',
@@ -78,7 +77,6 @@ export class EntityGroupDetailsComponent implements OnInit, OnDestroy {
                 }
                 this.groupDetails = response?.message || {};
 
-                // Map to Group model - only need entityId for members component
                 this.group = {
                     id: String(this.groupDetails?.Group_ID || this.groupDetails?.groupID || this.groupId),
                     title: this.isRegional ? (this.groupDetails?.Title_Regional || this.groupDetails?.title_Regional || this.groupDetails?.Title || this.groupDetails?.title || '') : (this.groupDetails?.Title || this.groupDetails?.title || ''),
@@ -88,7 +86,6 @@ export class EntityGroupDetailsComponent implements OnInit, OnDestroy {
                     createAccountId: this.groupDetails?.Create_Account_ID || this.groupDetails?.createAccountID || 0
                 };
 
-                // Verify it's an Entity Group
                 if (this.group.entityId <= 0) {
                     this.messageService.add({
                         severity: 'error',

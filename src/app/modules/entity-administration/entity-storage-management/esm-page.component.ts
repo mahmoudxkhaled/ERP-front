@@ -102,16 +102,13 @@ export class EsmPageComponent implements OnInit {
         { roleKey: 'fileSystem.entityAdminRoles.allEmployees', folderPath: '/Shared', accessKey: 'fileSystem.entityAdminAccess.readDownload' }
     ];
 
-    // Placeholder for owned virtual drives count (will be updated from shared component later if needed)
     get ownedVirtualDrivesCount(): number {
         return 0;
     }
 
-    // Traffic monitoring (placeholder until API)
     trafficUploads = '0';
     trafficDownloads = '0';
 
-    // Entity storage settings
     allowShareInternally = true;
     allowShareExternally = false;
 

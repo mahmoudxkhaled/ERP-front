@@ -2,9 +2,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { WorkflowsComponent } from './workflows/workflows.component';
 
-// Components
-
-
 const routes: Routes = [
     { path: '', redirectTo: 'entities/list', pathMatch: 'full' },
     {

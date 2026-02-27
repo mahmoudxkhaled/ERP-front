@@ -21,8 +21,8 @@ type GroupActionContext = 'list' | 'activate' | 'deactivate' | 'delete';
 export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
     @ViewChild('groupsTableContainer') groupsTableContainer?: ElementRef;
 
-    @Input() entityId?: number; // Optional: if provided, use this instead of current entity
-    @Input() showHeader: boolean = true; // Show/hide header section
+    @Input() entityId?: number;
+    @Input() showHeader: boolean = true;
 
     groups: Group[] = [];
     isLoading$: Observable<boolean>;
@@ -39,16 +39,13 @@ export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
     activeOnlyFilter: boolean = false;
     currentEntityId: number = 0;
 
-    // Dialog for form
     formDialogVisible: boolean = false;
     formGroupId?: number;
     formEntityId?: number;
 
-    // Pagination (handled by PrimeNG automatically)
     first: number = 0;
     rows: number = 10;
 
-    // Search functionality
     searchText: string = '';
     filteredGroups: Group[] = [];
 
@@ -71,16 +68,13 @@ export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     ngOnInit(): void {
-        // Use provided entityId or get from service
         if (this.entityId && this.entityId > 0) {
             this.currentEntityId = this.entityId;
         } else {
             this.currentEntityId = this.entityGroupsService.getCurrentEntityId();
         }
 
-        // Only check permissions and redirect if used as standalone page (not as child component)
         if (this.showHeader) {
-            // Check if user is Entity Admin
             if (!this.isEntityAdmin()) {
                 this.messageService.add({
                     severity: 'error',
@@ -97,7 +91,6 @@ export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        // Reload groups if entityId input changes
         if (changes['entityId'] && !changes['entityId'].firstChange && this.entityId) {
             this.currentEntityId = this.entityId;
             this.loadGroups();
@@ -113,7 +106,6 @@ export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
         const isRegional = this.accountSettings?.Language !== 'English';
         this.tableLoadingSpinner = true;
 
-        // Update entityId if input changed
         if (this.entityId && this.entityId > 0) {
             this.currentEntityId = this.entityId;
         }
@@ -162,13 +154,12 @@ export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
 
     onActiveFilterChange(): void {
         this.loadGroups();
-        // Note: applySearchFilter is called inside loadGroups() after data is loaded
     }
 
     edit(group: Group): void {
         if (group.id) {
             this.formGroupId = Number(group.id);
-            this.formEntityId = undefined; // Use group's entityId from loaded data
+            this.formEntityId = undefined;
             this.formDialogVisible = true;
         }
     }
@@ -264,26 +255,20 @@ export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
         const group = this.currentGroupForDelete;
         const groupId = Number(group.id);
 
-        // Step 1: Get all group members first
         const sub = this.entityGroupsService.getGroupMembers(groupId, true).pipe(
-            // Step 2: Remove all members if they exist
             concatMap((membersResponse: any) => {
                 if (!membersResponse?.success) {
-                    // If we can't get members, try to delete group anyway
                     return of(null);
                 }
 
                 const membersData = membersResponse?.message || {};
 
-                // Extract all account IDs from dictionary format: { accountId: email }
                 const accountIds: number[] = Object.keys(membersData).map((key) => Number(key));
 
-                // If there are no members, skip removal step
                 if (accountIds.length === 0) {
                     return of(null);
                 }
 
-                // Remove all members
                 return this.entityGroupsService.removeGroupMembers(groupId, accountIds).pipe(
                     tap((response: any) => {
                         if (!response?.success) {
@@ -310,12 +295,10 @@ export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
                                 life: 3000
                             });
                         }
-                        // Still try to delete group even if removal fails
                         return of(null);
                     })
                 );
             }),
-            // Step 3: Delete the group after members are removed (or if no members)
             concatMap(() => {
                 return this.entityGroupsService.deleteEntityGroup(groupId);
             })
@@ -337,7 +320,6 @@ export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
                 this.loadGroups();
             },
             error: () => {
-                // Do not show generic error toast - fail silently
                 this.deleteGroupDialog = false;
             },
             complete: () => {
@@ -361,7 +343,7 @@ export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     onFormSaved(): void {
-        this.loadGroups(); // Reload groups after save
+        this.loadGroups();
     }
 
     getStatusSeverity(status: boolean): string {
@@ -511,12 +493,10 @@ export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
     onPageChange(event: any): void {
         this.first = event.first;
         this.rows = event.rows;
-        // Scroll to top of table when page changes
         this.scrollToTableTop();
     }
 
     scrollToTableTop(): void {
-        // Use setTimeout to ensure the DOM has updated before scrolling
         setTimeout(() => {
             if (this.groupsTableContainer) {
                 this.groupsTableContainer.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -528,7 +508,6 @@ export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
         const target = event.target as HTMLInputElement;
         this.searchText = target?.value || '';
         this.applySearchFilter();
-        // Reset to first page when searching
         this.first = 0;
     }
 

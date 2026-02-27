@@ -263,7 +263,6 @@ export class FileSystemsSectionComponent implements OnInit {
     const isDeleted = row && !this.isFileSystemActive(row);
 
     if (isDeleted) {
-      // Deleted (Inactive) file system: only Restore is allowed.
       this.fileSystemMenuItems = [
         {
           label: this.translate.getInstant('fileSystem.entityAdmin.restoreFileSystem'),
@@ -274,7 +273,6 @@ export class FileSystemsSectionComponent implements OnInit {
       return;
     }
 
-    // Active file system: full menu.
     this.fileSystemMenuItems = [
       {
         label: this.translate.getInstant('fileSystem.admin.viewDetails'),
@@ -413,7 +411,6 @@ export class FileSystemsSectionComponent implements OnInit {
 
   handleError(operation: string, response: any): void {
     const detail = getFileSystemErrorDetail(response, (key) => this.translate.getInstant(key));
-    // Only show toast when we have a specific error message - no generic fallback
     if (detail) {
       const summary = this.translate.getInstant('fileSystem.admin.errorSummary');
       this.messageService.add({ severity: 'error', summary, detail });
@@ -508,7 +505,6 @@ export class FileSystemsSectionComponent implements OnInit {
       this.messageService.add({ severity: 'warn', summary: this.translate.getInstant('fileSystem.admin.validation'), detail: this.translate.getInstant('fileSystem.admin.fileSystemNameRequired') });
       return;
     }
-    // Type can be 0 (e.g. "Regular"); only null/undefined means not selected.
     const typeId = this.editFileSystemTypeId ?? this.selectedForEdit.type;
     if (typeId === null || typeId === undefined) {
       this.messageService.add({ severity: 'warn', summary: this.translate.getInstant('fileSystem.admin.validation'), detail: this.translate.getInstant('fileSystem.admin.fileSystemTypeRequired') });

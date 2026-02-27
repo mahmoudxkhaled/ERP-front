@@ -35,7 +35,7 @@ export interface FolderContentRow {
   /** Last modified timestamp (kept for dialogs/compatibility). */
   modified?: string;
   isFolder: boolean;
-  isBackButton?: boolean; // Special flag for back button row
+  isBackButton?: boolean;
 }
 
 /**
@@ -51,18 +51,15 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   /** File System ID received from parent component. Must be > 0. */
   @Input() fileSystemId: number = 0;
 
-  // Loading states
   isLoading$: Observable<boolean>;
   treeLoading = false;
   tableLoadingSpinner = false;
 
-  // Folder tree
   folderTreeNodes: TreeNode[] = [];
   selectedFolderNode: TreeNode | null = null;
-  currentFolderId: number = 0; // 0 = root folder
-  parentFolderId: number = 0; // Track parent folder for back navigation
+  currentFolderId: number = 0;
+  parentFolderId: number = 0;
 
-  // Folder contents table
   folderContents: FolderContentRow[] = [];
   showDeletedFolders = false;
   /** Cache of calculated folder sizes (folderId -> formatted string). */
@@ -70,25 +67,21 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   /** Folder IDs currently being calculated (show spinner). */
   folderSizeLoading = new Set<number>();
 
-  // Dialog visibility flags
   createFolderDialogVisible = false;
   uploadDialogVisible = false;
   renameFolderDialogVisible = false;
   moveFolderDialogVisible = false;
   deleteFolderConfirmVisible = false;
 
-  // Upload state
   selectedFiles: File[] = [];
   uploadProgressPercent = 0;
   uploadInProgress = false;
   uploadError: string | null = null;
   @ViewChild('fileInput', { static: false }) fileInputRef!: ElementRef<HTMLInputElement>;
-  // Track upload status for each file: 'pending' | 'uploading' | 'completed' | 'error'
   fileUploadStatus = new Map<string, 'pending' | 'uploading' | 'completed' | 'error'>();
   currentUploadingFileName: string | null = null;
   isDragOver = false;
 
-  // Form values for dialogs
   newFolderName = '';
   newFolderParentId: number = 0;
   renameFolderName = '';
@@ -104,7 +97,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   moveDestinationNode: TreeNode | null = null;
   selectedFolderForRestore: FolderTreeNode | null = null;
 
-  // Recycle bin (deleted folders + files)
   recycleBinDialogVisible = false;
   recycleBinLoading = false;
   deletedFolders: Folder[] = [];
@@ -120,20 +112,16 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   /** File IDs that could not be restored (duplicate name in target folder). User must uncheck before restoring again. */
   skippedFileIds = new Set<number>();
 
-  // Row menu (3-dot)
   folderMenuItems: MenuItem[] = [];
   selectedFolderForMenu: FolderTreeNode | null = null;
 
-  // File menu (3-dot)
   fileMenuItems: MenuItem[] = [];
   selectedFileForMenu: FolderContentRow | null = null;
 
-  // File dialogs
   fileDetailsDialogVisible = false;
   renameFileDialogVisible = false;
   deleteFileConfirmVisible = false;
 
-  // File operation state
   selectedFileForDetails: FolderContentRow | null = null;
   selectedFileForRename: FolderContentRow | null = null;
   selectedFileForDelete: FolderContentRow | null = null;
@@ -225,7 +213,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
         }
 
         const raw = response.message;
-        // API returns array of [Folder_ID, Parent_Folder_ID, Folder_Name]
         const structureItems = this.normalizeFolderStructureResponse(raw);
         this.folderTreeNodes = this.buildTreeFromStructure(structureItems);
       },
@@ -246,7 +233,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     if (list.length === 0) return [];
 
     const first = list[0];
-    // Array of arrays: [[id, parentId, name], ...]
     if (Array.isArray(first)) {
       return (list as any[][]).map((row) => ({
         folder_ID: Number(row[0] ?? 0),
@@ -254,7 +240,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
         folder_Name: String(row[2] ?? '')
       }));
     }
-    // Array of objects
     return list.map((item: any) => ({
       folder_ID: Number(item?.folder_ID ?? item?.Folder_ID ?? 0),
       parent_Folder_ID: Number(item?.parent_Folder_ID ?? item?.Parent_Folder_ID ?? 0),
@@ -269,7 +254,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   private buildTreeFromStructure(items: FolderStructureItem[]): TreeNode[] {
     const folderMap = new Map<number, TreeNode>();
 
-    // First pass: create all nodes
     items.forEach((item) => {
       const folderId = Number(item?.folder_ID ?? item?.Folder_ID ?? 0);
       const folderName = String(item?.folder_Name ?? item?.Folder_Name ?? '');
@@ -290,15 +274,12 @@ export class FolderManagementComponent implements OnInit, OnChanges {
       folderMap.set(folderId, node);
     });
 
-    // Second pass: build hierarchy
     const rootNodes: TreeNode[] = [];
     folderMap.forEach((node) => {
       const parentId = node.data.parentFolderId;
       if (parentId === 0) {
-        // Root level folder
         rootNodes.push(node);
       } else {
-        // Child folder
         const parent = folderMap.get(parentId);
         if (parent) {
           if (!parent.children) {
@@ -306,7 +287,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
           }
           parent.children.push(node);
         } else {
-          // Parent not found, treat as root
           rootNodes.push(node);
         }
       }
@@ -325,7 +305,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     }
 
     this.tableLoadingSpinner = true;
-    // Update parent folder ID if needed (when navigating to a new folder)
     if (updateParent && folderId !== this.currentFolderId) {
       this.parentFolderId = this.currentFolderId;
     }
@@ -340,7 +319,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
           return;
         }
 
-        // API returns message: { Folders: [...], Files: [] } with snake_case properties
         const raw = response.message;
         const contents: FolderContents = raw ?? { folders: [], files: [] };
         const foldersList = contents.folders ?? contents.Folders ?? [];
@@ -399,7 +377,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
         this.folderSizeLoading.delete(row.id);
         if (response?.success && response?.message != null) {
           const raw = response.message;
-          // API returns message as number (Total_Size) or object with Total_Size/total_size
           const totalSize = typeof raw === 'number' ? raw : Number(raw?.Total_Size ?? raw?.total_size ?? 0);
           this.folderSizeCache.set(row.id, this.formatBytes(totalSize));
         }
@@ -432,7 +409,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   onFolderNodeSelect(event: { node: TreeNode }): void {
     const folderNode = event.node as FolderTreeNode;
     if (folderNode?.data?.folderId !== undefined) {
-      // Update parent folder ID before changing current folder
       this.parentFolderId = this.currentFolderId;
       this.selectedFolderNode = folderNode;
       this.loadFolderContents(folderNode.data.folderId);
@@ -572,21 +548,17 @@ export class FolderManagementComponent implements OnInit, OnChanges {
 
   hideUploadDialog(): void {
     this.uploadDialogVisible = false;
-    // If an upload is in progress, keep the selected files and status so the
-    // bottom-left global progress card can continue to show them.
     if (this.uploadInProgress) {
       this.isDragOver = false;
       return;
     }
 
-    // No active upload: fully reset dialog state
     this.selectedFiles = [];
     this.uploadError = null;
     this.uploadProgressPercent = 0;
     this.fileUploadStatus.clear();
     this.currentUploadingFileName = null;
     this.isDragOver = false;
-    // Reset file input so user can select same files again
     if (this.fileInputRef?.nativeElement) {
       this.fileInputRef.nativeElement.value = '';
     }
@@ -609,7 +581,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     const newFiles = Array.from(input.files ?? []);
     this.uploadError = null;
 
-    // Add new files to existing list (avoid duplicates by name and size)
     newFiles.forEach(newFile => {
       const isDuplicate = this.selectedFiles.some(
         existingFile => existingFile.name === newFile.name && existingFile.size === newFile.size
@@ -620,7 +591,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
       }
     });
 
-    // Reset input so user can select same files again
     if (this.fileInputRef?.nativeElement) {
       this.fileInputRef.nativeElement.value = '';
     }
@@ -681,7 +651,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
       const newFiles = Array.from(files);
       this.uploadError = null;
 
-      // Add new files to existing list (avoid duplicates by name and size)
       newFiles.forEach(newFile => {
         const isDuplicate = this.selectedFiles.some(
           existingFile => existingFile.name === newFile.name && existingFile.size === newFile.size
@@ -702,9 +671,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
       return;
     }
 
-    // Remove file from list
     this.selectedFiles = this.selectedFiles.filter(file => file !== fileToRemove);
-    // Remove from status map
     this.fileUploadStatus.delete(fileToRemove.name);
   }
 
@@ -771,9 +738,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     this.downloadRemainingBytes = 0;
     this.downloadProgressVisible = true;
 
-    // Skip Get_File_Details before download to avoid CORS / "Server unavailable" errors from that endpoint.
-    // Download works with Download_Request + chunk requests only; progress shows percentage only.
-
     try {
       const blob = await this.fileDownloadService.downloadFile(
         accessToken,
@@ -784,7 +748,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
           const progress = Math.round(percent);
           this.downloadProgressPercent = progress;
 
-          // Calculate remaining bytes if we have file size
           if (this.downloadFileSizeBytes > 0) {
             const downloadedBytes = (this.downloadFileSizeBytes * progress) / 100;
             this.downloadRemainingBytes = Math.max(0, this.downloadFileSizeBytes - downloadedBytes);
@@ -792,7 +755,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
         }
       );
 
-      // Create download link and trigger download
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -802,7 +764,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
 
-      // Hide progress component and show success message
       this.downloadProgressVisible = false;
       this.messageService.add({
         severity: 'success',
@@ -812,7 +773,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     } catch (err: unknown) {
       this.downloadProgressVisible = false;
       const response = this.normalizeUploadError(err);
-      // Centralized business error handling (same pattern as Virtual Drives section)
       this.handleBusinessError('download', response);
     } finally {
       this.downloadInProgress = false;
@@ -840,7 +800,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     this.fileDetailsLoading = false;
     this.fileDetailsDialogVisible = true;
 
-    // Build details from the row so no API call is needed (avoids CORS/500 and console errors)
     this.fileDetails = {
       file_Name: file.name,
       file_name: file.name,
@@ -871,7 +830,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   showRenameFileDialog(file: FolderContentRow): void {
     this.selectedFileForRename = file;
     this.renameFileName = file.name;
-    // Extract file type from name if possible, or use default
     const nameParts = file.name.split('.');
     this.renameFileType = nameParts.length > 1 ? nameParts[nameParts.length - 1] : '';
     this.renameFileDialogVisible = true;
@@ -1006,7 +964,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
       return;
     }
 
-    // Names already in the current folder (files and folders) – avoid overwriting or duplicate names
     const existingNames = new Set(
       this.folderContents
         .filter((row) => !row.isBackButton)
@@ -1039,7 +996,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     this.uploadError = null;
     const totalFiles = this.selectedFiles.length;
 
-    // Close the upload dialog while keeping the bottom-left global progress visible
     this.uploadDialogVisible = false;
     try {
       for (let i = 0; i < this.selectedFiles.length; i++) {
@@ -1053,7 +1009,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
           this.fileSystemId,
           BigInt(this.currentFolderId),
           (percent) => {
-            // Calculate overall progress: completed files + current file progress
             const completedFiles = Array.from(this.fileUploadStatus.values()).filter(s => s === 'completed').length;
             const currentFileProgress = percent / 100;
             const overallProgress = ((completedFiles + currentFileProgress) / totalFiles) * 100;
@@ -1061,12 +1016,10 @@ export class FolderManagementComponent implements OnInit, OnChanges {
           }
         );
 
-        // Mark file as completed after successful upload
         this.fileUploadStatus.set(file.name, 'completed');
         this.currentUploadingFileName = null;
       }
 
-      // Log success info in console for debugging
       console.log('Upload completed successfully', {
         totalFiles,
         files: this.selectedFiles,
@@ -1082,13 +1035,11 @@ export class FolderManagementComponent implements OnInit, OnChanges {
       this.loadFolderContents(this.currentFolderId);
     } catch (err: unknown) {
       console.error('Upload failed', err);
-      // Mark current file as error if upload failed
       if (this.currentUploadingFileName) {
         this.fileUploadStatus.set(this.currentUploadingFileName, 'error');
         this.currentUploadingFileName = null;
       }
       const response = this.normalizeUploadError(err);
-      // Centralized business error handling (same pattern as Virtual Drives section)
       this.uploadError = this.handleBusinessError('upload', response);
     } finally {
       this.uploadInProgress = false;
@@ -1218,7 +1169,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
           });
           this.hideRenameFolderDialog();
           this.loadFolderStructure();
-          // Always refresh contents so the new name appears (e.g. when renamed folder is a child in current view)
           this.loadFolderContents(this.currentFolderId);
         }
       });
@@ -1268,7 +1218,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
       newParentId = destinationNode?.data?.folderId ?? 0;
     }
 
-    // Validation: cannot move to itself or its children
     if (this.isDescendantOf(this.selectedFolderForMove.data.folderId, newParentId)) {
       this.messageService.add({
         severity: 'error',
@@ -1384,14 +1333,12 @@ export class FolderManagementComponent implements OnInit, OnChanges {
         });
         this.hideDeleteFolderConfirm();
 
-        // If deleted folder was selected, switch view to parent
         if (this.currentFolderId === folderId) {
           this.currentFolderId = parentFolderId;
           this.selectedFolderNode = null;
         }
 
         this.loadFolderStructure();
-        // Refresh contents so table reflects the change (e.g. deleted folder disappears from list)
         this.loadFolderContents(this.currentFolderId);
       }
     });
@@ -1449,7 +1396,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
           file_System_ID: this.fileSystemId
         }));
 
-        // Build folder_id -> folder_name from Get_Folder_Structure (all folders in file system)
         const folderIdToName: Record<number, string> = {};
         if (result.folderStructure?.success && result.folderStructure?.message) {
           const structureItems = this.normalizeFolderStructureResponse(result.folderStructure.message);
@@ -1459,7 +1405,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
             if (id) folderIdToName[id] = name;
           });
         }
-        // Add names for deleted folders (in case they are no longer in Get_Folder_Structure)
         this.deletedFolders.forEach((fold) => {
           folderIdToName[fold.folder_ID] = fold.folder_Name;
         });
@@ -1593,8 +1538,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
         const skippedFileIdsFromApi: number[] = [];
         responses.forEach((r: any) => {
           const message = r?.message;
-          // Files that could not be restored (duplicate name in target folder): API returns
-          // success: true and message: [ { file_id, folder_id }, ... ]
           if (Array.isArray(message) && message.length > 0) {
             const isSkippedFileList = message.some(
               (item: any) => item?.file_id != null || item?.file_ID != null
@@ -1607,7 +1550,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
               return;
             }
           }
-          // Alternative shape: message.Skipped_IDs
           const rawSkipped =
             message && typeof message === 'object'
               ? (message as any).Skipped_IDs ?? (message as any).skipped_IDs ?? (message as any).skippedIds ?? []
@@ -1620,7 +1562,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
           }
         });
 
-        // Show success only if something was actually restored (not all selected files were skipped)
         const allSelectedFilesWereSkipped =
           this.selectedFilesToRestore.length > 0 &&
           this.selectedFilesToRestore.length === skippedFileIdsFromApi.length &&
@@ -1689,7 +1630,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     const detail = getFileSystemErrorDetail(response, (key) =>
       this.translate.getInstant(key)
     );
-    // Only show toast when we have a specific error message - no generic fallback
     if (detail) {
       const summary = this.translate.getInstant('fileSystem.folderManagement.error');
       this.messageService.add({
@@ -1756,7 +1696,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
         return null;
       };
 
-      // Find ancestors of the folder so we can expand them (path from root to parent of target)
       const findAncestors = (nodes: TreeNode[], targetId: number): TreeNode[] | null => {
         for (const node of nodes) {
           const nodeId = (node as FolderTreeNode).data?.folderId;
@@ -1775,7 +1714,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
 
       const folderNode = findNodeById(this.folderTreeNodes, row.id);
       if (folderNode) {
-        // Expand all ancestors so the selected folder is visible in the tree
         const ancestors = findAncestors(this.folderTreeNodes, row.id);
         if (ancestors) {
           ancestors.forEach((node) => {
@@ -1795,14 +1733,12 @@ export class FolderManagementComponent implements OnInit, OnChanges {
    */
   goBack(): void {
     if (this.parentFolderId === 0) {
-      // Go to root
       this.selectedFolderNode = null;
       this.loadFolderContents(0, false);
       this.parentFolderId = 0;
       return;
     }
 
-    // Find parent folder node in tree
     const findNodeById = (nodes: TreeNode[], id: number): TreeNode | null => {
       for (const node of nodes) {
         const nodeId = (node as FolderTreeNode).data?.folderId;
@@ -1820,14 +1756,12 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     const parentNode = findNodeById(this.folderTreeNodes, this.parentFolderId);
     if (parentNode) {
       const parentFolderNode = parentNode as FolderTreeNode;
-      // Get the parent's parent folder ID for next back navigation
       const grandParentId = parentFolderNode.data?.parentFolderId ?? 0;
       const newParentId = grandParentId;
       this.parentFolderId = newParentId;
       this.selectedFolderNode = parentNode;
       this.loadFolderContents(parentFolderNode.data.folderId, false);
     } else {
-      // Parent not found in tree, go to root
       this.selectedFolderNode = null;
       this.loadFolderContents(0, false);
       this.parentFolderId = 0;

@@ -17,7 +17,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     currentUser: any = null;
     userRole: string = '';
     userName: string = '';
-    showLogoutDialog: boolean = false; // Track logout dialog visibility
+    showLogoutDialog: boolean = false;
     dashboardCategories: IMenuFunction[] = [];
     highlightedModuleCode: string | null = null;
 
@@ -35,10 +35,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         this.loadUserData();
         this.loadDashboardCategories();
 
-        // Check for module URL query parameter
         this.route.queryParams.subscribe(params => {
             if (params['moduleUrl']) {
-                // Wait for view to initialize before scrolling
                 setTimeout(() => {
                     this.scrollToModule(params['moduleUrl']);
                 }, 100);
@@ -47,7 +45,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
 
     ngAfterViewInit(): void {
-        // Check query params again after view init in case they were set before view loaded
         const moduleUrl = this.route.snapshot.queryParams['moduleUrl'];
         if (moduleUrl) {
             setTimeout(() => {
@@ -134,20 +131,17 @@ export class DashboardComponent implements OnInit, AfterViewInit {
      * Handle module click - navigate to module route
      */
     onModuleClick(module: IMenuModule): void {
-        // Special handling for logout
         if (module.code === 'LGOT') {
             this.logOut();
             return;
         }
 
-        // Navigate if module has a valid route and is implemented
         if (module.url && module.isImplemented) {
             this.router.navigateByUrl(module.url);
         }
     }
 
     onLogoutConfirm() {
-        // User confirmed logout, proceed with logout
         this.authService.logout().subscribe((r) => {
             if (r.success) {
                 this.router.navigate(['/auth']);
@@ -176,7 +170,6 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 if (module.url === url) {
                     return module;
                 }
-                // Handle partial matches
                 if (module.url && url) {
                     const normalizedModuleUrl = module.url.trim().replace(/^\/+|\/+$/g, '');
                     const normalizedUrl = url.trim().replace(/^\/+|\/+$/g, '');
@@ -200,11 +193,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             return;
         }
 
-        // Find the module card element by code
         const moduleElement = document.getElementById(`module-card-${module.code}`);
         if (moduleElement) {
-            // Scroll to element with offset for header
-            const offset = 100; // Adjust based on your header height
+            const offset = 100;
             const elementPosition = moduleElement.getBoundingClientRect().top;
             const offsetPosition = elementPosition + window.pageYOffset - offset;
 
@@ -213,15 +204,12 @@ export class DashboardComponent implements OnInit, AfterViewInit {
                 behavior: 'smooth'
             });
 
-            // Highlight the module
             this.highlightedModuleCode = module.code;
 
-            // Remove highlight after animation
             setTimeout(() => {
                 this.highlightedModuleCode = null;
             }, 3000);
 
-            // Clear query parameter after scrolling
             this.router.navigate([], {
                 relativeTo: this.route,
                 queryParams: {},

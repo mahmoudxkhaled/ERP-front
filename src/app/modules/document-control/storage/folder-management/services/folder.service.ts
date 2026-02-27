@@ -207,7 +207,6 @@ export class FolderService {
   ): Observable<any> {
     this.isLoadingSubject.next(true);
 
-    // Backend expects List<long> for parameter 1: use JSON array string e.g. "[7,8]"
     const folderIdsParam = JSON.stringify(folderIds);
 
     const params: string[] = [

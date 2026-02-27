@@ -18,8 +18,8 @@ type GroupFormContext = 'create' | 'update' | 'details';
 })
 export class EntityGroupFormComponent implements OnInit, OnDestroy, OnChanges {
     @Input() visible: boolean = false;
-    @Input() groupId?: number; // Optional: for edit mode
-    @Input() entityId?: number; // Optional: for create mode
+    @Input() groupId?: number;
+    @Input() entityId?: number;
     @Output() visibleChange = new EventEmitter<boolean>();
     @Output() saved = new EventEmitter<void>();
 
@@ -99,7 +99,6 @@ export class EntityGroupFormComponent implements OnInit, OnDestroy, OnChanges {
                 }
                 const groupData = response?.message ?? {};
 
-                // Map to Group model
                 this.group = {
                     id: String(groupData?.Group_ID || groupData?.groupID || this.groupId),
                     title: this.isRegional ? (groupData?.Title_Regional || groupData?.title_Regional || groupData?.Title || groupData?.title || '') : (groupData?.Title || groupData?.title || ''),
@@ -109,7 +108,6 @@ export class EntityGroupFormComponent implements OnInit, OnDestroy, OnChanges {
                     createAccountId: groupData?.Create_Account_ID || groupData?.createAccountID || 0
                 };
 
-                // Verify it's an Entity Group
                 if (this.group.entityId <= 0) {
                     this.messageService.add({
                         severity: 'error',
@@ -194,7 +192,6 @@ export class EntityGroupFormComponent implements OnInit, OnDestroy, OnChanges {
             return;
         }
 
-        // Create new entity group - Entity_ID must be > 0
         if (this.currentEntityId <= 0) {
             this.messageService.add({
                 severity: 'error',

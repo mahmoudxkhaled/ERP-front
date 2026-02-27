@@ -11,15 +11,10 @@ export function passwordComplexityValidator(): ValidatorFn {
         const value = control.value;
         if (!value) return null;
 
-        // Check if password starts with a letter (uppercase or lowercase)
         const startsWithLetter = /^[A-Za-z]/.test(value);
-        // Check for at least one lowercase letter
         const hasLowercase = /[a-z]/.test(value);
-        // Check for at least one uppercase letter
         const hasUppercase = /[A-Z]/.test(value);
-        // Check for at least one digit
         const hasNumber = /[0-9]/.test(value);
-        // Check for at least one special character (non-alphanumeric)
         const hasSpecialChar = /[^A-Za-z0-9]/.test(value);
 
         const errors: ValidationErrors = {};

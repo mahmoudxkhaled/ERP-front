@@ -18,7 +18,7 @@ type GroupFormContext = 'create' | 'update' | 'details';
 })
 export class GroupFormComponent implements OnInit, OnDestroy, OnChanges {
     @Input() visible: boolean = false;
-    @Input() groupId?: number; // Optional: for edit mode
+    @Input() groupId?: number;
     @Output() visibleChange = new EventEmitter<boolean>();
     @Output() saved = new EventEmitter<void>();
 
@@ -99,7 +99,6 @@ export class GroupFormComponent implements OnInit, OnDestroy, OnChanges {
                 }
                 const groupData = response?.message ?? {};
 
-                // Map to Group model for owner verification
                 this.group = {
                     id: String(groupData?.Group_ID || groupData?.groupID || this.groupId),
                     title: this.isRegional ? (groupData?.Title_Regional || groupData?.title_Regional || groupData?.Title || groupData?.title || '') : (groupData?.Title || groupData?.title || ''),
@@ -109,7 +108,6 @@ export class GroupFormComponent implements OnInit, OnDestroy, OnChanges {
                     createAccountId: groupData?.Create_Account_ID || groupData?.createAccountID || 0
                 };
 
-                // Check if user is owner for Personal Groups
                 if (this.group.entityId === 0 && !this.isGroupOwner(this.group)) {
                     this.messageService.add({
                         severity: 'error',
@@ -184,7 +182,6 @@ export class GroupFormComponent implements OnInit, OnDestroy, OnChanges {
             return;
         }
 
-        // Create new group - always use Entity_ID = 0 for personal groups
         const sub = this.groupsService.createGroup(title, description, 0).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
@@ -228,7 +225,7 @@ export class GroupFormComponent implements OnInit, OnDestroy, OnChanges {
      */
     isGroupOwner(group: Group | null): boolean {
         if (!group || group.entityId !== 0) {
-            return false; // Only Personal Groups (Entity_ID = 0) are owner-managed
+            return false;
         }
         console.log('group.createAccountId', group.createAccountId);
         return group.createAccountId === this.currentAccountId;

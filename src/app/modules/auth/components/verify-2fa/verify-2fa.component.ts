@@ -50,7 +50,6 @@ export class Verify2FAComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    // Focus on the first input field when component loads
     setTimeout(() => {
       const firstInput = document.getElementById('code1') as HTMLInputElement;
       if (firstInput) {
@@ -102,14 +101,11 @@ export class Verify2FAComponent implements OnInit, OnDestroy, AfterViewInit {
   moveToNext(event: any, nextInputId: string): void {
     const input = event.target as HTMLInputElement;
     if (input.value.length === 1 && /^[0-9]$/.test(input.value)) {
-      // If there's a next input, move to it
       if (nextInputId) {
         const nextInput = document.getElementById(nextInputId) as HTMLInputElement;
         nextInput?.focus();
       } else {
-        // This is the last input (code6) - check if all 6 digits are filled and auto-submit
         setTimeout(() => {
-          // Check if all 6 code fields have values
           const allCodesFilled =
             this.form.get('code1')?.value &&
             this.form.get('code2')?.value &&
