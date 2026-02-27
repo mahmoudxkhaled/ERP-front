@@ -896,7 +896,12 @@ p-autoComplete {
 }
 
 .notification-content {
+  padding: 0px 16px 0px 0px !important;
   width: 100%;
+}
+
+::ng-deep .rtl-layout .notification-content {
+  padding: 0px 0px 0px 16px !important;
 }
 
 .notification-indicator {
