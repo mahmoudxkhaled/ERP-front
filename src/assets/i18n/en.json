@@ -2602,5 +2602,21 @@
                 }
             }
         }
+    },
+
+    "notfound": {
+        "ariaLabel": "Page not found",
+        "logoAlt": "Promatech Business Suite",
+        "appName": "Promatech Business Suite",
+        "oops": "Oops!",
+        "codeAndMessage": "404 - PAGE NOT FOUND",
+        "title": "Page not found",
+        "description": "This address is not valid in Promatech Business Suite. Check the URL or use the buttons below to go back or return to the dashboard.",
+        "descriptionShort": "The page you are looking for might have been removed, had its name changed or is temporarily unavailable.",
+        "actionsLabel": "Actions",
+        "back": "Back",
+        "goToDashboard": "Go to Dashboard",
+        "goToHomepage": "Go to Homepage",
+        "goHome": "Go to home"
     }
 }

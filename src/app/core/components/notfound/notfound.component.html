@@ -1,22 +1,29 @@
-<div class="overflow-hidden m-0 relative h-screen bg-cover bg-center" style="background: url('assets/layout/images/exception/bg-404.png');">
-    <div class="text-center text-5xl pt-5 font-bold text-white">
-        <div class="inline-block py-1 px-2 text-white surface-900">
-            <span>Page</span>
-        </div>
-        <span class="text-color">Not Found</span>
+<main class="notfound-page" role="alert" [attr.aria-label]="'notfound.ariaLabel' | translate">
+    <div class="notfound-background" aria-hidden="true">
+        <div class="notfound-pattern"></div>
+        <div class="notfound-glow notfound-glow-1"></div>
+        <div class="notfound-glow notfound-glow-2"></div>
     </div>
-    <div class="w-full absolute bottom-0 text-center surface-900 h-14rem">
-        <div class="w-full absolute text-center z-1" style="top: -36px">
-            <img src="assets/layout/images/exception/icon-error.png" alt="avalon-ng"/>
-        </div>
-        <div class="w-29rem relative text-white" style="margin-left: -200px; left: 50%; top: 30px;">
-            <div class="p-3">
-                <h3 class="m-0 mb-2 text-white">Page Not Found.</h3>
-                <p class="m-0">Please contact system administrator.</p>
-            </div>
-            <button pButton pRipple type="button" [routerLink]="['/']" label="Go To Dashboard"></button>
+
+    <div class="notfound-content">
+        <a [routerLink]="['/']" class="notfound-logo" [attr.aria-label]="'notfound.goHome' | translate">
+            <img src="assets/media/PBS.png" [attr.alt]="'notfound.logoAlt' | translate" width="40" height="40" />
+        </a>
+
+        <h1 class="notfound-oops">{{ 'notfound.oops' | translate }}</h1>
+        <p class="notfound-code">{{ 'notfound.codeAndMessage' | translate }}</p>
+        <p class="notfound-description">
+            {{ 'notfound.descriptionShort' | translate }}
+        </p>
+        <div class="notfound-actions">
+            <button pButton pRipple type="button" (click)="goBack()" [attr.aria-label]="'notfound.back' | translate"
+                [label]="'notfound.back' | translate" [icon]="isRtl ? 'pi pi-arrow-right' : 'pi pi-arrow-left'"
+                [iconPos]="isRtl ? 'right' : 'left'" class="notfound-button-back">
+            </button>
+            <button pButton pRipple type="button" [routerLink]="['/']"
+                [attr.aria-label]="'notfound.goToHomepage' | translate" [label]="'notfound.goToDashboard' | translate"
+                icon="pi pi-home" [iconPos]="isRtl ? 'right' : 'left'" class="notfound-button-homepage">
+            </button>
         </div>
     </div>
-</div>
-
-
+</main>

@@ -2462,5 +2462,20 @@
                 }
             }
         }
+    },
+    "notfound": {
+        "ariaLabel": "الصفحة غير موجودة",
+        "logoAlt": "Promatech Business Suite",
+        "appName": "Promatech Business Suite",
+        "oops": "! عذراً",
+        "codeAndMessage": "404 - الصفحة غير موجودة",
+        "title": "الصفحة غير موجودة",
+        "description": "هذا العنوان غير صالح في Promatech Business Suite. تحقق من الرابط أو استخدم الأزرار أدناه للعودة أو الانتقال إلى لوحة التحكم.",
+        "descriptionShort": "الصفحة التي تبحث عنها ربما تمت إزالتها أو تغيير اسمها أو أنها غير متاحة مؤقتاً.",
+        "actionsLabel": "الإجراءات",
+        "back": "رجوع",
+        "goToDashboard": "لوحة التحكم",
+        "goToHomepage": "الذهاب للصفحة الرئيسية",
+        "goHome": "الذهاب للرئيسية"
     }
 }
