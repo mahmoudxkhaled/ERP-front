@@ -1,0 +1,33 @@
+---
+description: Default when writing UI code — use skeleton for loading and translate everything (including toasts)
+alwaysApply: true
+---
+
+# UI defaults (skeleton + i18n)
+
+When writing or editing UI code, apply these by default.
+
+## 1. Loading state — use PrimeNG Skeleton
+
+- Use **&lt;p-skeleton&gt;** for loading; do not add spinners or new loading flags.
+- Use existing loading flags only (e.g. `loading`, `loadingDetails`, `isLoading$`).
+- Pattern: `*ngIf="loading; else realContent"` with `<ng-template #realContent>`; skeleton replaces inner content only; keep layout (containers, spacing, alignment) unchanged.
+- Skeleton size must match the final content (height/width) to avoid layout shift.
+- Do not change TypeScript logic; only change the HTML template.
+
+## 2. Translations — everything in en + ar
+
+- **Templates:** All user-visible text via `{{ 'key' | translate }}` or `[placeholder]="'key' | translate"`. Add keys to both `src/assets/i18n/en.json` and `src/assets/i18n/ar.json`.
+- **Toaster / notifications (MessageService):** Never use hardcoded `summary` or `detail`. Use `this.translate.instant('key')` (or `translate.instant('key')`) and add those keys to both en.json and ar.json. Arabic: professional, formal UI Arabic.
+
+Example toaster:
+
+```ts
+this.messageService.add({
+  severity: 'success',
+  summary: this.translate.instant('common.success'),
+  detail: this.translate.instant('entityAccounts.messages.created')
+});
+```
+
+Apply skeleton and i18n (including toasts) on every new or modified UI.

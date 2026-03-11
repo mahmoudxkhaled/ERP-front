@@ -1,0 +1,52 @@
+---
+description: Use translate pipe and add en/ar keys for all user-visible text in templates
+globs: "**/*.html","**/i18n/*.json"
+alwaysApply: false
+---
+
+# i18n and Translations
+
+When editing Angular HTML templates or translation files, follow these rules.
+
+## Templates
+
+1. **Replace all user-visible static text** with the `translate` pipe. Do not change TypeScript logic, form logic, or validation.
+2. **Pattern:** `{{ 'key.path.here' | translate }}` or `[placeholder]="'key.path.here' | translate"` for attributes.
+3. **Keep** structure, icons, and CSS classes unchanged.
+
+## Key naming (hierarchical)
+
+Use a clear hierarchy: `[module].[pageOrFeature].[section].[element]`.
+
+Examples:
+
+- `auth.reset-password.title`
+- `auth.reset-password.fields.newPassword`
+- `entityGroups.form.editTitle`
+- `systemAdministration.erpFunctions.functionsList.searchPlaceholder`
+
+## Translation files
+
+- **Always update both** `src/assets/i18n/en.json` and `src/assets/i18n/ar.json`.
+- **Arabic:** Use professional, formal UI Arabic (not literal word-by-word translation).
+
+## Examples
+
+```html
+<!-- Before -->
+<h2>Reset Password</h2>
+<p-button label="Submit"></p-button>
+
+<!-- After -->
+<h2>{{ 'auth.reset-password.title' | translate }}</h2>
+<p-button [label]="'auth.reset-password.actions.submit' | translate"></p-button>
+```
+
+When adding or changing template text, output the new keys and add the corresponding entries to both `en.json` and `ar.json`.
+
+## Toaster / notification messages (MessageService)
+
+- **Never use hardcoded** `summary` or `detail` in `messageService.add({ ... })`.
+- Use `this.translate.instant('key')` for both summary and detail; add every key to `en.json` and `ar.json`.
+- Same key naming: `[module].[feature].messages.*` or `common.success`, `common.error`, etc.
+- When adding or changing toasts, add the new keys to both language files.
