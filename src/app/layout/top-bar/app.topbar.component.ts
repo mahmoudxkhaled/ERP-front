@@ -295,28 +295,22 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
 
     changeUserLanguage(event: ListboxChangeEvent) {
         if (!event.value || this.langLoading) {
-            return; // Prevent unnecessary calls or multiple requests
+            return;
         }
         this.userLanguageCode = event.value;
-        console.log(event.value);
-
-        this.langLoading = true; // Set loading to true
-        this.isListboxVisible = false; // Hide the listbox after selection
+        this.isListboxVisible = false;
 
         const data = this.localStorage.getCurrentUserData();
-        console.log(data);
-        data.languageId = this.userLanguageCode;
-        data.language = this.userLanguageId;
-        this.localStorage.setItem('userData', data);
-        console.log('userLanguageCode', this.userLanguageCode);
-        this.rtlService.setUserLanguageCode(this.userLanguageCode || 'en');
-        this.isRtl = event.value === 'ar';
-        console.log('isRtl', this.isRtl);
-        this.rtlService.setRtl(this.isRtl);
-        this.langLoading = false; // Reset loading state
-        window.location.reload();
-        this.ref.detectChanges();
+        if (data) {
+            data.languageId = this.userLanguageCode;
+            data.language = this.userLanguageId;
+            this.localStorage.setItem('userData', data);
+        }
+        const newRtl = event.value === 'ar';
+        localStorage.setItem('isRtl', JSON.stringify(newRtl));
 
+        // Reload without updating layout first so there is no flicker
+        window.location.reload();
     }
 
     toggleLanguageDropdown() {
@@ -432,13 +426,13 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
 
         const unreadIds = unreadNotifications.map(n => n.id);
         const sub = this.notificationsService.markNotificationsRead(this.currentAccountId, unreadIds).subscribe({
-                next: (response: any) => {
-                    if (response?.success) {
-                        this.notifications.forEach(n => {
-                            if (!n.isRead) {
-                                n.isRead = true;
-                            }
-                        });
+            next: (response: any) => {
+                if (response?.success) {
+                    this.notifications.forEach(n => {
+                        if (!n.isRead) {
+                            n.isRead = true;
+                        }
+                    });
                     this.updateUnreadCount();
                     this.ref.detectChanges();
                     this.notificationRefreshService.requestInboxRefresh();
