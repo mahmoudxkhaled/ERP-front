@@ -166,6 +166,11 @@
   }
 }
 
+:host-context([dir="rtl"]) ::ng-deep .notfound-button-back .p-button-label,
+:host ::ng-deep .notfound-page.notfound-rtl .notfound-button-back .p-button-label {
+  margin-bottom: 7px !important;
+}
+
 .notfound-button-back {
   font-size: 1.3125rem !important;
   font-weight: 600 !important;
