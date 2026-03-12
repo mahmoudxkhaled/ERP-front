@@ -24,7 +24,7 @@ Junior-friendly
 
 Code must be easy for a junior developer to understand
 
-If logic is not obvious, add a short comment explaining it
+Do not add comments in code unless the user explicitly asks for comments
 
 Avoid RxJS complexity (no advanced operators unless absolutely necessary)
 

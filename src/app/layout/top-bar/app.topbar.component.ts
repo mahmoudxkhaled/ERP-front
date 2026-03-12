@@ -15,6 +15,7 @@ import { AuthService } from 'src/app/modules/auth/services/auth.service';
 import { LocalStorageService } from '../../core/services/local-storage.service';
 import { NotificationRefreshService } from '../../core/services/notification-refresh.service';
 import { LayoutService } from '../app-services/app.layout.service';
+import { EntitiesService } from 'src/app/modules/entity-administration/entities/services/entities.service';
 import { NotificationsService } from 'src/app/modules/summary/services/notifications.service';
 import { AccountNotification, AccountNotificationBackend } from 'src/app/modules/summary/models/notifications.model';
 import { PermissionService } from 'src/app/core/services/permission.service';
@@ -62,6 +63,10 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
     entityDetails: IEntityDetails;
     userName: string = '';
     entityName: string = '';
+    parentEntityCode: string = '';
+    parentEntityLogo: string = '';
+    headerLogoLoading = true;
+    headerTitleLoading = false;
     gender: boolean = false;
     profilePictureUrl: string = '';
 
@@ -82,8 +87,42 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         private notificationsService: NotificationsService,
         private messageService: MessageService,
         private permissionService: PermissionService,
-        private notificationRefreshService: NotificationRefreshService
+        private notificationRefreshService: NotificationRefreshService,
+        private entitiesService: EntitiesService
     ) {
+    }
+
+    get isRootEntity(): boolean {
+        const pid = this.entityDetails?.Parent_Entity_ID;
+        if (pid == null || pid === undefined || pid === 0) {
+            return true;
+        }
+        const s = String(pid).trim();
+        return s === '' || s === '0';
+    }
+
+    get headerDisplayLogo(): string {
+        if (this.isRootEntity) {
+            return this.entityLogo || '';
+        }
+        return this.entityLogo || this.parentEntityLogo || '';
+    }
+
+    get headerDisplayTitle(): string {
+        if (this.isRootEntity) {
+            return this.entityName || '';
+        }
+        const parent = (this.parentEntityCode || '').trim();
+        const sub = (this.entityName || '').trim();
+        if (!parent) {
+            return sub;
+        }
+        return sub ? `${parent} – ${sub}` : parent;
+    }
+
+    /** True while either logo or title is still loading; use to show both skeletons until both are ready. */
+    get headerBlockLoading(): boolean {
+        return this.headerLogoLoading || this.headerTitleLoading;
     }
 
     ngOnInit(): void {
@@ -152,6 +191,9 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         this.entityDetails = this.localStorage.getEntityDetails() as IEntityDetails;
         this.accountSettings = this.localStorage.getAccountSettings() as IAccountSettings;
 
+        this.parentEntityCode = '';
+        this.parentEntityLogo = '';
+        this.headerLogoLoading = true;
 
         this.entityLogo = this.imageService.toImageDataUrl(this.entityDetails?.Logo);
         const isRegional = this.accountSettings?.Language !== 'English';
@@ -168,6 +210,51 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
             } else {
                 this.entityName = this.entityDetails.Name || '';
             }
+
+            const raw = this.entityDetails.Parent_Entity_ID;
+            const parentIdStr = raw == null ? '' : String(raw).trim();
+            const isSubEntity = parentIdStr !== '' && parentIdStr !== '0';
+            if (!isSubEntity) {
+                this.headerLogoLoading = false;
+            } else {
+                this.headerTitleLoading = true;
+                const sub = this.entitiesService.getEntityDetails(parentIdStr).subscribe({
+                    next: (response: any) => {
+                        if (response?.success && response?.message) {
+                            this.parentEntityCode = response.message.Code || '';
+                        }
+                        this.headerTitleLoading = false;
+                        this.ref.detectChanges();
+                        if (!this.entityLogo) {
+                            this.entitiesService.getEntityLogo(parentIdStr).subscribe({
+                                next: (logoRes: any) => {
+                                    if (logoRes?.success && logoRes?.message?.Image) {
+                                        const fmt = logoRes.message.Image_Format || 'png';
+                                        this.parentEntityLogo = `data:image/${fmt.toLowerCase()};base64,${logoRes.message.Image}`;
+                                    }
+                                    this.headerLogoLoading = false;
+                                    this.ref.detectChanges();
+                                },
+                                error: () => {
+                                    this.headerLogoLoading = false;
+                                    this.ref.detectChanges();
+                                }
+                            });
+                        } else {
+                            this.headerLogoLoading = false;
+                            this.ref.detectChanges();
+                        }
+                    },
+                    error: () => {
+                        this.headerTitleLoading = false;
+                        this.headerLogoLoading = false;
+                        this.ref.detectChanges();
+                    }
+                });
+                this.subs.add(sub);
+            }
+        } else {
+            this.headerLogoLoading = false;
         }
 
         if (this.user) {

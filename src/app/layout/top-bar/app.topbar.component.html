@@ -1,12 +1,14 @@
 <div class="layout-topbar" [ngClass]="{ 'border-bottom-none': layoutService.config().topbarTheme !== 'light' }">
 
 
-    <div class="mx-4 flex align-items-center company-info-desktop">
-
-        <img *ngIf="entityLogo" width="45" class="mx-2" [src]="entityLogo"
-            [attr.alt]="'layout.top-bar.companyLogo' | translate" />
-        <p style="font-size: 1.2rem; font-weight: 600;"> {{ entityName }}{{ 'layout.top-bar.erpSystemSuffix' | translate
-            }}</p>
+    <div class="mx-4 flex align-items-center company-info-desktop topbar-entity-block">
+        <p-skeleton *ngIf="headerBlockLoading" width="45px" height="45px" class="mx-2 topbar-entity-logo"
+            styleClass="rounded" [ngStyle]="{ 'border-radius': '50%', opacity: 0.5 }"></p-skeleton>
+        <img *ngIf="!headerBlockLoading && headerDisplayLogo" width="45" height="45" class="mx-2 topbar-entity-logo"
+            [src]="headerDisplayLogo" [attr.alt]="'layout.top-bar.companyLogo' | translate" />
+        <p-skeleton *ngIf="headerBlockLoading" width="280px" height="1.7rem" class="topbar-entity-title-skeleton"
+            [ngStyle]="{ opacity: 0.5 }"></p-skeleton>
+        <p *ngIf="!headerBlockLoading" class="topbar-entity-title">{{ headerDisplayTitle }}</p>
     </div>
     <div class="company-info-mobile layout-topbar-start flex justify-content-between align-items-center"
         style="margin-top: 10px">

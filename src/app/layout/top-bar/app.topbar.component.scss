@@ -394,9 +394,42 @@ p-autoComplete {
   display: flex;
 }
 
+.topbar-entity-block {
+  min-width: 0;
+}
+
+.topbar-entity-logo {
+  flex-shrink: 0;
+}
+
+.topbar-entity-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 280px;
+}
+
+.topbar-entity-title-skeleton {
+  min-width: 0;
+  max-width: 280px;
+  flex-shrink: 0;
+  opacity: 0.5;
+}
+
 @media (max-width: 960px) {
   .company-info-desktop {
     display: none !important;
+  }
+
+  .topbar-entity-title {
+    max-width: 160px;
+  }
+
+  .topbar-entity-title-skeleton {
+    max-width: 160px;
   }
 }
 
