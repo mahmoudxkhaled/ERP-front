@@ -6,7 +6,8 @@ import { Subscription, throwError } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { EntitiesService } from '../../services/entities.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
-import { IAccountSettings } from 'src/app/core/models/account-status.model';
+import { EntityDetailsRefreshService } from 'src/app/core/services/entity-details-refresh.service';
+import { IAccountSettings, IEntityDetails } from 'src/app/core/models/account-status.model';
 import { Roles } from 'src/app/core/models/system-roles';
 import { textFieldValidator, getTextFieldError, nameFieldValidator, getNameFieldError } from 'src/app/core/validators/text-field.validator';
 import { Entity } from '../../models/entities.model';
@@ -50,7 +51,8 @@ export class EntityFormComponent implements OnInit, OnDestroy {
         private router: Router,
         private route: ActivatedRoute,
         private messageService: MessageService,
-        private localStorageService: LocalStorageService
+        private localStorageService: LocalStorageService,
+        private entityDetailsRefreshService: EntityDetailsRefreshService
     ) { }
 
     ngOnInit(): void {
@@ -337,6 +339,16 @@ export class EntityFormComponent implements OnInit, OnDestroy {
                     if (!response?.success) {
                         this.handleBusinessError('update', response);
                         return;
+                    }
+
+                    const currentEntity = this.localStorageService.getEntityDetails() as IEntityDetails | null;
+                    if (currentEntity && String(currentEntity.Entity_ID) === this.entityId) {
+                        currentEntity.Name = name;
+                        currentEntity.Name_Regional = name;
+                        currentEntity.Description = description;
+                        currentEntity.Description_Regional = description;
+                        this.localStorageService.setItem('Entity_Details', currentEntity);
+                        this.entityDetailsRefreshService.requestRefresh();
                     }
 
                     this.messageService.add({

@@ -14,6 +14,7 @@ import { UserNameService } from 'src/app/core/services/user-name.service';
 import { AuthService } from 'src/app/modules/auth/services/auth.service';
 import { LocalStorageService } from '../../core/services/local-storage.service';
 import { NotificationRefreshService } from '../../core/services/notification-refresh.service';
+import { EntityDetailsRefreshService } from '../../core/services/entity-details-refresh.service';
 import { LayoutService } from '../app-services/app.layout.service';
 import { EntitiesService } from 'src/app/modules/entity-administration/entities/services/entities.service';
 import { NotificationsService } from 'src/app/modules/summary/services/notifications.service';
@@ -88,6 +89,7 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         private messageService: MessageService,
         private permissionService: PermissionService,
         private notificationRefreshService: NotificationRefreshService,
+        private entityDetailsRefreshService: EntityDetailsRefreshService,
         private entitiesService: EntitiesService
     ) {
     }
@@ -178,6 +180,13 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
                 if (this.currentAccountId > 0) {
                     this.loadNotifications();
                 }
+            })
+        );
+        // Refresh entity name/logo in top bar when entity is updated (e.g. from entity form)
+        this.subs.add(
+            this.entityDetailsRefreshService.onRefreshRequested().subscribe(() => {
+                this.loadUserDetails();
+                this.ref.detectChanges();
             })
         );
     }
