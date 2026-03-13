@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslationService } from 'src/app/core/services/translation.service';
@@ -11,6 +11,7 @@ import { ProfileApiService } from '../../../services/profile-api.service';
 import { ProfileContactInfo, ProfilePreferences } from '../../../models/profile.model';
 import { Observable, Subscription } from 'rxjs';
 import { nameFieldValidator, getNameFieldError, textFieldValidator, getTextFieldError } from 'src/app/core/validators/text-field.validator';
+import { FileUpload } from 'primeng/fileupload';
 
 type ProfileContext = 'update' | 'contact' | 'preferences' | 'picture';
 
@@ -21,6 +22,8 @@ type ProfileContext = 'update' | 'contact' | 'preferences' | 'picture';
     providers: [MessageService]
 })
 export class ProfileEditComponent implements OnInit, OnDestroy {
+
+    @ViewChild('profilePictureUploader') profilePictureUploader?: FileUpload;
 
     profileForm!: FormGroup;
     contactInfoForm!: FormGroup;
@@ -560,6 +563,22 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
         this.subscriptions.push(sub);
     }
 
+    getDefaultAvatarUrl(): string {
+        return this.gender ? 'assets/media/avatar.png' : 'assets/media/female-avatar.png';
+    }
+
+    onProfilePictureAreaClick(): void {
+        if (this.uploadingPicture) {
+            return;
+        }
+        this.profilePictureUploader?.choose();
+    }
+
+    onProfilePictureKeydown(event: KeyboardEvent | Event): void {
+        event.preventDefault();
+        this.onProfilePictureAreaClick();
+    }
+
     uploadProfilePicture(event: any): void {
         if (!this.currentUserId) {
             return;
@@ -579,6 +598,7 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
                 summary: 'Error',
                 detail: 'Invalid image format. Allowed formats: PNG, JPG, JPEG, GIF, BMP, TIFF, PICT'
             });
+            this.profilePictureUploader?.clear();
             return;
         }
 
@@ -589,7 +609,19 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
                 summary: 'Error',
                 detail: 'Image size must be less than 2MB.'
             });
+            this.profilePictureUploader?.clear();
             return;
+        }
+
+        // Warn when file is over 1 MB (show in toaster)
+        const oneMB = 1024 * 1024;
+        if (file.size > oneMB) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: this.translate.getInstant('profile.edit.largeFile'),
+                detail: this.translate.getInstant('profile.edit.largeFileDetail'),
+                life: 5000
+            });
         }
 
         this.uploadingPicture = true;
@@ -603,6 +635,7 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
                     this.uploadingPicture = false;
                     if (!response?.success) {
                         this.handleBusinessError('picture', response);
+                        this.profilePictureUploader?.clear();
                         return;
                     }
 
@@ -617,10 +650,21 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
                 },
                 error: () => {
                     this.uploadingPicture = false;
+                    this.profilePictureUploader?.clear();
                 }
             });
 
             this.subscriptions.push(sub);
+        };
+        reader.onerror = () => {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error',
+                detail: 'Failed to read file. Please try again.',
+                life: 5000
+            });
+            this.uploadingPicture = false;
+            this.profilePictureUploader?.clear();
         };
         reader.readAsDataURL(file);
     }

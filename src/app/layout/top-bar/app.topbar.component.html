@@ -171,9 +171,10 @@
                         userName }}</p>
                 </li>
                 <li>
-                    <img [src]="profilePictureUrl" [attr.alt]="'layout.top-bar.avatar' | translate" style="width: 32px; height: 32px; vertical-align: middle;
-                    border-radius: 50%;
-                    border: 1px solid gray; background-color: white; cursor: pointer;" routerLink="/summary/profile" />
+                    <img [src]="profilePictureUrl" [attr.alt]="'layout.top-bar.avatar' | translate"
+                        style="width: 32px; height: 32px; vertical-align: middle; border-radius: 50%;
+                        border: 1px solid gray; background-color: white; cursor: pointer; object-fit: cover;"
+                        routerLink="/summary/profile" />
                 </li>
 
                 <!-- <li>
