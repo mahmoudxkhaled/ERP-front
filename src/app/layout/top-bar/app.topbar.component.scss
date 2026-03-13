@@ -19,16 +19,28 @@
 }
 
 .layout-topbar-middel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-grow: 1;
   gap: 1rem;
   font-size: 1.25rem;
-  padding: 0.5rem;
-  border-radius: 50%;
+  pointer-events: none;
   background-color: var(--topbar-item-bg);
   color: var(--topbar-item-text-color);
+
+  img,
+  a {
+    pointer-events: auto;
+  }
+
+  img {
+    display: block;
+  }
 }
 
 .ng-hidden-temp {
@@ -214,16 +226,28 @@ p-autoComplete {
 }
 
 .layout-topbar-middel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-grow: 1;
   gap: 1rem;
   font-size: 1.25rem;
-  padding: 0.5rem;
-  border-radius: 50%;
+  pointer-events: none;
   background-color: var(--topbar-item-bg);
   color: var(--topbar-item-text-color);
+
+  img,
+  a {
+    pointer-events: auto;
+  }
+
+  img {
+    display: block;
+  }
 }
 
 .ng-hidden-temp {
@@ -395,6 +419,7 @@ p-autoComplete {
 }
 
 .topbar-entity-block {
+  flex: 1;
   min-width: 0;
 }
 
@@ -465,16 +490,28 @@ p-autoComplete {
 }
 
 .layout-topbar-middel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-grow: 1;
   gap: 1rem;
   font-size: 1.25rem;
-  padding: 0.5rem;
-  border-radius: 50%;
+  pointer-events: none;
   background-color: var(--topbar-item-bg);
   color: var(--topbar-item-text-color);
+
+  img,
+  a {
+    pointer-events: auto;
+  }
+
+  img {
+    display: block;
+  }
 }
 
 .ng-hidden-temp {
@@ -660,16 +697,28 @@ p-autoComplete {
 }
 
 .layout-topbar-middel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-grow: 1;
   gap: 1rem;
   font-size: 1.25rem;
-  padding: 0.5rem;
-  border-radius: 50%;
+  pointer-events: none;
   background-color: var(--topbar-item-bg);
   color: var(--topbar-item-text-color);
+
+  img,
+  a {
+    pointer-events: auto;
+  }
+
+  img {
+    display: block;
+  }
 }
 
 .ng-hidden-temp {
