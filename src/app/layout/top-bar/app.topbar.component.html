@@ -66,9 +66,9 @@
                 <!-- Notification Bell: fixed-width wrap avoids layout shift; badge only when unread -->
                 <li class="topbar-notification-bell-wrap">
                     <i *ngIf="unreadCount > 0" class="pi pi-bell text-2xl cursor-pointer" pBadge severity="danger"
-                        [value]="unreadCount > 99 ? '99+' : unreadCount.toString()"
-                        pStyleClass="@next" enterFromClass="ng-hidden" enterActiveClass="px-scalein"
-                        leaveToClass="ng-hidden" leaveActiveClass="px-fadeout" [hideOnOutsideClick]="true"
+                        [value]="unreadCount > 99 ? '99+' : unreadCount.toString()" pStyleClass="@next"
+                        enterFromClass="ng-hidden" enterActiveClass="px-scalein" leaveToClass="ng-hidden"
+                        leaveActiveClass="px-fadeout" [hideOnOutsideClick]="true"
                         (click)="onNotificationPanelOpen($event)">
                     </i>
                     <i *ngIf="unreadCount === 0" class="pi pi-bell text-2xl cursor-pointer" pStyleClass="@next"
