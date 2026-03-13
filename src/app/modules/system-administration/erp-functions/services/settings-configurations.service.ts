@@ -31,12 +31,19 @@ export class SettingsConfigurationsService {
     /**
      * Retrieve the list of all available functions
      * API Code: 705
+     * @param options.silent - When true, do not set global loading state (avoids UI flicker)
      * @returns Observable containing FunctionsListResponse
      */
-    getFunctionsList(): Observable<any> {
-        this.isLoadingSubject.next(true);
+    getFunctionsList(options?: { silent?: boolean }): Observable<any> {
+        if (!options?.silent) {
+            this.isLoadingSubject.next(true);
+        }
         return this.apiServices.callAPI(705, this.getAccessToken(), []).pipe(
-            finalize(() => this.isLoadingSubject.next(false))
+            finalize(() => {
+                if (!options?.silent) {
+                    this.isLoadingSubject.next(false);
+                }
+            })
         );
     }
 
@@ -73,12 +80,19 @@ export class SettingsConfigurationsService {
      * Get function details
      * API Code: 701
      * @param functionId - Function ID
+     * @param options.silent - When true, do not set global loading state
      * @returns Observable containing FunctionDetailsResponse
      */
-    getFunctionDetails(functionId: number): Observable<any> {
-        this.isLoadingSubject.next(true);
+    getFunctionDetails(functionId: number, options?: { silent?: boolean }): Observable<any> {
+        if (!options?.silent) {
+            this.isLoadingSubject.next(true);
+        }
         return this.apiServices.callAPI(701, this.getAccessToken(), [functionId.toString()]).pipe(
-            finalize(() => this.isLoadingSubject.next(false))
+            finalize(() => {
+                if (!options?.silent) {
+                    this.isLoadingSubject.next(false);
+                }
+            })
         );
     }
 
@@ -91,6 +105,7 @@ export class SettingsConfigurationsService {
      * @param isRegional - Whether to update regional name
      * @param defaultOrder - Default order (must be > 0)
      * @param url - Function URL
+     * @param options.silent - When true, do not set global loading state
      * @returns Observable containing response
      */
     updateFunctionDetails(
@@ -99,9 +114,12 @@ export class SettingsConfigurationsService {
         name: string,
         isRegional: boolean,
         defaultOrder: number,
-        url: string
+        url: string,
+        options?: { silent?: boolean }
     ): Observable<any> {
-        this.isLoadingSubject.next(true);
+        if (!options?.silent) {
+            this.isLoadingSubject.next(true);
+        }
         const params = [
             functionId.toString(),
             code,
@@ -111,7 +129,11 @@ export class SettingsConfigurationsService {
             url.trim().toString()
         ];
         return this.apiServices.callAPI(702, this.getAccessToken(), params).pipe(
-            finalize(() => this.isLoadingSubject.next(false))
+            finalize(() => {
+                if (!options?.silent) {
+                    this.isLoadingSubject.next(false);
+                }
+            })
         );
     }
 

@@ -1,4 +1,8 @@
 {
+    "common": {
+        "success": "Success",
+        "error": "Error"
+    },
     "validation": {
         "requiredMessage": "This field is required",
         "emailMessage": "Please enter a valid email",
@@ -2486,12 +2490,16 @@
                     "id": "Id",
                     "code": "Code",
                     "name": "Name",
-                    "defaultOrder": "Default Order",
+                    "defaultOrder": "Order",
                     "url": "URL",
                     "status": "Status",
                     "actions": "Actions"
                 },
                 "emptyMessage": "No functions found",
+                "reorderUp": "Move up",
+                "reorderDown": "Move down",
+                "reorderSuccess": "Order updated successfully.",
+                "reorderError": "Failed to update order.",
                 "activationDialog": {
                     "activateTitle": "Activate Function",
                     "deactivateTitle": "Deactivate Function",

@@ -2,14 +2,14 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/co
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MenuItem, MessageService } from 'primeng/api';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, forkJoin } from 'rxjs';
 import { SettingsConfigurationsService } from '../../services/settings-configurations.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { Function } from '../../models/settings-configurations.model';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
 
-type FunctionActionContext = 'list' | 'activate' | 'deactivate';
+type FunctionActionContext = 'list' | 'activate' | 'deactivate' | 'reorder';
 
 @Component({
     selector: 'app-functions-list',
@@ -31,6 +31,7 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
     logoDialogVisible: boolean = false;
     currentFunctionForLogo?: Function;
     activationControls: Record<number, FormControl<boolean>> = {};
+    reorderInProgressIds = new Set<number>();
 
     // Pagination (handled by PrimeNG automatically)
     first: number = 0;
@@ -68,22 +69,23 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
         this.subscriptions.forEach((sub) => sub.unsubscribe());
     }
 
-    loadFunctions(forceReload: boolean = false): void {
-        if (this.settingsConfigurationsService.isLoadingSubject.value && !forceReload) {
+    loadFunctions(forceReload: boolean = false, silent: boolean = false): void {
+        if (this.settingsConfigurationsService.isLoadingSubject.value && !forceReload && !silent) {
             return;
         }
 
         const isRegional = this.accountSettings?.Language !== 'English';
-        this.tableLoadingSpinner = true;
+        if (!silent) {
+            this.tableLoadingSpinner = true;
+        }
 
-        const sub = this.settingsConfigurationsService.getFunctionsList().subscribe({
+        const sub = this.settingsConfigurationsService.getFunctionsList(silent ? { silent: true } : undefined).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
                     this.handleBusinessError('list', response);
                     return;
                 }
 
-                // Parse functions list
                 this.functions = this.settingsConfigurationsService.parseFunctionsList(response, isRegional);
                 this.applySearchFilter();
                 this.buildActivationControls();
@@ -303,19 +305,126 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
     }
 
     private applySearchFilter(): void {
+        let candidates: Function[];
         if (!this.searchText || this.searchText.trim() === '') {
-            this.filteredFunctions = [...this.functions];
+            candidates = [...this.functions];
+        } else {
+            const searchTerm = this.searchText.toLowerCase().trim();
+            candidates = this.functions.filter((functionItem) => {
+                const codeMatch = functionItem.code?.toLowerCase().includes(searchTerm) || false;
+                const nameMatch = functionItem.name?.toLowerCase().includes(searchTerm) || false;
+                const idMatch = String(functionItem.id).includes(searchTerm) || false;
+                const urlMatch = functionItem.url?.toLowerCase().includes(searchTerm) || false;
+                return codeMatch || nameMatch || idMatch || urlMatch;
+            });
+        }
+        this.filteredFunctions = [...candidates].sort((a, b) => (a.defaultOrder ?? 9999) - (b.defaultOrder ?? 9999));
+    }
+
+    isFirstRow(functionItem: Function): boolean {
+        return this.filteredFunctions.length > 0 && this.filteredFunctions[0].id === functionItem.id;
+    }
+
+    isLastRow(functionItem: Function): boolean {
+        return this.filteredFunctions.length > 0 && this.filteredFunctions[this.filteredFunctions.length - 1].id === functionItem.id;
+    }
+
+    isReorderInProgress(functionItem: Function): boolean {
+        return this.reorderInProgressIds.has(functionItem.id);
+    }
+
+    moveUp(functionItem: Function): void {
+        const currentIndex = this.filteredFunctions.findIndex((f) => f.id === functionItem.id);
+        if (currentIndex <= 0) {
             return;
         }
+        const other = this.filteredFunctions[currentIndex - 1];
+        const orderA = functionItem.defaultOrder ?? 0;
+        const orderB = other.defaultOrder ?? 0;
+        this.reorderTwoFunctions(functionItem, other, orderB, orderA);
+    }
 
-        const searchTerm = this.searchText.toLowerCase().trim();
-        this.filteredFunctions = this.functions.filter((functionItem) => {
-            const codeMatch = functionItem.code?.toLowerCase().includes(searchTerm) || false;
-            const nameMatch = functionItem.name?.toLowerCase().includes(searchTerm) || false;
-            const idMatch = String(functionItem.id).includes(searchTerm) || false;
-            const urlMatch = functionItem.url?.toLowerCase().includes(searchTerm) || false;
+    moveDown(functionItem: Function): void {
+        const currentIndex = this.filteredFunctions.findIndex((f) => f.id === functionItem.id);
+        if (currentIndex < 0 || currentIndex >= this.filteredFunctions.length - 1) {
+            return;
+        }
+        const other = this.filteredFunctions[currentIndex + 1];
+        const orderA = functionItem.defaultOrder ?? 0;
+        const orderB = other.defaultOrder ?? 0;
+        this.reorderTwoFunctions(functionItem, other, orderB, orderA);
+    }
 
-            return codeMatch || nameMatch || idMatch || urlMatch;
+    private reorderTwoFunctions(funcA: Function, funcB: Function, newOrderA: number, newOrderB: number): void {
+        this.reorderInProgressIds.add(funcA.id);
+        this.reorderInProgressIds.add(funcB.id);
+
+        const getDetailsA = this.settingsConfigurationsService.getFunctionDetails(funcA.id, { silent: true });
+        const getDetailsB = this.settingsConfigurationsService.getFunctionDetails(funcB.id, { silent: true });
+
+        const sub = forkJoin({ detailsA: getDetailsA, detailsB: getDetailsB }).subscribe({
+            next: (result) => {
+                const msgA = result.detailsA?.message;
+                const msgB = result.detailsB?.message;
+                if (!result.detailsA?.success || !msgA || !result.detailsB?.success || !msgB) {
+                    this.reorderInProgressIds.delete(funcA.id);
+                    this.reorderInProgressIds.delete(funcB.id);
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: this.translate.getInstant('common.error'),
+                        detail: this.translate.getInstant('systemAdministration.erpFunctions.functionsList.reorderError'),
+                        life: 3000
+                    });
+                    return;
+                }
+
+                const updateA = this.settingsConfigurationsService.updateFunctionDetails(
+                    funcA.id,
+                    msgA.Code || '',
+                    msgA.Name || '',
+                    !!msgA.Name_Regional,
+                    newOrderA,
+                    msgA.URL ?? '',
+                    { silent: true }
+                );
+                const updateB = this.settingsConfigurationsService.updateFunctionDetails(
+                    funcB.id,
+                    msgB.Code || '',
+                    msgB.Name || '',
+                    !!msgB.Name_Regional,
+                    newOrderB,
+                    msgB.URL ?? '',
+                    { silent: true }
+                );
+
+                const updateSub = forkJoin({ updateA, updateB }).subscribe({
+                    next: (updateResult) => {
+                        if (!updateResult.updateA?.success || !updateResult.updateB?.success) {
+                            this.messageService.add({
+                                severity: 'error',
+                                summary: this.translate.getInstant('common.error'),
+                                detail: this.translate.getInstant('systemAdministration.erpFunctions.functionsList.reorderError'),
+                                life: 3000
+                            });
+                            return;
+                        }
+                        this.messageService.add({
+                            severity: 'success',
+                            summary: this.translate.getInstant('common.success'),
+                            detail: this.translate.getInstant('systemAdministration.erpFunctions.functionsList.reorderSuccess'),
+                            life: 3000
+                        });
+                        this.loadFunctions(true, true);
+                    },
+                    complete: () => {
+                        this.reorderInProgressIds.delete(funcA.id);
+                        this.reorderInProgressIds.delete(funcB.id);
+                    }
+                });
+                this.subscriptions.push(updateSub);
+            }
         });
+
+        this.subscriptions.push(sub);
     }
 }

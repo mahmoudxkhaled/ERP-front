@@ -1,4 +1,8 @@
 {
+    "common": {
+        "success": "نجاح",
+        "error": "خطأ"
+    },
     "validation": {
         "requiredMessage": "هذا الحقل مطلوب",
         "emailMessage": "يرجى إدخال بريد إلكتروني صحيح",
@@ -2346,12 +2350,16 @@
                     "id": "المعرف",
                     "code": "الرمز",
                     "name": "الاسم",
-                    "defaultOrder": "الترتيب الافتراضي",
+                    "defaultOrder": "الترتيب ",
                     "url": "الرابط",
                     "status": "الحالة",
                     "actions": "الإجراءات"
                 },
                 "emptyMessage": "لم يتم العثور على وظائف",
+                "reorderUp": "تحريك لأعلى",
+                "reorderDown": "تحريك لأسفل",
+                "reorderSuccess": "تم تحديث الترتيب بنجاح.",
+                "reorderError": "فشل في تحديث الترتيب.",
                 "activationDialog": {
                     "activateTitle": "تفعيل الوظيفة",
                     "deactivateTitle": "إلغاء تفعيل الوظيفة",
