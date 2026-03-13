@@ -44,12 +44,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: var(--surface-100);
-
+      // Soft gray so empty area (with object-fit: contain) doesn't look like white
+      background-color: var(--surface-200, #e8e8e8);
       img {
         width: 100%;
         height: 100%;
-        object-fit: cover;
+        object-fit: contain;
       }
     }
 
@@ -83,6 +83,7 @@
       flex-direction: column;
       gap: 0.75rem;
       align-items: center;
+      padding: 0 0.5rem;
 
       // Ensure buttons are clickable
       ::ng-deep button,
@@ -91,7 +92,54 @@
       }
     }
 
-    // Loading overlay
+    .logo-actions-row {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      align-items: center;
+    }
+
+    // Upload button: light outline on dark overlay, clear hover
+    ::ng-deep .logo-upload-button.p-button {
+      background: transparent;
+      color: rgba(255, 255, 255, 0.95);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      border-radius: 8px;
+      padding: 0.5rem 0.75rem;
+      font-weight: 500;
+      transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.95);
+        color: #fff;
+        transform: translateY(-1px);
+      }
+    }
+
+    // Remove button: subtle danger style on dark overlay
+    .logo-remove-button.p-button {
+      background: rgba(220, 53, 69, 0.85);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      padding: 0.5rem 0.75rem;
+      font-weight: 500;
+      transition: background 0.2s ease, transform 0.15s ease;
+
+      &:hover:not(:disabled) {
+        background: rgba(220, 53, 69, 1);
+        transform: translateY(-1px);
+      }
+
+      &:disabled {
+        opacity: 0.6;
+      }
+    }
+
+    // Loading overlay: shown until upload finishes
     .logo-loading-overlay {
       position: absolute;
       top: 0;
@@ -104,6 +152,28 @@
       justify-content: center;
       border-radius: 16px;
       z-index: 10;
+    }
+
+    .logo-upload-indicator {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-upload-text {
+      color: rgba(255, 255, 255, 0.95);
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    ::ng-deep .logo-upload-spinner.p-progress-spinner {
+      width: 2.5rem;
+      height: 2.5rem;
+
+      circle {
+        stroke: rgba(255, 255, 255, 0.9);
+      }
     }
   }
   

@@ -1438,7 +1438,8 @@
                 "uploadPhoto": "رفع صورة",
                 "uploadAnotherOne": "رفع صورة أخرى",
                 "removePhoto": "إزالة الصورة",
-                "recommendedSize": "موصى به: 200 كيلوبايت أو أقل"
+                "recommendedSize": "موصى به: 200 كيلوبايت أو أقل",
+                "uploading": "جاري الرفع..."
             },
             "fields": {
                 "code": "الكود:",

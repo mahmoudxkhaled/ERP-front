@@ -223,6 +223,7 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
                 detail: 'Please select an image file (JPG, PNG, JPEG, WEBP).',
                 life: 5000
             });
+            this.logoUploader?.clear();
             return;
         }
 
@@ -258,6 +259,7 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
                 detail: 'Failed to read file. Please try again.',
                 life: 5000
             });
+            this.logoUploader?.clear();
         };
         reader.readAsArrayBuffer(file);
     }
@@ -278,6 +280,7 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
             next: (response: any) => {
                 if (!response?.success) {
                     this.handleBusinessError('uploadLogo', response);
+                    this.logoUploader?.clear();
                     return;
                 }
 
@@ -290,7 +293,10 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
 
                 this.loadLogo();
             },
-
+            error: () => {
+                this.loadingLogo = false;
+                this.logoUploader?.clear();
+            },
             complete: () => this.loadingLogo = false
         });
 

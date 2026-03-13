@@ -4,10 +4,12 @@
     <!-- Page Header -->
     <div class="flex justify-content-between align-items-center mb-4">
         <div>
-            <h1 class="text-3xl font-bold mb-2">{{ 'dashboard.profile' | translate }}{{ 'profile.edit.titleSuffix' | translate }}</h1>
+            <h1 class="text-3xl font-bold mb-2">{{ 'dashboard.profile' | translate }}{{ 'profile.edit.titleSuffix' |
+                translate }}</h1>
             <p class="text-gray-600 m-0">{{ 'profile.description' | translate }}</p>
         </div>
-        <p-button [label]="'profile.edit.backToOverview' | translate" icon="pi pi-arrow-left" (onClick)="navigateBack()"></p-button>
+        <p-button [label]="'profile.edit.backToOverview' | translate" icon="pi pi-arrow-left"
+            (onClick)="navigateBack()"></p-button>
     </div>
 
     <!-- Profile Form -->
@@ -27,7 +29,8 @@
                                     size="xlarge" shape="circle" styleClass="border-3 border-white shadow-4"
                                     [style]="{'width': '150px', 'height': '150px'}">
                                 </p-avatar>
-                                <p class="text-sm text-600 m-0">{{ 'profile.edit.currentProfilePicture' | translate }}</p>
+                                <p class="text-sm text-600 m-0">{{ 'profile.edit.currentProfilePicture' | translate }}
+                                </p>
                             </div>
                         </div>
                         <div class="col-12 md:col-8">
@@ -39,13 +42,15 @@
                                     </label>
                                     <p-fileUpload mode="basic" name="profilePicture" accept="image/*"
                                         (onSelect)="uploadProfilePicture($event)" [maxFileSize]="2097152"
-                                        [chooseLabel]="'profile.edit.chooseImage' | translate" [disabled]="uploadingPicture">
+                                        [chooseLabel]="'profile.edit.chooseImage' | translate"
+                                        [disabled]="uploadingPicture">
                                     </p-fileUpload>
                                     <small class="text-600">{{ 'profile.edit.allowedFormats' | translate }}</small>
                                 </div>
                                 <div *ngIf="hasProfilePicture">
-                                    <p-button [label]="'profile.edit.removePicture' | translate" icon="pi pi-trash" severity="danger"
-                                        (onClick)="removeProfilePicture()" [disabled]="uploadingPicture">
+                                    <p-button [label]="'profile.edit.removePicture' | translate" icon="pi pi-trash"
+                                        severity="danger" (onClick)="removeProfilePicture()"
+                                        [disabled]="uploadingPicture">
                                         <ng-container *ngIf="uploadingPicture">
                                             <span class="indicator-progress" [style.display]="'block'">
                                                 {{ 'profile.edit.pleaseWait' | translate }}
@@ -90,8 +95,7 @@
                                     <span class="text-red-500">*</span>
                                 </label>
                                 <input pInputText formControlName="First_Name"
-                                    [placeholder]="'profile.placeholders.firstName' | translate"
-                                    class="w-full"
+                                    [placeholder]="'profile.placeholders.firstName' | translate" class="w-full"
                                     [ngClass]="{'ng-invalid ng-dirty': profileForm.get('First_Name')?.invalid && profileForm.get('First_Name')?.touched}">
                                 <small class="p-error block mt-1"
                                     *ngIf="profileForm.get('First_Name')?.invalid && profileForm.get('First_Name')?.touched">
@@ -108,8 +112,7 @@
                                     {{ 'profile.fields.middleName' | translate }}
                                 </label>
                                 <input pInputText formControlName="Middle_Name"
-                                    [placeholder]="'profile.placeholders.middleName' | translate"
-                                    class="w-full"
+                                    [placeholder]="'profile.placeholders.middleName' | translate" class="w-full"
                                     [ngClass]="{'ng-invalid ng-dirty': profileForm.get('Middle_Name')?.invalid && profileForm.get('Middle_Name')?.touched}">
                                 <small class="p-error block mt-1"
                                     *ngIf="profileForm.get('Middle_Name')?.invalid && profileForm.get('Middle_Name')?.touched">
@@ -144,8 +147,7 @@
                                     {{ 'profile.fields.gender' | translate }}
                                 </label>
                                 <p-dropdown [options]="genderOptions" formControlName="Gender" optionLabel="label"
-                                    optionValue="value"
-                                    [placeholder]="'profile.placeholders.selectGender' | translate"
+                                    optionValue="value" [placeholder]="'profile.placeholders.selectGender' | translate"
                                     class="w-full"
                                     [ngClass]="{'ng-invalid ng-dirty': profileForm.get('Gender')?.invalid && profileForm.get('Gender')?.touched}">
                                 </p-dropdown>
@@ -205,17 +207,19 @@
                             <div class="col-12">
                                 <div class="flex justify-content-between align-items-center mb-2">
                                     <label class="block text-sm font-medium">
-                                        {{ 'profile.edit.phoneNumbers' | translate }} <span class="text-red-500">*</span>
+                                        {{ 'profile.edit.phoneNumbers' | translate }} <span
+                                            class="text-red-500">*</span>
                                     </label>
-                                    <p-button [label]="'profile.edit.addPhone' | translate" icon="pi pi-plus" size="small"
-                                        (onClick)="addPhoneNumber()" type="button"></p-button>
+                                    <p-button [label]="'profile.edit.addPhone' | translate" icon="pi pi-plus"
+                                        size="small" (onClick)="addPhoneNumber()" type="button"></p-button>
                                 </div>
                                 <div formArrayName="phoneNumbers" class="flex flex-column gap-2">
                                     <div *ngFor="let phoneGroup of phoneNumbersFormArray.controls; let i = index"
                                         [formGroupName]="i" class="flex flex-column gap-1">
                                         <div class="flex align-items-center gap-2">
                                             <input type="text" pInputText formControlName="number"
-                                                [placeholder]="'profile.edit.enterPhoneNumber' | translate" class="flex-1"
+                                                [placeholder]="'profile.edit.enterPhoneNumber' | translate"
+                                                class="flex-1"
                                                 [ngClass]="{'ng-invalid ng-dirty': phoneGroup.get('number')?.invalid && phoneGroup.get('number')?.touched}" />
                                             <button pButton pRipple type="button" icon="pi pi-times"
                                                 class="p-button-rounded p-button-danger p-button-text"
@@ -238,7 +242,8 @@
                                         {{ 'profile.edit.linkedinPage' | translate }}
                                     </label>
                                     <input type="url" pInputText formControlName="linkedinPage"
-                                        [placeholder]="'profile.edit.linkedinPlaceholder' | translate" class="w-full social-input"
+                                        [placeholder]="'profile.edit.linkedinPlaceholder' | translate"
+                                        class="w-full social-input"
                                         [ngClass]="{'ng-invalid ng-dirty': contactInfoForm.get('linkedinPage')?.invalid && contactInfoForm.get('linkedinPage')?.touched}">
                                     <small class="p-error block mt-1"
                                         *ngIf="contactInfoForm.get('linkedinPage')?.invalid && contactInfoForm.get('linkedinPage')?.touched">
@@ -254,7 +259,8 @@
                                         {{ 'profile.edit.facebookPage' | translate }}
                                     </label>
                                     <input type="url" pInputText formControlName="facebookPage"
-                                        [placeholder]="'profile.edit.facebookPlaceholder' | translate" class="w-full social-input"
+                                        [placeholder]="'profile.edit.facebookPlaceholder' | translate"
+                                        class="w-full social-input"
                                         [ngClass]="{'ng-invalid ng-dirty': contactInfoForm.get('facebookPage')?.invalid && contactInfoForm.get('facebookPage')?.touched}">
                                     <small class="p-error block mt-1"
                                         *ngIf="contactInfoForm.get('facebookPage')?.invalid && contactInfoForm.get('facebookPage')?.touched">
@@ -270,7 +276,8 @@
                                         {{ 'profile.edit.instagramPage' | translate }}
                                     </label>
                                     <input type="url" pInputText formControlName="instagramPage"
-                                        [placeholder]="'profile.edit.instagramPlaceholder' | translate" class="w-full social-input"
+                                        [placeholder]="'profile.edit.instagramPlaceholder' | translate"
+                                        class="w-full social-input"
                                         [ngClass]="{'ng-invalid ng-dirty': contactInfoForm.get('instagramPage')?.invalid && contactInfoForm.get('instagramPage')?.touched}">
                                     <small class="p-error block mt-1"
                                         *ngIf="contactInfoForm.get('instagramPage')?.invalid && contactInfoForm.get('instagramPage')?.touched">
@@ -286,7 +293,8 @@
                                         {{ 'profile.edit.twitterPage' | translate }}
                                     </label>
                                     <input type="url" pInputText formControlName="twitterPage"
-                                        [placeholder]="'profile.edit.twitterPlaceholder' | translate" class="w-full social-input"
+                                        [placeholder]="'profile.edit.twitterPlaceholder' | translate"
+                                        class="w-full social-input"
                                         [ngClass]="{'ng-invalid ng-dirty': contactInfoForm.get('twitterPage')?.invalid && contactInfoForm.get('twitterPage')?.touched}">
                                     <small class="p-error block mt-1"
                                         *ngIf="contactInfoForm.get('twitterPage')?.invalid && contactInfoForm.get('twitterPage')?.touched">
@@ -329,13 +337,15 @@
                             <div class="col-12">
                                 <div class="flex justify-content-between align-items-center mb-3">
                                     <p class="m-0 text-600">{{ 'profile.edit.managePreferences' | translate }}</p>
-                                    <p-button [label]="'profile.edit.addPreference' | translate" icon="pi pi-plus" size="small"
-                                        (onClick)="addPreference()" type="button" [disabled]="true"></p-button>
+                                    <p-button [label]="'profile.edit.addPreference' | translate" icon="pi pi-plus"
+                                        size="small" (onClick)="addPreference()" type="button"
+                                        [disabled]="true"></p-button>
                                 </div>
                             </div>
 
                             <div class="col-12" *ngIf="getPreferenceKeys().length === 0">
-                                <p class="text-center text-600 p-4">{{ 'profile.edit.noPreferencesSet' | translate }}</p>
+                                <p class="text-center text-600 p-4">{{ 'profile.edit.noPreferencesSet' | translate }}
+                                </p>
                             </div>
 
                             <div class="col-12 md:col-6" *ngFor="let key of getPreferenceKeys()">
@@ -347,15 +357,16 @@
                                             (click)="removePreference(key)" [disabled]="true">
                                         </button>
                                     </div>
-                                    <input type="text" pInputText [formControlName]="key" [placeholder]="'profile.edit.enterValue' | translate"
-                                        class="w-full" [disabled]="true">
+                                    <input type="text" pInputText [formControlName]="key"
+                                        [placeholder]="'profile.edit.enterValue' | translate" class="w-full"
+                                        [disabled]="true">
                                 </div>
                             </div>
 
                             <div class="col-12" *ngIf="getPreferenceKeys().length > 0">
                                 <div class="flex justify-content-start gap-3 my-4">
-                                    <p-button [label]="'profile.edit.savePreferences' | translate" icon="pi pi-save" severity="success"
-                                        (onClick)="savePreferences()" [disabled]="true">
+                                    <p-button [label]="'profile.edit.savePreferences' | translate" icon="pi pi-save"
+                                        severity="success" (onClick)="savePreferences()" [disabled]="true">
                                     </p-button>
                                 </div>
                             </div>

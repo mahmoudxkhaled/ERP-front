@@ -114,23 +114,24 @@
                                                         mode="basic" name="logo" accept="image/*"
                                                         (onSelect)="onLogoUpload($event)" [maxFileSize]="2097152"
                                                         [chooseLabel]="'entities.details.logo.uploadPhoto' | translate"
-                                                        styleClass="logo-upload-button">
+                                                        styleClass="logo-upload-button p-button-outlined p-button-sm">
                                                     </p-fileUpload>
 
                                                     <!-- Show both Upload Another and Remove when logo exists -->
-                                                    <ng-container *ngIf="hasLogo && !loadingLogo">
+                                                    <div *ngIf="hasLogo && !loadingLogo" class="logo-actions-row">
                                                         <p-fileUpload #logoUploader mode="basic" name="logo"
                                                             accept="image/*" (onSelect)="onLogoUpload($event)"
                                                             [maxFileSize]="2097152"
                                                             [chooseLabel]="'entities.details.logo.uploadAnotherOne' | translate"
-                                                            styleClass="logo-upload-button">
+                                                            styleClass="logo-upload-button p-button-outlined p-button-sm">
                                                         </p-fileUpload>
                                                         <p-button
                                                             [label]="'entities.details.logo.removePhoto' | translate"
-                                                            icon="pi pi-trash" class="p-button-danger p-button-sm"
+                                                            icon="pi pi-trash" iconPos="left"
+                                                            class="logo-remove-button p-button-sm"
                                                             (onClick)="removeLogo()" [disabled]="loadingLogo">
                                                         </p-button>
-                                                    </ng-container>
+                                                    </div>
 
                                                     <!-- Show recommended size text -->
                                                     <small *ngIf="!loadingLogo"
@@ -141,9 +142,17 @@
                                                 </div>
                                             </div>
 
-                                            <!-- Loading indicator: skeleton when uploading -->
+                                            <!-- Upload indicator: spinner and text until upload finishes -->
                                             <div *ngIf="loadingLogo" class="logo-loading-overlay">
-                                                <p-skeleton width="3rem" height="3rem" shape="circle"></p-skeleton>
+                                                <div class="logo-upload-indicator">
+                                                    <p-progressSpinner
+                                                        strokeWidth="4"
+                                                        styleClass="logo-upload-spinner">
+                                                    </p-progressSpinner>
+                                                    <span class="logo-upload-text">
+                                                        {{ 'entities.details.logo.uploading' | translate }}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

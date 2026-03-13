@@ -1578,7 +1578,8 @@
                 "uploadPhoto": "Upload Photo",
                 "uploadAnotherOne": "Upload Another One",
                 "removePhoto": "Remove Photo",
-                "recommendedSize": "Recommended: 200KB or less"
+                "recommendedSize": "Recommended: 200KB or less",
+                "uploading": "Uploading..."
             },
             "fields": {
                 "code": "Code:",
