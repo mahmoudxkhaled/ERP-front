@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslationService } from 'src/app/core/services/translation.service';
@@ -24,6 +24,7 @@ type ProfileContext = 'update' | 'contact' | 'preferences' | 'picture';
 export class ProfileEditComponent implements OnInit, OnDestroy {
 
     @ViewChild('profilePictureUploader') profilePictureUploader?: FileUpload;
+    @ViewChild('cropImage') cropImageRef?: ElementRef<HTMLImageElement>;
 
     profileForm!: FormGroup;
     contactInfoForm!: FormGroup;
@@ -51,6 +52,20 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
     savingContactInfo: boolean = false;
     savingPreferences: boolean = false;
     uploadingPicture: boolean = false;
+
+    // Crop dialog: position photo so head is in focus before upload
+    showCropDialog: boolean = false;
+    pendingCropDataUrl: string = '';
+    pendingCropFile: File | null = null;
+    pendingCropFileExtension: string = 'png';
+    cropPosition: { x: number; y: number } = { x: 0, y: 0 };
+    cropDisplayWidth: number = 200;
+    cropDisplayHeight: number = 200;
+    private cropNaturalWidth: number = 0;
+    private cropNaturalHeight: number = 0;
+    private isCropDragging: boolean = false;
+    private lastCropMouseX: number = 0;
+    private lastCropMouseY: number = 0;
 
     genderOptions = [
         { label: 'Male', value: true },
@@ -624,37 +639,16 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
             });
         }
 
-        this.uploadingPicture = true;
+        // Open crop dialog so user can position photo (focus on head) before upload
+        this.pendingCropFile = file;
+        this.pendingCropFileExtension = fileExtension;
         const reader = new FileReader();
         reader.onload = () => {
-            const base64String = (reader.result as string).split(',')[1]; // Remove data:image/...;base64, prefix
-            const imageFormat = fileExtension;
-
-            const sub = this.profileApiService.assignProfilePicture(this.currentUserId!, imageFormat, base64String).subscribe({
-                next: (response: any) => {
-                    this.uploadingPicture = false;
-                    if (!response?.success) {
-                        this.handleBusinessError('picture', response);
-                        this.profilePictureUploader?.clear();
-                        return;
-                    }
-
-                    this.messageService.add({
-                        severity: 'success',
-                        summary: 'Success',
-                        detail: 'Profile picture updated successfully.'
-                    });
-
-                    // Reload profile picture and sync with all components
-                    this.loadProfilePicture();
-                },
-                error: () => {
-                    this.uploadingPicture = false;
-                    this.profilePictureUploader?.clear();
-                }
-            });
-
-            this.subscriptions.push(sub);
+            this.pendingCropDataUrl = reader.result as string;
+            this.cropPosition = { x: 0, y: 0 };
+            this.cropDisplayWidth = 200;
+            this.cropDisplayHeight = 200;
+            this.showCropDialog = true;
         };
         reader.onerror = () => {
             this.messageService.add({
@@ -663,10 +657,115 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
                 detail: 'Failed to read file. Please try again.',
                 life: 5000
             });
-            this.uploadingPicture = false;
             this.profilePictureUploader?.clear();
         };
         reader.readAsDataURL(file);
+        this.profilePictureUploader?.clear();
+    }
+
+    onCropImageLoad(event: Event): void {
+        const img = event.target as HTMLImageElement;
+        if (!img?.naturalWidth) return;
+        this.cropNaturalWidth = img.naturalWidth;
+        this.cropNaturalHeight = img.naturalHeight;
+        const size = 200;
+        const scale = size / Math.min(img.naturalWidth, img.naturalHeight);
+        this.cropDisplayWidth = Math.round(img.naturalWidth * scale);
+        this.cropDisplayHeight = Math.round(img.naturalHeight * scale);
+        this.cropPosition = {
+            x: (size - this.cropDisplayWidth) / 2,
+            y: (size - this.cropDisplayHeight) / 2
+        };
+    }
+
+    onCropMouseDown(event: MouseEvent): void {
+        this.isCropDragging = true;
+        this.lastCropMouseX = event.clientX;
+        this.lastCropMouseY = event.clientY;
+    }
+
+    onCropMouseMove(event: MouseEvent): void {
+        if (!this.isCropDragging) return;
+        const dx = event.clientX - this.lastCropMouseX;
+        const dy = event.clientY - this.lastCropMouseY;
+        this.lastCropMouseX = event.clientX;
+        this.lastCropMouseY = event.clientY;
+        const size = 200;
+        const maxX = 0;
+        const minX = size - this.cropDisplayWidth;
+        const maxY = 0;
+        const minY = size - this.cropDisplayHeight;
+        this.cropPosition.x = Math.max(minX, Math.min(maxX, this.cropPosition.x + dx));
+        this.cropPosition.y = Math.max(minY, Math.min(maxY, this.cropPosition.y + dy));
+    }
+
+    onCropMouseUp(): void {
+        this.isCropDragging = false;
+    }
+
+    closeCropDialog(): void {
+        this.showCropDialog = false;
+        this.pendingCropDataUrl = '';
+        this.pendingCropFile = null;
+    }
+
+    onCropDialogHide(): void {
+        this.closeCropDialog();
+    }
+
+    applyCropAndUpload(): void {
+        const img = this.cropImageRef?.nativeElement as HTMLImageElement | undefined;
+        if (!img || !this.pendingCropDataUrl || !this.currentUserId) {
+            return;
+        }
+        const size = 200;
+        const ctx = document.createElement('canvas').getContext('2d');
+        if (!ctx) return;
+        const canvas = ctx.canvas;
+        canvas.width = size;
+        canvas.height = size;
+        const x = this.cropPosition.x;
+        const y = this.cropPosition.y;
+        const dw = this.cropDisplayWidth;
+        const dh = this.cropDisplayHeight;
+        const nw = this.cropNaturalWidth;
+        const nh = this.cropNaturalHeight;
+        const sx = (-x / dw) * nw;
+        const sy = (-y / dh) * nh;
+        const sw = (size / dw) * nw;
+        const sh = (size / dh) * nh;
+        ctx.beginPath();
+        ctx.arc(size / 2, size / 2, size / 2, 0, 2 * Math.PI);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, size, size);
+        const dataUrl = canvas.toDataURL('image/png');
+        const base64String = dataUrl.split(',')[1];
+        if (!base64String) return;
+        this.uploadingPicture = true;
+        this.closeCropDialog();
+        const sub = this.profileApiService.assignProfilePicture(this.currentUserId, 'png', base64String).subscribe({
+            next: (response: any) => {
+                this.uploadingPicture = false;
+                if (!response?.success) {
+                    this.handleBusinessError('picture', response);
+                    this.profilePictureUploader?.clear();
+                    return;
+                }
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Success',
+                    detail: 'Profile picture updated successfully.',
+                    life: 3000
+                });
+                this.loadProfilePicture();
+            },
+            error: () => {
+                this.uploadingPicture = false;
+                this.profilePictureUploader?.clear();
+            }
+        });
+        this.subscriptions.push(sub);
     }
 
     removeProfilePicture(): void {

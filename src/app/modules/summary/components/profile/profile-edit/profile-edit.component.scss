@@ -164,3 +164,33 @@
         }
     }
 }
+
+// Crop dialog: drag to position photo so head is in focus
+.crop-area {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+    cursor: grab;
+    user-select: none;
+    
+
+    &:active {
+        cursor: grabbing;
+    }
+}
+
+.crop-circle {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    background-color: var(--surface-200, #e8e8e8);
+    border: 2px solid black;
+
+    img {
+        position: absolute;
+        display: block;
+        pointer-events: none;
+    }
+}
