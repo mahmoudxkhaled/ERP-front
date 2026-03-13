@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, finalize, of, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, Observable, finalize, of, switchMap, tap, map, catchError } from 'rxjs';
 import { ApiService } from 'src/app/core/api/api.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { NotificationRefreshService } from 'src/app/core/services/notification-refresh.service';
-import { IAccountStatusResponse } from 'src/app/core/models/account-status.model';
+import { EntityLogoService } from 'src/app/core/services/entity-logo.service';
+import { IAccountStatusResponse, IEntityDetails } from 'src/app/core/models/account-status.model';
+import { EntitiesService } from 'src/app/modules/entity-administration/entities/services/entities.service';
 
 @Injectable({
     providedIn: 'root',
@@ -15,7 +17,9 @@ export class AuthService {
         private apiServices: ApiService,
         private localStorageService: LocalStorageService,
         private router: Router,
-        private notificationRefreshService: NotificationRefreshService
+        private notificationRefreshService: NotificationRefreshService,
+        private entityLogoService: EntityLogoService,
+        private entitiesService: EntitiesService
     ) {
         this.isLoadingSubject = new BehaviorSubject<boolean>(false);
     }
@@ -135,6 +139,26 @@ export class AuthService {
                 console.log('accountData', accountData);
                 this.localStorageService.setLoginDataPackage(accountData);
             }),
+            switchMap((response: any) => {
+                const entityId = response?.message?.Entity_Details?.Entity_ID;
+                if (entityId == null || entityId === undefined) {
+                    return of(response);
+                }
+                return this.entitiesService.getEntityLogo(String(entityId)).pipe(
+                    tap((logoRes: any) => {
+                        if (logoRes?.success && logoRes?.message?.Image) {
+                            const entityDetails = this.localStorageService.getEntityDetails() as IEntityDetails | null;
+                            if (entityDetails) {
+                                entityDetails.Logo = logoRes.message.Image;
+                                this.localStorageService.setItem('Entity_Details', entityDetails);
+                            }
+                            this.entityLogoService.updateLogo(logoRes.message.Image);
+                        }
+                    }),
+                    catchError(() => of(null)),
+                    map(() => response)
+                );
+            })
         );
     }
 

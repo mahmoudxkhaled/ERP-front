@@ -68,6 +68,7 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
     parentEntityLogo: string = '';
     headerLogoLoading = true;
     headerTitleLoading = false;
+    private parentLogoDelayTimer: ReturnType<typeof setTimeout> | null = null;
     gender: boolean = false;
     profilePictureUrl: string = '';
 
@@ -140,6 +141,9 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
                     if (!this.entityLogo) {
                         this.entityLogo = 'assets/media/White-Logo.png';
                     }
+                    if (!this.isRootEntity) {
+                        this.headerLogoLoading = false;
+                    }
                 } else {
                     this.entityLogo = '';
                 }
@@ -192,6 +196,10 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        if (this.parentLogoDelayTimer != null) {
+            clearTimeout(this.parentLogoDelayTimer);
+            this.parentLogoDelayTimer = null;
+        }
         this.subs.unsubscribe();
     }
     loadUserDetails() {
@@ -234,25 +242,7 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
                         }
                         this.headerTitleLoading = false;
                         this.ref.detectChanges();
-                        if (!this.entityLogo) {
-                            this.entitiesService.getEntityLogo(parentIdStr).subscribe({
-                                next: (logoRes: any) => {
-                                    if (logoRes?.success && logoRes?.message?.Image) {
-                                        const fmt = logoRes.message.Image_Format || 'png';
-                                        this.parentEntityLogo = `data:image/${fmt.toLowerCase()};base64,${logoRes.message.Image}`;
-                                    }
-                                    this.headerLogoLoading = false;
-                                    this.ref.detectChanges();
-                                },
-                                error: () => {
-                                    this.headerLogoLoading = false;
-                                    this.ref.detectChanges();
-                                }
-                            });
-                        } else {
-                            this.headerLogoLoading = false;
-                            this.ref.detectChanges();
-                        }
+                        this.scheduleParentLogoLoad(parentIdStr);
                     },
                     error: () => {
                         this.headerTitleLoading = false;
@@ -308,6 +298,40 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         if (this.userName) {
             this.userNameService.updateUserName(this.userName);
         }
+    }
+
+    /**
+     * Delay loading parent logo so getLoginDataPackage can set current-entity logo first (avoids flicker on refresh).
+     */
+    private scheduleParentLogoLoad(parentIdStr: string): void {
+        if (this.parentLogoDelayTimer != null) {
+            clearTimeout(this.parentLogoDelayTimer);
+            this.parentLogoDelayTimer = null;
+        }
+        const delayMs = 600;
+        this.parentLogoDelayTimer = setTimeout(() => {
+            this.parentLogoDelayTimer = null;
+            if (this.entityLogo) {
+                this.headerLogoLoading = false;
+                this.ref.detectChanges();
+                return;
+            }
+            const sub = this.entitiesService.getEntityLogo(parentIdStr).subscribe({
+                next: (logoRes: any) => {
+                    if (logoRes?.success && logoRes?.message?.Image) {
+                        const fmt = logoRes.message.Image_Format || 'png';
+                        this.parentEntityLogo = `data:image/${fmt.toLowerCase()};base64,${logoRes.message.Image}`;
+                    }
+                    this.headerLogoLoading = false;
+                    this.ref.detectChanges();
+                },
+                error: () => {
+                    this.headerLogoLoading = false;
+                    this.ref.detectChanges();
+                }
+            });
+            this.subs.add(sub);
+        }, delayMs);
     }
 
     /**
