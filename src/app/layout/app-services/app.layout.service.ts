@@ -260,7 +260,14 @@ export class LayoutService {
         document.documentElement.style.fontSize = `${value}px`;
     }
 
-
+    /**
+     * Default avatar path by theme: light = avatar/female-avatar, dark = white-avatar.
+     */
+    getDefaultAvatarPath(gender: boolean): string {
+        const dark = this.config().colorScheme === 'dark';
+        if (dark) return 'assets/media/white-avatar.png';
+        return gender ? 'assets/media/avatar.png' : 'assets/media/female-avatar.png';
+    }
 
     /**
      * Save current layout configuration to localStorage

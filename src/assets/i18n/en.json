@@ -830,6 +830,7 @@
             "savePreferences": "Save Preferences"
         },
         "overview": {
+            "loading": "Loading...",
             "fullName": "Full Name",
             "contactInformation": "Contact Information",
             "address": "Address",

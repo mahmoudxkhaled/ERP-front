@@ -8,11 +8,8 @@
             <h1 class="text-900 text-4xl font-extrabold m-0 tracking-tight">{{ getUserDisplayName() }}</h1>
         </div>
         <div class="actions">
-            <p-button
-                [label]="'layout.app-breadcrumb.editProfile' | translate"
-                icon="pi pi-pencil"
-                styleClass="p-button-primary font-bold edit-profile-btn"
-                (onClick)="navigateToEdit()">
+            <p-button [label]="'layout.app-breadcrumb.editProfile' | translate" icon="pi pi-pencil"
+                styleClass="p-button-primary font-bold edit-profile-btn" (onClick)="navigateToEdit()">
             </p-button>
         </div>
     </div>
@@ -22,11 +19,17 @@
             <div
                 class="identity-banner surface-card shadow-1 border-round-xl flex flex-column md:flex-row align-items-center p-5 gap-6">
                 <div class="avatar-container relative">
-                    <p-avatar [image]="profilePictureUrl || 'assets/media/avatar.png'" size="xlarge" shape="circle"
-                        styleClass="border-4 border-white shadow-3" [style]="{'width': '150px', 'height': '150px'}">
-                    </p-avatar>
-                    <div class="status-ring"
-                        [style.background]="getStatusSeverity() === 'success' ? '#10b981' : '#f59e0b'"></div>
+                    <div *ngIf="loadingProfilePicture" class="avatar-loading">
+                        <p-progressSpinner strokeWidth="4" styleClass="avatar-loading-spinner"></p-progressSpinner>
+                        <span class="avatar-loading-text">{{ 'profile.overview.loading' | translate }}</span>
+                    </div>
+                    <ng-container *ngIf="!loadingProfilePicture">
+                        <p-avatar [image]="profilePictureUrl || getDefaultAvatarUrl()" size="xlarge" shape="circle"
+                            styleClass="border-4 border-white shadow-3" [style]="{'width': '150px', 'height': '150px'}">
+                        </p-avatar>
+                        <div class="status-ring"
+                            [style.background]="getStatusSeverity() === 'success' ? '#10b981' : '#f59e0b'"></div>
+                    </ng-container>
                 </div>
 
                 <div class="identity-info flex-1">

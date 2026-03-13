@@ -396,25 +396,20 @@
     </form>
 
     <!-- Crop / position dialog: user can drag image to focus on head before upload -->
-    <p-dialog [(visible)]="showCropDialog" [header]="'profile.edit.positionPhoto' | translate"
-        [modal]="true" [closable]="true" [style]="{ width: '320px' }"
-        (onHide)="onCropDialogHide()" [draggable]="false" [resizable]="false">
+    <p-dialog [(visible)]="showCropDialog" [header]="'profile.edit.positionPhoto' | translate" [modal]="true"
+        [closable]="true" [style]="{ width: '320px' }" (onHide)="onCropDialogHide()" [draggable]="false"
+        [resizable]="false">
         <p class="text-600 mb-3">{{ 'profile.edit.positionPhotoHint' | translate }}</p>
         <div class="crop-area" (mousedown)="onCropMouseDown($event)" (mousemove)="onCropMouseMove($event)"
             (mouseup)="onCropMouseUp()" (mouseleave)="onCropMouseUp()">
             <div class="crop-circle">
-                <img #cropImage [src]="pendingCropDataUrl" alt="Crop"
-                    [style.width.px]="cropDisplayWidth"
-                    [style.height.px]="cropDisplayHeight"
-                    [style.left.px]="cropPosition.x"
-                    [style.top.px]="cropPosition.y"
-                    (load)="onCropImageLoad($event)"
-                    draggable="false">
+                <img #cropImage [src]="pendingCropDataUrl" alt="Crop" [style.width.px]="cropDisplayWidth"
+                    [style.height.px]="cropDisplayHeight" [style.left.px]="cropPosition.x"
+                    [style.top.px]="cropPosition.y" (load)="onCropImageLoad($event)" draggable="false">
             </div>
         </div>
         <ng-template pTemplate="footer">
-            <p-button [label]="'profile.edit.cancel' | translate" (onClick)="closeCropDialog()"
-                class="p-button-text">
+            <p-button [label]="'profile.edit.cancel' | translate" (onClick)="closeCropDialog()" class="p-button-text">
             </p-button>
             <p-button [label]="'profile.edit.applyCrop' | translate" (onClick)="applyCropAndUpload()"
                 [loading]="uploadingPicture">

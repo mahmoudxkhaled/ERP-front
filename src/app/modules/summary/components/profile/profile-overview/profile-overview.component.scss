@@ -8,6 +8,36 @@
         border-left: 6px solid var(--primary-color);
     }
 
+    .avatar-container {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 4px solid gray;
+    }
+
+    .avatar-loading {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .avatar-loading-text {
+        font-size: 0.75rem;
+        color: var(--text-color-secondary);
+        font-weight: 500;
+    }
+
+    ::ng-deep .avatar-loading-spinner.p-progress-spinner {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+
     .status-ring {
         position: absolute;
         bottom: 8px;

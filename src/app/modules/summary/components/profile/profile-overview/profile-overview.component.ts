@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { MessageService } from 'primeng/api';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { LayoutService } from 'src/app/layout/app-services/app.layout.service';
 import { IUserDetails, IAccountDetails, IEntityDetails, IAccountSettings } from 'src/app/core/models/account-status.model';
 import { ProfileApiService } from '../../../services/profile-api.service';
 import { ProfileContactInfo, ProfilePreferences } from '../../../models/profile.model';
@@ -41,7 +42,8 @@ export class ProfileOverviewComponent implements OnInit, OnDestroy {
         private messageService: MessageService,
         private localStorageService: LocalStorageService,
         private profileApiService: ProfileApiService,
-        private router: Router
+        private router: Router,
+        private layoutService: LayoutService
     ) {
         this.isLoading$ = this.profileApiService.isLoadingSubject.asObservable();
     }
@@ -66,6 +68,10 @@ export class ProfileOverviewComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.subscriptions.forEach((sub) => sub.unsubscribe());
+    }
+
+    getDefaultAvatarUrl(): string {
+        return this.layoutService.getDefaultAvatarPath(this.gender);
     }
 
     loadUserData(): void {

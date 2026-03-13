@@ -830,6 +830,7 @@
             "savePreferences": "حفظ التفضيلات"
         },
         "overview": {
+            "loading": "جاري التحميل...",
             "fullName": "الاسم الكامل",
             "contactInformation": "معلومات الاتصال",
             "address": "العنوان",
