@@ -141,7 +141,7 @@
 <p-toast></p-toast>
 
 <p-dialog [(visible)]="activationGroupDialog" [modal]="true" [style]="{ width: '500px' }" [closable]="true"
-    [draggable]="false" [resizable]="false">
+    [draggable]="false" [resizable]="false" (onHide)="onCancelActivationDialog()">
     <ng-template pTemplate="header">
         <h3>{{ (currentGroupForActivation?.active ? 'entityGroups.list.activationDialog.deactivateTitle' :
             'entityGroups.list.activationDialog.activateTitle') | translate }}</h3>

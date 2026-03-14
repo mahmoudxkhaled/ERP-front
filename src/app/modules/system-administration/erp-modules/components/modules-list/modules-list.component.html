@@ -161,7 +161,7 @@
 <p-toast></p-toast>
 
 <p-dialog [(visible)]="activateModuleDialog" [modal]="true" [style]="{ width: '500px' }" [closable]="true"
-    [draggable]="false" [resizable]="false">
+    [draggable]="false" [resizable]="false" (onHide)="onCancelActivationDialog()">
     <ng-template pTemplate="header">
         <h3>{{ (currentModuleForActivation?.isActive ?
             'systemAdministration.erpModules.modulesList.activationDialog.deactivateTitle' :

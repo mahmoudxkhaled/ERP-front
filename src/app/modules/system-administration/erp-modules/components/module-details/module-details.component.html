@@ -169,7 +169,7 @@
 
 <!-- Activation Dialog -->
 <p-dialog [(visible)]="activateModuleDialog" [modal]="true" [style]="{ width: '500px' }" [closable]="true"
-    [draggable]="false" [resizable]="false">
+    [draggable]="false" [resizable]="false" (onHide)="onCancelActivationDialog()">
     <ng-template pTemplate="header">
         <h3>{{ (moduleDetails?.isActive ? 'systemAdministration.erpModules.moduleDetails.activationDialog.deactivateTitle' : 'systemAdministration.erpModules.moduleDetails.activationDialog.activateTitle') | translate }}</h3>
     </ng-template>

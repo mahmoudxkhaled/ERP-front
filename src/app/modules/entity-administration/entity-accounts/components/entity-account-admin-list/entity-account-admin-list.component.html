@@ -186,7 +186,7 @@
 </p-dialog>
 
 <!-- Activate Account Confirmation Dialog -->
-<p-dialog [(visible)]="activateAccountDialog" [modal]="true" [style]="{ width: '450px' }" [closable]="true"
+<p-dialog [(visible)]="activateAccountDialog" [modal]="true" [style]="{ width: '450px' }" [closable]="true" (onHide)="onCancelActivateAccountDialog()"
     [draggable]="false" [resizable]="false">
     <ng-template pTemplate="header">
         <h3>{{ 'entityAccounts.adminList.activateDialog.title' | translate }}</h3>
@@ -213,7 +213,7 @@
 </p-dialog>
 
 <!-- Deactivate Account Confirmation Dialog -->
-<p-dialog [(visible)]="deactivateAccountDialog" [modal]="true" [style]="{ width: '450px' }" [closable]="true"
+<p-dialog [(visible)]="deactivateAccountDialog" [modal]="true" [style]="{ width: '450px' }" [closable]="true" (onHide)="onCancelDeactivateAccountDialog()"
     [draggable]="false" [resizable]="false">
     <ng-template pTemplate="header">
         <h3>{{ 'entityAccounts.adminList.deactivateDialog.title' | translate }}</h3>
