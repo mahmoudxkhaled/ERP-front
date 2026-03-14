@@ -36,12 +36,19 @@ export class SettingsConfigurationsService {
     /**
      * Retrieve the list of all available modules
      * API Code: 715
+     * @param options.silent - When true, do not set global loading state (avoids UI flicker)
      * @returns Observable containing ModulesListResponse
      */
-    getModulesList(): Observable<any> {
-        this.isLoadingSubject.next(true);
+    getModulesList(options?: { silent?: boolean }): Observable<any> {
+        if (!options?.silent) {
+            this.isLoadingSubject.next(true);
+        }
         return this.apiServices.callAPI(715, this.getAccessToken(), []).pipe(
-            finalize(() => this.isLoadingSubject.next(false))
+            finalize(() => {
+                if (!options?.silent) {
+                    this.isLoadingSubject.next(false);
+                }
+            })
         );
     }
 
@@ -186,12 +193,19 @@ export class SettingsConfigurationsService {
      * Get module details
      * API Code: 711
      * @param moduleId - Module ID
+     * @param options.silent - When true, do not set global loading state
      * @returns Observable containing ModuleDetailsResponse
      */
-    getModuleDetails(moduleId: number): Observable<any> {
-        this.isLoadingSubject.next(true);
+    getModuleDetails(moduleId: number, options?: { silent?: boolean }): Observable<any> {
+        if (!options?.silent) {
+            this.isLoadingSubject.next(true);
+        }
         return this.apiServices.callAPI(711, this.getAccessToken(), [moduleId.toString()]).pipe(
-            finalize(() => this.isLoadingSubject.next(false))
+            finalize(() => {
+                if (!options?.silent) {
+                    this.isLoadingSubject.next(false);
+                }
+            })
         );
     }
 
@@ -205,6 +219,7 @@ export class SettingsConfigurationsService {
      * @param isRegional - Whether to update regional name
      * @param defaultOrder - Default order (must be > 0)
      * @param url - Module URL
+     * @param options.silent - When true, do not set global loading state
      * @returns Observable containing response
      */
     updateModuleDetails(
@@ -214,9 +229,12 @@ export class SettingsConfigurationsService {
         name: string,
         isRegional: boolean,
         defaultOrder: number,
-        url: string
+        url: string,
+        options?: { silent?: boolean }
     ): Observable<any> {
-        this.isLoadingSubject.next(true);
+        if (!options?.silent) {
+            this.isLoadingSubject.next(true);
+        }
         const params = [
             moduleId.toString(),
             functionId.toString(),
@@ -226,9 +244,12 @@ export class SettingsConfigurationsService {
             defaultOrder.toString(),
             url.trim().toString()
         ];
-        console.log('params', params);
         return this.apiServices.callAPI(712, this.getAccessToken(), params).pipe(
-            finalize(() => this.isLoadingSubject.next(false))
+            finalize(() => {
+                if (!options?.silent) {
+                    this.isLoadingSubject.next(false);
+                }
+            })
         );
     }
 

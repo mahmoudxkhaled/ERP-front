@@ -19,11 +19,13 @@
         <div class="p-inputgroup w-full">
             <span class="p-input-icon-left">
                 <i class="pi pi-search"></i>
-                <input type="text" pInputText [placeholder]="'systemAdministration.erpModules.modulesList.searchPlaceholder' | translate"
+                <input type="text" pInputText
+                    [placeholder]="'systemAdministration.erpModules.modulesList.searchPlaceholder' | translate"
                     [value]="searchText" (input)="onSearchInput($event)" class="w-full" />
             </span>
             <button *ngIf="searchText" pButton pRipple type="button" icon="pi pi-times"
-                class="p-button-rounded p-button-text p-button-plain" (click)="clearSearch()" [pTooltip]="'systemAdministration.erpModules.modulesList.clearSearch' | translate">
+                class="p-button-rounded p-button-text p-button-plain" (click)="clearSearch()"
+                [pTooltip]="'systemAdministration.erpModules.modulesList.clearSearch' | translate">
             </button>
         </div>
     </div>
@@ -36,14 +38,22 @@
 
             <ng-template pTemplate="header">
                 <tr>
-                    <th style="width: 40px;">{{ 'systemAdministration.erpModules.modulesList.table.id' | translate }}</th>
-                    <th style="width: 100px;">{{ 'systemAdministration.erpModules.modulesList.table.code' | translate }}</th>
-                    <th style="width: 200px;">{{ 'systemAdministration.erpModules.modulesList.table.name' | translate }}</th>
-                    <th style="width: 200px;">{{ 'systemAdministration.erpModules.modulesList.table.function' | translate }}</th>
-                    <th style="width: 100px;">{{ 'systemAdministration.erpModules.modulesList.table.defaultOrder' | translate }}</th>
-                    <th style="width: 200px;">{{ 'systemAdministration.erpModules.modulesList.table.url' | translate }}</th>
-                    <th style="text-align: center !important;">{{ 'systemAdministration.erpModules.modulesList.table.status' | translate }}</th>
-                    <th style="width: 150px; text-align: start !important;">{{ 'systemAdministration.erpModules.modulesList.table.actions' | translate }}</th>
+                    <th style="width: 40px;">{{ 'systemAdministration.erpModules.modulesList.table.id' | translate }}
+                    </th>
+                    <th style="width: 100px;">{{ 'systemAdministration.erpModules.modulesList.table.code' | translate }}
+                    </th>
+                    <th style="width: 200px;">{{ 'systemAdministration.erpModules.modulesList.table.name' | translate }}
+                    </th>
+                    <th style="width: 200px;">{{ 'systemAdministration.erpModules.modulesList.table.function' |
+                        translate }}</th>
+                    <th style="width: 140px;">{{ 'systemAdministration.erpModules.modulesList.table.defaultOrder' |
+                        translate }}</th>
+                    <th style="width: 200px;">{{ 'systemAdministration.erpModules.modulesList.table.url' | translate }}
+                    </th>
+                    <th style="text-align: center !important;">{{
+                        'systemAdministration.erpModules.modulesList.table.status' | translate }}</th>
+                    <th style="width: 150px; text-align: start !important;">{{
+                        'systemAdministration.erpModules.modulesList.table.actions' | translate }}</th>
                 </tr>
             </ng-template>
 
@@ -85,10 +95,24 @@
                     </td>
                     <td>
                         <ng-container *ngIf="tableLoadingSpinner; else normalOrder">
-                            <p-skeleton height="1.5rem" width="4rem"></p-skeleton>
+                            <p-skeleton height="1.5rem" width="7rem" borderRadius="4px"></p-skeleton>
                         </ng-container>
                         <ng-template #normalOrder>
-                            <span class="text-600">{{ moduleItem.defaultOrder || '—' }}</span>
+                            <div class="flex align-items-center gap-1">
+                                <span class="text-600">{{ moduleItem.defaultOrder || '—' }}</span>
+                                <button pButton pRipple type="button" icon="pi pi-chevron-up"
+                                    class="p-button-rounded p-button-text p-button-sm p-button-plain"
+                                    [pTooltip]="'systemAdministration.erpModules.modulesList.reorderUp' | translate"
+                                    [disabled]="isFirstRow(moduleItem) || isReorderInProgress(moduleItem)"
+                                    (click)="moveUp(moduleItem)">
+                                </button>
+                                <button pButton pRipple type="button" icon="pi pi-chevron-down"
+                                    class="p-button-rounded p-button-text p-button-sm p-button-plain"
+                                    [pTooltip]="'systemAdministration.erpModules.modulesList.reorderDown' | translate"
+                                    [disabled]="isLastRow(moduleItem) || isReorderInProgress(moduleItem)"
+                                    (click)="moveDown(moduleItem)">
+                                </button>
+                            </div>
                         </ng-template>
                     </td>
                     <td>
@@ -126,7 +150,8 @@
 
             <ng-template pTemplate="emptymessage">
                 <tr>
-                    <td colspan="8" class="text-center">{{ 'systemAdministration.erpModules.modulesList.emptyMessage' | translate }}</td>
+                    <td colspan="8" class="text-center">{{ 'systemAdministration.erpModules.modulesList.emptyMessage' |
+                        translate }}</td>
                 </tr>
             </ng-template>
         </p-table>
@@ -138,25 +163,30 @@
 <p-dialog [(visible)]="activateModuleDialog" [modal]="true" [style]="{ width: '500px' }" [closable]="true"
     [draggable]="false" [resizable]="false">
     <ng-template pTemplate="header">
-        <h3>{{ (currentModuleForActivation?.isActive ? 'systemAdministration.erpModules.modulesList.activationDialog.deactivateTitle' : 'systemAdministration.erpModules.modulesList.activationDialog.activateTitle') | translate }}</h3>
+        <h3>{{ (currentModuleForActivation?.isActive ?
+            'systemAdministration.erpModules.modulesList.activationDialog.deactivateTitle' :
+            'systemAdministration.erpModules.modulesList.activationDialog.activateTitle') | translate }}</h3>
     </ng-template>
     <div class="flex flex-column gap-3">
         <!-- Activation Message -->
         <ng-container *ngIf="!currentModuleForActivation?.isActive">
             <p>
-                {{ 'systemAdministration.erpModules.modulesList.activationDialog.activateMessage' | translate:{ name: currentModuleForActivation?.name } }}
+                {{ 'systemAdministration.erpModules.modulesList.activationDialog.activateMessage' | translate:{ name:
+                currentModuleForActivation?.name } }}
             </p>
         </ng-container>
 
         <!-- Deactivation Message -->
         <ng-container *ngIf="currentModuleForActivation?.isActive">
             <p>
-                {{ 'systemAdministration.erpModules.modulesList.activationDialog.deactivateMessage' | translate:{ name: currentModuleForActivation?.name } }}
+                {{ 'systemAdministration.erpModules.modulesList.activationDialog.deactivateMessage' | translate:{ name:
+                currentModuleForActivation?.name } }}
             </p>
         </ng-container>
     </div>
     <ng-template pTemplate="footer">
-        <p-button [label]="'systemAdministration.erpModules.modulesList.activationDialog.cancel' | translate" icon="pi pi-times" class="p-button-text" (onClick)="onCancelActivationDialog()"
+        <p-button [label]="'systemAdministration.erpModules.modulesList.activationDialog.cancel' | translate"
+            icon="pi pi-times" class="p-button-text" (onClick)="onCancelActivationDialog()"
             [disabled]="!!(isLoading$ | async)">
         </p-button>
         <p-button [severity]="currentModuleForActivation?.isActive ? 'danger' : 'success'"
@@ -168,7 +198,9 @@
                 </span>
             </ng-container>
             <ng-container *ngIf="(isLoading$ | async) === false">
-                <span>{{ (currentModuleForActivation?.isActive ? 'systemAdministration.erpModules.modulesList.activationDialog.deactivate' : 'systemAdministration.erpModules.modulesList.activationDialog.activate') | translate }}</span>
+                <span>{{ (currentModuleForActivation?.isActive ?
+                    'systemAdministration.erpModules.modulesList.activationDialog.deactivate' :
+                    'systemAdministration.erpModules.modulesList.activationDialog.activate') | translate }}</span>
             </ng-container>
         </p-button>
     </ng-template>

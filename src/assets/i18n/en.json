@@ -2608,6 +2608,10 @@
                     "actions": "Actions"
                 },
                 "emptyMessage": "No modules found",
+                "reorderUp": "Move up",
+                "reorderDown": "Move down",
+                "reorderSuccess": "Order updated successfully.",
+                "reorderError": "Failed to update order.",
                 "activationDialog": {
                     "activateTitle": "Activate Module",
                     "deactivateTitle": "Deactivate Module",

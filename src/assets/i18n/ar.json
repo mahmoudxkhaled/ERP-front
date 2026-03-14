@@ -2468,6 +2468,10 @@
                     "actions": "الإجراءات"
                 },
                 "emptyMessage": "لم يتم العثور على وحدات",
+                "reorderUp": "تحريك لأعلى",
+                "reorderDown": "تحريك لأسفل",
+                "reorderSuccess": "تم تحديث الترتيب بنجاح.",
+                "reorderError": "فشل في تحديث الترتيب.",
                 "activationDialog": {
                     "activateTitle": "تفعيل الوحدة",
                     "deactivateTitle": "إلغاء تفعيل الوحدة",

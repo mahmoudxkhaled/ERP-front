@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/co
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MenuItem, MessageService } from 'primeng/api';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription, forkJoin } from 'rxjs';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
@@ -10,7 +10,7 @@ import { SettingsConfigurationsService } from 'src/app/modules/system-administra
 import { Function, Module } from '../../../erp-functions/models/settings-configurations.model';
 
 
-type ModuleActionContext = 'list' | 'activate' | 'deactivate';
+type ModuleActionContext = 'list' | 'activate' | 'deactivate' | 'reorder';
 
 @Component({
     selector: 'app-modules-list',
@@ -33,6 +33,7 @@ export class ModulesListComponent implements OnInit, OnDestroy {
     logoDialogVisible: boolean = false;
     currentModuleForLogo?: Module;
     activationControls: Record<number, FormControl<boolean>> = {};
+    reorderInProgressIds = new Set<number>();
 
     // Pagination (handled by PrimeNG automatically)
     first: number = 0;
@@ -88,23 +89,19 @@ export class ModulesListComponent implements OnInit, OnDestroy {
         this.subscriptions.push(sub);
     }
 
-    loadModules(forceReload: boolean = false): void {
-        // Note: We removed the isLoadingSubject check because it was preventing
-        // the initial load. Since loadModules() is called after loadFunctions()
-        // completes, we don't need to check if another call is in progress.
-
+    loadModules(forceReload: boolean = false, silent: boolean = false): void {
         const isRegional = this.accountSettings?.Language !== 'English';
-        this.tableLoadingSpinner = true;
+        if (!silent) {
+            this.tableLoadingSpinner = true;
+        }
 
-        const sub = this.settingsConfigurationsService.getModulesList().subscribe({
+        const sub = this.settingsConfigurationsService.getModulesList(silent ? { silent: true } : undefined).subscribe({
             next: (response: any) => {
-                console.log('response', response);
                 if (!response?.success) {
                     this.handleBusinessError('list', response);
                     return;
                 }
 
-                // Parse modules list
                 this.modules = this.settingsConfigurationsService.parseModulesList(response, isRegional);
                 this.applySearchFilter();
                 this.buildActivationControls();
@@ -208,7 +205,7 @@ export class ModulesListComponent implements OnInit, OnDestroy {
                 });
                 moduleItem.isActive = value;
                 this.activateModuleDialog = false;
-                this.loadModules(true);
+                this.loadModules(true, false);
             },
             complete: () => {
                 control.enable();
@@ -329,20 +326,133 @@ export class ModulesListComponent implements OnInit, OnDestroy {
     }
 
     private applySearchFilter(): void {
+        let candidates: Module[];
         if (!this.searchText || this.searchText.trim() === '') {
-            this.filteredModules = [...this.modules];
+            candidates = [...this.modules];
+        } else {
+            const searchTerm = this.searchText.toLowerCase().trim();
+            candidates = this.modules.filter((moduleItem) => {
+                const codeMatch = moduleItem.code?.toLowerCase().includes(searchTerm) || false;
+                const nameMatch = moduleItem.name?.toLowerCase().includes(searchTerm) || false;
+                const idMatch = String(moduleItem.id).includes(searchTerm) || false;
+                const urlMatch = moduleItem.url?.toLowerCase().includes(searchTerm) || false;
+                const functionNameMatch = this.getFunctionName(moduleItem.functionId).toLowerCase().includes(searchTerm) || false;
+                return codeMatch || nameMatch || idMatch || urlMatch || functionNameMatch;
+            });
+        }
+        this.filteredModules = [...candidates].sort((a, b) => {
+            const funcCmp = (a.functionId ?? 0) - (b.functionId ?? 0);
+            if (funcCmp !== 0) return funcCmp;
+            return (a.defaultOrder ?? 9999) - (b.defaultOrder ?? 9999);
+        });
+    }
+
+    isFirstRow(moduleItem: Module): boolean {
+        return this.filteredModules.length > 0 && this.filteredModules[0].id === moduleItem.id;
+    }
+
+    isLastRow(moduleItem: Module): boolean {
+        return this.filteredModules.length > 0 && this.filteredModules[this.filteredModules.length - 1].id === moduleItem.id;
+    }
+
+    isReorderInProgress(moduleItem: Module): boolean {
+        return this.reorderInProgressIds.has(moduleItem.id);
+    }
+
+    moveUp(moduleItem: Module): void {
+        const currentIndex = this.filteredModules.findIndex((m) => m.id === moduleItem.id);
+        if (currentIndex <= 0) {
             return;
         }
+        const other = this.filteredModules[currentIndex - 1];
+        const orderA = moduleItem.defaultOrder ?? 0;
+        const orderB = other.defaultOrder ?? 0;
+        this.reorderTwoModules(moduleItem, other, orderB, orderA);
+    }
 
-        const searchTerm = this.searchText.toLowerCase().trim();
-        this.filteredModules = this.modules.filter((moduleItem) => {
-            const codeMatch = moduleItem.code?.toLowerCase().includes(searchTerm) || false;
-            const nameMatch = moduleItem.name?.toLowerCase().includes(searchTerm) || false;
-            const idMatch = String(moduleItem.id).includes(searchTerm) || false;
-            const urlMatch = moduleItem.url?.toLowerCase().includes(searchTerm) || false;
-            const functionNameMatch = this.getFunctionName(moduleItem.functionId).toLowerCase().includes(searchTerm) || false;
+    moveDown(moduleItem: Module): void {
+        const currentIndex = this.filteredModules.findIndex((m) => m.id === moduleItem.id);
+        if (currentIndex < 0 || currentIndex >= this.filteredModules.length - 1) {
+            return;
+        }
+        const other = this.filteredModules[currentIndex + 1];
+        const orderA = moduleItem.defaultOrder ?? 0;
+        const orderB = other.defaultOrder ?? 0;
+        this.reorderTwoModules(moduleItem, other, orderB, orderA);
+    }
 
-            return codeMatch || nameMatch || idMatch || urlMatch || functionNameMatch;
+    private reorderTwoModules(moduleA: Module, moduleB: Module, newOrderA: number, newOrderB: number): void {
+        this.reorderInProgressIds.add(moduleA.id);
+        this.reorderInProgressIds.add(moduleB.id);
+
+        const getDetailsA = this.settingsConfigurationsService.getModuleDetails(moduleA.id, { silent: true });
+        const getDetailsB = this.settingsConfigurationsService.getModuleDetails(moduleB.id, { silent: true });
+
+        const sub = forkJoin({ detailsA: getDetailsA, detailsB: getDetailsB }).subscribe({
+            next: (result) => {
+                const msgA = result.detailsA?.message;
+                const msgB = result.detailsB?.message;
+                if (!result.detailsA?.success || !msgA || !result.detailsB?.success || !msgB) {
+                    this.reorderInProgressIds.delete(moduleA.id);
+                    this.reorderInProgressIds.delete(moduleB.id);
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: this.translate.getInstant('common.error'),
+                        detail: this.translate.getInstant('systemAdministration.erpModules.modulesList.reorderError'),
+                        life: 3000
+                    });
+                    return;
+                }
+
+                const updateA = this.settingsConfigurationsService.updateModuleDetails(
+                    moduleA.id,
+                    msgA.Function_ID,
+                    msgA.Code || '',
+                    msgA.Name || '',
+                    !!msgA.Name_Regional,
+                    newOrderA,
+                    msgA.URL ?? '',
+                    { silent: true }
+                );
+                const updateB = this.settingsConfigurationsService.updateModuleDetails(
+                    moduleB.id,
+                    msgB.Function_ID,
+                    msgB.Code || '',
+                    msgB.Name || '',
+                    !!msgB.Name_Regional,
+                    newOrderB,
+                    msgB.URL ?? '',
+                    { silent: true }
+                );
+
+                const updateSub = forkJoin({ updateA, updateB }).subscribe({
+                    next: (updateResult) => {
+                        if (!updateResult.updateA?.success || !updateResult.updateB?.success) {
+                            this.messageService.add({
+                                severity: 'error',
+                                summary: this.translate.getInstant('common.error'),
+                                detail: this.translate.getInstant('systemAdministration.erpModules.modulesList.reorderError'),
+                                life: 3000
+                            });
+                            return;
+                        }
+                        this.messageService.add({
+                            severity: 'success',
+                            summary: this.translate.getInstant('common.success'),
+                            detail: this.translate.getInstant('systemAdministration.erpModules.modulesList.reorderSuccess'),
+                            life: 3000
+                        });
+                        this.loadModules(true, true);
+                    },
+                    complete: () => {
+                        this.reorderInProgressIds.delete(moduleA.id);
+                        this.reorderInProgressIds.delete(moduleB.id);
+                    }
+                });
+                this.subscriptions.push(updateSub);
+            }
         });
+
+        this.subscriptions.push(sub);
     }
 }
