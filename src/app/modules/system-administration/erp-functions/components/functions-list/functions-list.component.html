@@ -42,6 +42,7 @@
                         }}</th>
                     <th style="width: 100px;">{{ 'systemAdministration.erpFunctions.functionsList.table.code' |
                         translate }}</th>
+                    <th style="width: 56px;">{{ 'systemAdministration.erpFunctions.functionsList.table.logo' | translate }}</th>
                     <th style="width: 200px;">{{ 'systemAdministration.erpFunctions.functionsList.table.name' |
                         translate }}</th>
                     <th style="width: 140px;">{{
@@ -72,6 +73,20 @@
                         </ng-container>
                         <ng-template #normalCode>
                             <span class="font-semibold text-lg">{{ functionItem.code }}</span>
+                        </ng-template>
+                    </td>
+                    <td>
+                        <ng-container *ngIf="isLoading$ | async; else normalLogo">
+                            <p-skeleton height="2.5rem" width="2.5rem" borderRadius="8px"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalLogo>
+                            <button type="button" class="logo-cell p-button p-button-rounded p-button-text p-button-plain border-noround"
+                                [pTooltip]="'systemAdministration.erpFunctions.functionsList.manageLogo' | translate"
+                                (click)="openLogoDialog(functionItem)">
+                                <img *ngIf="getLogoUrl(functionItem)" [src]="getLogoUrl(functionItem)!" alt=""
+                                    style="width: 2rem; height: 2rem; object-fit: contain; border-radius: 4px;" />
+                                <i *ngIf="!getLogoUrl(functionItem)" class="pi pi-image" style="font-size: 1.25rem;"></i>
+                            </button>
                         </ng-template>
                     </td>
                     <td>
@@ -141,7 +156,7 @@
 
             <ng-template pTemplate="emptymessage">
                 <tr>
-                    <td colspan="7" class="text-center">{{
+                    <td colspan="8" class="text-center">{{
                         'systemAdministration.erpFunctions.functionsList.emptyMessage' | translate }}</td>
                 </tr>
             </ng-template>

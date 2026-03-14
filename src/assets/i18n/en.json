@@ -2474,9 +2474,11 @@
             },
             "functionLogo": {
                 "title": "Manage Function Logo",
+                "titleWithName": "{ name } - Logo",
                 "uploadLogo": "Upload Logo",
                 "chooseLogo": "Choose Logo",
-                "allowedFormats": "Allowed formats: PNG, JPG, JPE, JPEG, GIF, BMP, TIFF, TIF, PICT. Recommended size: 200KB or less.",
+                "allowedFormats": "Allowed formats: PNG, JPG, JPE, JPEG, GIF, BMP, TIFF, TIF, PICT.",
+                "recommendedSize": "Recommended size: 200KB or less.",
                 "removeLogo": "Remove Logo",
                 "close": "Close"
             },
@@ -2486,9 +2488,11 @@
                 "pleaseWait": "Please wait",
                 "searchPlaceholder": "Search by code, name, ID, or URL...",
                 "clearSearch": "Clear search",
+                "manageLogo": "Manage Logo",
                 "table": {
                     "id": "Id",
                     "code": "Code",
+                    "logo": "Logo",
                     "name": "Name",
                     "defaultOrder": "Order",
                     "url": "URL",
@@ -2585,9 +2589,11 @@
             },
             "moduleLogo": {
                 "title": "Manage Module Logo",
+                "titleWithName": "{{ name }} Logo",
                 "uploadLogo": "Upload Logo",
                 "chooseLogo": "Choose Logo",
-                "allowedFormats": "Allowed formats: PNG, JPG, JPE, JPEG, GIF, BMP, TIFF, TIF, PICT. Recommended size: 200KB or less.",
+                "allowedFormats": "Allowed formats: PNG, JPG, JPE, JPEG, GIF, BMP, TIFF, TIF, PICT.",
+                "recommendedSize": "Recommended size: 200KB or less.",
                 "removeLogo": "Remove Logo",
                 "close": "Close"
             },
@@ -2597,9 +2603,11 @@
                 "pleaseWait": "Please wait",
                 "searchPlaceholder": "Search by code, name, ID, URL, or function...",
                 "clearSearch": "Clear search",
+                "manageLogo": "Manage Logo",
                 "table": {
                     "id": "Id",
                     "code": "Code",
+                    "logo": "Logo",
                     "name": "Name",
                     "function": "Function",
                     "defaultOrder": "Default Order",

@@ -184,12 +184,19 @@ export class SettingsConfigurationsService {
      * Get function logo
      * API Code: 707
      * @param functionId - Function ID
+     * @param options.silent - When true, do not set global loading state (avoids table skeleton when opening logo dialog)
      * @returns Observable containing FunctionLogoResponse
      */
-    getFunctionLogo(functionId: number): Observable<any> {
-        this.isLoadingSubject.next(true);
+    getFunctionLogo(functionId: number, options?: { silent?: boolean }): Observable<any> {
+        if (!options?.silent) {
+            this.isLoadingSubject.next(true);
+        }
         return this.apiServices.callAPI(707, this.getAccessToken(), [functionId.toString()]).pipe(
-            finalize(() => this.isLoadingSubject.next(false))
+            finalize(() => {
+                if (!options?.silent) {
+                    this.isLoadingSubject.next(false);
+                }
+            })
         );
     }
 

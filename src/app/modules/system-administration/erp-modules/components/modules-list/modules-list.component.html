@@ -42,6 +42,7 @@
                     </th>
                     <th style="width: 100px;">{{ 'systemAdministration.erpModules.modulesList.table.code' | translate }}
                     </th>
+                    <th style="width: 56px;">{{ 'systemAdministration.erpModules.modulesList.table.logo' | translate }}</th>
                     <th style="width: 200px;">{{ 'systemAdministration.erpModules.modulesList.table.name' | translate }}
                     </th>
                     <th style="width: 200px;">{{ 'systemAdministration.erpModules.modulesList.table.function' |
@@ -73,6 +74,20 @@
                         </ng-container>
                         <ng-template #normalCode>
                             <span class="font-semibold text-lg">{{ moduleItem.code }}</span>
+                        </ng-template>
+                    </td>
+                    <td>
+                        <ng-container *ngIf="tableLoadingSpinner; else normalLogo">
+                            <p-skeleton height="2.5rem" width="2.5rem" borderRadius="8px"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalLogo>
+                            <button type="button" class="logo-cell p-button p-button-rounded p-button-text p-button-plain border-noround"
+                                [pTooltip]="'systemAdministration.erpModules.modulesList.manageLogo' | translate"
+                                (click)="openLogoDialog(moduleItem)">
+                                <img *ngIf="getLogoUrl(moduleItem)" [src]="getLogoUrl(moduleItem)!" alt=""
+                                    style="width: 2rem; height: 2rem; object-fit: contain; border-radius: 4px;" />
+                                <i *ngIf="!getLogoUrl(moduleItem)" class="pi pi-image" style="font-size: 1.25rem;"></i>
+                            </button>
                         </ng-template>
                     </td>
                     <td>
@@ -150,7 +165,7 @@
 
             <ng-template pTemplate="emptymessage">
                 <tr>
-                    <td colspan="8" class="text-center">{{ 'systemAdministration.erpModules.modulesList.emptyMessage' |
+                    <td colspan="9" class="text-center">{{ 'systemAdministration.erpModules.modulesList.emptyMessage' |
                         translate }}</td>
                 </tr>
             </ng-template>

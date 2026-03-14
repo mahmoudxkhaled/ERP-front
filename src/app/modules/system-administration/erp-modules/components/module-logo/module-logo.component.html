@@ -1,63 +1,44 @@
-<p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '600px' }" [closable]="true" [draggable]="false"
-    [resizable]="false" (onHide)="onDialogHide()">
+<p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '520px' }" [contentStyle]="{ overflow: 'visible' }"
+    [closable]="true" [draggable]="false" [resizable]="false" (onHide)="onDialogHide()"
+    styleClass="module-logo-dialog">
     <ng-template pTemplate="header">
-        <h3>{{ 'systemAdministration.erpModules.moduleLogo.title' | translate }}</h3>
+        <div class="flex align-items-center gap-2">
+            <span class="dialog-icon"><i class="pi pi-image"></i></span>
+            <span class="dialog-title">{{ (moduleName ?
+                ('systemAdministration.erpModules.moduleLogo.titleWithName' | translate:{ name: moduleName }) :
+                ('systemAdministration.erpModules.moduleLogo.title' | translate)) }}</span>
+        </div>
     </ng-template>
 
-    <div class="flex flex-column gap-4">
-        <!-- Skeleton when loading logo: same size as logo area (300x300) + upload section -->
-        <div *ngIf="loadingLogo" class="flex flex-column gap-4">
-            <div class="flex justify-content-center align-items-center p-4">
-                <div class="module-logo-skeleton-box"
-                    style="width: 300px; height: 300px; border: 1px solid var(--surface-border); border-radius: 8px; padding: 1rem; background: var(--surface-ground);">
-                    <p-skeleton width="100%" height="100%" styleClass="rounded"></p-skeleton>
-                </div>
-            </div>
-            <div class="flex flex-column gap-3">
-                <div class="field p-fluid">
-                    <p-skeleton width="6rem" height="1rem" class="mb-2"></p-skeleton>
-                    <p-skeleton width="100%" height="2.5rem" styleClass="rounded"></p-skeleton>
-                    <p-skeleton width="90%" height="0.875rem" class="mt-2"></p-skeleton>
+    <div class="module-logo-content">
+        <div class="logo-preview-wrapper">
+            <div class="logo-preview-container">
+                <img [src]="moduleLogo" alt="Module Logo" class="logo-image" />
+                <div *ngIf="loading || loadingLogo" class="logo-loading-overlay">
+                    <i class="pi pi-spin pi-spinner" style="font-size: 2rem; color: var(--primary-500);"></i>
                 </div>
             </div>
         </div>
 
-        <!-- Main content when logo loaded -->
-        <ng-container *ngIf="!loadingLogo">
-            <div class="flex justify-content-center align-items-center p-4">
-                <div class="logo-preview-container"
-                    style="max-width: 300px; max-height: 300px; border: 1px solid var(--surface-border); border-radius: 8px; padding: 1rem; background: var(--surface-ground);">
-                    <img [src]="moduleLogo" alt="Module Logo" style="width: 100%; height: 100%; object-fit: contain;">
-                </div>
+        <div class="upload-section">
+            <label class="upload-label">{{ 'systemAdministration.erpModules.moduleLogo.uploadLogo' | translate }}</label>
+            <div class="upload-button-wrapper">
+                <p-fileUpload #logoUploader mode="basic" name="logo" accept="image/*" (onSelect)="onLogoUpload($event)"
+                    [maxFileSize]="2097152"
+                    [chooseLabel]="'systemAdministration.erpModules.moduleLogo.chooseLogo' | translate"
+                    [disabled]="loading || loadingLogo">
+                </p-fileUpload>
             </div>
+            <small class="upload-hint">{{ 'systemAdministration.erpModules.moduleLogo.allowedFormats' | translate }}</small>
+            <small class="upload-hint">{{ 'systemAdministration.erpModules.moduleLogo.recommendedSize' | translate }}</small>
+        </div>
 
-            <div class="flex flex-column gap-3">
-                <div class="field p-fluid">
-                    <label>{{ 'systemAdministration.erpModules.moduleLogo.uploadLogo' | translate }}</label>
-                    <p-fileUpload #logoUploader mode="basic" name="logo" accept="image/*" (onSelect)="onLogoUpload($event)"
-                        [maxFileSize]="2097152" [chooseLabel]="'systemAdministration.erpModules.moduleLogo.chooseLogo' | translate" [disabled]="loading || loadingLogo">
-                    </p-fileUpload>
-                    <small class="text-500">
-                        {{ 'systemAdministration.erpModules.moduleLogo.allowedFormats' | translate }}
-                    </small>
-                </div>
-
-                <div *ngIf="hasLogo" class="flex justify-content-center">
-                    <p-button [label]="'systemAdministration.erpModules.moduleLogo.removeLogo' | translate" icon="pi pi-trash" severity="danger" (onClick)="removeLogo()"
-                        [disabled]="loading">
-                    </p-button>
-                </div>
-            </div>
-        </ng-container>
+        <div *ngIf="hasLogo" class="remove-section">
+            <p-button [label]="'systemAdministration.erpModules.moduleLogo.removeLogo' | translate"
+                icon="pi pi-trash" severity="danger" [outlined]="true" (onClick)="removeLogo()"
+                [disabled]="loading || loadingLogo" />
+        </div>
     </div>
-
-    <ng-template pTemplate="footer">
-        <div class="flex justify-content-end gap-2">
-            <p-button [label]="'systemAdministration.erpModules.moduleLogo.close' | translate" icon="pi pi-times" class="p-button-text" (onClick)="closeDialog()"
-                [disabled]="loading || loadingLogo">
-            </p-button>
-        </div>
-    </ng-template>
 </p-dialog>
 
 <p-toast></p-toast>

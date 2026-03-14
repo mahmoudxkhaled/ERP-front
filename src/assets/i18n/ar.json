@@ -2334,9 +2334,11 @@
             },
             "functionLogo": {
                 "title": "إدارة شعار الوظيفة",
+                "titleWithName": "شعار - { name }",
                 "uploadLogo": "رفع الشعار",
                 "chooseLogo": "اختر الشعار",
-                "allowedFormats": "الصيغ المسموحة: PNG, JPG, JPE, JPEG, GIF, BMP, TIFF, TIF, PICT. الحجم الموصى به: 200 كيلوبايت أو أقل.",
+                "allowedFormats": "الصيغ المسموحة: PNG, JPG, JPE, JPEG, GIF, BMP, TIFF, TIF, PICT.",
+                "recommendedSize": "الحجم الموصى به: 200 كيلوبايت أو أقل.",
                 "removeLogo": "إزالة الشعار",
                 "close": "إغلاق"
             },
@@ -2346,9 +2348,11 @@
                 "pleaseWait": "يرجى الانتظار",
                 "searchPlaceholder": "البحث بالرمز أو الاسم أو المعرف أو الرابط...",
                 "clearSearch": "مسح البحث",
+                "manageLogo": "إدارة الشعار",
                 "table": {
                     "id": "المعرف",
                     "code": "الرمز",
+                    "logo": "الشعار",
                     "name": "الاسم",
                     "defaultOrder": "الترتيب ",
                     "url": "الرابط",
@@ -2445,9 +2449,11 @@
             },
             "moduleLogo": {
                 "title": "إدارة شعار الوحدة",
+                "titleWithName": "{{ name }} - الشعار",
                 "uploadLogo": "رفع الشعار",
                 "chooseLogo": "اختر الشعار",
-                "allowedFormats": "الصيغ المسموحة: PNG, JPG, JPE, JPEG, GIF, BMP, TIFF, TIF, PICT. الحجم الموصى به: 200 كيلوبايت أو أقل.",
+                "allowedFormats": "الصيغ المسموحة: PNG, JPG, JPE, JPEG, GIF, BMP, TIFF, TIF, PICT.",
+                "recommendedSize": "الحجم الموصى به: 200 كيلوبايت أو أقل.",
                 "removeLogo": "إزالة الشعار",
                 "close": "إغلاق"
             },
@@ -2457,9 +2463,11 @@
                 "pleaseWait": "يرجى الانتظار",
                 "searchPlaceholder": "البحث بالرمز أو الاسم أو المعرف أو الرابط أو الوظيفة...",
                 "clearSearch": "مسح البحث",
+                "manageLogo": "إدارة الشعار",
                 "table": {
                     "id": "المعرف",
                     "code": "الرمز",
+                    "logo": "الشعار",
                     "name": "الاسم",
                     "function": "الوظيفة",
                     "defaultOrder": "الترتيب الافتراضي",

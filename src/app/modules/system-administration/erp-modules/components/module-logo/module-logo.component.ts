@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { FileUpload } from 'primeng/fileupload';
@@ -21,7 +21,10 @@ export class ModuleLogoComponent implements OnInit, OnDestroy {
     set visible(value: boolean) {
         this._visible = value;
         if (value) {
-            this.loadLogo();
+            this.setPlaceholderLogo();
+            setTimeout(() => this.loadLogo(), 0);
+        } else {
+            this.setPlaceholderLogo();
         }
     }
 
@@ -43,8 +46,12 @@ export class ModuleLogoComponent implements OnInit, OnDestroy {
         private messageService: MessageService
     ) { }
 
-    ngOnInit(): void {
-        // Component initialized
+    ngOnInit(): void { }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['moduleId'] && this._visible && this.moduleId && this.moduleId > 0) {
+            this.loadLogo();
+        }
     }
 
     ngOnDestroy(): void {
@@ -169,7 +176,10 @@ export class ModuleLogoComponent implements OnInit, OnDestroy {
                 this.logoUpdated.emit();
                 this.loadLogo();
             },
-            complete: () => this.loading = false
+            complete: () => {
+                this.loading = false;
+                this.logoUploader?.clear();
+            }
         });
 
         this.subscriptions.push(sub);
@@ -185,7 +195,7 @@ export class ModuleLogoComponent implements OnInit, OnDestroy {
         // Send empty string to remove the logo
         const sub = this.settingsConfigurationsService.setModuleLogo(
             this.moduleId,
-            'png',
+            '',
             ''
         ).subscribe({
             next: (response: any) => {

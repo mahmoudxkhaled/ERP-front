@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MessageService } from 'primeng/api';
 import { SettingsConfigurationsService } from '../../services/settings-configurations.service';
@@ -9,7 +9,7 @@ import { FileUpload } from 'primeng/fileupload';
     templateUrl: './function-logo.component.html',
     styleUrls: ['./function-logo.component.scss']
 })
-export class FunctionLogoComponent implements OnInit, OnDestroy {
+export class FunctionLogoComponent implements OnInit, OnChanges, OnDestroy {
     @ViewChild('logoUploader') logoUploader?: FileUpload;
 
     private _visible: boolean = false;
@@ -21,7 +21,10 @@ export class FunctionLogoComponent implements OnInit, OnDestroy {
     set visible(value: boolean) {
         this._visible = value;
         if (value) {
-            this.loadLogo();
+            this.setPlaceholderLogo();
+            setTimeout(() => this.loadLogo(), 0);
+        } else {
+            this.setPlaceholderLogo();
         }
     }
 
@@ -43,8 +46,12 @@ export class FunctionLogoComponent implements OnInit, OnDestroy {
         private messageService: MessageService
     ) { }
 
-    ngOnInit(): void {
-        // Component initialized
+    ngOnInit(): void { }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['functionId'] && this._visible && this.functionId && this.functionId > 0) {
+            this.loadLogo();
+        }
     }
 
     ngOnDestroy(): void {
@@ -57,7 +64,7 @@ export class FunctionLogoComponent implements OnInit, OnDestroy {
         }
 
         this.loadingLogo = true;
-        const sub = this.settingsConfigurationsService.getFunctionLogo(this.functionId).subscribe({
+        const sub = this.settingsConfigurationsService.getFunctionLogo(this.functionId, { silent: true }).subscribe({
             next: (response: any) => {
                 if (response?.success && response?.message) {
                     const logoData = response.message;
@@ -169,7 +176,10 @@ export class FunctionLogoComponent implements OnInit, OnDestroy {
                 this.logoUpdated.emit();
                 this.loadLogo();
             },
-            complete: () => this.loading = false
+            complete: () => {
+                this.loading = false;
+                this.logoUploader?.clear();
+            }
         });
 
         this.subscriptions.push(sub);
@@ -185,10 +195,11 @@ export class FunctionLogoComponent implements OnInit, OnDestroy {
         // Send empty string to remove the logo
         const sub = this.settingsConfigurationsService.setFunctionLogo(
             this.functionId,
-            'png',
+            '',
             ''
         ).subscribe({
             next: (response: any) => {
+                console.log('response', response);
                 if (!response?.success) {
                     // Check if error is ERP11409 (empty contents) - this is expected for removal
                     const errorCode = String(response?.message || '');

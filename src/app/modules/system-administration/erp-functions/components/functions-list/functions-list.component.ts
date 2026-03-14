@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MenuItem, MessageService } from 'primeng/api';
@@ -32,6 +32,7 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
     currentFunctionForLogo?: Function;
     activationControls: Record<number, FormControl<boolean>> = {};
     reorderInProgressIds = new Set<number>();
+    logoCache: Record<number, string> = {};
 
     // Pagination (handled by PrimeNG automatically)
     first: number = 0;
@@ -54,7 +55,8 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
         private router: Router,
         private messageService: MessageService,
         private localStorageService: LocalStorageService,
-        private translate: TranslationService
+        private translate: TranslationService,
+        private cdr: ChangeDetectorRef
     ) {
         this.isLoading$ = this.settingsConfigurationsService.isLoadingSubject.asObservable();
     }
@@ -89,6 +91,7 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
                 this.functions = this.settingsConfigurationsService.parseFunctionsList(response, isRegional);
                 this.applySearchFilter();
                 this.buildActivationControls();
+                this.loadLogosForList();
             },
             complete: () => this.resetLoadingFlags()
         });
@@ -210,8 +213,47 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
         this.currentFunctionForLogo = undefined;
     }
 
+    getLogoUrl(functionItem: Function): string | null {
+        return this.logoCache[functionItem.id] ?? null;
+    }
+
+    private loadLogosForList(): void {
+        this.filteredFunctions.forEach((fn) => {
+            if (this.logoCache[fn.id] !== undefined) {
+                return;
+            }
+            const sub = this.settingsConfigurationsService.getFunctionLogo(fn.id, { silent: true }).subscribe({
+                next: (response: any) => {
+                    if (response?.success && response?.message?.Image?.trim()) {
+                        const fmt = response.message.Image_Format || 'png';
+                        this.logoCache[fn.id] = `data:image/${fmt.toLowerCase()};base64,${response.message.Image}`;
+                    } else {
+                        this.logoCache[fn.id] = '';
+                    }
+                    this.cdr.markForCheck();
+                }
+            });
+            this.subscriptions.push(sub);
+        });
+    }
+
     onLogoUpdated(): void {
-        this.loadFunctions(true);
+        if (!this.currentFunctionForLogo?.id) {
+            return;
+        }
+        const id = this.currentFunctionForLogo.id;
+        const sub = this.settingsConfigurationsService.getFunctionLogo(id, { silent: true }).subscribe({
+            next: (response: any) => {
+                if (response?.success && response?.message?.Image?.trim()) {
+                    const fmt = response.message.Image_Format || 'png';
+                    this.logoCache[id] = `data:image/${fmt.toLowerCase()};base64,${response.message.Image}`;
+                } else {
+                    delete this.logoCache[id];
+                }
+                this.cdr.markForCheck();
+            }
+        });
+        this.subscriptions.push(sub);
     }
 
     navigateToNew(): void {
@@ -319,6 +361,7 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
             });
         }
         this.filteredFunctions = [...candidates].sort((a, b) => (a.defaultOrder ?? 9999) - (b.defaultOrder ?? 9999));
+        this.loadLogosForList();
     }
 
     isFirstRow(functionItem: Function): boolean {
