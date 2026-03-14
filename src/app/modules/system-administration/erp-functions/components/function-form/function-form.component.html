@@ -1,5 +1,5 @@
-<div class="card">
-    <div class="flex justify-content-between align-items-center mb-4">
+<div class="card" [class.dialog-form]="dialogMode">
+    <div *ngIf="!dialogMode" class="flex justify-content-between align-items-center mb-4">
         <h2>{{ (isEdit ? 'systemAdministration.erpFunctions.functionForm.titleEdit' : 'systemAdministration.erpFunctions.functionForm.titleCreate') | translate }}</h2>
         <p-button [label]="'systemAdministration.erpFunctions.functionForm.actions.backToList' | translate" icon="pi pi-arrow-left" class="p-button-secondary" (onClick)="cancel()"
             [disabled]="loading">

@@ -32,6 +32,10 @@ export class ModulesListComponent implements OnInit, OnDestroy {
     currentModuleForActivation?: Module;
     logoDialogVisible: boolean = false;
     currentModuleForLogo?: Module;
+    detailsDialogVisible: boolean = false;
+    currentModuleForDetails?: Module;
+    editDialogVisible: boolean = false;
+    currentModuleForEdit: Module | null = null;
     activationControls: Record<number, FormControl<boolean>> = {};
     reorderInProgressIds = new Set<number>();
     logoCache: Record<number, string> = {};
@@ -167,14 +171,41 @@ export class ModulesListComponent implements OnInit, OnDestroy {
 
     edit(moduleItem: Module): void {
         if (moduleItem.id) {
-            this.router.navigate(['/system-administration/erp-modules', moduleItem.id, 'edit']);
+            this.currentModuleForEdit = moduleItem;
+            this.editDialogVisible = true;
         }
     }
 
     viewDetails(moduleItem: Module): void {
         if (moduleItem.id) {
-            this.router.navigate(['/system-administration/erp-modules', moduleItem.id]);
+            this.currentModuleForDetails = moduleItem;
+            this.detailsDialogVisible = true;
         }
+    }
+
+    onDetailsClosed(): void {
+        this.detailsDialogVisible = false;
+        this.currentModuleForDetails = undefined;
+    }
+
+    onDetailsEditRequested(): void {
+        if (this.currentModuleForDetails) {
+            this.currentModuleForEdit = this.currentModuleForDetails;
+            this.detailsDialogVisible = false;
+            this.currentModuleForDetails = undefined;
+            this.editDialogVisible = true;
+        }
+    }
+
+    onFormSaved(): void {
+        this.editDialogVisible = false;
+        this.currentModuleForEdit = null;
+        this.loadModules(true);
+    }
+
+    onFormCancelled(): void {
+        this.editDialogVisible = false;
+        this.currentModuleForEdit = null;
     }
 
     openMenu(menuRef: any, moduleItem: Module, event: Event): void {
@@ -273,7 +304,8 @@ export class ModulesListComponent implements OnInit, OnDestroy {
     }
 
     navigateToNew(): void {
-        this.router.navigate(['/system-administration/erp-modules/new']);
+        this.currentModuleForEdit = null;
+        this.editDialogVisible = true;
     }
 
     getFunctionName(functionId: number): string {

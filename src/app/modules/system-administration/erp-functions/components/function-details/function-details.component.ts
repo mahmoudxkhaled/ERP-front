@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
@@ -6,7 +6,6 @@ import { Subscription } from 'rxjs';
 import { SettingsConfigurationsService } from '../../services/settings-configurations.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
-import { FileUpload } from 'primeng/fileupload';
 import { Function } from '../../models/settings-configurations.model';
 
 @Component({
@@ -14,19 +13,20 @@ import { Function } from '../../models/settings-configurations.model';
     templateUrl: './function-details.component.html',
     styleUrls: ['./function-details.component.scss']
 })
-export class FunctionDetailsComponent implements OnInit, OnDestroy {
-    @ViewChild('logoUploader') logoUploader?: FileUpload;
+export class FunctionDetailsComponent implements OnInit, OnChanges, OnDestroy {
+    @Input() functionIdInput: number | null = null;
+    @Input() dialogMode: boolean = false;
+    @Output() closed = new EventEmitter<void>();
+    @Output() editRequested = new EventEmitter<void>();
 
-    functionId: number = 0;
+    private _routeId: number = 0;
+    get functionId(): number {
+        return this.dialogMode ? (this.functionIdInput ?? 0) : this._routeId;
+    }
     loading: boolean = false;
     loadingDetails: boolean = false;
-    loadingLogo: boolean = false;
-    activeTabIndex: number = 0;
 
     functionDetails: Function | null = null;
-    functionLogo: string = 'assets/media/upload-photo.jpg';
-    hasLogo: boolean = false;
-    uploadingLogo: boolean = false;
     activationControl: FormControl<boolean> = new FormControl<boolean>(false, { nonNullable: true });
     activateFunctionDialog: boolean = false;
 
@@ -47,8 +47,16 @@ export class FunctionDetailsComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        if (this.dialogMode) {
+            if (!this.functionId || this.functionId === 0) {
+                this.closed.emit();
+                return;
+            }
+            this.loadAllData();
+            return;
+        }
         const idParam = this.route.snapshot.paramMap.get('id');
-        this.functionId = idParam ? Number(idParam) : 0;
+        this._routeId = idParam ? Number(idParam) : 0;
         if (!this.functionId || this.functionId === 0) {
             this.messageService.add({
                 severity: 'error',
@@ -58,8 +66,13 @@ export class FunctionDetailsComponent implements OnInit, OnDestroy {
             this.router.navigate(['/system-administration/erp-functions/list']);
             return;
         }
-
         this.loadAllData();
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (this.dialogMode && changes['functionIdInput'] && this.functionId > 0) {
+            this.loadAllData();
+        }
     }
 
     ngOnDestroy(): void {
@@ -69,9 +82,9 @@ export class FunctionDetailsComponent implements OnInit, OnDestroy {
     loadAllData(): void {
         this.loading = true;
         this.loadingDetails = true;
-        this.loadingLogo = true;
 
-        const sub = this.settingsConfigurationsService.getFunctionDetails(this.functionId).subscribe({
+        const options = this.dialogMode ? { silent: true } : undefined;
+        const sub = this.settingsConfigurationsService.getFunctionDetails(this.functionId, options).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
                     this.handleBusinessError(response);
@@ -101,214 +114,22 @@ export class FunctionDetailsComponent implements OnInit, OnDestroy {
         });
 
         this.subscriptions.push(sub);
-        this.loadLogo();
-    }
-
-    loadLogo(): void {
-        const sub = this.settingsConfigurationsService.getFunctionLogo(this.functionId).subscribe({
-            next: (response: any) => {
-                if (response?.success && response?.message) {
-                    const logoData = response.message;
-                    if (logoData?.Image && logoData.Image.trim() !== '') {
-                        const imageFormat = logoData.Image_Format || 'png';
-                        this.functionLogo = `data:image/${imageFormat.toLowerCase()};base64,${logoData.Image}`;
-                        this.hasLogo = true;
-                    } else {
-                        this.setPlaceholderLogo();
-                    }
-                } else {
-                    this.setPlaceholderLogo();
-                }
-                this.loadingLogo = false;
-            },
-            error: () => {
-                this.setPlaceholderLogo();
-                this.loadingLogo = false;
-            }
-        });
-
-        this.subscriptions.push(sub);
-    }
-
-    private setPlaceholderLogo(): void {
-        this.functionLogo = 'assets/media/upload-photo.jpg';
-        this.hasLogo = false;
     }
 
     navigateBack(): void {
+        if (this.dialogMode) {
+            this.closed.emit();
+            return;
+        }
         this.router.navigate(['/system-administration/erp-functions/list']);
     }
 
     editFunction(): void {
+        if (this.dialogMode) {
+            this.editRequested.emit();
+            return;
+        }
         this.router.navigate(['/system-administration/erp-functions', this.functionId, 'edit']);
-    }
-
-    onLogoUpload(event: any): void {
-        const file = event.files?.[0];
-        if (!file) {
-            return;
-        }
-
-        // Validate file type by MIME type
-        if (!file.type.startsWith('image/')) {
-            this.messageService.add({
-                severity: 'error',
-                summary: 'Invalid File Type',
-                detail: 'Please select an image file (JPG, PNG, JPEG, WEBP).',
-                life: 5000
-            });
-            this.logoUploader?.clear();
-            return;
-        }
-
-        const RECOMMENDED_FILE_SIZE = 200 * 1024;
-        const fileSizeInMB = (file.size / (1024 * 1024)).toFixed(2);
-        const recommendedSizeInKB = (RECOMMENDED_FILE_SIZE / 1024).toFixed(0);
-
-        if (file.size > RECOMMENDED_FILE_SIZE) {
-            this.messageService.add({
-                severity: 'warn',
-                summary: 'Large File Size',
-                detail: `File size (${fileSizeInMB}MB) is larger than recommended (${recommendedSizeInKB}KB). Upload may take longer.`,
-                life: 5000
-            });
-            this.uploadingLogo = false;
-            this.logoUploader?.clear();
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = () => {
-            const arrayBuffer = reader.result as ArrayBuffer;
-            const byteArray = new Uint8Array(arrayBuffer);
-            // Extract format from MIME type
-            const imageFormat = file.type.split('/')[1] || 'png';
-
-            this.uploadLogo(byteArray, imageFormat);
-        };
-        reader.onerror = () => {
-            this.messageService.add({
-                severity: 'error',
-                summary: 'Error',
-                detail: 'Failed to read file. Please try again.',
-                life: 5000
-            });
-            this.uploadingLogo = false;
-        };
-        reader.readAsArrayBuffer(file);
-    }
-
-    uploadLogo(byteArray: Uint8Array, imageFormat: string): void {
-        this.uploadingLogo = true;
-
-        const base64String = btoa(
-            String.fromCharCode.apply(null, Array.from(byteArray))
-        );
-
-        const sub = this.settingsConfigurationsService.setFunctionLogo(
-            this.functionId,
-            imageFormat,
-            base64String
-        ).subscribe({
-            next: (response: any) => {
-                if (!response?.success) {
-                    this.handleLogoUploadError(response);
-                    return;
-                }
-
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Success',
-                    detail: 'Logo uploaded successfully.',
-                    life: 3000
-                });
-
-                this.loadLogo();
-            },
-            complete: () => {
-                this.uploadingLogo = false;
-            }
-        });
-
-        this.subscriptions.push(sub);
-    }
-
-    removeLogo(): void {
-        if (!this.functionId || this.functionId === 0) {
-            return;
-        }
-
-        this.uploadingLogo = true;
-
-        // Send empty string to remove the logo
-        const sub = this.settingsConfigurationsService.setFunctionLogo(
-            this.functionId,
-            '',
-            ''
-        ).subscribe({
-            next: (response: any) => {
-                if (!response?.success) {
-                    // Check if error is ERP11409 (empty contents) - this is expected for removal
-                    const errorCode = String(response?.message || '');
-                    if (errorCode === 'ERP11409') {
-                        // API accepted empty string as removal
-                        this.messageService.add({
-                            severity: 'success',
-                            summary: 'Success',
-                            detail: 'Logo removed successfully.',
-                            life: 3000
-                        });
-                        this.loadLogo();
-                    } else {
-                        this.handleLogoUploadError(response);
-                    }
-                    return;
-                }
-
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Success',
-                    detail: 'Logo removed successfully.',
-                    life: 3000
-                });
-
-                this.loadLogo();
-            },
-            complete: () => {
-                this.uploadingLogo = false;
-            }
-        });
-
-        this.subscriptions.push(sub);
-    }
-
-    private handleLogoUploadError(response: any): void | null {
-        const code = String(response?.message || '');
-        let detail = '';
-
-        switch (code) {
-            case 'ERP11400':
-                detail = 'Invalid Function ID';
-                break;
-            case 'ERP11408':
-                detail = 'Unknown image file format';
-                break;
-            case 'ERP11409':
-                detail = 'Empty contents for logo file';
-                break;
-            default:
-                return null;
-        }
-
-        if (detail) {
-            this.messageService.add({
-                severity: 'error',
-                summary: 'Error',
-                detail
-            });
-        }
-        this.uploadingLogo = false;
-        return null;
     }
 
     onStatusToggle(): void {

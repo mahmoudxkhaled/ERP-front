@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
@@ -15,7 +15,12 @@ type FunctionFormContext = 'create' | 'update' | 'details';
     templateUrl: './function-form.component.html',
     styleUrls: ['./function-form.component.scss']
 })
-export class FunctionFormComponent implements OnInit, OnDestroy {
+export class FunctionFormComponent implements OnInit, OnChanges, OnDestroy {
+    @Input() functionIdInput: number | null = null;
+    @Input() dialogMode: boolean = false;
+    @Output() saved = new EventEmitter<void>();
+    @Output() cancelled = new EventEmitter<void>();
+
     form!: FormGroup;
     functionId: number = 0;
     isEdit: boolean = false;
@@ -39,13 +44,39 @@ export class FunctionFormComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        if (this.dialogMode) {
+            this.functionId = this.functionIdInput ?? 0;
+            this.isEdit = this.functionId > 0;
+            this.initForm();
+            if (this.isEdit) {
+                this.loadFunction();
+            }
+            return;
+        }
         const idParam = this.route.snapshot.paramMap.get('id');
         this.functionId = idParam ? Number(idParam) : 0;
         this.isEdit = !!this.functionId && this.functionId > 0;
         this.initForm();
-
         if (this.isEdit) {
             this.loadFunction();
+        }
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (this.dialogMode && changes['functionIdInput'] && this.form) {
+            this.functionId = this.functionIdInput ?? 0;
+            this.isEdit = this.functionId > 0;
+            if (this.isEdit) {
+                this.loadFunction();
+            } else {
+                this.form.reset({
+                    code: '',
+                    name: '',
+                    isRegional: false,
+                    defaultOrder: 0,
+                    url: ''
+                });
+            }
         }
     }
 
@@ -69,7 +100,8 @@ export class FunctionFormComponent implements OnInit, OnDestroy {
         }
 
         this.loading = true;
-        const sub = this.settingsConfigurationsService.getFunctionDetails(this.functionId).subscribe({
+        const options = this.dialogMode ? { silent: true } : undefined;
+        const sub = this.settingsConfigurationsService.getFunctionDetails(this.functionId, options).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
                     this.handleBusinessError('details', response);
@@ -131,7 +163,11 @@ export class FunctionFormComponent implements OnInit, OnDestroy {
                         summary: 'Success',
                         detail: 'Function updated successfully.'
                     });
-                    this.router.navigate(['/system-administration/erp-functions', this.functionId]);
+                    if (this.dialogMode) {
+                        this.saved.emit();
+                    } else {
+                        this.router.navigate(['/system-administration/erp-functions', this.functionId]);
+                    }
                 },
                 complete: () => this.loading = false
             });
@@ -140,7 +176,6 @@ export class FunctionFormComponent implements OnInit, OnDestroy {
             return;
         }
 
-        // Create new function
         const sub = this.settingsConfigurationsService.addFunction(code.trim(), name.trim()).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
@@ -148,16 +183,20 @@ export class FunctionFormComponent implements OnInit, OnDestroy {
                     return;
                 }
 
-                const newFunctionId = response?.message?.Function_ID;
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Success',
                     detail: 'Function created successfully.'
                 });
-                if (newFunctionId) {
-                    this.router.navigate(['/system-administration/erp-functions', newFunctionId]);
+                if (this.dialogMode) {
+                    this.saved.emit();
                 } else {
-                    this.router.navigate(['/system-administration/erp-functions/list']);
+                    const newFunctionId = response?.message?.Function_ID;
+                    if (newFunctionId) {
+                        this.router.navigate(['/system-administration/erp-functions', newFunctionId]);
+                    } else {
+                        this.router.navigate(['/system-administration/erp-functions/list']);
+                    }
                 }
             },
             complete: () => this.loading = false
@@ -167,6 +206,10 @@ export class FunctionFormComponent implements OnInit, OnDestroy {
     }
 
     cancel(): void {
+        if (this.dialogMode) {
+            this.cancelled.emit();
+            return;
+        }
         this.router.navigate(['/system-administration/erp-functions/list']);
     }
 

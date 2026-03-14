@@ -30,6 +30,10 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
     currentFunctionForActivation?: Function;
     logoDialogVisible: boolean = false;
     currentFunctionForLogo?: Function;
+    detailsDialogVisible: boolean = false;
+    currentFunctionForDetails?: Function;
+    editDialogVisible: boolean = false;
+    currentFunctionForEdit: Function | null = null;
     activationControls: Record<number, FormControl<boolean>> = {};
     reorderInProgressIds = new Set<number>();
     logoCache: Record<number, string> = {};
@@ -127,14 +131,41 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
 
     edit(functionItem: Function): void {
         if (functionItem.id) {
-            this.router.navigate(['/system-administration/erp-functions', functionItem.id, 'edit']);
+            this.currentFunctionForEdit = functionItem;
+            this.editDialogVisible = true;
         }
     }
 
     viewDetails(functionItem: Function): void {
         if (functionItem.id) {
-            this.router.navigate(['/system-administration/erp-functions', functionItem.id]);
+            this.currentFunctionForDetails = functionItem;
+            this.detailsDialogVisible = true;
         }
+    }
+
+    onDetailsClosed(): void {
+        this.detailsDialogVisible = false;
+        this.currentFunctionForDetails = undefined;
+    }
+
+    onDetailsEditRequested(): void {
+        if (this.currentFunctionForDetails) {
+            this.currentFunctionForEdit = this.currentFunctionForDetails;
+            this.detailsDialogVisible = false;
+            this.currentFunctionForDetails = undefined;
+            this.editDialogVisible = true;
+        }
+    }
+
+    onFormSaved(): void {
+        this.editDialogVisible = false;
+        this.currentFunctionForEdit = null;
+        this.loadFunctions(true);
+    }
+
+    onFormCancelled(): void {
+        this.editDialogVisible = false;
+        this.currentFunctionForEdit = null;
     }
 
     openMenu(menuRef: any, functionItem: Function, event: Event): void {
@@ -257,7 +288,8 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
     }
 
     navigateToNew(): void {
-        this.router.navigate(['/system-administration/erp-functions/new']);
+        this.currentFunctionForEdit = null;
+        this.editDialogVisible = true;
     }
 
     private configureMenuItems(): void {

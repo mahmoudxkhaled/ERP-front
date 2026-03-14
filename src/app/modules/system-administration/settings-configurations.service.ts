@@ -26,10 +26,16 @@ export class SettingsConfigurationsService {
      * API Code: 705
      * @returns Observable containing FunctionsListResponse
      */
-    getFunctionsList(): Observable<any> {
-        this.isLoadingSubject.next(true);
+    getFunctionsList(options?: { silent?: boolean }): Observable<any> {
+        if (!options?.silent) {
+            this.isLoadingSubject.next(true);
+        }
         return this.apiServices.callAPI(705, this.getAccessToken(), []).pipe(
-            finalize(() => this.isLoadingSubject.next(false))
+            finalize(() => {
+                if (!options?.silent) {
+                    this.isLoadingSubject.next(false);
+                }
+            })
         );
     }
 
@@ -75,10 +81,16 @@ export class SettingsConfigurationsService {
      * @param functionId - Function ID
      * @returns Observable containing FunctionDetailsResponse
      */
-    getFunctionDetails(functionId: number): Observable<any> {
-        this.isLoadingSubject.next(true);
+    getFunctionDetails(functionId: number, options?: { silent?: boolean }): Observable<any> {
+        if (!options?.silent) {
+            this.isLoadingSubject.next(true);
+        }
         return this.apiServices.callAPI(701, this.getAccessToken(), [functionId.toString()]).pipe(
-            finalize(() => this.isLoadingSubject.next(false))
+            finalize(() => {
+                if (!options?.silent) {
+                    this.isLoadingSubject.next(false);
+                }
+            })
         );
     }
 

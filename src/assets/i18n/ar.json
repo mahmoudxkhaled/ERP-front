@@ -2274,6 +2274,7 @@
                 "title": "تفاصيل الوظيفة",
                 "actions": {
                     "backToList": "العودة للقائمة",
+                    "close": "إغلاق",
                     "editFunction": "تعديل الوظيفة"
                 },
                 "tabs": {
@@ -2381,6 +2382,7 @@
                 "title": "تفاصيل الوحدة",
                 "actions": {
                     "backToList": "العودة للقائمة",
+                    "close": "إغلاق",
                     "editModule": "تعديل الوحدة"
                 },
                 "tabs": {

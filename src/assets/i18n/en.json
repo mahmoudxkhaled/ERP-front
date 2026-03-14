@@ -2414,6 +2414,7 @@
                 "title": "Function Details",
                 "actions": {
                     "backToList": "Back to List",
+                    "close": "Close",
                     "editFunction": "Edit Function"
                 },
                 "tabs": {
@@ -2521,6 +2522,7 @@
                 "title": "Module Details",
                 "actions": {
                     "backToList": "Back to List",
+                    "close": "Close",
                     "editModule": "Edit Module"
                 },
                 "tabs": {

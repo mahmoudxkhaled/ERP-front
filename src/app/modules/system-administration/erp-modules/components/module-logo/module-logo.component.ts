@@ -94,6 +94,16 @@ export class ModuleLogoComponent implements OnInit, OnDestroy {
         this.hasLogo = false;
     }
 
+    private uint8ArrayToBase64(bytes: Uint8Array): string {
+        const chunkSize = 8192;
+        let binary = '';
+        for (let i = 0; i < bytes.length; i += chunkSize) {
+            const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
+            binary += String.fromCharCode.apply(null, Array.from(chunk));
+        }
+        return btoa(binary);
+    }
+
     onLogoUpload(event: any): void {
         const file = event.files?.[0];
         if (!file) {
@@ -151,9 +161,7 @@ export class ModuleLogoComponent implements OnInit, OnDestroy {
     uploadLogo(byteArray: Uint8Array, imageFormat: string): void {
         this.loading = true;
 
-        const base64String = btoa(
-            String.fromCharCode.apply(null, Array.from(byteArray))
-        );
+        const base64String = this.uint8ArrayToBase64(byteArray);
 
         const sub = this.settingsConfigurationsService.setModuleLogo(
             this.moduleId,

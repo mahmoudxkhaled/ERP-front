@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
@@ -16,7 +16,12 @@ type ModuleFormContext = 'create' | 'update' | 'details';
     templateUrl: './module-form.component.html',
     styleUrls: ['./module-form.component.scss']
 })
-export class ModuleFormComponent implements OnInit, OnDestroy {
+export class ModuleFormComponent implements OnInit, OnChanges, OnDestroy {
+    @Input() moduleIdInput: number | null = null;
+    @Input() dialogMode: boolean = false;
+    @Output() saved = new EventEmitter<void>();
+    @Output() cancelled = new EventEmitter<void>();
+
     form!: FormGroup;
     moduleId: number = 0;
     isEdit: boolean = false;
@@ -46,14 +51,43 @@ export class ModuleFormComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        if (this.dialogMode) {
+            this.moduleId = this.moduleIdInput ?? 0;
+            this.isEdit = this.moduleId > 0;
+            this.initForm();
+            this.loadFunctions();
+            if (this.isEdit) {
+                this.loadModule();
+            }
+            return;
+        }
         const idParam = this.route.snapshot.paramMap.get('id');
         this.moduleId = idParam ? Number(idParam) : 0;
         this.isEdit = !!this.moduleId && this.moduleId > 0;
         this.initForm();
         this.loadFunctions();
-
         if (this.isEdit) {
             this.loadModule();
+        }
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (this.dialogMode && changes['moduleIdInput'] && this.form) {
+            this.moduleId = this.moduleIdInput ?? 0;
+            this.isEdit = this.moduleId > 0;
+            if (this.isEdit) {
+                this.loadModule();
+            } else {
+                this.form.reset({
+                    functionId: 0,
+                    code: '',
+                    name: '',
+                    isRegional: false,
+                    defaultOrder: 0,
+                    url: ''
+                });
+                this.selectedFunction = undefined;
+            }
         }
     }
 
@@ -74,7 +108,8 @@ export class ModuleFormComponent implements OnInit, OnDestroy {
 
     loadFunctions(): void {
         this.loadingFunctions = true;
-        const sub = this.settingsConfigurationsService.getFunctionsList().subscribe({
+        const options = this.dialogMode ? { silent: true } : undefined;
+        const sub = this.settingsConfigurationsService.getFunctionsList(options).subscribe({
             next: (response: any) => {
                 if (response?.success) {
                     this.functions = this.settingsConfigurationsService.parseFunctionsList(response, this.isRegional);
@@ -94,7 +129,8 @@ export class ModuleFormComponent implements OnInit, OnDestroy {
         }
 
         this.loading = true;
-        const sub = this.settingsConfigurationsService.getModuleDetails(this.moduleId).subscribe({
+        const options = this.dialogMode ? { silent: true } : undefined;
+        const sub = this.settingsConfigurationsService.getModuleDetails(this.moduleId, options).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
                     this.handleBusinessError('details', response);
@@ -164,7 +200,11 @@ export class ModuleFormComponent implements OnInit, OnDestroy {
                         summary: 'Success',
                         detail: 'Module updated successfully.'
                     });
-                    this.router.navigate(['/system-administration/erp-modules', this.moduleId]);
+                    if (this.dialogMode) {
+                        this.saved.emit();
+                    } else {
+                        this.router.navigate(['/system-administration/erp-modules', this.moduleId]);
+                    }
                 },
                 complete: () => this.loading = false
             });
@@ -173,7 +213,6 @@ export class ModuleFormComponent implements OnInit, OnDestroy {
             return;
         }
 
-        // Create new module
         const sub = this.settingsConfigurationsService.addModule(
             Number(functionId),
             code.trim(),
@@ -185,16 +224,20 @@ export class ModuleFormComponent implements OnInit, OnDestroy {
                     return;
                 }
 
-                const newModuleId = response?.message?.Module_ID;
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Success',
                     detail: 'Module created successfully.'
                 });
-                if (newModuleId) {
-                    this.router.navigate(['/system-administration/erp-modules', newModuleId]);
+                if (this.dialogMode) {
+                    this.saved.emit();
                 } else {
-                    this.router.navigate(['/system-administration/erp-modules/list']);
+                    const newModuleId = response?.message?.Module_ID;
+                    if (newModuleId) {
+                        this.router.navigate(['/system-administration/erp-modules', newModuleId]);
+                    } else {
+                        this.router.navigate(['/system-administration/erp-modules/list']);
+                    }
                 }
             },
             complete: () => this.loading = false
@@ -204,6 +247,10 @@ export class ModuleFormComponent implements OnInit, OnDestroy {
     }
 
     cancel(): void {
+        if (this.dialogMode) {
+            this.cancelled.emit();
+            return;
+        }
         this.router.navigate(['/system-administration/erp-modules/list']);
     }
 
