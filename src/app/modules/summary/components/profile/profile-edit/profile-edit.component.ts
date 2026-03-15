@@ -1,19 +1,17 @@
-import { Component, ElementRef, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { MessageService } from 'primeng/api';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
-import { ProfilePictureService } from 'src/app/core/services/profile-picture.service';
 import { UserNameService } from 'src/app/core/services/user-name.service';
 import { IUserDetails, IAccountDetails, IEntityDetails, IAccountSettings } from 'src/app/core/models/account-status.model';
 import { ProfileApiService } from '../../../services/profile-api.service';
 import { ProfileContactInfo, ProfilePreferences } from '../../../models/profile.model';
 import { Observable, Subscription } from 'rxjs';
 import { nameFieldValidator, getNameFieldError, textFieldValidator, getTextFieldError } from 'src/app/core/validators/text-field.validator';
-import { FileUpload } from 'primeng/fileupload';
 
-type ProfileContext = 'update' | 'contact' | 'preferences' | 'picture';
+type ProfileContext = 'update' | 'contact' | 'preferences';
 
 @Component({
     selector: 'app-profile-edit',
@@ -22,9 +20,6 @@ type ProfileContext = 'update' | 'contact' | 'preferences' | 'picture';
     providers: [MessageService]
 })
 export class ProfileEditComponent implements OnInit, OnDestroy {
-
-    @ViewChild('profilePictureUploader') profilePictureUploader?: FileUpload;
-    @ViewChild('cropImage') cropImageRef?: ElementRef<HTMLImageElement>;
 
     profileForm!: FormGroup;
     contactInfoForm!: FormGroup;
@@ -37,8 +32,6 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
     entityDetails: IEntityDetails | null = null;
     accountSettings: IAccountSettings | null = null;
     isRegional: boolean = false;
-    profilePictureUrl: string = '';
-    hasProfilePicture: boolean = false;
 
     // API integration properties
     currentUserId: number | null = null;
@@ -47,25 +40,9 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
     isLoading$: Observable<boolean>;
     loadingContactInfo: boolean = false;
     loadingPreferences: boolean = false;
-    loadingProfilePicture: boolean = false;
     saving: boolean = false;
     savingContactInfo: boolean = false;
     savingPreferences: boolean = false;
-    uploadingPicture: boolean = false;
-
-    // Crop dialog: position photo so head is in focus before upload
-    showCropDialog: boolean = false;
-    pendingCropDataUrl: string = '';
-    pendingCropFile: File | null = null;
-    pendingCropFileExtension: string = 'png';
-    cropPosition: { x: number; y: number } = { x: 0, y: 0 };
-    cropDisplayWidth: number = 200;
-    cropDisplayHeight: number = 200;
-    private cropNaturalWidth: number = 0;
-    private cropNaturalHeight: number = 0;
-    private isCropDragging: boolean = false;
-    private lastCropMouseX: number = 0;
-    private lastCropMouseY: number = 0;
 
     genderOptions = [
         { label: 'Male', value: true },
@@ -80,7 +57,6 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
         private messageService: MessageService,
         private localStorageService: LocalStorageService,
         private profileApiService: ProfileApiService,
-        private profilePictureService: ProfilePictureService,
         private userNameService: UserNameService,
         private router: Router
     ) {
@@ -100,14 +76,6 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
             this.loadUserDetailsFromAPI();
             this.loadContactInfo();
             this.loadPreferences();
-            this.loadProfilePicture();
-        } else {
-            // Fallback to localStorage profile picture
-            if (this.gender) {
-                this.profilePictureUrl = this.accountDetails?.Profile_Picture || 'assets/media/avatar.png';
-            } else {
-                this.profilePictureUrl = this.accountDetails?.Profile_Picture || 'assets/media/female-avatar.png';
-            }
         }
     }
 
@@ -443,46 +411,6 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
         this.subscriptions.push(sub);
     }
 
-    loadProfilePicture(): void {
-        if (!this.currentUserId) {
-            return;
-        }
-
-        this.loadingProfilePicture = true;
-        const sub = this.profileApiService.getProfilePicture(this.currentUserId).subscribe({
-            next: (response: any) => {
-                this.loadingProfilePicture = false;
-                if (response?.success && response?.message) {
-                    const pictureData = response.message;
-                    if (pictureData?.Image && pictureData.Image.trim() !== '') {
-                        const imageFormat = pictureData.Image_Format || 'png';
-                        this.profilePictureUrl = `data:image/${imageFormat.toLowerCase()};base64,${pictureData.Image}`;
-                        this.hasProfilePicture = true;
-                    } else {
-                        // Fallback to default avatar
-                        this.profilePictureUrl = this.gender ? 'assets/media/avatar.png' : 'assets/media/female-avatar.png';
-                        this.hasProfilePicture = false;
-                    }
-                } else {
-                    // Fallback to default avatar
-                    this.profilePictureUrl = this.gender ? 'assets/media/avatar.png' : 'assets/media/female-avatar.png';
-                    this.hasProfilePicture = false;
-                }
-                // Sync profile picture with service and localStorage
-                this.syncProfilePicture(this.profilePictureUrl);
-            },
-            error: () => {
-                this.loadingProfilePicture = false;
-                this.profilePictureUrl = this.gender ? 'assets/media/avatar.png' : 'assets/media/female-avatar.png';
-                this.hasProfilePicture = false;
-                // Sync profile picture with service and localStorage
-                this.syncProfilePicture(this.profilePictureUrl);
-            }
-        });
-
-        this.subscriptions.push(sub);
-    }
-
     saveContactInfo(): void {
         if (!this.currentUserId) {
             return;
@@ -578,233 +506,6 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
         this.subscriptions.push(sub);
     }
 
-    getDefaultAvatarUrl(): string {
-        return this.gender ? 'assets/media/avatar.png' : 'assets/media/female-avatar.png';
-    }
-
-    onProfilePictureAreaClick(): void {
-        if (this.uploadingPicture) {
-            return;
-        }
-        this.profilePictureUploader?.choose();
-    }
-
-    onProfilePictureKeydown(event: KeyboardEvent | Event): void {
-        event.preventDefault();
-        this.onProfilePictureAreaClick();
-    }
-
-    uploadProfilePicture(event: any): void {
-        if (!this.currentUserId) {
-            return;
-        }
-
-        const file = event.files?.[0];
-        if (!file) {
-            return;
-        }
-
-        // Validate file type
-        const validFormats = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff', 'pict'];
-        const fileExtension = file.name.split('.').pop()?.toLowerCase() || '';
-        if (!validFormats.includes(fileExtension)) {
-            this.messageService.add({
-                severity: 'error',
-                summary: 'Error',
-                detail: 'Invalid image format. Allowed formats: PNG, JPG, JPEG, GIF, BMP, TIFF, PICT'
-            });
-            this.profilePictureUploader?.clear();
-            return;
-        }
-
-        // Validate file size (max 2MB)
-        if (file.size > 2097152) {
-            this.messageService.add({
-                severity: 'error',
-                summary: 'Error',
-                detail: 'Image size must be less than 2MB.'
-            });
-            this.profilePictureUploader?.clear();
-            return;
-        }
-
-        // Warn when file is over 1 MB (show in toaster)
-        const oneMB = 1024 * 1024;
-        if (file.size > oneMB) {
-            this.messageService.add({
-                severity: 'warn',
-                summary: this.translate.getInstant('profile.edit.largeFile'),
-                detail: this.translate.getInstant('profile.edit.largeFileDetail'),
-                life: 5000
-            });
-        }
-
-        // Open crop dialog so user can position photo (focus on head) before upload
-        this.pendingCropFile = file;
-        this.pendingCropFileExtension = fileExtension;
-        const reader = new FileReader();
-        reader.onload = () => {
-            this.pendingCropDataUrl = reader.result as string;
-            this.cropPosition = { x: 0, y: 0 };
-            this.cropDisplayWidth = 200;
-            this.cropDisplayHeight = 200;
-            this.showCropDialog = true;
-        };
-        reader.onerror = () => {
-            this.messageService.add({
-                severity: 'error',
-                summary: 'Error',
-                detail: 'Failed to read file. Please try again.',
-                life: 5000
-            });
-            this.profilePictureUploader?.clear();
-        };
-        reader.readAsDataURL(file);
-        this.profilePictureUploader?.clear();
-    }
-
-    onCropImageLoad(event: Event): void {
-        const img = event.target as HTMLImageElement;
-        if (!img?.naturalWidth) return;
-        this.cropNaturalWidth = img.naturalWidth;
-        this.cropNaturalHeight = img.naturalHeight;
-        const size = 200;
-        const scale = size / Math.min(img.naturalWidth, img.naturalHeight);
-        this.cropDisplayWidth = Math.round(img.naturalWidth * scale);
-        this.cropDisplayHeight = Math.round(img.naturalHeight * scale);
-        this.cropPosition = {
-            x: (size - this.cropDisplayWidth) / 2,
-            y: (size - this.cropDisplayHeight) / 2
-        };
-    }
-
-    onCropMouseDown(event: MouseEvent): void {
-        this.isCropDragging = true;
-        this.lastCropMouseX = event.clientX;
-        this.lastCropMouseY = event.clientY;
-    }
-
-    onCropMouseMove(event: MouseEvent): void {
-        if (!this.isCropDragging) return;
-        const dx = event.clientX - this.lastCropMouseX;
-        const dy = event.clientY - this.lastCropMouseY;
-        this.lastCropMouseX = event.clientX;
-        this.lastCropMouseY = event.clientY;
-        const size = 200;
-        const maxX = 0;
-        const minX = size - this.cropDisplayWidth;
-        const maxY = 0;
-        const minY = size - this.cropDisplayHeight;
-        this.cropPosition.x = Math.max(minX, Math.min(maxX, this.cropPosition.x + dx));
-        this.cropPosition.y = Math.max(minY, Math.min(maxY, this.cropPosition.y + dy));
-    }
-
-    onCropMouseUp(): void {
-        this.isCropDragging = false;
-    }
-
-    closeCropDialog(): void {
-        this.showCropDialog = false;
-        this.pendingCropDataUrl = '';
-        this.pendingCropFile = null;
-    }
-
-    onCropDialogHide(): void {
-        this.closeCropDialog();
-    }
-
-    applyCropAndUpload(): void {
-        const img = this.cropImageRef?.nativeElement as HTMLImageElement | undefined;
-        if (!img || !this.pendingCropDataUrl || !this.currentUserId) {
-            return;
-        }
-        const size = 200;
-        const ctx = document.createElement('canvas').getContext('2d');
-        if (!ctx) return;
-        const canvas = ctx.canvas;
-        canvas.width = size;
-        canvas.height = size;
-        const x = this.cropPosition.x;
-        const y = this.cropPosition.y;
-        const dw = this.cropDisplayWidth;
-        const dh = this.cropDisplayHeight;
-        const nw = this.cropNaturalWidth;
-        const nh = this.cropNaturalHeight;
-        const sx = (-x / dw) * nw;
-        const sy = (-y / dh) * nh;
-        const sw = (size / dw) * nw;
-        const sh = (size / dh) * nh;
-        ctx.beginPath();
-        ctx.arc(size / 2, size / 2, size / 2, 0, 2 * Math.PI);
-        ctx.closePath();
-        ctx.clip();
-        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, size, size);
-        const dataUrl = canvas.toDataURL('image/png');
-        const base64String = dataUrl.split(',')[1];
-        if (!base64String) return;
-        this.uploadingPicture = true;
-        this.closeCropDialog();
-        const sub = this.profileApiService.assignProfilePicture(this.currentUserId, 'png', base64String).subscribe({
-            next: (response: any) => {
-                this.uploadingPicture = false;
-                if (!response?.success) {
-                    this.handleBusinessError('picture', response);
-                    this.profilePictureUploader?.clear();
-                    return;
-                }
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Success',
-                    detail: 'Profile picture updated successfully.',
-                    life: 3000
-                });
-                this.loadProfilePicture();
-            },
-            error: () => {
-                this.uploadingPicture = false;
-                this.profilePictureUploader?.clear();
-            }
-        });
-        this.subscriptions.push(sub);
-    }
-
-    removeProfilePicture(): void {
-        if (!this.currentUserId) {
-            return;
-        }
-
-        this.uploadingPicture = true;
-        const sub = this.profileApiService.removeProfilePicture(this.currentUserId).subscribe({
-            next: (response: any) => {
-                this.uploadingPicture = false;
-                if (!response?.success) {
-                    this.messageService.add({
-                        severity: 'error',
-                        summary: 'Error',
-                        detail: 'Failed to remove profile picture.'
-                    });
-                    return;
-                }
-
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Success',
-                    detail: 'Profile picture removed successfully.'
-                });
-
-                this.profilePictureUrl = this.gender ? 'assets/media/avatar.png' : 'assets/media/female-avatar.png';
-                this.hasProfilePicture = false;
-                // Sync profile picture with service and localStorage
-                this.syncProfilePicture(this.profilePictureUrl);
-            },
-            error: () => {
-                this.uploadingPicture = false;
-            }
-        });
-
-        this.subscriptions.push(sub);
-    }
-
     addPreference(): void {
         const key = prompt('Enter preference key:');
         if (key && key.trim()) {
@@ -893,22 +594,6 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
         this.localStorageService.setItem('User_Details', this.userDetails);
     }
 
-    /**
-     * Sync profile picture with ProfilePictureService and update localStorage
-     * This ensures all components (top bar, menu profile) are updated in real-time
-     */
-    private syncProfilePicture(pictureUrl: string): void {
-        // Update the service to notify all subscribers (top bar, menu profile)
-        this.profilePictureService.updateProfilePicture(pictureUrl);
-
-        // Update localStorage so the picture persists across page reloads
-        if (this.accountDetails) {
-            // Store the picture URL in Account_Details.Profile_Picture
-            this.accountDetails.Profile_Picture = pictureUrl;
-            this.localStorageService.setItem('Account_Details', this.accountDetails);
-        }
-    }
-
     private handleBusinessError(context: ProfileContext, response: any): void | null {
         const code = String(response?.message || '');
         let detail = '';
@@ -921,11 +606,7 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
                 detail = this.getContactErrorMessage(code) || '';
                 break;
             case 'preferences':
-                // Preferences errors are handled inline
                 return null;
-            case 'picture':
-                detail = this.getPictureErrorMessage(code) || '';
-                break;
             default:
                 return null;
         }
@@ -976,15 +657,5 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
         }
     }
 
-    private getPictureErrorMessage(code: string): string | null {
-        switch (code) {
-            case 'ERP11220':
-                return 'Invalid Image Format';
-            case 'ERP11221':
-                return 'Invalid Image Size';
-            default:
-                return null;
-        }
-    }
 }
 

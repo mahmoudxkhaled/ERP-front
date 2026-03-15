@@ -806,7 +806,11 @@
         "messages": {
             "saveSuccess": "Profile information saved successfully!",
             "resetInfo": "Profile information has been reset to original values.",
-            "cancelInfo": "Changes have been cancelled."
+            "cancelInfo": "Changes have been cancelled.",
+            "pictureUpdated": "Profile picture updated successfully.",
+            "pictureRemoved": "Profile picture removed successfully.",
+            "pictureUpdateFailed": "Failed to update profile picture.",
+            "pictureRemoveFailed": "Failed to remove profile picture."
         },
         "edit": {
             "titleSuffix": " - Edit",
@@ -821,6 +825,9 @@
             "recommendedSize": "Recommended: 200KB or less. Files over 1 MB will show a warning.",
             "largeFile": "Large file",
             "largeFileDetail": "Your file is larger than 1 MB. Upload may take longer.",
+            "invalidImageFormat": "Invalid image format. Allowed formats: PNG, JPG, JPEG, GIF, BMP, TIFF, PICT.",
+            "imageSizeMax": "Image size must be less than 2MB.",
+            "readFileError": "Failed to read file. Please try again.",
             "pleaseWait": "Please wait",
             "positionPhoto": "Position your photo",
             "positionPhotoHint": "Drag the image to center your face in the circle, then click Apply.",
@@ -852,6 +859,8 @@
         },
         "overview": {
             "loading": "Loading...",
+            "profilePictureAlt": "Profile picture",
+            "cropAlt": "Crop",
             "fullName": "Full Name",
             "contactInformation": "Contact Information",
             "address": "Address",

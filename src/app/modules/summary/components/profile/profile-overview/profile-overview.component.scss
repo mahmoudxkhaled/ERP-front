@@ -11,7 +11,18 @@
     .avatar-container {
         width: 150px;
         height: 150px;
-        
+    }
+
+    .avatar-with-status {
+        position: relative;
+        width: 150px;
+        height: 150px;
+    }
+
+    .avatar-with-status .status-ring {
+        position: absolute;
+        bottom: 8px;
+        right: 8px;
     }
 
     .avatar-loading {
@@ -37,13 +48,191 @@
     }
 
     .status-ring {
-        position: absolute;
-        bottom: 8px;
-        right: 8px;
         width: 28px;
         height: 28px;
         border-radius: 50%;
         border: 4px solid #fff;
+    }
+
+    .profile-picture-wrapper {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        overflow: visible;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        cursor: pointer;
+        transition: transform 0.3s ease;
+
+        &:hover {
+            transform: scale(1.05);
+        }
+
+        .profile-picture-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--surface-200, #e8e8e8);
+
+            img {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+            }
+        }
+
+        .picture-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            border-radius: 50%;
+            backdrop-filter: blur(4px);
+            overflow: visible;
+        }
+
+        &:hover .picture-overlay {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .picture-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            align-items: center;
+            padding: 0 0.5rem;
+
+            ::ng-deep button,
+            ::ng-deep .p-button {
+                pointer-events: auto;
+            }
+        }
+
+        .picture-recommended-size {
+            font-size: 0.75rem;
+        }
+
+        .picture-actions-row {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            align-items: center;
+        }
+
+        ::ng-deep .picture-upload-button.p-button {
+            background: transparent;
+            color: rgba(255, 255, 255, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            padding: 0.5rem 0.75rem;
+            font-weight: 500;
+            transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+
+            &:hover {
+                background: rgba(255, 255, 255, 0.15);
+                border-color: rgba(255, 255, 255, 0.95);
+                color: #fff;
+                transform: translateY(-1px);
+            }
+        }
+
+        .picture-remove-button.p-button {
+            background: rgba(220, 53, 69, 0.85);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 0.5rem 0.75rem;
+            font-weight: 500;
+            transition: background 0.2s ease, transform 0.15s ease;
+
+            &:hover:not(:disabled) {
+                background: rgba(220, 53, 69, 1);
+                transform: translateY(-1px);
+            }
+
+            &:disabled {
+                opacity: 0.6;
+            }
+        }
+
+        .picture-loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            z-index: 10;
+        }
+
+        .picture-upload-indicator {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .picture-upload-text {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        ::ng-deep .picture-upload-spinner.p-progress-spinner {
+            width: 2.5rem;
+            height: 2.5rem;
+
+            circle {
+                stroke: rgba(255, 255, 255, 0.9);
+            }
+        }
+    }
+
+    .crop-area {
+        width: 200px;
+        height: 200px;
+        margin: 0 auto;
+        cursor: grab;
+        user-select: none;
+
+        &:active {
+            cursor: grabbing;
+        }
+    }
+
+    .crop-circle {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        overflow: hidden;
+        position: relative;
+        background-color: var(--surface-200, #e8e8e8);
+        border: 2px solid black;
+
+        img {
+            position: absolute;
+            display: block;
+            pointer-events: none;
+        }
     }
 
     .surface-card {

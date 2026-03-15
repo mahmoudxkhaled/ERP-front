@@ -24,11 +24,55 @@
                         <span class="avatar-loading-text">{{ 'profile.overview.loading' | translate }}</span>
                     </div>
                     <ng-container *ngIf="!loadingProfilePicture">
-                        <p-avatar [image]="profilePictureUrl || getDefaultAvatarUrl()" size="xlarge" shape="circle"
-                            styleClass="border-4 border-white shadow-3" [style]="{'width': '150px', 'height': '150px'}">
-                        </p-avatar>
-                        <div class="status-ring"
-                            [style.background]="getStatusSeverity() === 'success' ? '#10b981' : '#f59e0b'"></div>
+                        <div class="avatar-with-status">
+                            <div class="profile-picture-wrapper" role="button" tabindex="0"
+                                aria-label="Upload profile picture" (click)="onProfilePictureAreaClick()"
+                                (keydown.enter)="onProfilePictureKeydown($event)"
+                                (keydown.space)="onProfilePictureKeydown($event)">
+                                <div class="profile-picture-inner">
+                                    <img [src]="profilePictureUrl || getDefaultAvatarUrl()"
+                                        [alt]="'profile.overview.profilePictureAlt' | translate"
+                                        style="width: 100%; height: 100%; object-fit: contain;">
+                                </div>
+                                <div class="picture-overlay">
+                                    <div class="picture-actions">
+                                        <p-fileUpload #profilePictureUploader
+                                            *ngIf="!hasProfilePicture && !uploadingPicture" mode="basic"
+                                            name="profilePicture" accept="image/*"
+                                            (onSelect)="uploadProfilePicture($event)" [maxFileSize]="2097152"
+                                            styleClass="picture-upload-button p-button-outlined p-button-sm">
+                                        </p-fileUpload>
+                                        <div *ngIf="hasProfilePicture && !uploadingPicture"
+                                            class="picture-actions-row">
+                                            <p-fileUpload #profilePictureUploader2 mode="basic" name="profilePicture2"
+                                                accept="image/*" (onSelect)="uploadProfilePicture($event)"
+                                                [maxFileSize]="2097152"
+                                                styleClass="picture-upload-button p-button-outlined p-button-sm">
+                                            </p-fileUpload>
+                                            <p-button icon="pi pi-trash" iconPos="left"
+                                                class="picture-remove-button p-button-sm"
+                                                (onClick)="removeProfilePicture()" [disabled]="uploadingPicture">
+                                            </p-button>
+                                        </div>
+                                        <small *ngIf="!uploadingPicture"
+                                            class="text-white-alpha-90 mt-2 text-center picture-recommended-size">
+                                            {{ 'profile.edit.recommendedSize' | translate }}
+                                        </small>
+                                    </div>
+                                </div>
+                                <div *ngIf="uploadingPicture" class="picture-loading-overlay">
+                                    <div class="picture-upload-indicator">
+                                        <p-progressSpinner strokeWidth="4" styleClass="picture-upload-spinner">
+                                        </p-progressSpinner>
+                                        <span class="picture-upload-text">
+                                            {{ 'profile.edit.uploading' | translate }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="status-ring"
+                                [style.background]="getStatusSeverity() === 'success' ? '#10b981' : '#f59e0b'"></div>
+                        </div>
                     </ng-container>
                 </div>
 
@@ -188,6 +232,28 @@
             <p-button [label]="'common.cancel' | translate" styleClass="p-button-text" (onClick)="cancelEditAccountTitle()"></p-button>
             <p-button [label]="'common.save' | translate" icon="pi pi-check" (onClick)="saveEditAccountTitle()"
                 [loading]="savingAccountTitle"></p-button>
+        </ng-template>
+    </p-dialog>
+
+    <p-dialog [(visible)]="showCropDialog" [header]="'profile.edit.positionPhoto' | translate" [modal]="true"
+        [closable]="true" [style]="{ width: '320px' }" (onHide)="onCropDialogHide()" [draggable]="false"
+        [resizable]="false">
+        <p class="text-600 mb-3">{{ 'profile.edit.positionPhotoHint' | translate }}</p>
+        <div class="crop-area" (mousedown)="onCropMouseDown($event)" (mousemove)="onCropMouseMove($event)"
+            (mouseup)="onCropMouseUp()" (mouseleave)="onCropMouseUp()">
+            <div class="crop-circle">
+                <img #cropImage [src]="pendingCropDataUrl" [alt]="'profile.overview.cropAlt' | translate"
+                    [style.width.px]="cropDisplayWidth" [style.height.px]="cropDisplayHeight"
+                    [style.left.px]="cropPosition.x" [style.top.px]="cropPosition.y"
+                    (load)="onCropImageLoad($event)" draggable="false">
+            </div>
+        </div>
+        <ng-template pTemplate="footer">
+            <p-button [label]="'profile.edit.cancel' | translate" (onClick)="closeCropDialog()" class="p-button-text">
+            </p-button>
+            <p-button [label]="'profile.edit.applyCrop' | translate" (onClick)="applyCropAndUpload()"
+                [loading]="uploadingPicture">
+            </p-button>
         </ng-template>
     </p-dialog>
 </div>

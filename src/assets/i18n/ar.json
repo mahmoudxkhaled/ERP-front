@@ -806,7 +806,11 @@
         "messages": {
             "saveSuccess": "تم حفظ معلومات الملف الشخصي بنجاح!",
             "resetInfo": "تم إعادة تعيين معلومات الملف الشخصي إلى القيم الأصلية.",
-            "cancelInfo": "تم إلغاء التغييرات."
+            "cancelInfo": "تم إلغاء التغييرات.",
+            "pictureUpdated": "تم تحديث صورة الملف الشخصي بنجاح.",
+            "pictureRemoved": "تم إزالة صورة الملف الشخصي بنجاح.",
+            "pictureUpdateFailed": "فشل تحديث صورة الملف الشخصي.",
+            "pictureRemoveFailed": "فشل إزالة صورة الملف الشخصي."
         },
         "edit": {
             "titleSuffix": " - تعديل",
@@ -821,6 +825,9 @@
             "recommendedSize": "موصى به: 200 كيلوبايت أو أقل. الملفات أكبر من 1 ميجابايت ستظهر تحذيراً.",
             "largeFile": "ملف كبير",
             "largeFileDetail": "حجم الملف أكبر من 1 ميجابايت. قد يستغرق الرفع وقتاً أطول.",
+            "invalidImageFormat": "صيغة الصورة غير صالحة. الصيغ المسموحة: PNG, JPG, JPEG, GIF, BMP, TIFF, PICT.",
+            "imageSizeMax": "يجب أن يكون حجم الصورة أقل من 2 ميجابايت.",
+            "readFileError": "فشل قراءة الملف. يرجى المحاولة مرة أخرى.",
             "pleaseWait": "يرجى الانتظار",
             "positionPhoto": "وضّع صورتك",
             "positionPhotoHint": "اسحب الصورة لتوسيط وجهك في الدائرة، ثم انقر تطبيق.",
@@ -852,6 +859,8 @@
         },
         "overview": {
             "loading": "جاري التحميل...",
+            "profilePictureAlt": "صورة الملف الشخصي",
+            "cropAlt": "قص",
             "fullName": "الاسم الكامل",
             "contactInformation": "معلومات الاتصال",
             "address": "العنوان",

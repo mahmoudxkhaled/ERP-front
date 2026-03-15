@@ -1,13 +1,15 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, ElementRef, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { MessageService } from 'primeng/api';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { LayoutService } from 'src/app/layout/app-services/app.layout.service';
+import { ProfilePictureService } from 'src/app/core/services/profile-picture.service';
 import { IUserDetails, IAccountDetails, IEntityDetails, IAccountSettings, IUserAccountItem } from 'src/app/core/models/account-status.model';
 import { ProfileApiService } from '../../../services/profile-api.service';
 import { ProfileContactInfo, ProfilePreferences } from '../../../models/profile.model';
 import { Observable, Subscription } from 'rxjs';
+import { FileUpload } from 'primeng/fileupload';
 
 @Component({
     selector: 'app-profile-overview',
@@ -29,6 +31,24 @@ export class ProfileOverviewComponent implements OnInit, OnDestroy {
     savingAccountTitle: boolean = false;
     profilePictureUrl: string = '';
     hasProfilePicture: boolean = false;
+    uploadingPicture: boolean = false;
+
+    showCropDialog: boolean = false;
+    pendingCropDataUrl: string = '';
+    pendingCropFile: File | null = null;
+    pendingCropFileExtension: string = 'png';
+    cropPosition: { x: number; y: number } = { x: 0, y: 0 };
+    cropDisplayWidth: number = 200;
+    cropDisplayHeight: number = 200;
+    private cropNaturalWidth: number = 0;
+    private cropNaturalHeight: number = 0;
+    private isCropDragging: boolean = false;
+    private lastCropMouseX: number = 0;
+    private lastCropMouseY: number = 0;
+
+    @ViewChild('profilePictureUploader') profilePictureUploader?: FileUpload;
+    @ViewChild('profilePictureUploader2') profilePictureUploader2?: FileUpload;
+    @ViewChild('cropImage') cropImageRef?: ElementRef<HTMLImageElement>;
 
     userContactInfo: ProfileContactInfo | null = null;
     userPreferences: ProfilePreferences = {};
@@ -47,6 +67,7 @@ export class ProfileOverviewComponent implements OnInit, OnDestroy {
         private messageService: MessageService,
         private localStorageService: LocalStorageService,
         private profileApiService: ProfileApiService,
+        private profilePictureService: ProfilePictureService,
         private router: Router,
         private layoutService: LayoutService
     ) {
@@ -216,14 +237,232 @@ export class ProfileOverviewComponent implements OnInit, OnDestroy {
                     this.profilePictureUrl = this.gender ? 'assets/media/avatar.png' : 'assets/media/female-avatar.png';
                     this.hasProfilePicture = false;
                 }
+                this.syncProfilePicture(this.profilePictureUrl);
             },
             error: () => {
                 this.loadingProfilePicture = false;
                 this.profilePictureUrl = this.gender ? 'assets/media/avatar.png' : 'assets/media/female-avatar.png';
                 this.hasProfilePicture = false;
+                this.syncProfilePicture(this.profilePictureUrl);
             }
         });
 
+        this.subscriptions.push(sub);
+    }
+
+    private syncProfilePicture(pictureUrl: string): void {
+        this.profilePictureService.updateProfilePicture(pictureUrl);
+        if (this.accountDetails) {
+            this.accountDetails.Profile_Picture = pictureUrl;
+            this.localStorageService.setItem('Account_Details', this.accountDetails);
+        }
+    }
+
+    onProfilePictureAreaClick(): void {
+        if (this.uploadingPicture) return;
+        (this.profilePictureUploader ?? this.profilePictureUploader2)?.choose();
+    }
+
+    onProfilePictureKeydown(event: KeyboardEvent | Event): void {
+        event.preventDefault();
+        this.onProfilePictureAreaClick();
+    }
+
+    uploadProfilePicture(event: any): void {
+        if (!this.currentUserId) return;
+        const file = event.files?.[0];
+        if (!file) return;
+
+        const validFormats = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff', 'pict'];
+        const fileExtension = file.name.split('.').pop()?.toLowerCase() || '';
+        if (!validFormats.includes(fileExtension)) {
+            this.messageService.add({
+                severity: 'error',
+                summary: this.translate.getInstant('shared.messages.error'),
+                detail: this.translate.getInstant('profile.edit.invalidImageFormat')
+            });
+            this.profilePictureUploader?.clear();
+            this.profilePictureUploader2?.clear();
+            return;
+        }
+        if (file.size > 2097152) {
+            this.messageService.add({
+                severity: 'error',
+                summary: this.translate.getInstant('shared.messages.error'),
+                detail: this.translate.getInstant('profile.edit.imageSizeMax')
+            });
+            this.profilePictureUploader?.clear();
+            this.profilePictureUploader2?.clear();
+            return;
+        }
+        const oneMB = 1024 * 1024;
+        if (file.size > oneMB) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: this.translate.getInstant('profile.edit.largeFile'),
+                detail: this.translate.getInstant('profile.edit.largeFileDetail'),
+                life: 5000
+            });
+        }
+
+        this.pendingCropFile = file;
+        this.pendingCropFileExtension = fileExtension;
+        const reader = new FileReader();
+        reader.onload = () => {
+            this.pendingCropDataUrl = reader.result as string;
+            this.cropPosition = { x: 0, y: 0 };
+            this.cropDisplayWidth = 200;
+            this.cropDisplayHeight = 200;
+            this.showCropDialog = true;
+        };
+        reader.onerror = () => {
+            this.messageService.add({
+                severity: 'error',
+                summary: this.translate.getInstant('shared.messages.error'),
+                detail: this.translate.getInstant('profile.edit.readFileError'),
+                life: 5000
+            });
+            this.profilePictureUploader?.clear();
+            this.profilePictureUploader2?.clear();
+        };
+        reader.readAsDataURL(file);
+        this.profilePictureUploader?.clear();
+        this.profilePictureUploader2?.clear();
+    }
+
+    onCropImageLoad(event: Event): void {
+        const img = event.target as HTMLImageElement;
+        if (!img?.naturalWidth) return;
+        this.cropNaturalWidth = img.naturalWidth;
+        this.cropNaturalHeight = img.naturalHeight;
+        const size = 200;
+        const scale = size / Math.min(img.naturalWidth, img.naturalHeight);
+        this.cropDisplayWidth = Math.round(img.naturalWidth * scale);
+        this.cropDisplayHeight = Math.round(img.naturalHeight * scale);
+        this.cropPosition = {
+            x: (size - this.cropDisplayWidth) / 2,
+            y: (size - this.cropDisplayHeight) / 2
+        };
+    }
+
+    onCropMouseDown(event: MouseEvent): void {
+        this.isCropDragging = true;
+        this.lastCropMouseX = event.clientX;
+        this.lastCropMouseY = event.clientY;
+    }
+
+    onCropMouseMove(event: MouseEvent): void {
+        if (!this.isCropDragging) return;
+        const dx = event.clientX - this.lastCropMouseX;
+        const dy = event.clientY - this.lastCropMouseY;
+        this.lastCropMouseX = event.clientX;
+        this.lastCropMouseY = event.clientY;
+        const size = 200;
+        const maxX = 0;
+        const minX = size - this.cropDisplayWidth;
+        const maxY = 0;
+        const minY = size - this.cropDisplayHeight;
+        this.cropPosition.x = Math.max(minX, Math.min(maxX, this.cropPosition.x + dx));
+        this.cropPosition.y = Math.max(minY, Math.min(maxY, this.cropPosition.y + dy));
+    }
+
+    onCropMouseUp(): void {
+        this.isCropDragging = false;
+    }
+
+    closeCropDialog(): void {
+        this.showCropDialog = false;
+        this.pendingCropDataUrl = '';
+        this.pendingCropFile = null;
+    }
+
+    onCropDialogHide(): void {
+        this.closeCropDialog();
+    }
+
+    applyCropAndUpload(): void {
+        const img = this.cropImageRef?.nativeElement as HTMLImageElement | undefined;
+        if (!img || !this.pendingCropDataUrl || !this.currentUserId) return;
+        const size = 200;
+        const ctx = document.createElement('canvas').getContext('2d');
+        if (!ctx) return;
+        const canvas = ctx.canvas;
+        canvas.width = size;
+        canvas.height = size;
+        const x = this.cropPosition.x;
+        const y = this.cropPosition.y;
+        const dw = this.cropDisplayWidth;
+        const dh = this.cropDisplayHeight;
+        const nw = this.cropNaturalWidth;
+        const nh = this.cropNaturalHeight;
+        const sx = (-x / dw) * nw;
+        const sy = (-y / dh) * nh;
+        const sw = (size / dw) * nw;
+        const sh = (size / dh) * nh;
+        ctx.beginPath();
+        ctx.arc(size / 2, size / 2, size / 2, 0, 2 * Math.PI);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(img, sx, sy, sw, sh, 0, 0, size, size);
+        const dataUrl = canvas.toDataURL('image/png');
+        const base64String = dataUrl.split(',')[1];
+        if (!base64String) return;
+        this.uploadingPicture = true;
+        this.closeCropDialog();
+        const sub = this.profileApiService.assignProfilePicture(this.currentUserId, 'png', base64String).subscribe({
+            next: (response: any) => {
+                this.uploadingPicture = false;
+                if (!response?.success) {
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: this.translate.getInstant('shared.messages.error'),
+                        detail: response?.message || this.translate.getInstant('profile.messages.pictureUpdateFailed')
+                    });
+                    return;
+                }
+                this.messageService.add({
+                    severity: 'success',
+                    summary: this.translate.getInstant('shared.messages.success'),
+                    detail: this.translate.getInstant('profile.messages.pictureUpdated'),
+                    life: 3000
+                });
+                this.loadProfilePicture();
+            },
+            error: () => {
+                this.uploadingPicture = false;
+            }
+        });
+        this.subscriptions.push(sub);
+    }
+
+    removeProfilePicture(): void {
+        if (!this.currentUserId) return;
+        this.uploadingPicture = true;
+        const sub = this.profileApiService.removeProfilePicture(this.currentUserId).subscribe({
+            next: (response: any) => {
+                this.uploadingPicture = false;
+                if (!response?.success) {
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: this.translate.getInstant('shared.messages.error'),
+                        detail: this.translate.getInstant('profile.messages.pictureRemoveFailed')
+                    });
+                    return;
+                }
+                this.messageService.add({
+                    severity: 'success',
+                    summary: this.translate.getInstant('shared.messages.success'),
+                    detail: this.translate.getInstant('profile.messages.pictureRemoved'),
+                    life: 3000
+                });
+                this.profilePictureUrl = this.gender ? 'assets/media/avatar.png' : 'assets/media/female-avatar.png';
+                this.hasProfilePicture = false;
+                this.syncProfilePicture(this.profilePictureUrl);
+            },
+            error: () => {
+                this.uploadingPicture = false;
+            }
+        });
         this.subscriptions.push(sub);
     }
 
