@@ -4,7 +4,7 @@ import { TranslationService } from 'src/app/core/services/translation.service';
 import { MessageService } from 'primeng/api';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { LayoutService } from 'src/app/layout/app-services/app.layout.service';
-import { IUserDetails, IAccountDetails, IEntityDetails, IAccountSettings } from 'src/app/core/models/account-status.model';
+import { IUserDetails, IAccountDetails, IEntityDetails, IAccountSettings, IUserAccountItem } from 'src/app/core/models/account-status.model';
 import { ProfileApiService } from '../../../services/profile-api.service';
 import { ProfileContactInfo, ProfilePreferences } from '../../../models/profile.model';
 import { Observable, Subscription } from 'rxjs';
@@ -21,6 +21,7 @@ export class ProfileOverviewComponent implements OnInit, OnDestroy {
     accountDetails: IAccountDetails | null = null;
     entityDetails: IEntityDetails | null = null;
     accountSettings: IAccountSettings | null = null;
+    userAccounts: IUserAccountItem[] = [];
     isRegional: boolean = false;
     profilePictureUrl: string = '';
     hasProfilePicture: boolean = false;
@@ -79,8 +80,17 @@ export class ProfileOverviewComponent implements OnInit, OnDestroy {
         this.accountDetails = this.localStorageService.getAccountDetails();
         this.entityDetails = this.localStorageService.getEntityDetails();
         this.accountSettings = this.localStorageService.getAccountSettings();
+        const accounts = this.localStorageService.getUserAccounts();
+        this.userAccounts = accounts || [];
 
         this.isRegional = this.accountSettings?.Language !== 'English';
+    }
+
+    getEntityNameForAccount(entityId: number): string {
+        if (this.entityDetails?.Entity_ID === entityId) {
+            return this.isRegional ? (this.entityDetails.Name_Regional || this.entityDetails.Name || '') : (this.entityDetails.Name || '—');
+        }
+        return entityId.toString();
     }
 
     loadAllData(): void {

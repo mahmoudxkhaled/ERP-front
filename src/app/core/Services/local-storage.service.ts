@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IUserDetails, IAccountDetails, IEntityDetails, IFunctionsDetails, IModulesDetails, IAccountSettings, IAccountStatusResponse } from '../models/account-status.model';
+import { IUserDetails, IAccountDetails, IEntityDetails, IFunctionsDetails, IModulesDetails, IAccountSettings, IAccountStatusResponse, IUserAccountItem } from '../models/account-status.model';
 
 @Injectable({
   providedIn: 'root'
@@ -87,6 +87,10 @@ export class LocalStorageService {
       }
       this.setItem('Account_Settings', settingsToSave);
     }
+
+    if (accountData.User_Accounts) {
+      this.setItem('User_Accounts', accountData.User_Accounts);
+    }
   }
 
 
@@ -97,6 +101,7 @@ export class LocalStorageService {
     this.removeItem('Functions_Details');
     this.removeItem('Modules_Details');
     this.removeItem('Account_Settings');
+    this.removeItem('User_Accounts');
     this.removeItem('userData');
   }
 
@@ -122,5 +127,9 @@ export class LocalStorageService {
 
   getAccountSettings(): IAccountSettings | null {
     return this.getItem('Account_Settings');
+  }
+
+  getUserAccounts(): IUserAccountItem[] | null {
+    return this.getItem('User_Accounts');
   }
 }

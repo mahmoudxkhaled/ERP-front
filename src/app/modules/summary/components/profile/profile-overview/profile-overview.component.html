@@ -79,11 +79,31 @@
                             {{ getGenderLabel() }}
                         </div>
                     </div>
-                    <div class="col-12 mt-2" *ngIf="accountDetails?.Description">
-                        <label class="font-bold text-sm text-600 block mb-2">{{ 'profile.labels.account' | translate
-                            }}</label>
-                        <div class="p-4   border-round line-height-3 text-700 italic border-left-3 border-primary">
-                            "{{ accountDetails?.Description }}"
+                    <div class="col-12 mt-4">
+                        <label class="font-bold text-sm text-600 block mb-3">{{ 'profile.labels.account' | translate }}</label>
+                        <div class="profile-accounts-table-wrapper">
+                            <p-table [value]="userAccounts" responsiveLayout="scroll"
+                                styleClass="p-datatable-sm p-datatable-striped profile-accounts-table">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th class="col-account-id">{{ 'profile.labels.accountId' | translate }}</th>
+                                        <th class="col-account-title">{{ 'profile.labels.accountTitle' | translate }}</th>
+                                        <th class="col-entity">{{ 'profile.labels.entity' | translate }}</th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-account>
+                                    <tr>
+                                        <td class="col-account-id font-medium text-900">{{ account.Account_ID }}</td>
+                                        <td class="col-account-title">{{ isRegional ? (account.Description_Regional || account.Description) : account.Description }}</td>
+                                        <td class="col-entity">{{ getEntityNameForAccount(account.Entity_ID) }}</td>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="emptymessage">
+                                    <tr>
+                                        <td colspan="3" class="text-center text-500 p-4">{{ 'profile.overview.noAccounts' | translate }}</td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
                         </div>
                     </div>
                 </div>

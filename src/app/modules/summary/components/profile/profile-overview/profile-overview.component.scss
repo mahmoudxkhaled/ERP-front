@@ -68,4 +68,42 @@
             color: #ffffff !important;
         }
     }
+
+    .profile-accounts-table-wrapper {
+        border: 1px solid var(--surface-border);
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        background: var(--surface-ground);
+    }
+
+    ::ng-deep .profile-accounts-table {
+        .p-datatable-thead > tr > th {
+            background: var(--surface-100);
+            color: var(--text-color);
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.875rem 1rem;
+            border-bottom: 1px solid var(--surface-border);
+        }
+        .p-datatable-tbody > tr > td {
+            padding: 0.875rem 1rem;
+            border-bottom: 1px solid var(--surface-border);
+            vertical-align: middle;
+        }
+        .p-datatable-tbody > tr:last-child > td {
+            border-bottom: none;
+        }
+        .p-datatable-tbody > tr:hover {
+            background: var(--surface-50);
+        }
+        .col-account-id {
+            width: 7rem;
+            min-width: 6rem;
+        }
+        .col-entity {
+            min-width: 10rem;
+        }
+    }
 }

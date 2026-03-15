@@ -727,6 +727,9 @@
         "labels": {
             "emailAddress": "عنوان البريد الإلكتروني",
             "account": "حسابات المستخدمين",
+            "accountId": "معرف الحساب",
+            "accountTitle": "عنوان الحساب",
+            "entity": "الشركة",
             "company": "الشركة",
             "userId": "معرف المستخدم"
         },
@@ -850,6 +853,7 @@
             "contactInformation": "معلومات الاتصال",
             "address": "العنوان",
             "noContactInfoAvailable": "لا توجد معلومات اتصال متاحة",
+            "noAccounts": "لا توجد حسابات متاحة",
             "socialMedia": "وسائل التواصل الاجتماعي"
         }
     },

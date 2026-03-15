@@ -727,6 +727,9 @@
         "labels": {
             "emailAddress": "Email Address",
             "account": "User Accounts",
+            "accountId": "Account ID",
+            "accountTitle": "Account Title",
+            "entity": "Entity",
             "company": "Company",
             "userId": "User ID"
         },
@@ -850,6 +853,7 @@
             "contactInformation": "Contact Information",
             "address": "Address",
             "noContactInfoAvailable": "No contact information available",
+            "noAccounts": "No accounts available",
             "socialMedia": "Social Media"
         }
     },

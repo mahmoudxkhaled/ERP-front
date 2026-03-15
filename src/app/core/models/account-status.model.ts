@@ -6,6 +6,7 @@ export interface Get_Login_Data_Package {
     Functions_Details: IFunctionsDetails;
     Modules_Details: IModulesDetails;
     Account_Settings: IAccountSettings;
+    User_Accounts?: IUserAccountItem[];
 }
 
 
@@ -92,6 +93,16 @@ export interface IAccountSettings {
     Modules_Order: string;
 }
 
+export interface IUserAccountItem {
+    Account_ID: number;
+    Email: string;
+    Entity_ID: number;
+    Entity_Role_ID: number;
+    Description: string;
+    Description_Regional: string;
+    AccountState: number;
+    SystemRole: number;
+}
 
 export interface IAccountStatusResponse {
     Account_Details: IAccountDetails;
@@ -100,6 +111,7 @@ export interface IAccountStatusResponse {
     Functions_Details: IFunctionsDetails;
     Modules_Details: IModulesDetails;
     Account_Settings: IAccountSettings;
+    User_Accounts?: IUserAccountItem[];
 }
 
 
