@@ -72,7 +72,6 @@ export class FunctionFormComponent implements OnInit, OnChanges, OnDestroy {
                 this.form.reset({
                     code: '',
                     name: '',
-                    isRegional: false,
                     defaultOrder: 0,
                     url: ''
                 });
@@ -88,7 +87,6 @@ export class FunctionFormComponent implements OnInit, OnChanges, OnDestroy {
         this.form = this.fb.group({
             code: ['', [Validators.required, Validators.maxLength(10), textFieldValidator()]],
             name: ['', [Validators.required, Validators.maxLength(30), textFieldValidator()]],
-            isRegional: [false],
             defaultOrder: [0, [Validators.required, Validators.min(1)]],
             url: ['']
         });
@@ -112,7 +110,6 @@ export class FunctionFormComponent implements OnInit, OnChanges, OnDestroy {
                 this.form.patchValue({
                     code: functionData.Code || '',
                     name: this.isRegional ? (functionData.Name_Regional || functionData.Name || '') : (functionData.Name || ''),
-                    isRegional: !!functionData.Name_Regional,
                     defaultOrder: functionData.Default_Order || 0,
                     url: functionData.URL || ''
                 });
@@ -139,7 +136,8 @@ export class FunctionFormComponent implements OnInit, OnChanges, OnDestroy {
             return;
         }
 
-        const { code, name, isRegional, defaultOrder, url } = this.form.value;
+        const { code, name, defaultOrder, url } = this.form.value;
+        const isRegional = this.accountSettings?.Language !== 'English';
 
         this.loading = true;
 

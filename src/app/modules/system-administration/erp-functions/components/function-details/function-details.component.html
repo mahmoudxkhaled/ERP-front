@@ -1,21 +1,26 @@
-<div class="card">
-    <!-- Header -->
-    <div class="flex justify-content-between align-items-center mb-4">
-        <h2>{{ 'systemAdministration.erpFunctions.functionDetails.title' | translate }}</h2>
-        <p-button [label]="(dialogMode ? 'systemAdministration.erpFunctions.functionDetails.actions.close' : 'systemAdministration.erpFunctions.functionDetails.actions.backToList') | translate" icon="pi pi-arrow-left" class="p-button-secondary" (onClick)="navigateBack()"
-            [disabled]="loading">
-        </p-button>
+<div class="function-details-card">
+    <div class="details-header">
+        <div class="details-header-left">
+            <span class="details-icon" *ngIf="!functionLogoUrl">
+                <i class="pi pi-puzzle-piece"></i>
+            </span>
+            <img *ngIf="functionLogoUrl" [src]="functionLogoUrl" alt="" class="details-logo" />
+            <h2 class="details-title">{{ 'systemAdministration.erpFunctions.functionDetails.title' | translate }}</h2>
+        </div>
+        <div class="details-header-actions">
+            <p-button [label]="(dialogMode ? 'systemAdministration.erpFunctions.functionDetails.actions.close' : 'systemAdministration.erpFunctions.functionDetails.actions.backToList') | translate"
+                icon="pi pi-arrow-left" class="p-button-secondary p-button-outlined" (onClick)="navigateBack()" [disabled]="loading">
+            </p-button>
+            <p-button [label]="'systemAdministration.erpFunctions.functionDetails.actions.editFunction' | translate"
+                icon="pi pi-pencil" (onClick)="editFunction()" [disabled]="loading">
+            </p-button>
+        </div>
     </div>
 
-    <!-- Skeleton: same layout as Function Profile panel (header + grid with fields) -->
     <div *ngIf="loading" class="function-details-skeleton">
-        <div class="flex justify-content-between align-items-center mb-4">
-            <p-skeleton width="12rem" height="2rem"></p-skeleton>
-            <p-skeleton width="8rem" height="2.5rem" styleClass="rounded"></p-skeleton>
-        </div>
         <div class="details-skeleton-panel">
             <p-skeleton width="10rem" height="1.75rem" class="mb-4"></p-skeleton>
-            <div class="grid p-5">
+            <div class="grid p-4">
                 <div class="col-12 md:col-6">
                     <div class="flex flex-column gap-3">
                         <div><p-skeleton width="6rem" height="0.875rem" class="mb-1"></p-skeleton><p-skeleton width="4rem" height="1.25rem"></p-skeleton></div>
@@ -27,120 +32,47 @@
                     <div class="flex flex-column gap-3">
                         <div><p-skeleton width="8rem" height="0.875rem" class="mb-1"></p-skeleton><p-skeleton width="3rem" height="1.25rem"></p-skeleton></div>
                         <div><p-skeleton width="3rem" height="0.875rem" class="mb-1"></p-skeleton><p-skeleton width="100%" height="1.25rem"></p-skeleton></div>
-                        <div><p-skeleton width="5rem" height="0.875rem" class="mb-1"></p-skeleton><p-skeleton width="5rem" height="1.5rem"></p-skeleton></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Content -->
-    <div *ngIf="!loading && functionDetails">
-        <p-panel class="mb-5" [toggleable]="false">
-            <ng-template pTemplate="header">
-                <div class="flex align-items-center justify-content-between w-full">
-                    <div class="flex align-items-center gap-3">
-                        <i class="pi pi-puzzle-piece text-primary text-2xl"></i>
-                        <span class="text-xl font-semibold">{{ 'systemAdministration.erpFunctions.functionDetails.profile' | translate }}</span>
+    <div *ngIf="!loading && functionDetails" class="details-profile-panel">
+        <div class="profile-section">
+            <h3 class="profile-section-title">{{ 'systemAdministration.erpFunctions.functionDetails.profile' | translate }}</h3>
+            <div class="profile-grid">
+                <div class="profile-col">
+                    <div class="detail-field">
+                        <span class="detail-label">{{ 'systemAdministration.erpFunctions.functionDetails.fields.functionId' | translate }}</span>
+                        <span class="detail-value">#{{ functionDetails.id }}</span>
                     </div>
-                    <div class="flex gap-2 align-items-center">
-                        <p-inputSwitch [formControl]="activationControl" (onChange)="onStatusToggle()"
-                            [disabled]="loading">
-                        </p-inputSwitch>
-                        <p-button [label]="'systemAdministration.erpFunctions.functionDetails.actions.editFunction' | translate" icon="pi pi-pencil" size="small" severity="contrast"
-                            (onClick)="editFunction()" [disabled]="loading">
-                        </p-button>
+                    <div class="detail-field">
+                        <span class="detail-label">{{ 'systemAdministration.erpFunctions.functionDetails.fields.code' | translate }}</span>
+                        <span class="detail-value detail-value-emphasis">{{ functionDetails.code }}</span>
+                    </div>
+                    <div class="detail-field">
+                        <span class="detail-label">{{ 'systemAdministration.erpFunctions.functionDetails.fields.name' | translate }}</span>
+                        <span class="detail-value detail-value-emphasis">{{ functionDetails.name }}</span>
+                    </div>
+                    <div *ngIf="functionDetails.nameRegional" class="detail-field">
+                        <span class="detail-label">{{ 'systemAdministration.erpFunctions.functionDetails.fields.nameRegional' | translate }}</span>
+                        <span class="detail-value">{{ functionDetails.nameRegional }}</span>
                     </div>
                 </div>
-            </ng-template>
-
-            <div class="p-5">
-                <div class="grid">
-                    <div class="col-12 md:col-6">
-                        <div class="flex flex-column gap-3">
-                            <div>
-                                <small class="text-500">{{ 'systemAdministration.erpFunctions.functionDetails.fields.functionId' | translate }}</small>
-                                <p class="mt-1 text-700 font-medium">#{{ functionDetails.id }}</p>
-                            </div>
-                            <div>
-                                <small class="text-500">{{ 'systemAdministration.erpFunctions.functionDetails.fields.code' | translate }}</small>
-                                <p class="mt-1 text-700 font-medium text-lg">{{ functionDetails.code }}</p>
-                            </div>
-                            <div>
-                                <small class="text-500">{{ 'systemAdministration.erpFunctions.functionDetails.fields.name' | translate }}</small>
-                                <p class="mt-1 text-700 font-medium text-lg">{{ functionDetails.name }}</p>
-                            </div>
-                            <div *ngIf="functionDetails.nameRegional">
-                                <small class="text-500">{{ 'systemAdministration.erpFunctions.functionDetails.fields.nameRegional' | translate }}</small>
-                                <p class="mt-1 text-700 font-medium">{{ functionDetails.nameRegional }}</p>
-                            </div>
-                        </div>
+                <div class="profile-col">
+                    <div class="detail-field">
+                        <span class="detail-label">{{ 'systemAdministration.erpFunctions.functionDetails.fields.defaultOrder' | translate }}</span>
+                        <span class="detail-value">{{ functionDetails.defaultOrder || '—' }}</span>
                     </div>
-                    <div class="col-12 md:col-6">
-                        <div class="flex flex-column gap-3">
-                            <div>
-                                <small class="text-500">{{ 'systemAdministration.erpFunctions.functionDetails.fields.defaultOrder' | translate }}</small>
-                                <p class="mt-1 text-700 font-medium">{{ functionDetails.defaultOrder || '—' }}
-                                </p>
-                            </div>
-                            <div>
-                                <small class="text-500">{{ 'systemAdministration.erpFunctions.functionDetails.fields.url' | translate }}</small>
-                                <p class="mt-1 text-700 font-medium">{{ functionDetails.url || '—' }}</p>
-                            </div>
-                            <div>
-                                <small class="text-500">{{ 'systemAdministration.erpFunctions.functionDetails.fields.status' | translate }}</small>
-                                <div class="mt-1">
-                                    <p-tag [value]="getStatusLabel()" [severity]="getStatusSeverity()"
-                                        [rounded]="true" icon="pi pi-circle-fill" class="text-sm font-medium">
-                                    </p-tag>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="detail-field">
+                        <span class="detail-label">{{ 'systemAdministration.erpFunctions.functionDetails.fields.url' | translate }}</span>
+                        <span class="detail-value detail-value-url">{{ functionDetails.url || '—' }}</span>
                     </div>
                 </div>
             </div>
-        </p-panel>
+        </div>
     </div>
 </div>
-
-<!-- Activation Dialog -->
-<p-dialog [(visible)]="activateFunctionDialog" [modal]="true" [style]="{ width: '500px' }" [closable]="true"
-    [draggable]="false" [resizable]="false" (onHide)="onCancelActivationDialog()">
-    <ng-template pTemplate="header">
-        <h3>{{ (functionDetails?.isActive ? 'systemAdministration.erpFunctions.functionDetails.activationDialog.deactivateTitle' : 'systemAdministration.erpFunctions.functionDetails.activationDialog.activateTitle') | translate }}</h3>
-    </ng-template>
-    <div class="flex flex-column gap-3">
-        <!-- Activation Message -->
-        <ng-container *ngIf="!functionDetails?.isActive">
-            <p>
-                {{ 'systemAdministration.erpFunctions.functionDetails.activationDialog.activateMessage' | translate:{ name: functionDetails?.name } }}
-            </p>
-        </ng-container>
-
-        <!-- Deactivation Message -->
-        <ng-container *ngIf="functionDetails?.isActive">
-            <p>
-                {{ 'systemAdministration.erpFunctions.functionDetails.activationDialog.deactivateMessage' | translate:{ name: functionDetails?.name } }}
-            </p>
-        </ng-container>
-    </div>
-    <ng-template pTemplate="footer">
-        <p-button [label]="'systemAdministration.erpFunctions.functionDetails.activationDialog.cancel' | translate" icon="pi pi-times" class="p-button-text" (onClick)="onCancelActivationDialog()"
-            [disabled]="loading">
-        </p-button>
-        <p-button [severity]="functionDetails?.isActive ? 'danger' : 'success'"
-            (onClick)="activation(!functionDetails?.isActive)" [disabled]="loading">
-            <ng-container *ngIf="loading">
-                <span class="indicator-progress" [style.display]="'block'">
-                    {{ 'systemAdministration.erpFunctions.functionDetails.activationDialog.pleaseWait' | translate }}
-                    <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
-                </span>
-            </ng-container>
-            <ng-container *ngIf="!loading">
-                <span>{{ (functionDetails?.isActive ? 'systemAdministration.erpFunctions.functionDetails.activationDialog.deactivate' : 'systemAdministration.erpFunctions.functionDetails.activationDialog.activate') | translate }}</span>
-            </ng-container>
-        </p-button>
-    </ng-template>
-</p-dialog>
 
 <p-toast></p-toast>

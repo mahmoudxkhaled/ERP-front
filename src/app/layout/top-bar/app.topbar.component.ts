@@ -208,6 +208,10 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         this.entityDetails = this.localStorage.getEntityDetails() as IEntityDetails;
         this.accountSettings = this.localStorage.getAccountSettings() as IAccountSettings;
 
+        const langCode = this.accountSettings?.Language === 'English' ? 'en' : 'ar';
+        this.userLanguageCode = langCode;
+        this.userLanguageId = langCode;
+
         this.parentEntityCode = '';
         this.parentEntityLogo = '';
         this.headerLogoLoading = true;
@@ -418,18 +422,29 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
             return;
         }
         this.userLanguageCode = event.value;
+        this.userLanguageId = event.value;
         this.isListboxVisible = false;
+
+        const selectedLanguage = this.languages.find((l: { code: string }) => l.code === event.value);
+        const newLanguageName = selectedLanguage?.name ?? event.value;
 
         const data = this.localStorage.getCurrentUserData();
         if (data) {
             data.languageId = this.userLanguageCode;
-            data.language = this.userLanguageId;
+            data.language = newLanguageName;
+            data.userLanguageCode = event.value;
             this.localStorage.setItem('userData', data);
         }
+
+        const accountSettings = this.localStorage.getAccountSettings();
+        if (accountSettings) {
+            accountSettings.Language = event.value === 'en' ? 'English' : 'Arabic';
+            this.localStorage.setItem('Account_Settings', accountSettings);
+        }
+
         const newRtl = event.value === 'ar';
         localStorage.setItem('isRtl', JSON.stringify(newRtl));
 
-        // Reload without updating layout first so there is no flicker
         window.location.reload();
     }
 

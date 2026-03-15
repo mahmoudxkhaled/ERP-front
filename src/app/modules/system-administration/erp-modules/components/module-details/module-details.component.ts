@@ -1,5 +1,4 @@
 import { Component, OnDestroy, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
@@ -28,8 +27,7 @@ export class ModuleDetailsComponent implements OnInit, OnChanges, OnDestroy {
 
     moduleDetails: Module | null = null;
     functionDetails: Function | null = null;
-    activationControl: FormControl<boolean> = new FormControl<boolean>(false, { nonNullable: true });
-    activateModuleDialog: boolean = false;
+    moduleLogoUrl: string | null = null;
 
     accountSettings: IAccountSettings;
     isRegional: boolean = false;
@@ -83,10 +81,12 @@ export class ModuleDetailsComponent implements OnInit, OnChanges, OnDestroy {
     loadAllData(): void {
         this.loading = true;
         this.loadingDetails = true;
+        this.moduleLogoUrl = null;
 
         const options = this.dialogMode ? { silent: true } : undefined;
         const sub = this.settingsConfigurationsService.getModuleDetails(this.moduleId, options).subscribe({
             next: (response: any) => {
+                console.log('response module details', response);
                 if (!response?.success) {
                     this.handleBusinessError(response);
                     return;
@@ -104,11 +104,12 @@ export class ModuleDetailsComponent implements OnInit, OnChanges, OnDestroy {
                     url: moduleData.URL || '',
                     isActive: isActive
                 };
-                this.activationControl.setValue(isActive, { emitEvent: false });
 
                 if (this.moduleDetails.functionId) {
                     this.loadFunctionDetails(this.moduleDetails.functionId);
                 }
+
+                this.loadLogo();
 
                 this.loadingDetails = false;
                 this.loading = false;
@@ -119,6 +120,23 @@ export class ModuleDetailsComponent implements OnInit, OnChanges, OnDestroy {
             }
         });
 
+        this.subscriptions.push(sub);
+    }
+
+    private loadLogo(): void {
+        if (!this.moduleId || this.moduleId === 0) {
+            return;
+        }
+        const sub = this.settingsConfigurationsService.getModuleLogo(this.moduleId, { silent: true }).subscribe({
+            next: (response: any) => {
+                if (response?.success && response?.message?.Image?.trim()) {
+                    const fmt = response.message.Image_Format || 'png';
+                    this.moduleLogoUrl = `data:image/${fmt.toLowerCase()};base64,${response.message.Image}`;
+                } else {
+                    this.moduleLogoUrl = null;
+                }
+            }
+        });
         this.subscriptions.push(sub);
     }
 
@@ -159,74 +177,6 @@ export class ModuleDetailsComponent implements OnInit, OnChanges, OnDestroy {
         this.router.navigate(['/system-administration/erp-modules', this.moduleId, 'edit']);
     }
 
-    onStatusToggle(): void {
-        this.activateModuleDialog = true;
-    }
-
-    onCancelActivationDialog(): void {
-        this.activateModuleDialog = false;
-        if (this.moduleDetails) {
-            this.activationControl.setValue(this.moduleDetails.isActive ?? true, { emitEvent: false });
-        }
-    }
-
-    activation(value: boolean): void {
-        if (!this.moduleDetails) {
-            return;
-        }
-
-        this.activationControl.disable();
-        const action = value ? 'activate' : 'deactivate';
-        const apiCall = value
-            ? this.settingsConfigurationsService.activateModule(this.moduleId)
-            : this.settingsConfigurationsService.deactivateModule(this.moduleId);
-
-        const sub = apiCall.subscribe({
-            next: (response: any) => {
-                if (!response?.success) {
-                    this.handleBusinessError(response);
-                    this.activationControl.setValue(!value, { emitEvent: false });
-                    this.activateModuleDialog = false;
-                    return;
-                }
-
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Success',
-                    detail: `Module ${value ? 'activated' : 'deactivated'} successfully.`
-                });
-                if (this.moduleDetails) {
-                    this.moduleDetails.isActive = value;
-                }
-                this.activateModuleDialog = false;
-                this.loadAllData();
-            },
-            complete: () => {
-                this.activationControl.enable();
-            }
-        });
-
-        this.subscriptions.push(sub);
-    }
-
-    activateModule(): void {
-        this.activation(true);
-    }
-
-    deactivateModule(): void {
-        this.activation(false);
-    }
-
-    getStatusLabel(): string {
-        if (!this.moduleDetails) return 'Unknown';
-        return this.moduleDetails.isActive ? 'Active' : 'Inactive';
-    }
-
-    getStatusSeverity(): 'success' | 'danger' {
-        if (!this.moduleDetails) return 'danger';
-        return this.moduleDetails.isActive ? 'success' : 'danger';
-    }
-
     private handleBusinessError(response: any): void | null {
         const code = String(response?.message || '');
         let detail = '';
@@ -234,12 +184,6 @@ export class ModuleDetailsComponent implements OnInit, OnChanges, OnDestroy {
         switch (code) {
             case 'ERP11410':
                 detail = 'Invalid Module ID';
-                break;
-            case 'ERP11411':
-                detail = 'Module already Active';
-                break;
-            case 'ERP11412':
-                detail = 'Module already Inactive';
                 break;
             default:
                 return null;

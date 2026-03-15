@@ -80,7 +80,12 @@ export class LocalStorageService {
     }
 
     if (accountData.Account_Settings) {
-      this.setItem('Account_Settings', accountData.Account_Settings);
+      const existingSettings = this.getAccountSettings();
+      const settingsToSave = { ...accountData.Account_Settings };
+      if (existingSettings?.Language) {
+        settingsToSave.Language = existingSettings.Language;
+      }
+      this.setItem('Account_Settings', settingsToSave);
     }
   }
 

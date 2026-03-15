@@ -162,7 +162,7 @@
                             "></i>
                     </a>
                     <div class="ng-hidden-temp hidden-temp" id="hidden-temp" *ngIf="isListboxVisible">
-                        <p-listbox [options]="languages" optionLabel="name" optionValue="id" [ngModel]="userLanguageId"
+                        <p-listbox [options]="languages" optionLabel="name" optionValue="id" [(ngModel)]="userLanguageId"
                             (onChange)="changeUserLanguage($event)"></p-listbox>
                     </div>
                 </li>

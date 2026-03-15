@@ -128,6 +128,7 @@ export class SettingsConfigurationsService {
             defaultOrder.toString(),
             url.trim().toString()
         ];
+        console.log('params', params);
         return this.apiServices.callAPI(702, this.getAccessToken(), params).pipe(
             finalize(() => {
                 if (!options?.silent) {

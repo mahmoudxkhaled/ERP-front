@@ -82,7 +82,6 @@ export class ModuleFormComponent implements OnInit, OnChanges, OnDestroy {
                     functionId: 0,
                     code: '',
                     name: '',
-                    isRegional: false,
                     defaultOrder: 0,
                     url: ''
                 });
@@ -100,7 +99,6 @@ export class ModuleFormComponent implements OnInit, OnChanges, OnDestroy {
             functionId: [0, [Validators.required, Validators.min(1)]],
             code: ['', [Validators.required, Validators.maxLength(10), textFieldValidator()]],
             name: ['', [Validators.required, Validators.maxLength(30), textFieldValidator()]],
-            isRegional: [false],
             defaultOrder: [0, [Validators.required, Validators.min(1)]],
             url: ['']
         });
@@ -142,7 +140,6 @@ export class ModuleFormComponent implements OnInit, OnChanges, OnDestroy {
                     functionId: moduleData.Function_ID || 0,
                     code: moduleData.Code || '',
                     name: this.isRegional ? (moduleData.Name_Regional || moduleData.Name || '') : (moduleData.Name || ''),
-                    isRegional: !!moduleData.Name_Regional,
                     defaultOrder: moduleData.Default_Order || 0,
                     url: moduleData.URL || ''
                 });
@@ -175,7 +172,8 @@ export class ModuleFormComponent implements OnInit, OnChanges, OnDestroy {
             return;
         }
 
-        const { functionId, code, name, isRegional, defaultOrder, url } = this.form.value;
+        const { functionId, code, name, defaultOrder, url } = this.form.value;
+        const isRegional = this.accountSettings?.Language !== 'English';
 
         this.loading = true;
 

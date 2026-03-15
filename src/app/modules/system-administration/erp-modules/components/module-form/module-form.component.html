@@ -43,13 +43,6 @@
                 </small>
             </div>
 
-            <!-- Is Regional Checkbox (only for edit mode) -->
-            <div class="field p-fluid" *ngIf="isEdit">
-                <p-inputSwitch formControlName="isRegional" id="isRegional"></p-inputSwitch>
-                <label for="isRegional" class="ml-2">{{ 'systemAdministration.erpModules.moduleForm.fields.isRegional' | translate }}</label>
-                <small class="block text-500 mt-1">{{ 'systemAdministration.erpModules.moduleForm.fields.isRegionalHint' | translate }}</small>
-            </div>
-
             <!-- Default Order Field -->
             <div class="field p-fluid">
                 <label for="defaultOrder">{{ 'systemAdministration.erpModules.moduleForm.fields.defaultOrder' | translate }} <span class="text-red-500">*</span></label>

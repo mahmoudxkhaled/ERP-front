@@ -1,5 +1,4 @@
 import { Component, OnDestroy, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
@@ -27,8 +26,7 @@ export class FunctionDetailsComponent implements OnInit, OnChanges, OnDestroy {
     loadingDetails: boolean = false;
 
     functionDetails: Function | null = null;
-    activationControl: FormControl<boolean> = new FormControl<boolean>(false, { nonNullable: true });
-    activateFunctionDialog: boolean = false;
+    functionLogoUrl: string | null = null;
 
     accountSettings: IAccountSettings;
     isRegional: boolean = false;
@@ -86,6 +84,7 @@ export class FunctionDetailsComponent implements OnInit, OnChanges, OnDestroy {
         const options = this.dialogMode ? { silent: true } : undefined;
         const sub = this.settingsConfigurationsService.getFunctionDetails(this.functionId, options).subscribe({
             next: (response: any) => {
+                console.log('response function details', response);
                 if (!response?.success) {
                     this.handleBusinessError(response);
                     return;
@@ -102,7 +101,8 @@ export class FunctionDetailsComponent implements OnInit, OnChanges, OnDestroy {
                     url: functionData.URL || '',
                     isActive: isActive
                 };
-                this.activationControl.setValue(isActive, { emitEvent: false });
+
+                this.loadLogo();
 
                 this.loadingDetails = false;
                 this.loading = false;
@@ -113,6 +113,23 @@ export class FunctionDetailsComponent implements OnInit, OnChanges, OnDestroy {
             }
         });
 
+        this.subscriptions.push(sub);
+    }
+
+    private loadLogo(): void {
+        if (!this.functionId || this.functionId === 0) {
+            return;
+        }
+        const sub = this.settingsConfigurationsService.getFunctionLogo(this.functionId, { silent: true }).subscribe({
+            next: (response: any) => {
+                if (response?.success && response?.message?.Image?.trim()) {
+                    const fmt = response.message.Image_Format || 'png';
+                    this.functionLogoUrl = `data:image/${fmt.toLowerCase()};base64,${response.message.Image}`;
+                } else {
+                    this.functionLogoUrl = null;
+                }
+            }
+        });
         this.subscriptions.push(sub);
     }
 
@@ -132,74 +149,6 @@ export class FunctionDetailsComponent implements OnInit, OnChanges, OnDestroy {
         this.router.navigate(['/system-administration/erp-functions', this.functionId, 'edit']);
     }
 
-    onStatusToggle(): void {
-        this.activateFunctionDialog = true;
-    }
-
-    onCancelActivationDialog(): void {
-        this.activateFunctionDialog = false;
-        if (this.functionDetails) {
-            this.activationControl.setValue(this.functionDetails.isActive ?? true, { emitEvent: false });
-        }
-    }
-
-    activation(value: boolean): void {
-        if (!this.functionDetails) {
-            return;
-        }
-
-        this.activationControl.disable();
-        const action = value ? 'activate' : 'deactivate';
-        const apiCall = value
-            ? this.settingsConfigurationsService.activateFunction(this.functionId)
-            : this.settingsConfigurationsService.deactivateFunction(this.functionId);
-
-        const sub = apiCall.subscribe({
-            next: (response: any) => {
-                if (!response?.success) {
-                    this.handleBusinessError(response);
-                    this.activationControl.setValue(!value, { emitEvent: false });
-                    this.activateFunctionDialog = false;
-                    return;
-                }
-
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Success',
-                    detail: `Function ${value ? 'activated' : 'deactivated'} successfully.`
-                });
-                if (this.functionDetails) {
-                    this.functionDetails.isActive = value;
-                }
-                this.activateFunctionDialog = false;
-                this.loadAllData();
-            },
-            complete: () => {
-                this.activationControl.enable();
-            }
-        });
-
-        this.subscriptions.push(sub);
-    }
-
-    activateFunction(): void {
-        this.activation(true);
-    }
-
-    deactivateFunction(): void {
-        this.activation(false);
-    }
-
-    getStatusLabel(): string {
-        if (!this.functionDetails) return 'Unknown';
-        return this.functionDetails.isActive ? 'Active' : 'Inactive';
-    }
-
-    getStatusSeverity(): 'success' | 'danger' {
-        if (!this.functionDetails) return 'danger';
-        return this.functionDetails.isActive ? 'success' : 'danger';
-    }
-
     private handleBusinessError(response: any): void | null {
         const code = String(response?.message || '');
         let detail = '';
@@ -207,12 +156,6 @@ export class FunctionDetailsComponent implements OnInit, OnChanges, OnDestroy {
         switch (code) {
             case 'ERP11400':
                 detail = 'Invalid Function ID';
-                break;
-            case 'ERP11406':
-                detail = 'Function already Active';
-                break;
-            case 'ERP11407':
-                detail = 'Function already Inactive';
                 break;
             default:
                 return null;
