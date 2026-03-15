@@ -453,11 +453,15 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
                     return;
                 }
 
+                const isRegional = this.accountSettings?.Language !== 'English';
+                const nameA = isRegional ? (msgA.Name_Regional || msgA.Name || '') : (msgA.Name || '');
+                const nameB = isRegional ? (msgB.Name_Regional || msgB.Name || '') : (msgB.Name || '');
+
                 const updateA = this.settingsConfigurationsService.updateFunctionDetails(
                     funcA.id,
                     msgA.Code || '',
-                    msgA.Name || '',
-                    !!msgA.Name_Regional,
+                    nameA,
+                    isRegional,
                     newOrderA,
                     msgA.URL ?? '',
                     { silent: true }
@@ -465,8 +469,8 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
                 const updateB = this.settingsConfigurationsService.updateFunctionDetails(
                     funcB.id,
                     msgB.Code || '',
-                    msgB.Name || '',
-                    !!msgB.Name_Regional,
+                    nameB,
+                    isRegional,
                     newOrderB,
                     msgB.URL ?? '',
                     { silent: true }

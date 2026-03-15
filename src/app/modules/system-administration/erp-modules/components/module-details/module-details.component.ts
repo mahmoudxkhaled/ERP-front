@@ -98,7 +98,7 @@ export class ModuleDetailsComponent implements OnInit, OnChanges, OnDestroy {
                     id: moduleData.Module_ID || 0,
                     functionId: moduleData.Function_ID || 0,
                     code: moduleData.Code || '',
-                    name: this.isRegional ? (moduleData.Name_Regional || moduleData.Name || '') : (moduleData.Name || ''),
+                    name: moduleData.Name || '',
                     nameRegional: moduleData.Name_Regional || '',
                     defaultOrder: moduleData.Default_Order,
                     url: moduleData.URL || '',

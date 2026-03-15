@@ -95,7 +95,7 @@ export class FunctionDetailsComponent implements OnInit, OnChanges, OnDestroy {
                 this.functionDetails = {
                     id: functionData.Function_ID || 0,
                     code: functionData.Code || '',
-                    name: this.isRegional ? (functionData.Name_Regional || functionData.Name || '') : (functionData.Name || ''),
+                    name: functionData.Name || '',
                     nameRegional: functionData.Name_Regional || '',
                     defaultOrder: functionData.Default_Order,
                     url: functionData.URL || '',

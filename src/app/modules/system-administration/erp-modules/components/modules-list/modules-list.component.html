@@ -16,7 +16,7 @@
 
     <!-- Search Bar -->
     <div class="mb-3">
-        <div class="p-inputgroup w-full">
+        <div class="p-inputgroup w-full p-fluid">
             <span class="p-input-icon-left">
                 <i class="pi pi-search"></i>
                 <input type="text" pInputText
@@ -42,7 +42,8 @@
                     </th>
                     <th style="width: 100px;">{{ 'systemAdministration.erpModules.modulesList.table.code' | translate }}
                     </th>
-                    <th style="width: 56px;">{{ 'systemAdministration.erpModules.modulesList.table.logo' | translate }}</th>
+                    <th style="width: 56px;">{{ 'systemAdministration.erpModules.modulesList.table.logo' | translate }}
+                    </th>
                     <th style="width: 200px;">{{ 'systemAdministration.erpModules.modulesList.table.name' | translate }}
                     </th>
                     <th style="width: 200px;">{{ 'systemAdministration.erpModules.modulesList.table.function' |
@@ -81,7 +82,8 @@
                             <p-skeleton height="2.5rem" width="2.5rem" borderRadius="8px"></p-skeleton>
                         </ng-container>
                         <ng-template #normalLogo>
-                            <button type="button" class="logo-cell p-button p-button-rounded p-button-text p-button-plain border-noround"
+                            <button type="button"
+                                class="logo-cell p-button p-button-rounded p-button-text p-button-plain border-noround"
                                 [pTooltip]="'systemAdministration.erpModules.modulesList.manageLogo' | translate"
                                 (click)="openLogoDialog(moduleItem)">
                                 <img *ngIf="getLogoUrl(moduleItem)" [src]="getLogoUrl(moduleItem)!" alt=""
@@ -95,8 +97,7 @@
                             <p-skeleton height="1rem" width="10rem"></p-skeleton>
                         </ng-container>
                         <ng-template #normalName>
-                            <span style="cursor: pointer;" class="font-semibold"
-                                (click)="viewDetails(moduleItem)">
+                            <span style="cursor: pointer;" class="font-semibold" (click)="viewDetails(moduleItem)">
                                 {{ moduleItem.name }}</span>
                         </ng-template>
                     </td>
@@ -234,8 +235,8 @@
         <span>{{ 'systemAdministration.erpModules.moduleDetails.title' | translate }}</span>
     </ng-template>
     <app-module-details *ngIf="detailsDialogVisible && currentModuleForDetails"
-        [moduleIdInput]="currentModuleForDetails.id" [dialogMode]="true"
-        (closed)="onDetailsClosed()" (editRequested)="onDetailsEditRequested()">
+        [moduleIdInput]="currentModuleForDetails.id" [dialogMode]="true" (closed)="onDetailsClosed()"
+        (editRequested)="onDetailsEditRequested()">
     </app-module-details>
 </p-dialog>
 
@@ -243,10 +244,10 @@
 <p-dialog [(visible)]="editDialogVisible" [modal]="true" [style]="{ width: '520px' }" [closable]="true"
     [draggable]="false" [resizable]="false" (onHide)="onFormCancelled()" styleClass="module-form-dialog">
     <ng-template pTemplate="header">
-        <span>{{ (currentModuleForEdit ? 'systemAdministration.erpModules.moduleForm.titleEdit' : 'systemAdministration.erpModules.moduleForm.titleCreate') | translate }}</span>
+        <span>{{ (currentModuleForEdit ? 'systemAdministration.erpModules.moduleForm.titleEdit' :
+            'systemAdministration.erpModules.moduleForm.titleCreate') | translate }}</span>
     </ng-template>
-    <app-module-form *ngIf="editDialogVisible"
-        [moduleIdInput]="currentModuleForEdit?.id ?? 0" [dialogMode]="true"
+    <app-module-form *ngIf="editDialogVisible" [moduleIdInput]="currentModuleForEdit?.id ?? 0" [dialogMode]="true"
         (saved)="onFormSaved()" (cancelled)="onFormCancelled()">
     </app-module-form>
 </p-dialog>

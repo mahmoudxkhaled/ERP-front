@@ -479,12 +479,16 @@ export class ModulesListComponent implements OnInit, OnDestroy {
                     return;
                 }
 
+                const isRegional = this.accountSettings?.Language !== 'English';
+                const nameA = isRegional ? (msgA.Name_Regional || msgA.Name || '') : (msgA.Name || '');
+                const nameB = isRegional ? (msgB.Name_Regional || msgB.Name || '') : (msgB.Name || '');
+
                 const updateA = this.settingsConfigurationsService.updateModuleDetails(
                     moduleA.id,
                     msgA.Function_ID,
                     msgA.Code || '',
-                    msgA.Name || '',
-                    !!msgA.Name_Regional,
+                    nameA,
+                    isRegional,
                     newOrderA,
                     msgA.URL ?? '',
                     { silent: true }
@@ -493,8 +497,8 @@ export class ModulesListComponent implements OnInit, OnDestroy {
                     moduleB.id,
                     msgB.Function_ID,
                     msgB.Code || '',
-                    msgB.Name || '',
-                    !!msgB.Name_Regional,
+                    nameB,
+                    isRegional,
                     newOrderB,
                     msgB.URL ?? '',
                     { silent: true }

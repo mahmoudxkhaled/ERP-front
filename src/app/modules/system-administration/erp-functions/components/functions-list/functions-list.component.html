@@ -16,7 +16,7 @@
 
     <!-- Search Bar -->
     <div class="mb-3">
-        <div class="p-inputgroup w-full">
+        <div class="p-inputgroup w-full p-fluid">
             <span class="p-input-icon-left">
                 <i class="pi pi-search"></i>
                 <input type="text" pInputText
@@ -42,7 +42,8 @@
                         }}</th>
                     <th style="width: 100px;">{{ 'systemAdministration.erpFunctions.functionsList.table.code' |
                         translate }}</th>
-                    <th style="width: 56px;">{{ 'systemAdministration.erpFunctions.functionsList.table.logo' | translate }}</th>
+                    <th style="width: 56px;">{{ 'systemAdministration.erpFunctions.functionsList.table.logo' | translate
+                        }}</th>
                     <th style="width: 200px;">{{ 'systemAdministration.erpFunctions.functionsList.table.name' |
                         translate }}</th>
                     <th style="width: 140px;">{{
@@ -80,12 +81,14 @@
                             <p-skeleton height="2.5rem" width="2.5rem" borderRadius="8px"></p-skeleton>
                         </ng-container>
                         <ng-template #normalLogo>
-                            <button type="button" class="logo-cell p-button p-button-rounded p-button-text p-button-plain border-noround"
+                            <button type="button"
+                                class="logo-cell p-button p-button-rounded p-button-text p-button-plain border-noround"
                                 [pTooltip]="'systemAdministration.erpFunctions.functionsList.manageLogo' | translate"
                                 (click)="openLogoDialog(functionItem)">
                                 <img *ngIf="getLogoUrl(functionItem)" [src]="getLogoUrl(functionItem)!" alt=""
                                     style="width: 2rem; height: 2rem; object-fit: contain; border-radius: 4px;" />
-                                <i *ngIf="!getLogoUrl(functionItem)" class="pi pi-image" style="font-size: 1.25rem;"></i>
+                                <i *ngIf="!getLogoUrl(functionItem)" class="pi pi-image"
+                                    style="font-size: 1.25rem;"></i>
                             </button>
                         </ng-template>
                     </td>
@@ -94,8 +97,7 @@
                             <p-skeleton height="1rem" width="10rem"></p-skeleton>
                         </ng-container>
                         <ng-template #normalName>
-                            <span style="cursor: pointer;" class="font-semibold"
-                                (click)="viewDetails(functionItem)">
+                            <span style="cursor: pointer;" class="font-semibold" (click)="viewDetails(functionItem)">
                                 {{ functionItem.name }}</span>
                         </ng-template>
                     </td>
@@ -225,8 +227,8 @@
         <span>{{ 'systemAdministration.erpFunctions.functionDetails.title' | translate }}</span>
     </ng-template>
     <app-function-details *ngIf="detailsDialogVisible && currentFunctionForDetails"
-        [functionIdInput]="currentFunctionForDetails.id" [dialogMode]="true"
-        (closed)="onDetailsClosed()" (editRequested)="onDetailsEditRequested()">
+        [functionIdInput]="currentFunctionForDetails.id" [dialogMode]="true" (closed)="onDetailsClosed()"
+        (editRequested)="onDetailsEditRequested()">
     </app-function-details>
 </p-dialog>
 
@@ -234,10 +236,10 @@
 <p-dialog [(visible)]="editDialogVisible" [modal]="true" [style]="{ width: '520px' }" [closable]="true"
     [draggable]="false" [resizable]="false" (onHide)="onFormCancelled()" styleClass="function-form-dialog">
     <ng-template pTemplate="header">
-        <span>{{ (currentFunctionForEdit ? 'systemAdministration.erpFunctions.functionForm.titleEdit' : 'systemAdministration.erpFunctions.functionForm.titleCreate') | translate }}</span>
+        <span>{{ (currentFunctionForEdit ? 'systemAdministration.erpFunctions.functionForm.titleEdit' :
+            'systemAdministration.erpFunctions.functionForm.titleCreate') | translate }}</span>
     </ng-template>
-    <app-function-form *ngIf="editDialogVisible"
-        [functionIdInput]="currentFunctionForEdit?.id ?? 0" [dialogMode]="true"
+    <app-function-form *ngIf="editDialogVisible" [functionIdInput]="currentFunctionForEdit?.id ?? 0" [dialogMode]="true"
         (saved)="onFormSaved()" (cancelled)="onFormCancelled()">
     </app-function-form>
 </p-dialog>

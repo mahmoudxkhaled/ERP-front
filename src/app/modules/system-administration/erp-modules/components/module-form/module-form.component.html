@@ -1,8 +1,9 @@
 <div class="card" [class.dialog-form]="dialogMode">
     <div *ngIf="!dialogMode" class="flex justify-content-between align-items-center mb-4">
-        <h2>{{ (isEdit ? 'systemAdministration.erpModules.moduleForm.titleEdit' : 'systemAdministration.erpModules.moduleForm.titleCreate') | translate }}</h2>
-        <p-button [label]="'systemAdministration.erpModules.moduleForm.actions.backToList' | translate" icon="pi pi-arrow-left" class="p-button-secondary" (onClick)="cancel()"
-            [disabled]="loading">
+        <h2>{{ (isEdit ? 'systemAdministration.erpModules.moduleForm.titleEdit' :
+            'systemAdministration.erpModules.moduleForm.titleCreate') | translate }}</h2>
+        <p-button [label]="'systemAdministration.erpModules.moduleForm.actions.backToList' | translate"
+            icon="pi pi-arrow-left" class="p-button-secondary" (onClick)="cancel()" [disabled]="loading">
         </p-button>
     </div>
 
@@ -10,10 +11,12 @@
         <div class="flex flex-column gap-3">
             <!-- Function Selection Field -->
             <div class="field p-fluid">
-                <label for="functionId">{{ 'systemAdministration.erpModules.moduleForm.fields.function' | translate }} <span class="text-red-500">*</span></label>
+                <label for="functionId">{{ 'systemAdministration.erpModules.moduleForm.fields.function' | translate }}
+                    <span class="text-red-500">*</span></label>
                 <div class="p-inputgroup">
                     <input id="functionId" type="text" pInputText [value]="getFunctionDisplayText()" readonly
-                        [placeholder]="'systemAdministration.erpModules.moduleForm.placeholders.selectFunction' | translate" (click)="openFunctionDialog()" style="cursor: pointer;" />
+                        [placeholder]="'systemAdministration.erpModules.moduleForm.placeholders.selectFunction' | translate"
+                        (click)="openFunctionDialog()" style="cursor: pointer;" />
                     <p-button icon="pi pi-search" (onClick)="openFunctionDialog()"
                         [disabled]="loading || loadingFunctions" class="p-button-secondary">
                     </p-button>
@@ -25,7 +28,8 @@
 
             <!-- Code Field -->
             <div class="field p-fluid">
-                <label for="code">{{ 'systemAdministration.erpModules.moduleForm.fields.code' | translate }} <span class="text-red-500">*</span></label>
+                <label for="code">{{ 'systemAdministration.erpModules.moduleForm.fields.code' | translate }} <span
+                        class="text-red-500">*</span></label>
                 <input id="code" type="text" pInputText formControlName="code" [maxlength]="10"
                     [placeholder]="'systemAdministration.erpModules.moduleForm.placeholders.code' | translate" />
                 <small class="p-error" *ngIf="submitted && f['code'].invalid">
@@ -35,7 +39,8 @@
 
             <!-- Name Field -->
             <div class="field p-fluid">
-                <label for="name">{{ 'systemAdministration.erpModules.moduleForm.fields.name' | translate }} <span class="text-red-500">*</span></label>
+                <label for="name">{{ 'systemAdministration.erpModules.moduleForm.fields.name' | translate }} <span
+                        class="text-red-500">*</span></label>
                 <input id="name" type="text" pInputText formControlName="name" [maxlength]="30"
                     [placeholder]="'systemAdministration.erpModules.moduleForm.placeholders.name' | translate" />
                 <small class="p-error" *ngIf="submitted && f['name'].invalid">
@@ -45,7 +50,8 @@
 
             <!-- Default Order Field -->
             <div class="field p-fluid">
-                <label for="defaultOrder">{{ 'systemAdministration.erpModules.moduleForm.fields.defaultOrder' | translate }} <span class="text-red-500">*</span></label>
+                <label for="defaultOrder">{{ 'systemAdministration.erpModules.moduleForm.fields.defaultOrder' |
+                    translate }} <span class="text-red-500">*</span></label>
                 <input id="defaultOrder" type="number" pInputText formControlName="defaultOrder" [min]="1"
                     [placeholder]="'systemAdministration.erpModules.moduleForm.placeholders.defaultOrder' | translate" />
                 <small class="p-error" *ngIf="submitted && f['defaultOrder'].invalid">
@@ -63,10 +69,12 @@
 
         <!-- Action Buttons -->
         <div class="flex justify-content-end gap-2 mt-4">
-            <p-button [label]="'systemAdministration.erpModules.moduleForm.actions.cancel' | translate" icon="pi pi-times" class="p-button-text" (onClick)="cancel()" [disabled]="loading">
+            <p-button [label]="'systemAdministration.erpModules.moduleForm.actions.cancel' | translate"
+                icon="pi pi-times" class="p-button-text" (onClick)="cancel()" [disabled]="loading">
             </p-button>
-            <p-button [label]="(isEdit ? 'systemAdministration.erpModules.moduleForm.actions.update' : 'systemAdministration.erpModules.moduleForm.actions.create') | translate" icon="pi pi-check" type="submit" [loading]="loading"
-                [disabled]="loading || form.invalid">
+            <p-button
+                [label]="(isEdit ? 'systemAdministration.erpModules.moduleForm.actions.update' : 'systemAdministration.erpModules.moduleForm.actions.create') | translate"
+                icon="pi pi-check" type="submit" [loading]="loading" [disabled]="loading || form.invalid">
             </p-button>
         </div>
     </form>
@@ -108,14 +116,13 @@
 
     <ng-template pTemplate="footer">
         <div class="flex justify-content-end gap-2">
-            <p-button [label]="'systemAdministration.erpModules.moduleForm.actions.cancel' | translate" icon="pi pi-times" class="p-button-text" (onClick)="closeFunctionDialog()"
+            <p-button [label]="'systemAdministration.erpModules.moduleForm.actions.cancel' | translate"
+                icon="pi pi-times" class="p-button-text" (onClick)="closeFunctionDialog()"
                 [disabled]="loadingFunctions">
             </p-button>
-            <p-button [label]="'systemAdministration.erpModules.moduleForm.actions.select' | translate" icon="pi pi-check" (onClick)="closeFunctionDialog()"
-                [disabled]="loadingFunctions || !selectedFunction">
+            <p-button [label]="'systemAdministration.erpModules.moduleForm.actions.select' | translate"
+                icon="pi pi-check" (onClick)="closeFunctionDialog()" [disabled]="loadingFunctions || !selectedFunction">
             </p-button>
         </div>
     </ng-template>
 </p-dialog>
-
-<p-toast></p-toast>
