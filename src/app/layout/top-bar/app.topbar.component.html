@@ -1,4 +1,4 @@
-<div class="layout-topbar" [ngClass]="{ 'border-bottom-none': layoutService.config().topbarTheme !== 'light' }">
+<div class="layout-topbar " [ngClass]="{ 'border-bottom-none': layoutService.config().topbarTheme !== 'light' }">
 
 
     <div class="mx-4 flex align-items-center company-info-desktop topbar-entity-block">
@@ -162,8 +162,8 @@
                             "></i>
                     </a>
                     <div class="ng-hidden-temp hidden-temp" id="hidden-temp" *ngIf="isListboxVisible">
-                        <p-listbox [options]="languages" optionLabel="name" optionValue="id" [(ngModel)]="userLanguageId"
-                            (onChange)="changeUserLanguage($event)"></p-listbox>
+                        <p-listbox [options]="languages" optionLabel="name" optionValue="id"
+                            [(ngModel)]="userLanguageId" (onChange)="changeUserLanguage($event)"></p-listbox>
                     </div>
                 </li>
                 <li>
@@ -171,8 +171,7 @@
                         userName }}</p>
                 </li>
                 <li>
-                    <img [src]="profilePictureUrl" [attr.alt]="'layout.top-bar.avatar' | translate"
-                        style="width: 32px; height: 32px; vertical-align: middle; border-radius: 50%;
+                    <img [src]="profilePictureUrl" [attr.alt]="'layout.top-bar.avatar' | translate" style="width: 32px; height: 32px; vertical-align: middle; border-radius: 50%;
                         border: 1px solid gray; background-color: white; cursor: pointer; object-fit: cover;"
                         routerLink="/summary/profile" />
                 </li>
