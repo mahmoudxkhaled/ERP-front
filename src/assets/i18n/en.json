@@ -4,6 +4,16 @@
         "error": "Error",
         "loading": "Loading..."
     },
+    "underDevelopment": {
+        "ariaLabel": "Page under development",
+        "goHome": "Go to home",
+        "logoAlt": "Logo",
+        "heading": "Under Development",
+        "tagline": "This page is currently being built.",
+        "description": "We are working on this feature. Please check back later or use the buttons below to go back or return to the dashboard.",
+        "back": "Go Back",
+        "goToDashboard": "Go to Dashboard"
+    },
     "validation": {
         "requiredMessage": "This field is required",
         "emailMessage": "Please enter a valid email",
