@@ -67,6 +67,10 @@ const routes: Routes = [
         loadChildren: () => import('./core/components/notfound/notfound.module').then((m) => m.NotfoundModule),
     },
     {
+        path: 'under-development',
+        loadChildren: () => import('./core/components/under-development/under-development.module').then((m) => m.UnderDevelopmentModule),
+    },
+    {
         path: 'landing',
         loadChildren: () => import('./core/components/landing/landing.module').then((m) => m.LandingModule),
     },
