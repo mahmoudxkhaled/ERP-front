@@ -2597,7 +2597,7 @@
             },
             "moduleLogo": {
                 "title": "Manage Module Logo",
-                "titleWithName": "{{ name }} Logo",
+                "titleWithName": "{ name } - Logo",
                 "uploadLogo": "Upload Logo",
                 "chooseLogo": "Choose Logo",
                 "allowedFormats": "Allowed formats: PNG, JPG, JPE, JPEG, GIF, BMP, TIFF, TIF, PICT.",

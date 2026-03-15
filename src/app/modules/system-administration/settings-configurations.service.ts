@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, finalize } from 'rxjs';
+import { BehaviorSubject, Observable, of, finalize } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { ApiService } from 'src/app/core/api/api.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { Function, Module } from './erp-functions/models/settings-configurations.model';
@@ -325,6 +326,30 @@ export class SettingsConfigurationsService {
                     this.isLoadingSubject.next(false);
                 }
             })
+        );
+    }
+
+    private moduleLogoCache = new Map<number, string>();
+
+    /**
+     * Get module logo as data URL, cached by moduleId. Use for menu and dashboard.
+     */
+    getModuleLogoCached(moduleId: number): Observable<string | null> {
+        const cached = this.moduleLogoCache.get(moduleId);
+        if (cached !== undefined) {
+            return of(cached);
+        }
+        return this.getModuleLogo(moduleId, { silent: true }).pipe(
+            map((res: any) => {
+                if (res?.success && res?.message?.Image?.trim()) {
+                    const fmt = res.message.Image_Format || 'png';
+                    const url = `data:image/${fmt.toLowerCase()};base64,${res.message.Image}`;
+                    this.moduleLogoCache.set(moduleId, url);
+                    return url;
+                }
+                return null;
+            }),
+            catchError(() => of(null))
         );
     }
 

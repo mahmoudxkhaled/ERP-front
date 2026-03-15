@@ -2457,7 +2457,7 @@
             },
             "moduleLogo": {
                 "title": "إدارة شعار الوحدة",
-                "titleWithName": "{{ name }} - الشعار",
+                "titleWithName": "شعار - { name }",
                 "uploadLogo": "رفع الشعار",
                 "chooseLogo": "اختر الشعار",
                 "allowedFormats": "الصيغ المسموحة: PNG, JPG, JPE, JPEG, GIF, BMP, TIFF, TIF, PICT.",

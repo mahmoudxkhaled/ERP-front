@@ -1,10 +1,11 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, AfterViewInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { AuthService } from '../auth/services/auth.service';
 import { LogoutComponent } from '../auth/components/logout/logout.component';
 import { DialogService } from 'primeng/dynamicdialog';
+import { SettingsConfigurationsService } from 'src/app/modules/system-administration/settings-configurations.service';
 import { IMenuFunction, IMenuModule } from 'src/app/core/models/account-status.model';
 import { ModuleNavigationService } from 'src/app/core/services/module-navigation.service';
 
@@ -28,7 +29,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
         public translate: TranslationService,
         private dialogService: DialogService,
         private authService: AuthService,
-        private moduleNavigationService: ModuleNavigationService
+        private moduleNavigationService: ModuleNavigationService,
+        private settingsConfigurationsService: SettingsConfigurationsService,
+        private cdr: ChangeDetectorRef
     ) { }
 
     ngOnInit(): void {
@@ -67,6 +70,20 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
     loadDashboardCategories(): void {
         this.dashboardCategories = this.moduleNavigationService.getFunctionsWithModules();
+        this.loadModuleLogos();
+    }
+
+    private loadModuleLogos(): void {
+        this.dashboardCategories.forEach((func) => {
+            func.modules.forEach((module) => {
+                this.settingsConfigurationsService.getModuleLogoCached(module.moduleId).subscribe((url) => {
+                    if (url) {
+                        module.icon = url;
+                        this.cdr.detectChanges();
+                    }
+                });
+            });
+        });
     }
 
     getDashboardCategories(): IMenuFunction[] {
