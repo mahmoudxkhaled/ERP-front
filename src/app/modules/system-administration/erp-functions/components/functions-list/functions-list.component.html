@@ -49,6 +49,9 @@
                     <th style="width: 140px;">{{
                         'systemAdministration.erpFunctions.functionsList.table.defaultOrder' |
                         translate }}</th>
+                    <th style="width: 56px; text-align: center !important;">{{
+                        'systemAdministration.erpFunctions.functionsList.table.modules' |
+                        translate }}</th>
                     <th style="width: 200px;">{{ 'systemAdministration.erpFunctions.functionsList.table.url' | translate
                         }}</th>
                     <th>{{
@@ -123,6 +126,18 @@
                             </div>
                         </ng-template>
                     </td>
+                    <td class="text-center">
+                        <ng-container *ngIf="isLoading$ | async; else normalModules">
+                            <p-skeleton height="2rem" width="2rem" borderRadius="50%" class="text-center"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalModules>
+                            <button pButton pRipple type="button" icon="pi pi-list"
+                                class="p-button-rounded p-button-text p-button-plain"
+                                [pTooltip]="'systemAdministration.erpFunctions.functionsList.viewModules' | translate"
+                                (click)="openModulesPanel(functionItem, $event)">
+                            </button>
+                        </ng-template>
+                    </td>
                     <td>
                         <ng-container *ngIf="isLoading$ | async; else normalUrl">
                             <p-skeleton height="1.5rem" width="10rem"></p-skeleton>
@@ -158,12 +173,25 @@
 
             <ng-template pTemplate="emptymessage">
                 <tr>
-                    <td colspan="8" class="text-center">{{
+                    <td colspan="9" class="text-center">{{
                         'systemAdministration.erpFunctions.functionsList.emptyMessage' | translate }}</td>
                 </tr>
             </ng-template>
         </p-table>
     </div>
+
+    <p-overlayPanel #modulesOverlay [appendTo]="'body'">
+        <div class="modules-panel-content">
+            <p *ngIf="modulesPanelLoading" class="m-0 text-500">{{ 'common.loading' | translate }}</p>
+            <ng-container *ngIf="!modulesPanelLoading">
+                <p *ngIf="modulesForPanel.length === 0" class="m-0 text-500">{{
+                    'systemAdministration.erpFunctions.functionsList.modulesPanel.noModules' | translate }}</p>
+                <ol *ngIf="modulesForPanel.length > 0" class="modules-numbered-list">
+                    <li *ngFor="let m of modulesForPanel">{{ m.name }}</li>
+                </ol>
+            </ng-container>
+        </div>
+    </p-overlayPanel>
 </div>
 
 <p-toast></p-toast>

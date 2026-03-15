@@ -2,11 +2,12 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef 
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MenuItem, MessageService } from 'primeng/api';
+import { OverlayPanel } from 'primeng/overlaypanel';
 import { Observable, Subscription, forkJoin } from 'rxjs';
 import { SettingsConfigurationsService } from '../../services/settings-configurations.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { TranslationService } from 'src/app/core/services/translation.service';
-import { Function } from '../../models/settings-configurations.model';
+import { Function, Module } from '../../models/settings-configurations.model';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
 
 type FunctionActionContext = 'list' | 'activate' | 'deactivate' | 'reorder';
@@ -18,8 +19,11 @@ type FunctionActionContext = 'list' | 'activate' | 'deactivate' | 'reorder';
 })
 export class FunctionsListComponent implements OnInit, OnDestroy {
     @ViewChild('functionsTableContainer') functionsTableContainer?: ElementRef;
+    @ViewChild('modulesOverlay') modulesOverlay?: OverlayPanel;
 
     functions: Function[] = [];
+    modulesForPanel: Module[] = [];
+    modulesPanelLoading = false;
     isLoading$: Observable<boolean>;
     tableLoadingSpinner = false;
     private subscriptions: Subscription[] = [];
@@ -237,6 +241,29 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
     openLogoDialog(functionItem: Function): void {
         this.currentFunctionForLogo = functionItem;
         this.logoDialogVisible = true;
+    }
+
+    openModulesPanel(functionItem: Function, event: Event): void {
+        this.modulesPanelLoading = true;
+        this.modulesForPanel = [];
+        const isRegional = this.accountSettings?.Language !== 'English';
+        const sub = this.settingsConfigurationsService.getModulesList({ silent: true }).subscribe({
+            next: (response: any) => {
+                if (response?.success) {
+                    const all = this.settingsConfigurationsService.parseModulesList(response, isRegional);
+                    this.modulesForPanel = all.filter((m) => m.functionId === functionItem.id);
+                }
+                this.modulesPanelLoading = false;
+                this.cdr.detectChanges();
+                this.modulesOverlay?.toggle(event);
+            },
+            error: () => {
+                this.modulesPanelLoading = false;
+                this.cdr.detectChanges();
+                this.modulesOverlay?.toggle(event);
+            }
+        });
+        this.subscriptions.push(sub);
     }
 
     onLogoDialogClose(): void {

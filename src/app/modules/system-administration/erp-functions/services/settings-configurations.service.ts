@@ -50,12 +50,19 @@ export class SettingsConfigurationsService {
     /**
      * Retrieve the list of all available modules
      * API Code: 715
+     * @param options.silent - When true, do not set global loading state
      * @returns Observable containing ModulesListResponse
      */
-    getModulesList(): Observable<any> {
-        this.isLoadingSubject.next(true);
+    getModulesList(options?: { silent?: boolean }): Observable<any> {
+        if (!options?.silent) {
+            this.isLoadingSubject.next(true);
+        }
         return this.apiServices.callAPI(715, this.getAccessToken(), []).pipe(
-            finalize(() => this.isLoadingSubject.next(false))
+            finalize(() => {
+                if (!options?.silent) {
+                    this.isLoadingSubject.next(false);
+                }
+            })
         );
     }
 

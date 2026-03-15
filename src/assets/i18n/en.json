@@ -1,7 +1,8 @@
 {
     "common": {
         "success": "Success",
-        "error": "Error"
+        "error": "Error",
+        "loading": "Loading..."
     },
     "validation": {
         "requiredMessage": "This field is required",
@@ -2497,8 +2498,13 @@
                     "name": "Name",
                     "defaultOrder": "Order",
                     "url": "URL",
+                    "modules": "Modules",
                     "status": "Status",
                     "actions": "Actions"
+                },
+                "viewModules": "View modules",
+                "modulesPanel": {
+                    "noModules": "No modules"
                 },
                 "emptyMessage": "No functions found",
                 "reorderUp": "Move up",

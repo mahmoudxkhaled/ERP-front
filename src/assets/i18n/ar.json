@@ -1,7 +1,8 @@
 {
     "common": {
         "success": "نجاح",
-        "error": "خطأ"
+        "error": "خطأ",
+        "loading": "جاري التحميل..."
     },
     "validation": {
         "requiredMessage": "هذا الحقل مطلوب",
@@ -2357,8 +2358,13 @@
                     "name": "الاسم",
                     "defaultOrder": "الترتيب ",
                     "url": "الرابط",
+                    "modules": "الوحدات",
                     "status": "الحالة",
                     "actions": "الإجراءات"
+                },
+                "viewModules": "عرض الوحدات",
+                "modulesPanel": {
+                    "noModules": "لا توجد وحدات"
                 },
                 "emptyMessage": "لم يتم العثور على وظائف",
                 "reorderUp": "تحريك لأعلى",
