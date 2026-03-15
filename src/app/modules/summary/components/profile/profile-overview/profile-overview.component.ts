@@ -23,6 +23,10 @@ export class ProfileOverviewComponent implements OnInit, OnDestroy {
     accountSettings: IAccountSettings | null = null;
     userAccounts: IUserAccountItem[] = [];
     isRegional: boolean = false;
+    editAccountTitleDialogVisible: boolean = false;
+    accountBeingEdited: IUserAccountItem | null = null;
+    editAccountTitleValue: string = '';
+    savingAccountTitle: boolean = false;
     profilePictureUrl: string = '';
     hasProfilePicture: boolean = false;
 
@@ -302,6 +306,73 @@ export class ProfileOverviewComponent implements OnInit, OnDestroy {
         if (url) {
             window.open(url, '_blank');
         }
+    }
+
+    openEditAccountTitle(account: IUserAccountItem): void {
+        this.accountBeingEdited = account;
+        this.editAccountTitleValue = this.isRegional
+            ? (account.Description_Regional || account.Description || '')
+            : (account.Description || '');
+        this.editAccountTitleDialogVisible = true;
+    }
+
+    cancelEditAccountTitle(): void {
+        this.editAccountTitleDialogVisible = false;
+        this.accountBeingEdited = null;
+        this.editAccountTitleValue = '';
+    }
+
+    saveEditAccountTitle(): void {
+        if (!this.accountBeingEdited) return;
+        const email = this.accountBeingEdited.Email;
+        const description = this.editAccountTitleValue.trim();
+        this.savingAccountTitle = true;
+        const sub = this.profileApiService.updateAccountDetails(email, description, this.isRegional).subscribe({
+            next: (response: any) => {
+                this.savingAccountTitle = false;
+                if (response?.success) {
+                    if (this.isRegional) {
+                        this.accountBeingEdited!.Description_Regional = description;
+                    } else {
+                        this.accountBeingEdited!.Description = description;
+                    }
+                    this.persistUserAccounts();
+                    if (this.accountDetails && this.accountDetails.Email === email) {
+                        if (this.isRegional) {
+                            this.accountDetails.Description_Regional = description;
+                        } else {
+                            this.accountDetails.Description = description;
+                        }
+                        this.localStorageService.setItem('Account_Details', this.accountDetails);
+                    }
+                    this.messageService.add({
+                        severity: 'success',
+                        summary: this.translate.getInstant('common.success'),
+                        detail: this.translate.getInstant('profile.overview.accountTitleUpdated')
+                    });
+                    this.cancelEditAccountTitle();
+                } else {
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: this.translate.getInstant('common.error'),
+                        detail: response?.message || this.translate.getInstant('common.error')
+                    });
+                }
+            },
+            error: () => {
+                this.savingAccountTitle = false;
+                this.messageService.add({
+                    severity: 'error',
+                    summary: this.translate.getInstant('common.error'),
+                    detail: this.translate.getInstant('common.error')
+                });
+            }
+        });
+        this.subscriptions.push(sub);
+    }
+
+    private persistUserAccounts(): void {
+        this.localStorageService.setItem('User_Accounts', this.userAccounts);
     }
 }
 

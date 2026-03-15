@@ -2,7 +2,10 @@
     "common": {
         "success": "Success",
         "error": "Error",
-        "loading": "Loading..."
+        "loading": "Loading...",
+        "cancel": "Cancel",
+        "save": "Save",
+        "actions": "Actions"
     },
     "underDevelopment": {
         "ariaLabel": "Page under development",
@@ -854,6 +857,11 @@
             "address": "Address",
             "noContactInfoAvailable": "No contact information available",
             "noAccounts": "No accounts available",
+            "editAccountTitle": "Edit account title",
+            "editAccountTitleDialogTitle": "Edit Account Title",
+            "editAccountTitlePlaceholder": "Enter account title",
+            "regionalFieldHint": "You are editing the regional (language-specific) title.",
+            "accountTitleUpdated": "Account title updated successfully.",
             "socialMedia": "Social Media"
         }
     },

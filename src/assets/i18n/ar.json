@@ -2,7 +2,10 @@
     "common": {
         "success": "نجاح",
         "error": "خطأ",
-        "loading": "جاري التحميل..."
+        "loading": "جاري التحميل...",
+        "cancel": "إلغاء",
+        "save": "حفظ",
+        "actions": "الإجراءات"
     },
     "underDevelopment": {
         "ariaLabel": "الصفحة قيد التطوير",
@@ -854,6 +857,11 @@
             "address": "العنوان",
             "noContactInfoAvailable": "لا توجد معلومات اتصال متاحة",
             "noAccounts": "لا توجد حسابات متاحة",
+            "editAccountTitle": "تعديل عنوان الحساب",
+            "editAccountTitleDialogTitle": "تعديل عنوان الحساب",
+            "editAccountTitlePlaceholder": "أدخل عنوان الحساب",
+            "regionalFieldHint": "أنت تعدل العنوان المحلي (حسب اللغة).",
+            "accountTitleUpdated": "تم تحديث عنوان الحساب بنجاح.",
             "socialMedia": "وسائل التواصل الاجتماعي"
         }
     },

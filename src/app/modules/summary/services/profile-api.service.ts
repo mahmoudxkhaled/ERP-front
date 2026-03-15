@@ -189,5 +189,20 @@ export class ProfileApiService {
             finalize(() => this.isLoadingSubject.next(false))
         );
     }
+
+    /**
+     * Update account details (description)
+     * API Code: 156
+     * @param email - Account email address
+     * @param description - Account description (or regional description based on isRegional)
+     * @param isRegional - Whether to use regional fields
+     */
+    updateAccountDetails(email: string, description: string, isRegional: boolean): Observable<any> {
+        this.isLoadingSubject.next(true);
+        const params = [email, description, isRegional.toString()];
+        return this.apiService.callAPI(156, this.getAccessToken(), params).pipe(
+            finalize(() => this.isLoadingSubject.next(false))
+        );
+    }
 }
 
