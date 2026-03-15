@@ -125,3 +125,41 @@
 .detail-value-url {
     word-break: break-all;
 }
+
+.modules-tab-content {
+    padding: 0.25rem 0;
+}
+
+.add-module-form {
+    label {
+        font-weight: 500;
+        color: var(--text-color-secondary);
+    }
+}
+
+.modules-table-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid var(--surface-border);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+
+.skeleton-table-header {
+    display: grid;
+    grid-template-columns: 1fr 2fr 0.8fr 1.2fr;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    background: var(--surface-section);
+    border-bottom: 1px solid var(--surface-border);
+}
+
+.skeleton-table-row {
+    display: grid;
+    grid-template-columns: 1fr 2fr 0.8fr 1.2fr;
+    gap: 1rem;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid var(--surface-border);
+    align-items: center;
+}

@@ -2279,9 +2279,57 @@
                     "editFunction": "تعديل الوظيفة"
                 },
                 "tabs": {
+                    "basicInfo": "المعلومات الأساسية",
+                    "modules": "الوحدات",
                     "basicInformation": "المعلومات الأساسية",
                     "logo": "الشعار"
                 },
+                "modulesTab": {
+                    "title": "الوحدات التابعة لهذه الوظيفة",
+                    "addModule": "إضافة وحدة",
+                    "moveModuleHere": "نقل وحدة إلى هنا",
+                    "moveToFunction": "نقل إلى وظيفة",
+                    "code": "الرمز",
+                    "name": "الاسم",
+                    "order": "الترتيب",
+                    "status": "الحالة",
+                    "actions": "الإجراءات",
+                    "active": "نشط",
+                    "inactive": "غير نشط",
+                    "noModules": "لا توجد وحدات تابعة لهذه الوظيفة.",
+                    "addFormSubmit": "إضافة",
+                    "activationDialog": {
+                        "activateTitle": "تفعيل الوحدة <strong>\"{{name}}\"</strong>",
+                        "deactivateTitle": "إلغاء تفعيل الوحدة <strong>\"{{name}}\"</strong>",
+                        "activateMessage": "هل أنت متأكد أنك تريد تفعيل <strong>\"{{name}}\"</strong>؟",
+                        "deactivateMessage": "هل أنت متأكد أنك تريد إلغاء تفعيل <strong>\"{{name}}\"</strong>؟",
+                        "cancel": "إلغاء",
+                        "activate": "تفعيل",
+                        "deactivate": "إلغاء التفعيل"
+                    },
+                    "moveDialog": {
+                        "titleTo": "نقل الوحدة <strong>\"{{moduleName}}\"</strong> إلى وظيفة أخرى",
+                        "titleFrom": "نقل وحدة من وظيفة أخرى إلى <strong>\"{{currentFunctionName}}\"</strong>",
+                        "stepSelectFunctionTo": "اختر الوظيفة التي تريد نقل <strong>\"{{moduleName}}\"</strong> إليها.",
+                        "stepSelectFunctionFrom": "اختر الوظيفة التي تريد نقل وحدة منها.",
+                        "stepSelectModule": "اختر الوحدة التي تريد نقلها إلى <strong>\"{{currentFunctionName}}\"</strong>.",
+                        "stepConfirm": "تأكيد",
+                        "confirmTo": "نقل <strong>\"{{moduleName}}\"</strong> إلى <strong>\"{{functionName}}\"</strong>؟",
+                        "confirmFrom": "نقل <strong>\"{{moduleName}}\"</strong> إلى الوظيفة الحالية <strong>\"{{functionName}}\"</strong>؟",
+                        "next": "التالي",
+                        "back": "رجوع",
+                        "confirm": "تأكيد",
+                        "cancel": "إلغاء"
+                    },
+                    "toasts": {
+                        "moduleAdded": "تمت إضافة الوحدة بنجاح.",
+                        "moduleActivated": "تم تفعيل الوحدة بنجاح.",
+                        "moduleDeactivated": "تم إلغاء تفعيل الوحدة بنجاح.",
+                        "moduleMoved": "تم نقل الوحدة بنجاح.",
+                        "error": "فشلت العملية."
+                    }
+                },
+                "invalidFunctionId": "معرف الوظيفة غير صالح.",
                 "profile": "ملف الوظيفة",
                 "fields": {
                     "functionId": "معرف الوظيفة",

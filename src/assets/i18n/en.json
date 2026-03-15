@@ -2419,9 +2419,57 @@
                     "editFunction": "Edit Function"
                 },
                 "tabs": {
+                    "basicInfo": "Basic info",
+                    "modules": "Modules",
                     "basicInformation": "Basic Information",
                     "logo": "Logo"
                 },
+                "modulesTab": {
+                    "title": "Modules under this function",
+                    "addModule": "Add module",
+                    "moveModuleHere": "Move module here",
+                    "moveToFunction": "Move to function",
+                    "code": "Code",
+                    "name": "Name",
+                    "order": "Order",
+                    "status": "Status",
+                    "actions": "Actions",
+                    "active": "Active",
+                    "inactive": "Inactive",
+                    "noModules": "No modules under this function.",
+                    "addFormSubmit": "Add",
+                    "activationDialog": {
+                        "activateTitle": "Activate module <strong>\"{{name}}\"</strong>",
+                        "deactivateTitle": "Deactivate module <strong>\"{{name}}\"</strong>",
+                        "activateMessage": "Are you sure you want to activate <strong>\"{{name}}\"</strong>?",
+                        "deactivateMessage": "Are you sure you want to deactivate <strong>\"{{name}}\"</strong>?",
+                        "cancel": "Cancel",
+                        "activate": "Activate",
+                        "deactivate": "Deactivate"
+                    },
+                    "moveDialog": {
+                        "titleTo": "Move module <strong>\"{{moduleName}}\"</strong> to another function",
+                        "titleFrom": "Move a module from another function to <strong>\"{{currentFunctionName}}\"</strong>",
+                        "stepSelectFunctionTo": "Select the function to move <strong>\"{{moduleName}}\"</strong> to.",
+                        "stepSelectFunctionFrom": "Select the function to move a module from.",
+                        "stepSelectModule": "Select the module to move to <strong>\"{{currentFunctionName}}\"</strong>.",
+                        "stepConfirm": "Confirm",
+                        "confirmTo": "Move <strong>\"{{moduleName}}\"</strong> to <strong>\"{{functionName}}\"</strong>?",
+                        "confirmFrom": "Move <strong>\"{{moduleName}}\"</strong> to current function <strong>\"{{functionName}}\"</strong>?",
+                        "next": "Next",
+                        "back": "Back",
+                        "confirm": "Confirm",
+                        "cancel": "Cancel"
+                    },
+                    "toasts": {
+                        "moduleAdded": "Module added successfully.",
+                        "moduleActivated": "Module activated successfully.",
+                        "moduleDeactivated": "Module deactivated successfully.",
+                        "moduleMoved": "Module moved successfully.",
+                        "error": "Operation failed."
+                    }
+                },
+                "invalidFunctionId": "Invalid function ID.",
                 "profile": "Function Profile",
                 "fields": {
                     "functionId": "Function ID",
