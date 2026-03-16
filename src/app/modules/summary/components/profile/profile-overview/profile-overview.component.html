@@ -85,17 +85,13 @@
                     </div>
 
                     <div class="grid">
-                        <div class="col-12 md:col-6">
+                        <!-- <div class="col-12 md:col-6">
                             <span class="text-500 text-xs font-bold uppercase block mb-1">{{ 'profile.overview.fullName'
                                 | translate }}</span>
                             <span class="text-900 font-bold text-lg">{{ getFirstName() }} {{ getMiddleName() }} {{
                                 getLastName() }}</span>
-                        </div>
-                        <div class="col-12 md:col-6">
-                            <span class="text-500 text-xs font-bold uppercase block mb-1">{{ 'profile.fields.gender' |
-                                translate }}</span>
-                            <span class="text-900 font-bold text-lg">{{ getGenderLabel() }}</span>
-                        </div>
+                        </div> -->
+
                         <div class="col-12 md:col-6">
                             <span class="text-500 text-xs font-bold uppercase block mb-1">{{
                                 'profile.labels.emailAddress' | translate }}</span>
@@ -107,12 +103,17 @@
                             <span class="text-900 font-bold text-lg">{{ isRegional ? (entityDetails?.Name_Regional ||
                                 entityDetails?.Name || '') : (entityDetails?.Name || '—') }}</span>
                         </div>
-                        <div class="col-12 mt-3">
+                        <div class="col-12 md:col-6 ">
                             <span class="text-500 text-xs font-bold uppercase block mb-1">{{
                                 'profile.labels.accountTitle' | translate }}</span>
                             <span class="text-900 font-bold text-lg">{{ isRegional ?
                                 (accountDetails?.Description_Regional || accountDetails?.Description || '—') :
                                 (accountDetails?.Description || '—') }}</span>
+                        </div>
+                        <div class="col-12 md:col-6">
+                            <span class="text-500 text-xs font-bold uppercase block mb-1">{{ 'profile.fields.gender' |
+                                translate }}</span>
+                            <span class="text-900 font-bold text-lg">{{ getGenderLabel() }}</span>
                         </div>
                     </div>
                 </div>
@@ -244,9 +245,9 @@
     </p-dialog>
 
     <p-dialog [(visible)]="accountDetailsDialogVisible"
-        [header]="'profile.overview.accountDetailsDialogTitle' | translate" [modal]="true"
-        [style]="{ width: '420px' }" [closable]="true" [draggable]="false" [resizable]="false"
-        (onHide)="closeAccountDetailsDialog()" styleClass="account-details-dialog">
+        [header]="'profile.overview.accountDetailsDialogTitle' | translate" [modal]="true" [style]="{ width: '420px' }"
+        [closable]="true" [draggable]="false" [resizable]="false" (onHide)="closeAccountDetailsDialog()"
+        styleClass="account-details-dialog">
         <div *ngIf="accountForDetails" class="account-details-content">
             <div *ngIf="loadingAccountDetails" class="flex align-items-center justify-content-center p-4">
                 <p-progressSpinner strokeWidth="4" styleClass="w-2rem h-2rem"></p-progressSpinner>
@@ -258,11 +259,13 @@
                 </div>
                 <div class="account-details-row">
                     <span class="account-details-label">{{ 'profile.labels.accountTitle' | translate }}</span>
-                    <span class="account-details-value">{{ isRegional ? (accountForDetails.Description_Regional || accountForDetails.Description) : (accountForDetails.Description || '—') }}</span>
+                    <span class="account-details-value">{{ isRegional ? (accountForDetails.Description_Regional ||
+                        accountForDetails.Description) : (accountForDetails.Description || '—') }}</span>
                 </div>
                 <div class="account-details-row">
                     <span class="account-details-label">{{ 'profile.labels.entity' | translate }}</span>
-                    <span class="account-details-value">{{ getEntityNameForAccount(accountForDetails.Entity_ID) }}</span>
+                    <span class="account-details-value">{{ getEntityNameForAccount(accountForDetails.Entity_ID)
+                        }}</span>
                 </div>
                 <div class="account-details-row">
                     <span class="account-details-label">{{ 'profile.labels.emailAddress' | translate }}</span>
