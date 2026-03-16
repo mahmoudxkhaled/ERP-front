@@ -1,13 +1,14 @@
 import { Component, ElementRef, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslationService } from 'src/app/core/services/translation.service';
-import { MessageService } from 'primeng/api';
+import { MenuItem, MessageService } from 'primeng/api';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { LayoutService } from 'src/app/layout/app-services/app.layout.service';
 import { ProfilePictureService } from 'src/app/core/services/profile-picture.service';
 import { IUserDetails, IAccountDetails, IEntityDetails, IAccountSettings, IUserAccountItem } from 'src/app/core/models/account-status.model';
 import { ProfileApiService } from '../../../services/profile-api.service';
 import { ProfileContactInfo, ProfilePreferences } from '../../../models/profile.model';
+import { RolesService } from 'src/app/modules/entity-administration/roles/services/roles.service';
 import { Observable, Subscription } from 'rxjs';
 import { FileUpload } from 'primeng/fileupload';
 
@@ -29,6 +30,10 @@ export class ProfileOverviewComponent implements OnInit, OnDestroy {
     accountBeingEdited: IUserAccountItem | null = null;
     editAccountTitleValue: string = '';
     savingAccountTitle: boolean = false;
+    accountDetailsDialogVisible: boolean = false;
+    accountForDetails: IUserAccountItem | null = null;
+    accountDetailsRoleName: string = '';
+    loadingAccountDetails: boolean = false;
     profilePictureUrl: string = '';
     hasProfilePicture: boolean = false;
     uploadingPicture: boolean = false;
@@ -68,6 +73,7 @@ export class ProfileOverviewComponent implements OnInit, OnDestroy {
         private localStorageService: LocalStorageService,
         private profileApiService: ProfileApiService,
         private profilePictureService: ProfilePictureService,
+        private rolesService: RolesService,
         private router: Router,
         private layoutService: LayoutService
     ) {
@@ -547,12 +553,61 @@ export class ProfileOverviewComponent implements OnInit, OnDestroy {
         }
     }
 
+    accountMenuItems: MenuItem[] = [];
+
+    openAccountMenu(menuRef: { toggle: (e: Event) => void }, account: IUserAccountItem, event: Event): void {
+        const accountCapture = account;
+        this.accountMenuItems = [
+            {
+                label: this.translate.getInstant('profile.overview.editAccountTitle'),
+                icon: 'pi pi-pencil',
+                command: () => {
+                    this.openEditAccountTitle(accountCapture);
+                }
+            },
+            {
+                label: this.translate.getInstant('profile.overview.viewDetails'),
+                icon: 'pi pi-eye',
+                command: () => {
+                    this.openViewDetails(accountCapture);
+                }
+            }
+        ];
+        menuRef.toggle(event);
+    }
+
     openEditAccountTitle(account: IUserAccountItem): void {
         this.accountBeingEdited = account;
         this.editAccountTitleValue = this.isRegional
             ? (account.Description_Regional || account.Description || '')
             : (account.Description || '');
         this.editAccountTitleDialogVisible = true;
+    }
+
+    openViewDetails(account: IUserAccountItem): void {
+        this.accountForDetails = account;
+        this.accountDetailsDialogVisible = true;
+        this.accountDetailsRoleName = '';
+        this.loadingAccountDetails = true;
+        const sub = this.rolesService.getEntityRoleDetails(account.Entity_Role_ID).subscribe({
+            next: (response: any) => {
+                this.loadingAccountDetails = false;
+                const role = response?.message || {};
+                this.accountDetailsRoleName = this.isRegional
+                    ? (role.Title_Regional || role.Title || '')
+                    : (role.Title || '');
+            },
+            error: () => {
+                this.loadingAccountDetails = false;
+            }
+        });
+        this.subscriptions.push(sub);
+    }
+
+    closeAccountDetailsDialog(): void {
+        this.accountDetailsDialogVisible = false;
+        this.accountForDetails = null;
+        this.accountDetailsRoleName = '';
     }
 
     cancelEditAccountTitle(): void {
