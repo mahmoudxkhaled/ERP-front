@@ -627,8 +627,8 @@
         "title": "الإعدادات",
         "description": "إدارة إعدادات التطبيق",
         "tabs": {
-            "accountSettings": "إعدادات شكل وسمة الحساب",
-            "layoutTheme": "إعدادات التخطيط والسمة",
+            "accountSettings": "إعدادات الحساب",
+            "layoutTheme": "إعدادات شكل وسمة الحساب",
             "dashboard": "إعدادات لوحة التحكم",
             "incoming": "الإعدادات القادمة",
             "entitySettings": "إعدادات الكيان",
