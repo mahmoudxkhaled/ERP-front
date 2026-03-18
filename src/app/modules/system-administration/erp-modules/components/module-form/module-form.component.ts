@@ -173,6 +173,7 @@ export class ModuleFormComponent implements OnInit, OnChanges, OnDestroy {
         }
 
         const { functionId, code, name, defaultOrder, url } = this.form.value;
+        const normalizedUrl = url && url.trim().length > 0 ? url.trim() : '/under-development';
         const isRegional = this.accountSettings?.Language !== 'English';
 
         this.loading = true;
@@ -185,7 +186,7 @@ export class ModuleFormComponent implements OnInit, OnChanges, OnDestroy {
                 name.trim(),
                 isRegional,
                 Number(defaultOrder),
-                url.trim()
+                normalizedUrl
             ).subscribe({
                 next: (response: any) => {
                     if (!response?.success) {

@@ -248,6 +248,7 @@ export class SettingsConfigurationsService {
         if (!options?.silent) {
             this.isLoadingSubject.next(true);
         }
+        const normalizedUrl = url && url.trim().length > 0 ? url.trim() : '/under-development';
         const params = [
             moduleId.toString(),
             functionId.toString(),
@@ -255,7 +256,7 @@ export class SettingsConfigurationsService {
             name,
             isRegional.toString(),
             defaultOrder.toString(),
-            url.trim().toString()
+            normalizedUrl
         ];
         return this.apiServices.callAPI(712, this.getAccessToken(), params).pipe(
             finalize(() => {
