@@ -23,6 +23,8 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
     isLoading$: Observable<boolean>;
     tableLoadingSpinner = false;
     private subscriptions: Subscription[] = [];
+    entityLogoUrls: Record<string, string> = {};
+    entityLogoLoading: Record<string, boolean> = {};
 
     /** When loading and entities is empty, return placeholder rows so the table can show skeleton cells. */
     get tableValue(): Entity[] {
@@ -112,6 +114,7 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
                     };
                 });
                 this.buildActivationControls();
+                this.loadLogosForCurrentPage();
             },
             complete: () => this.resetLoadingFlags()
         });
@@ -144,6 +147,39 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
         if (entity.id) {
             this.router.navigate(['/entity-administration/entities', entity.id]);
         }
+    }
+
+    getEntityLogoUrl(entity: Entity): string | null {
+        if (!entity?.id) return null;
+        return this.entityLogoUrls[entity.id] || null;
+    }
+
+    isEntityLogoLoading(entity: Entity): boolean {
+        if (!entity?.id) return false;
+        return !!this.entityLogoLoading[entity.id];
+    }
+
+    private loadLogosForCurrentPage(): void {
+        // Load logos only for visible page rows (simple cache by entity id).
+        this.entities.forEach((entity) => {
+            if (!entity?.id) return;
+            if (this.entityLogoUrls[entity.id]) return;
+            if (this.entityLogoLoading[entity.id]) return;
+
+            this.entityLogoLoading[entity.id] = true;
+            const sub = this.entitiesService.getEntityLogo(entity.id).subscribe({
+                next: (logoRes: any) => {
+                    if (logoRes?.success && logoRes?.message?.Image) {
+                        const fmt = logoRes.message.Image_Format || 'png';
+                        this.entityLogoUrls[entity.id] = `data:image/${String(fmt).toLowerCase()};base64,${logoRes.message.Image}`;
+                    }
+                },
+                complete: () => {
+                    this.entityLogoLoading[entity.id] = false;
+                }
+            });
+            this.subscriptions.push(sub);
+        });
     }
 
     openMenu(menuRef: any, entity: Entity, event: Event): void {

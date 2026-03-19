@@ -1404,6 +1404,7 @@
             "pleaseWait": "يرجى الانتظار",
             "searchPlaceholder": "بحث",
             "table": {
+                "logo": "الشعار",
                 "id": "المعرف",
                 "code": "الكود",
                 "name": "الاسم",

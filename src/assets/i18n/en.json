@@ -1544,6 +1544,7 @@
             "pleaseWait": "Please wait",
             "searchPlaceholder": "Search",
             "table": {
+                "logo": "Logo",
                 "id": "Id",
                 "code": "Code",
                 "name": "Name",
