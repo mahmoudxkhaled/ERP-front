@@ -321,7 +321,7 @@
 </p-dialog>
 
 <!-- Update Account Entity Dialog (Shared Component) -->
-<app-entity-account-update [visible]="updateAccountEntityDialogVisible" [accountEmail]="accountEmailForUpdate"
+<app-entity-account-update [visible]="updateAccountEntityDialogVisible" [accountEmail]="accountEmailForUpdate" [requestedSystemRole]="requestedSystemRole"
     (onSave)="onAccountEntityUpdateSave($event)" (onCancel)="onAccountEntityUpdateCancel()"
     (onClose)="onAccountEntityUpdateCancel()">
 </app-entity-account-update>

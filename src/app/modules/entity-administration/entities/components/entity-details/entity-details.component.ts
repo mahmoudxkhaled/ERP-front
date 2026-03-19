@@ -29,6 +29,7 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
 
     accountSettings: IAccountSettings;
     isRegional: boolean = false;
+    requestedSystemRole: number = 0;
 
     private subscriptions: Subscription[] = [];
 
@@ -45,6 +46,11 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        // Scope used by nested entity pickers (EntityAdmin vs SystemAdmin scope).
+        this.requestedSystemRole =
+            this.route.snapshot.data['requestedSystemRole'] ??
+            (this.localStorageService.getAccountDetails()?.System_Role_ID || 0);
+
         this.entityId = this.route.snapshot.paramMap.get('id') || '';
         if (!this.entityId) {
             this.messageService.add({
@@ -52,7 +58,8 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
                 summary: 'Error',
                 detail: 'Invalid entity ID.'
             });
-            this.router.navigate(['/entity-administration/entities/list']);
+            const baseRoute = this.route.parent ?? this.route;
+            this.router.navigate(['list'], { relativeTo: baseRoute });
             return;
         }
 
@@ -202,7 +209,7 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
 
     openEditEntityDialog(): void {
         if (this.entityId) {
-            this.router.navigate(['/entity-administration/entities', this.entityId, 'edit']);
+            this.router.navigate(['edit'], { relativeTo: this.route });
         }
     }
 
@@ -342,7 +349,8 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
     }
 
     navigateBack(): void {
-        this.router.navigate(['/entity-administration/entities/list']);
+        const baseRoute = this.route.parent ?? this.route;
+        this.router.navigate(['list'], { relativeTo: baseRoute });
     }
 
     getEntityIdAsNumber(): number {

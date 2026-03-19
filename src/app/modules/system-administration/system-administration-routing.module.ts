@@ -17,6 +17,11 @@ const routes: Routes = [
         loadChildren: () => import('./system-storage-management/system-storage-management.module').then((m) => m.SystemStorageManagementModule),
         data: { breadcrumb: 'fileSystemSSM' }
     },
+    {
+        path: 'system-entities',
+        loadChildren: () => import('./system-entities/system-entities.module').then((m) => m.SystemEntitiesModule),
+        data: { breadcrumb: 'entitiesList' }
+    },
     { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
 ];
 

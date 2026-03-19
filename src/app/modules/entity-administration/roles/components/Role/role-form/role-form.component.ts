@@ -35,6 +35,7 @@ export class RoleFormComponent implements OnInit, OnDestroy {
     entityTableTotalRecords: number = 0;
     entityTableTextFilter: string = '';
     loadingEntitiesTable: boolean = false;
+    requestedSystemRole: number = 0;
 
     /** Placeholder rows for entity selection table so skeleton cells show while loading. */
     get entityTableValue(): Entity[] {
@@ -63,6 +64,11 @@ export class RoleFormComponent implements OnInit, OnDestroy {
         this.roleId = this.route.snapshot.paramMap.get('id') || '';
         this.isEdit = !!this.roleId;
         this.initForm();
+
+        // Scope for List_Entities filtering (Entity Admin vs System Admin screen).
+        this.requestedSystemRole =
+            this.route.snapshot.data['requestedSystemRole'] ??
+            (this.localStorageService.getAccountDetails()?.System_Role_ID || 0);
 
         if (this.isEdit) {
             this.loadRole();
@@ -259,7 +265,12 @@ export class RoleFormComponent implements OnInit, OnDestroy {
         const currentPage = Math.floor(this.entityTableFirst / this.entityTableRows) + 1;
         const lastEntityId = -currentPage;
 
-        const sub = this.entitiesService.listEntities(lastEntityId, this.entityTableRows, this.entityTableTextFilter).subscribe({
+        const sub = this.entitiesService.listEntities(
+            lastEntityId,
+            this.entityTableRows,
+            this.entityTableTextFilter,
+            this.requestedSystemRole
+        ).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
                     this.loadingEntitiesTable = false;
@@ -269,7 +280,7 @@ export class RoleFormComponent implements OnInit, OnDestroy {
                 this.entityTableTotalRecords = Number(response.message.Total_Count || 0);
 
                 let entitiesData: any = {};
-                const messageData = response.message.Entities || {};
+                const messageData = response.message.Entities_List || response.message.Entities || {};
                 Object.keys(messageData).forEach((key) => {
                     const item = messageData[key];
                     if (typeof item === 'object' && item !== null && item.Entity_ID !== undefined) {

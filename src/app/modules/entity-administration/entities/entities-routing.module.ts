@@ -8,10 +8,10 @@ import { EntityDetailsComponent } from './components/entity-details/entity-detai
 
 const routes: Routes = [
     { path: '', redirectTo: 'list', pathMatch: 'full' },
-    { path: 'list', component: EntitiesListComponent, data: { breadcrumb: 'entitiesList' } },
-    { path: 'new', component: EntityFormComponent, data: { breadcrumb: 'newEntity' } },
-    { path: ':id', component: EntityDetailsComponent, data: { breadcrumb: 'entityDetails' } },
-    { path: ':id/edit', component: EntityFormComponent, data: { breadcrumb: 'editEntity' } },
+    { path: 'list', component: EntitiesListComponent, data: { breadcrumb: 'entitiesList', requestedSystemRole: 3 } },
+    { path: 'new', component: EntityFormComponent, data: { breadcrumb: 'newEntity', requestedSystemRole: 3 } },
+    { path: ':id', component: EntityDetailsComponent, data: { breadcrumb: 'entityDetails', requestedSystemRole: 3 } },
+    { path: ':id/edit', component: EntityFormComponent, data: { breadcrumb: 'editEntity', requestedSystemRole: 3 } },
 ];
 
 @NgModule({

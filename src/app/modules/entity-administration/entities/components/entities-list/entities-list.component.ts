@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Observable, Subscription } from 'rxjs';
 import { EntitiesService } from '../../services/entities.service';
@@ -49,6 +49,9 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
 
     // Text filter for server-side search
     textFilter: string = '';
+    requestedSystemRole: number = 0;
+    private lastCompletedRequestSignature: string = '';
+    private activeRequestSignature: string | null = null;
 
     constructor(
         private entitiesService: EntitiesService,
@@ -56,14 +59,16 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
         private messageService: MessageService,
         private localStorageService: LocalStorageService,
         private permissionService: PermissionService,
-        private translate: TranslationService
+        private translate: TranslationService,
+        private route: ActivatedRoute
     ) {
         this.isLoading$ = this.entitiesService.isLoadingSubject.asObservable();
     }
 
     ngOnInit(): void {
         this.configureMenuItems();
-        this.loadEntities();
+        this.requestedSystemRole =
+            this.route.snapshot.data['requestedSystemRole'] ?? this.permissionService.getCurrentRoleId();
     }
 
     ngOnDestroy(): void {
@@ -71,29 +76,41 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
     }
 
     loadEntities(forceReload: boolean = false): void {
-        if (this.entitiesService.isLoadingSubject.value && !forceReload) {
+        const requestSignature = this.buildListRequestSignature();
+
+        if (!forceReload && this.activeRequestSignature === requestSignature) {
+            return;
+        }
+
+        if (!forceReload && this.lastCompletedRequestSignature === requestSignature) {
             return;
         }
 
         this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
         const isRegional = this.accountSettings?.Language !== 'English';
+        this.activeRequestSignature = requestSignature;
         this.tableLoadingSpinner = true;
 
         // API uses negative page numbers: -1 = page 1, -2 = page 2, etc.
         const currentPage = Math.floor(this.first / this.rows) + 1;
         const lastEntityId = -currentPage;
 
-        const sub = this.entitiesService.listEntities(lastEntityId, this.rows, this.textFilter).subscribe({
+        const sub = this.entitiesService.listEntities(
+            lastEntityId,
+            this.rows,
+            this.textFilter,
+            this.requestedSystemRole
+        ).subscribe({
             next: (response: any) => {
-                console.log('response', response);
                 if (!response?.success) {
                     this.handleBusinessError('list', response);
                     return;
                 }
+                this.lastCompletedRequestSignature = requestSignature;
                 this.totalRecords = Number(response.message.Total_Count);
 
                 let entitiesData: any = {};
-                const messageData = response.message.Entities;
+                const messageData = response.message.Entities_List || response.message.Entities;
                 entitiesData = {};
                 Object.keys(messageData).forEach((key) => {
                     const item = messageData[key];
@@ -116,7 +133,10 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
                 this.buildActivationControls();
                 this.loadLogosForCurrentPage();
             },
-            complete: () => this.resetLoadingFlags()
+            error: () => {
+                this.resetLoadingFlags(requestSignature);
+            },
+            complete: () => this.resetLoadingFlags(requestSignature)
         });
 
         this.subscriptions.push(sub);
@@ -124,9 +144,11 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
 
 
     onPageChange(event: any): void {
-        this.first = event.first;
-        this.rows = event.rows;
-        this.loadEntities(true);
+        const nextFirst = event?.first ?? 0;
+        const nextRows = event?.rows ?? this.rows;
+        this.first = nextFirst;
+        this.rows = nextRows;
+        this.loadEntities();
     }
 
     isFirstPage(): boolean {
@@ -139,13 +161,15 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
 
     edit(entity: Entity): void {
         if (entity.id) {
-            this.router.navigate(['/entity-administration/entities', entity.id, 'edit']);
+            const baseRoute = this.route.parent ?? this.route;
+            this.router.navigate([entity.id, 'edit'], { relativeTo: baseRoute });
         }
     }
 
     viewDetails(entity: Entity): void {
         if (entity.id) {
-            this.router.navigate(['/entity-administration/entities', entity.id]);
+            const baseRoute = this.route.parent ?? this.route;
+            this.router.navigate([entity.id], { relativeTo: baseRoute });
         }
     }
 
@@ -167,7 +191,7 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
             if (this.entityLogoLoading[entity.id]) return;
 
             this.entityLogoLoading[entity.id] = true;
-            const sub = this.entitiesService.getEntityLogo(entity.id).subscribe({
+            const sub = this.entitiesService.getEntityLogo(entity.id, false).subscribe({
                 next: (logoRes: any) => {
                     if (logoRes?.success && logoRes?.message?.Image) {
                         const fmt = logoRes.message.Image_Format || 'png';
@@ -291,7 +315,8 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
     }
 
     navigateToNew(): void {
-        this.router.navigate(['/entity-administration/entities/new']);
+        const baseRoute = this.route.parent ?? this.route;
+        this.router.navigate(['new'], { relativeTo: baseRoute });
     }
 
     onSearchInput(event: Event): void {
@@ -427,7 +452,20 @@ export class EntitiesListComponent implements OnInit, OnDestroy {
         }
     }
 
-    private resetLoadingFlags(): void {
+    private buildListRequestSignature(): string {
+        const currentPage = Math.floor(this.first / this.rows) + 1;
+        return JSON.stringify({
+            page: currentPage,
+            rows: this.rows,
+            filter: (this.textFilter || '').trim(),
+            requestedSystemRole: this.requestedSystemRole
+        });
+    }
+
+    private resetLoadingFlags(requestSignature?: string): void {
+        if (!requestSignature || this.activeRequestSignature === requestSignature) {
+            this.activeRequestSignature = null;
+        }
         this.tableLoadingSpinner = false;
     }
 }

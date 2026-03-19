@@ -438,10 +438,10 @@ export class SendNotificationComponent implements OnInit, OnDestroy {
 
     loadEntities(): void {
         this.targetSelectionLoading = true;
-        const sub = this.entitiesService.listEntities(0, 100, '').subscribe({
+        const sub = this.entitiesService.listEntities(0, 100, '', this.permissionService.getCurrentRoleId()).subscribe({
             next: (response: any) => {
                 if (response?.success) {
-                    const entitiesData = response?.message?.Entities || {};
+                    const entitiesData = response?.message?.Entities_List || response?.message?.Entities || {};
                     const entitiesArray = Object.values(entitiesData).filter((item: any) =>
                         typeof item === 'object' && item !== null && item.Entity_ID !== undefined
                     );

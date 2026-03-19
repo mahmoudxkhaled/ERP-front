@@ -56,7 +56,7 @@
                 <tr>
                     <td>
                         <div>
-                            <ng-container *ngIf="isLoading$ | async; else normalId">
+                            <ng-container *ngIf="tableLoadingSpinner; else normalId">
                                 <p-skeleton height="1.5rem" width="4rem" borderRadius="4px"></p-skeleton>
                             </ng-container>
                             <ng-template #normalId>
@@ -67,7 +67,7 @@
                         </div>
                     </td>
                     <td class="text-center">
-                        <ng-container *ngIf="isLoading$ | async; else normalLogo">
+                        <ng-container *ngIf="tableLoadingSpinner; else normalLogo">
                             <p-skeleton width="2rem" height="2rem" borderRadius="50%"></p-skeleton>
                         </ng-container>
                         <ng-template #normalLogo>
@@ -92,7 +92,7 @@
                     </td>
                     <td>
                         <div class="flex align-items-center gap-2">
-                            <ng-container *ngIf="isLoading$ | async; else normalCode">
+                            <ng-container *ngIf="tableLoadingSpinner; else normalCode">
                                 <p-skeleton height="1.5rem" width="6rem"></p-skeleton>
                             </ng-container>
                             <ng-template #normalCode>
@@ -104,20 +104,20 @@
                     </td>
                     <td>
                         <div class="flex flex-column">
-                            <ng-container *ngIf="isLoading$ | async; else normalName">
+                            <ng-container *ngIf="tableLoadingSpinner; else normalName">
                                 <p-skeleton height="1rem" width="10rem" class="mb-1"></p-skeleton>
                                 <p-skeleton height="0.875rem" width="8rem"></p-skeleton>
                             </ng-container>
                             <ng-template #normalName>
                                 <span style="cursor: pointer;" class="font-semibold name-text"
-                                    routerLink="/entity-administration/entities/{{ entity.id }}">
+                                    (click)="viewDetails(entity)">
                                     {{ entity.name }}</span>
                                 <small class="text-500">{{ getParentLabel(entity) }}</small>
                             </ng-template>
                         </div>
                     </td>
                     <td>
-                        <ng-container *ngIf="isLoading$ | async; else normalDescription">
+                        <ng-container *ngIf="tableLoadingSpinner; else normalDescription">
                             <p-skeleton height="3rem" width="100%" class="line-height-3"></p-skeleton>
                         </ng-container>
                         <ng-template #normalDescription>
@@ -127,7 +127,7 @@
                         </ng-template>
                     </td>
                     <td class="text-center">
-                        <ng-container *ngIf="isLoading$ | async; else normalType">
+                        <ng-container *ngIf="tableLoadingSpinner; else normalType">
                             <p-skeleton height="1.5rem" width="5rem" borderRadius="4px"></p-skeleton>
                         </ng-container>
                         <ng-template #normalType>
@@ -136,7 +136,7 @@
                     </td>
 
                     <td class="text-center">
-                        <ng-container *ngIf="isLoading$ | async; else normalStatus">
+                        <ng-container *ngIf="tableLoadingSpinner; else normalStatus">
                             <p-skeleton height="1.5rem" width="3rem" borderRadius="30px"></p-skeleton>
                         </ng-container>
                         <ng-template #normalStatus>
@@ -146,7 +146,7 @@
                         </ng-template>
                     </td>
                     <td class="text-start">
-                        <ng-container *ngIf="isLoading$ | async; else normalActions">
+                        <ng-container *ngIf="tableLoadingSpinner; else normalActions">
                             <p-skeleton height="2rem" width="2rem" borderRadius="50%"></p-skeleton>
                         </ng-container>
                         <ng-template #normalActions>

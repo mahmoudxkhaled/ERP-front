@@ -15,6 +15,7 @@ import { RolesService } from '../../../roles/services/roles.service';
 export class EntityAccountUpdateComponent implements OnInit, OnChanges, OnDestroy {
   @Input() visible: boolean = false;
   @Input() accountEmail: string = '';
+  @Input() requestedSystemRole: number = 0;
   @Output() onSave = new EventEmitter<{ email: string; entityId: number; entityRoleId: number }>();
   @Output() onCancel = new EventEmitter<void>();
   @Output() onClose = new EventEmitter<void>();
@@ -158,7 +159,15 @@ export class EntityAccountUpdateComponent implements OnInit, OnChanges, OnDestro
     const currentPage = Math.floor(this.entityTableFirst / this.entityTableRows) + 1;
     const lastEntityId = -currentPage;
 
-    const sub = this.entitiesService.listEntities(lastEntityId, this.entityTableRows, this.entityTableTextFilter).subscribe({
+    const requestedRoleValue =
+      this.requestedSystemRole || (this.localStorageService.getAccountDetails()?.System_Role_ID || 0);
+
+    const sub = this.entitiesService.listEntities(
+      lastEntityId,
+      this.entityTableRows,
+      this.entityTableTextFilter,
+      requestedRoleValue
+    ).subscribe({
       next: (response: any) => {
         if (!response?.success) {
           this.loadingEntitiesTable = false;
@@ -168,7 +177,7 @@ export class EntityAccountUpdateComponent implements OnInit, OnChanges, OnDestro
         this.entityTableTotalRecords = Number(response.message.Total_Count || 0);
 
         let entitiesData: any = {};
-        const messageData = response.message.Entities || {};
+        const messageData = response.message.Entities_List || response.message.Entities || {};
         Object.keys(messageData).forEach((key) => {
           const item = messageData[key];
           if (typeof item === 'object' && item !== null && item.Entity_ID !== undefined) {

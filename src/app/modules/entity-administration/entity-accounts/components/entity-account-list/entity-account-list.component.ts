@@ -20,6 +20,7 @@ import { RolesService } from '../../../roles/services/roles.service';
 })
 export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges {
   @Input() entityId: string = '';
+  @Input() requestedSystemRole: number = 0;
   @Output() accountCreated = new EventEmitter<string>();
   @Output() accountUpdated = new EventEmitter<void>();
 

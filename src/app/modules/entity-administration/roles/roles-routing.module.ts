@@ -10,10 +10,10 @@ import { RolePermissionsComponent } from './components/Permissions/role-permissi
 const routes: Routes = [
     { path: '', redirectTo: 'list', pathMatch: 'full' },
     { path: 'list', component: RolesListComponent, data: { breadcrumb: 'rolesList' } },
-    { path: 'new', component: RoleFormComponent, data: { breadcrumb: 'newRole' } },
+    { path: 'new', component: RoleFormComponent, data: { breadcrumb: 'newRole', requestedSystemRole: 3 } },
     { path: 'permissions/:roleId', component: RolePermissionsComponent, data: { breadcrumb: 'permissions' } },
     { path: ':id', component: RoleDetailsComponent, data: { breadcrumb: 'roleDetails' } },
-    { path: ':id/edit', component: RoleFormComponent, data: { breadcrumb: 'editRole' } },
+    { path: ':id/edit', component: RoleFormComponent, data: { breadcrumb: 'editRole', requestedSystemRole: 3 } },
 ];
 
 @NgModule({

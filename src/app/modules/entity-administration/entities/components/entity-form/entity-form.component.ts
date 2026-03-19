@@ -29,6 +29,7 @@ export class EntityFormComponent implements OnInit, OnDestroy {
     showIsPersonal: boolean = false;
     showAccountSection: boolean = false;
     systemRole: number = 0;
+    requestedSystemRole: number = 0;
     parentEntities: any[] = [];
 
     // Entity selection table properties
@@ -58,6 +59,13 @@ export class EntityFormComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.entityId = this.route.snapshot.paramMap.get('id') || '';
         this.isEdit = !!this.entityId;
+
+        // Scope for API filtering (EntityAdmin vs SystemAdmin screen).
+        this.requestedSystemRole =
+            this.route.snapshot.data['requestedSystemRole'] ??
+            (this.localStorageService.getAccountDetails()?.System_Role_ID || 0);
+        this.systemRole = this.requestedSystemRole;
+
         this.initForm();
         this.initializeRoleBasedLogic();
 
@@ -67,9 +75,6 @@ export class EntityFormComponent implements OnInit, OnDestroy {
     }
 
     private initializeRoleBasedLogic(): void {
-        const accountDetails = this.localStorageService.getAccountDetails();
-        this.systemRole = accountDetails?.System_Role_ID || 0;
-
         switch (this.systemRole) {
             case Roles.Developer:
                 this.showParentSelector = true;
@@ -137,7 +142,12 @@ export class EntityFormComponent implements OnInit, OnDestroy {
         const currentPage = Math.floor(this.entityTableFirst / this.entityTableRows) + 1;
         const lastEntityId = -currentPage;
 
-        const sub = this.entitiesService.listEntities(lastEntityId, this.entityTableRows, this.entityTableTextFilter).subscribe({
+        const sub = this.entitiesService.listEntities(
+            lastEntityId,
+            this.entityTableRows,
+            this.entityTableTextFilter,
+            this.requestedSystemRole
+        ).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
                     this.loadingEntitiesTable = false;
@@ -147,7 +157,7 @@ export class EntityFormComponent implements OnInit, OnDestroy {
                 this.entityTableTotalRecords = Number(response.message.Total_Count || 0);
 
                 let entitiesData: any = {};
-                const messageData = response.message.Entities || {};
+                const messageData = response.message.Entities_List || response.message.Entities || {};
                 Object.keys(messageData).forEach((key) => {
                     const item = messageData[key];
                     if (typeof item === 'object' && item !== null && item.Entity_ID !== undefined) {
@@ -356,7 +366,8 @@ export class EntityFormComponent implements OnInit, OnDestroy {
                         summary: 'Success',
                         detail: 'Entity updated successfully.'
                     });
-                    this.router.navigate(['/entity-administration/entities', this.entityId]);
+                    const baseRoute = this.route.parent ?? this.route;
+                    this.router.navigate([this.entityId], { relativeTo: baseRoute });
                 },
                 complete: () => this.loading = false
             });
@@ -391,7 +402,8 @@ export class EntityFormComponent implements OnInit, OnDestroy {
                         summary: 'Success',
                         detail: 'Entity created successfully.'
                     });
-                    this.router.navigate(['/entity-administration/entities/list']);
+                    const baseRoute = this.route.parent ?? this.route;
+                    this.router.navigate(['list'], { relativeTo: baseRoute });
                 },
                 complete: () => this.loading = false
             });
@@ -401,7 +413,8 @@ export class EntityFormComponent implements OnInit, OnDestroy {
     }
 
     cancel(): void {
-        this.router.navigate(['/entity-administration/entities/list']);
+        const baseRoute = this.route.parent ?? this.route;
+        this.router.navigate(['list'], { relativeTo: baseRoute });
     }
 
     get f() {
@@ -669,7 +682,8 @@ export class EntityFormComponent implements OnInit, OnDestroy {
                     summary: 'Success',
                     detail: 'Entity, role, and administrator account created successfully.'
                 });
-                this.router.navigate(['/entity-administration/entities/list']);
+                const baseRoute = this.route.parent ?? this.route;
+                this.router.navigate(['list'], { relativeTo: baseRoute });
             },
             error: () => this.loading = false,
             complete: () => this.loading = false

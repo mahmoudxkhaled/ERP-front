@@ -214,13 +214,15 @@
 
                 <!-- Tab 2: Accounts -->
                 <p-tabPanel [header]="'entities.details.tabs.accounts' | translate">
-                    <app-entity-account-list [entityId]="entityId" (accountCreated)="handleEntityUpdated()"
+                    <app-entity-account-list [entityId]="entityId" [requestedSystemRole]="requestedSystemRole"
+                        (accountCreated)="handleEntityUpdated()"
                         (accountUpdated)="handleEntityUpdated()"></app-entity-account-list>
                 </p-tabPanel>
 
                 <!-- Tab 3: Admins -->
                 <p-tabPanel [header]="'entities.details.tabs.admins' | translate">
-                    <app-entity-account-admin-list [entityId]="entityId" (adminCreated)="handleEntityUpdated()"
+                    <app-entity-account-admin-list [entityId]="entityId" [requestedSystemRole]="requestedSystemRole"
+                        (adminCreated)="handleEntityUpdated()"
                         (adminUpdated)="handleEntityUpdated()"></app-entity-account-admin-list>
                 </p-tabPanel>
 

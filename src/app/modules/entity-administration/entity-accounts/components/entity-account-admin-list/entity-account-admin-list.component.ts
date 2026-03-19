@@ -29,6 +29,7 @@ interface EntityAdmin {
 })
 export class EntityAccountAdminListComponent implements OnInit, OnDestroy, OnChanges {
     @Input() entityId: string = '';
+    @Input() requestedSystemRole: number = 0;
     @Output() adminCreated = new EventEmitter<string>();
     @Output() adminUpdated = new EventEmitter<void>();
 

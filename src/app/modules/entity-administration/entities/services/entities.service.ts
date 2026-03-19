@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, finalize } from 'rxjs';
 import { ApiService } from 'src/app/core/api/api.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { Roles } from 'src/app/core/models/system-roles';
 
 @Injectable({
     providedIn: 'root',
@@ -90,13 +91,33 @@ export class EntitiesService {
         );
     }
 
+    private getRequestedSystemRoleFallback(): number {
+        // Used when a caller does not provide a scope.
+        const accountDetails = this.localStorageService.getAccountDetails();
+        return (accountDetails?.System_Role_ID as Roles) || 0;
+    }
 
-    listEntities(lastEntityId: number = 0, filterCount: number = 10, textFilter: string = ''): Observable<any> {
+
+    listEntities(
+        lastEntityId: number = 0,
+        filterCount: number = 10,
+        textFilter: string = '',
+        requestedSystemRole: number | null = null
+    ): Observable<any> {
         this.isLoadingSubject.next(true);
         console.log('listEntities');
         const validatedFilterCount = Math.max(10, Math.min(100, filterCount));
 
-        const params = [lastEntityId.toString(), validatedFilterCount.toString(), textFilter || ''];
+        const requestedRoleValue =
+            requestedSystemRole === null ? this.getRequestedSystemRoleFallback() : requestedSystemRole;
+
+        // Backend: List_Entities(Last_Entity_ID, Filter_Count, Text_Filter, Requested_System_Role)
+        const params = [
+            lastEntityId.toString(),
+            validatedFilterCount.toString(),
+            textFilter || '',
+            requestedRoleValue.toString()
+        ];
         console.log('params', params);
         return this.apiServices.callAPI(406, this.getAccessToken(), params).pipe(
             finalize(() => this.isLoadingSubject.next(false))
@@ -166,10 +187,17 @@ export class EntitiesService {
     }
 
 
-    getEntityLogo(entityId: string): Observable<any> {
-        this.isLoadingSubject.next(true);
+    getEntityLogo(entityId: string, withGlobalLoading: boolean = true): Observable<any> {
+        if (withGlobalLoading) {
+            this.isLoadingSubject.next(true);
+        }
+
         return this.apiServices.callAPI(421, this.getAccessToken(), [entityId]).pipe(
-            finalize(() => this.isLoadingSubject.next(false))
+            finalize(() => {
+                if (withGlobalLoading) {
+                    this.isLoadingSubject.next(false);
+                }
+            })
         );
     }
 

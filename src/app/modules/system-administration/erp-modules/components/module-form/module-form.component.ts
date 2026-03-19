@@ -189,6 +189,7 @@ export class ModuleFormComponent implements OnInit, OnChanges, OnDestroy {
                 normalizedUrl
             ).subscribe({
                 next: (response: any) => {
+                    console.log('updateModuleDetails response', response);
                     if (!response?.success) {
                         this.handleBusinessError('update', response);
                         return;
