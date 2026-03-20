@@ -210,6 +210,7 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
       this.textFilter
     ).subscribe({
       next: (response: any) => {
+        console.log('reloadAccounts response', response);
         if (!response?.success) {
           this.handleBusinessError('accounts', response);
           return;

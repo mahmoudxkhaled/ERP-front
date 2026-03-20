@@ -281,6 +281,7 @@ export class SettingsConfigurationsService {
     }
 
     /**
+     * 
      * Deactivate a module
      * API Code: 714
      * @param moduleId - Module ID
