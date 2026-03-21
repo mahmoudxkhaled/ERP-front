@@ -1,0 +1,33 @@
+.entity-profile-panel {
+  ::ng-deep .p-panel-header {
+    background: linear-gradient(90deg, var(--primary-600), var(--primary-500));
+    color: white;
+    border: none;
+    border-radius: 16px 16px 0 0;
+    padding: 1.5rem;
+  }
+
+  ::ng-deep .p-panel-content {
+    padding: 0 !important;
+    border-radius: 0 0 16px 16px;
+    overflow: hidden;
+  }
+}
+
+.identity-logo-wrapper {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.identity-logo {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--surface-200, #e8e8e8);
+}

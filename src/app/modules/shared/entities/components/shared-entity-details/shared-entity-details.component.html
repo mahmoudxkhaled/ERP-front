@@ -1,0 +1,126 @@
+<div class="card">
+    <!-- Header -->
+    <div class="flex justify-content-between align-items-center mb-4">
+        <h2>
+            <ng-container *ngIf="loading; else headerTitle">
+                <p-skeleton height="2rem" width="14rem"></p-skeleton>
+            </ng-container>
+            <ng-template #headerTitle>{{ 'entities.details.title' | translate }}</ng-template>
+        </h2>
+        <p-button [label]="'entities.details.backToList' | translate" icon="pi pi-arrow-left" class="p-button-secondary"
+            (onClick)="navigateBack()" [disabled]="loading">
+        </p-button>
+    </div>
+
+    <!-- Content: skeleton when loading, real content when loaded -->
+    <div *ngIf="entityId">
+        <ng-container *ngIf="loading; else realContent">
+            <p-tabView class="w-full h-full">
+                <p-tabPanel [header]="'entities.details.tabs.basicInfoContacts' | translate">
+                    <p-panel class="mb-5" [toggleable]="false">
+                        <ng-template pTemplate="header">
+                            <div class="flex align-items-center justify-content-between w-full">
+                                <div class="flex align-items-center gap-3">
+                                    <p-skeleton shape="circle" size="2rem"></p-skeleton>
+                                    <p-skeleton height="1.5rem" width="10rem"></p-skeleton>
+                                </div>
+                                <p-skeleton height="2.25rem" width="8rem" borderRadius="4px"></p-skeleton>
+                            </div>
+                        </ng-template>
+                        <div class="entity-profile-content">
+                            <div class="profile-hero p-5 mb-5">
+                                <div class="grid align-items-start">
+                                    <div class="col-12 md:col-4 flex justify-content-center">
+                                        <div class="identity-logo-wrapper">
+                                            <div class="identity-logo">
+                                                <p-skeleton width="100%" height="100%" borderRadius="8px"></p-skeleton>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 md:col-8">
+                                        <div class="pl-4">
+                                            <p-skeleton height="2.5rem" width="80%" class="mb-2"></p-skeleton>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </p-panel>
+                </p-tabPanel>
+            </p-tabView>
+        </ng-container>
+        <ng-template #realContent>
+            <p-tabView *ngIf="entityDetails" [(activeIndex)]="activeTabIndex" class="w-full h-full">
+                <p-tabPanel [header]="'entities.details.tabs.basicInfoContacts' | translate">
+                    <p-panel class="  mb-5" [toggleable]="false">
+                        <ng-template pTemplate="header">
+                            <div class="flex align-items-center justify-content-between w-full">
+                                <div class="flex align-items-center gap-3">
+                                    <i class="pi pi-briefcase text-primary text-2xl"></i>
+                                    <span class="text-xl font-semibold">{{ 'entities.details.profile' | translate }}</span>
+                                </div>
+                                <p-button [label]="'entities.details.editEntity' | translate" icon="pi pi-pencil"
+                                    size="small" severity="contrast" (onClick)="openEditEntityDialog()"
+                                    [disabled]="loading" class="edit-entity-btn">
+                                </p-button>
+                            </div>
+                        </ng-template>
+                        <div class="entity-profile-content">
+                            <div class="profile-hero p-5 mb-5">
+                                <div class="grid align-items-start">
+                                    <div class="col-12 md:col-4 flex justify-content-center">
+                                        <div class="identity-logo-wrapper">
+                                            <div class="identity-logo">
+                                                <img [src]="entityLogo || 'assets/media/upload-photo.jpg'" [alt]="'Entity Logo'" style="width: 100%; height: 100%; object-fit: contain;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 md:col-8">
+                                        <div class="pl-4">
+                                            <h1 class="text-3xl font-bold text-900 mt-0 mb-2">
+                                                {{ getEntityName() || ('entities.details.unnamedEntity' | translate) }}
+                                            </h1>
+                                            <div class="flex flex-column gap-3 text-lg">
+                                                <div><span><strong>{{ 'entities.details.fields.code' | translate }}</strong> {{ getEntityCode() || '—' }}</span></div>
+                                                <div><span><strong>{{ 'entities.details.fields.entityId' | translate }}</strong> #{{ entityId || '—' }}</span></div>
+                                            </div>
+                                            <div class="flex gap-3 mt-4">
+                                                <p-tag [value]="getStatusLabel()" [severity]="getStatusSeverity()" [rounded]="true"></p-tag>
+                                                <p-tag [value]="getTypeLabel()" [severity]="getTypeSeverity()" [rounded]="true"></p-tag>
+                                            </div>
+                                            <div class="mt-4 pt-4 border-top-1 surface-border">
+                                                <small class="text-500">{{ 'entities.details.fields.description' | translate }}</small>
+                                                <p class="mt-1 text-700 font-medium">{{ getEntityDescription() || ('entities.details.noDescription' | translate) }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </p-panel>
+
+                    <app-shared-entity-contact [entityId]="entityId" [entityName]="getEntityName()"></app-shared-entity-contact>
+                </p-tabPanel>
+                <p-tabPanel [header]="'entities.details.tabs.accounts' | translate">
+                    <app-shared-account-list [entityId]="entityId" [requestedSystemRole]="requestedSystemRole"
+                        (accountCreated)="handleEntityUpdated()"
+                        (accountUpdated)="handleEntityUpdated()"></app-shared-account-list>
+                </p-tabPanel>
+                <p-tabPanel [header]="'entities.details.tabs.admins' | translate">
+                    <app-entity-account-admin-list [entityId]="entityId" [requestedSystemRole]="requestedSystemRole"
+                        (adminCreated)="handleEntityUpdated()"
+                        (adminUpdated)="handleEntityUpdated()"></app-entity-account-admin-list>
+                </p-tabPanel>
+                <p-tabPanel [header]="'entities.details.tabs.rolesPermissions' | translate">
+                    <app-roles-list [entityId]="getEntityIdAsNumber()"></app-roles-list>
+                </p-tabPanel>
+                <p-tabPanel [header]="'entities.details.tabs.entityGroups' | translate">
+                    <app-entity-groups-list [entityId]="getEntityIdAsNumber()"
+                        [showHeader]="false"></app-entity-groups-list>
+                </p-tabPanel>
+            </p-tabView>
+        </ng-template>
+    </div>
+</div>
+
+<p-toast></p-toast>

@@ -1666,6 +1666,19 @@
                 "validEmail": "Please enter a valid email address",
                 "cancel": "Cancel",
                 "saveChanges": "Save Changes"
+            },
+            "toasts": {
+                "validationSummary": "Validation",
+                "addressRequired": "Address is required. Please fill in the address field.",
+                "fixFormErrors": "Please correct the errors in the form. Phone numbers, fax numbers, and emails must be in valid format if provided.",
+                "updatedSuccessfully": "Contact information updated successfully."
+            },
+            "errors": {
+                "invalidEntityId": "Invalid Entity ID",
+                "invalidAddressFormat": "Invalid format for provided Address",
+                "invalidPhoneFormat": "Invalid format for one or more of the provided phone numbers (only digits are allowed; no +, -, / or spaces)",
+                "invalidFaxFormat": "Invalid format for one or more of the provided fax numbers (only digits are allowed; no +, -, / or spaces)",
+                "invalidEmailFormat": "Invalid format for one or more of the provided email addresses"
             }
         },
         "assignAdmin": {
