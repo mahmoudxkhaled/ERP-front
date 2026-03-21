@@ -9,9 +9,11 @@ import { ResetPasswordComponent } from './components/reset-password/reset-passwo
 import { ForgetPasswordComponent } from './components/forget-password/forget-password.component';
 import { AccountStatusComponent } from './components/account-status/account-status.component';
 import { Verify2FAComponent } from './components/verify-2fa/verify-2fa.component';
+import { AuthBrandComponent } from './components/auth-brand/auth-brand.component';
 
 @NgModule({
     declarations: [
+        AuthBrandComponent,
         LoginComponent,
         EmailVerifiedComponent,
         VerificationEmailComponent,

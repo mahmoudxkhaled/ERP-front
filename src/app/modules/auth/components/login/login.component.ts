@@ -17,7 +17,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     loginCreditials!: FormGroup;
     unsubscribe: Subscription[] = [];
     isLoading$: Observable<boolean>;
-    isRtl: boolean = false;
     showPassword: boolean = false;
 
     currentIndex = 0;
@@ -52,7 +51,6 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.initForm();
         const userLang = this.rtlService.getLanguageFromStorage();
         this.rtlService.setRtl(userLang === 'ar');
-        this.isRtl = userLang === 'ar';
     }
 
     initForm() {
