@@ -20,6 +20,11 @@ const routes: Routes = [
         data: { breadcrumb: 'userAccounts' }
     },
     {
+        path: 'entity-user-accounts',
+        loadChildren: () => import('../entity-administration/entity-user-accounts/entity-user-accounts.module').then((m) => m.EntityUserAccountsModule),
+        data: { breadcrumb: 'userAccounts' }
+    },
+    {
         path: 'entity-groups',
         loadChildren: () => import('../entity-administration/entity-groups/entity-groups.module').then((m) => m.EntityGroupsModule),
         data: { breadcrumb: 'entityGroups' }

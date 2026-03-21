@@ -45,6 +45,8 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
 
   // Entity roles map for lookup
   entityRolesMap: Map<number, string> = new Map();
+  systemEntityRolesMap: Map<string, string> = new Map();
+  loadedSystemEntityIds: Set<number> = new Set();
 
   // Confirmation dialogs state
   deleteAccountDialog: boolean = false;
@@ -84,6 +86,14 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
 
   private subscriptions: Subscription[] = [];
 
+  private isSystemScope(): boolean {
+    return String(this.entityId) === '0';
+  }
+
+  get canCreateAccount(): boolean {
+    return !this.isSystemScope();
+  }
+
   constructor(
     private entitiesService: EntitiesService,
     private messageService: MessageService,
@@ -102,7 +112,9 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
 
     if (this.entityId) {
       this.loadAccounts();
-      this.loadEntity();
+      if (!this.isSystemScope()) {
+        this.loadEntity();
+      }
     }
   }
 
@@ -110,8 +122,10 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     if (changes['entityId'] && !changes['entityId'].firstChange && this.entityId) {
       // Clear roles map when entity changes
       this.entityRolesMap.clear();
+      this.systemEntityRolesMap.clear();
+      this.loadedSystemEntityIds.clear();
       this.loadAccounts();
-      if (!this.entityName) {
+      if (!this.entityName && !this.isSystemScope()) {
         this.loadEntity();
       }
     }
@@ -147,6 +161,11 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
   /** Fetches entity roles and creates a lookup map. */
   loadEntityRoles(): void {
     if (!this.entityId) {
+      return;
+    }
+
+    if (this.isSystemScope()) {
+      this.entityRolesMap.clear();
       return;
     }
 
@@ -216,7 +235,7 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
           return;
         }
         console.log('reloadAccounts response', response);
-        this.totalRecords = response.message.Total_Count;
+        this.totalRecords = Number(response.message.Total_Count || 0);
         const accountsData = response?.message?.Accounts || {};
         this.mapAccountsData(accountsData);
       },
@@ -231,6 +250,10 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     const accounts = accountsData || {};
     const accountsArray = Array.isArray(accounts) ? accounts : Object.values(accounts);
 
+    if (this.isSystemScope()) {
+      this.loadSystemRolesForCurrentPage(accountsArray);
+    }
+
     this.entityAccounts = accountsArray.map((account: any) => {
       const accountId = String(account?.Account_ID || '');
       const userId = account?.User_ID || 0;
@@ -242,10 +265,9 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
       const lastLogin = account?.Last_Login || null;
 
       // Extract entity role ID and look up role name
+      const accountEntityId = account?.Entity_ID || 0;
       const entityRoleId = account?.Entity_Role_ID || 0;
-      const entityRoleName = entityRoleId > 0 && this.entityRolesMap.has(entityRoleId)
-        ? this.entityRolesMap.get(entityRoleId) || 'N/A'
-        : 'N/A';
+      const entityRoleName = this.resolveEntityRoleName(accountEntityId, entityRoleId);
 
       return {
         accountId,
@@ -259,7 +281,62 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
         Two_FA: twoFA,
         Last_Login: lastLogin
       };
-    }).filter((account: EntityAccount) => account.systemRoleId !== 3);
+    });
+  }
+
+  private resolveEntityRoleName(entityId: number, entityRoleId: number): string {
+    if (entityRoleId <= 0) {
+      return 'N/A';
+    }
+
+    if (this.isSystemScope()) {
+      const roleKey = `${entityId}_${entityRoleId}`;
+      return this.systemEntityRolesMap.get(roleKey) || String(entityRoleId);
+    }
+
+    return this.entityRolesMap.get(entityRoleId) || 'N/A';
+  }
+
+  private loadSystemRolesForCurrentPage(accountsArray: any[]): void {
+    const entityIds = [...new Set(
+      accountsArray
+        .map((account: any) => Number(account?.Entity_ID || 0))
+        .filter((entityId: number) => entityId > 0)
+    )];
+
+    entityIds.forEach((entityId: number) => {
+      if (this.loadedSystemEntityIds.has(entityId)) {
+        return;
+      }
+
+      this.loadedSystemEntityIds.add(entityId);
+      const sub = this.rolesService.listEntityRoles(entityId, 0, 100).subscribe({
+        next: (response: any) => {
+          if (!response?.success) {
+            return;
+          }
+
+          const rolesData = response?.message?.Entity_Roles || {};
+          Object.values(rolesData).forEach((item: any) => {
+            const roleId = Number(item?.Entity_Role_ID || 0);
+            if (roleId <= 0) {
+              return;
+            }
+
+            const roleName = this.isRegional
+              ? (item?.Title_Regional || item?.Title || '')
+              : (item?.Title || '');
+            const roleKey = `${entityId}_${roleId}`;
+            this.systemEntityRolesMap.set(roleKey, roleName || String(roleId));
+          });
+
+          // Refresh current page so role names appear after async role lookups complete.
+          this.mapAccountsData(accountsArray);
+        }
+      });
+
+      this.subscriptions.push(sub);
+    });
   }
 
   onFilterChange(): void {
@@ -277,8 +354,10 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
 
 
   onPageChange(event: any): void {
-    this.first = event.first;
-    this.rows = event.rows;
+    const nextFirst = event?.first ?? 0;
+    const nextRows = event?.rows ?? this.rows;
+    this.first = nextFirst;
+    this.rows = nextRows;
     this.reloadAccounts();
   }
 
@@ -313,6 +392,10 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
   }
 
   navigateToAddAccount(): void {
+    if (!this.canCreateAccount) {
+      return;
+    }
+
     if (!this.form) {
       this.initForm();
     } else {
@@ -330,6 +413,10 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
 
   /** Creates a new account with role and assigns it to the entity. */
   submit(): void {
+    if (!this.canCreateAccount) {
+      return;
+    }
+
     this.submitted = true;
 
     if (this.form.invalid || this.loading) {

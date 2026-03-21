@@ -31,7 +31,7 @@
                     <i class="pi pi-shield text-primary text-2xl"></i>
                     <span class="text-xl font-semibold">{{ 'entityAccounts.list.title' | translate }}</span>
                 </div>
-                <div class="flex gap-2">
+                <div class="flex gap-2" *ngIf="canCreateAccount">
                     <p-button [label]="'entityAccounts.list.createAccount' | translate" icon="pi pi-user-plus" iconPos="left" size="small"
                         severity="contrast" (onClick)="navigateToAddAccount()" [disabled]="loadingAccounts"></p-button>
                 </div>
@@ -42,7 +42,8 @@
             [totalRecords]="totalRecords" [showCurrentPageReport]="true" responsiveLayout="scroll"
             [rowsPerPageOptions]="[10, 25, 50, 100]"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-            (onPage)="onPageChange($event)">
+            [lazy]="true"
+            (onLazyLoad)="onPageChange($event)">
             <ng-template pTemplate="header">
                 <tr>
                     <th class="text-center">{{ 'entityAccounts.list.table.accountId' | translate }}</th>

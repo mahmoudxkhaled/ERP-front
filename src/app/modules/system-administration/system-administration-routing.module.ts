@@ -22,6 +22,11 @@ const routes: Routes = [
         loadChildren: () => import('./system-entities/system-entities.module').then((m) => m.SystemEntitiesModule),
         data: { breadcrumb: 'entitiesList' }
     },
+    {
+        path: 'user-accounts',
+        loadChildren: () => import('./user-accounts/user-accounts.module').then((m) => m.SystemUserAccountsModule),
+        data: { breadcrumb: 'userAccounts' }
+    },
     { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
 ];
 
