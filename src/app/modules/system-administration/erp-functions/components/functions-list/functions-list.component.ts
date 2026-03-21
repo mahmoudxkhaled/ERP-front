@@ -117,10 +117,7 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
         });
     }
 
-    onPageChange(event: any): void {
-        this.first = event.first;
-        this.rows = event.rows;
-        // Scroll to top of table when page changes
+    onPageChange(_event: any): void {
         this.scrollToTableTop();
     }
 
@@ -394,15 +391,14 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
     onSearchInput(event: Event): void {
         const target = event.target as HTMLInputElement;
         this.searchText = target?.value || '';
-        this.applySearchFilter();
-        // Reset to first page when searching
         this.first = 0;
+        this.applySearchFilter();
     }
 
     clearSearch(): void {
         this.searchText = '';
-        this.applySearchFilter();
         this.first = 0;
+        this.applySearchFilter();
     }
 
     private applySearchFilter(): void {
@@ -420,7 +416,19 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
             });
         }
         this.filteredFunctions = [...candidates].sort((a, b) => (a.defaultOrder ?? 9999) - (b.defaultOrder ?? 9999));
+        this.clampFirstToFilteredLength();
         this.loadLogosForList();
+    }
+
+    private clampFirstToFilteredLength(): void {
+        const count = this.filteredFunctions.length;
+        if (count === 0) {
+            this.first = 0;
+            return;
+        }
+        if (this.first >= count) {
+            this.first = Math.floor((count - 1) / this.rows) * this.rows;
+        }
     }
 
     isFirstRow(functionItem: Function): boolean {
