@@ -10,7 +10,8 @@
     "underDevelopment": {
         "ariaLabel": "Page under development",
         "goHome": "Go to home",
-        "logoAlt": "Logo",
+        "logoAlt": "PROMATECH logo",
+        "brandName": "PROMATECH",
         "heading": "Under Development",
         "tagline": "This page is currently being built.",
         "description": "We are working on this feature. Please check back later or use the buttons below to go back or return to the dashboard.",
@@ -2746,7 +2747,8 @@
 
     "notfound": {
         "ariaLabel": "Page not found",
-        "logoAlt": "Promatech Business Suite",
+        "logoAlt": "PROMATECH logo",
+        "brandName": "PROMATECH",
         "appName": "Promatech Business Suite",
         "oops": "Oops!",
         "codeAndMessage": "404 - PAGE NOT FOUND",

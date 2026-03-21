@@ -10,7 +10,8 @@
     "underDevelopment": {
         "ariaLabel": "الصفحة قيد التطوير",
         "goHome": "الذهاب إلى الصفحة الرئيسية",
-        "logoAlt": "الشعار",
+        "logoAlt": "شعار PROMATECH",
+        "brandName": "PROMATECH",
         "heading": "قيد التطوير",
         "tagline": "هذه الصفحة قيد الإنشاء حاليًا.",
         "description": "نحن نعمل على هذه الميزة. يرجى المراجعة لاحقًا أو استخدام الأزرار أدناه للعودة أو الانتقال إلى لوحة التحكم.",
@@ -2605,7 +2606,8 @@
     },
     "notfound": {
         "ariaLabel": "الصفحة غير موجودة",
-        "logoAlt": "Promatech Business Suite",
+        "logoAlt": "شعار PROMATECH",
+        "brandName": "PROMATECH",
         "appName": "Promatech Business Suite",
         "oops": "! عذراً",
         "codeAndMessage": "404 - الصفحة غير موجودة",
