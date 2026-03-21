@@ -1055,6 +1055,9 @@
     "auth": {
         "login": {
             "title": "تسجيل الدخول إلى ERP",
+            "logoAlt": "شعار بروماتك",
+            "brandName": "بروماتك",
+            "brandTagline": "حزمة الأعمال",
             "fields": {
                 "username": "اسم المستخدم",
                 "password": "كلمة المرور"

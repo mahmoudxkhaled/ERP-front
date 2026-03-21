@@ -1195,6 +1195,9 @@
     "auth": {
         "login": {
             "title": "Sign in to ERP",
+            "logoAlt": "Promatech logo",
+            "brandName": "Promatech",
+            "brandTagline": "Business Suite",
             "fields": {
                 "username": "Username",
                 "password": "Password"

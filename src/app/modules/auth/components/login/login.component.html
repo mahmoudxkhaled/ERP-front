@@ -8,7 +8,14 @@
                 <img src="/assets/images/quantum_logo.png" alt="logo" />
             </div>
         </div> -->
-        <h2 class="app-title">Promatech Business Suite</h2>
+        <div class="login-brand" [class.login-brand--rtl]="isRtl">
+            <img class="login-brand__logo" src="assets/media/logo/PMAT_Logo_(Small)_No_Bkgnd.png"
+                [attr.alt]="'auth.login.logoAlt' | translate" width="200" height="200" />
+            <div class="login-brand__text">
+                <span class="login-brand__name">{{ 'auth.login.brandName' | translate }}</span>
+                <span class="login-brand__tagline">{{ 'auth.login.brandTagline' | translate }}</span>
+            </div>
+        </div>
         <div *ngIf="hasError" class="backend-error-message">
 
             <span>

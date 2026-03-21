@@ -83,17 +83,52 @@
     from { opacity: 0; transform: scale(0.9); }
     to { opacity: 1; transform: scale(1); }
 }
-.login-container h2 {
-    font-size: 32px;
-    font-weight: 800;
-    text-align: center;
-    background: linear-gradient(90deg, #003366, #0077cc);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    letter-spacing: 1px;
+.login-brand {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    gap: 1rem;
+    margin-bottom: 0;
     padding-bottom: 35px;
+    text-align: start;
 }
-.app-title {
+
+.login-brand--rtl {
+    flex-direction: row-reverse;
+}
+
+.login-brand__logo {
+    flex-shrink: 0;
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+}
+
+.login-brand__text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    text-align: start;
+    line-height: 1.2;
+}
+
+.login-brand--rtl .login-brand__text {
+    align-items: flex-end;
+    text-align: end;
+}
+
+.login-brand__name,
+.login-brand__tagline {
+    display: inline-block;
+    font-size: 29px;
+    font-weight: 800;
+    text-align: start;
+    background: linear-gradient(180deg, #003366, #0077cc);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
     letter-spacing: 0.5px;
 }
 
@@ -266,6 +301,7 @@
 ::ng-deep .p-dialog-content {
     background: none !important;
 }
+
 .kikoff-container h2 {
     font-size: 28px;
     margin-bottom: 20px;
