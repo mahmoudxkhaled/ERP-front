@@ -214,9 +214,9 @@
 
                 <!-- Tab 2: Accounts -->
                 <p-tabPanel [header]="'entities.details.tabs.accounts' | translate">
-                    <app-entity-account-list [entityId]="entityId" [requestedSystemRole]="requestedSystemRole"
+                    <app-shared-account-list [entityId]="entityId" [requestedSystemRole]="requestedSystemRole"
                         (accountCreated)="handleEntityUpdated()"
-                        (accountUpdated)="handleEntityUpdated()"></app-entity-account-list>
+                        (accountUpdated)="handleEntityUpdated()"></app-shared-account-list>
                 </p-tabPanel>
 
                 <!-- Tab 3: Admins -->
