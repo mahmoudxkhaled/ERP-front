@@ -47,6 +47,11 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
   systemEntityRolesMap: Map<string, string> = new Map();
   loadedSystemEntityIds: Set<number> = new Set();
 
+  /** Entity_ID -> display name for table column (filled via getEntityDetails). */
+  accountEntityNamesMap: Map<number, string> = new Map();
+  loadedAccountEntityNameIds: Set<number> = new Set();
+  private lastAccountsSourceForMap: any[] = [];
+
   // Confirmation dialogs state
   deleteAccountDialog: boolean = false;
   accountToDelete?: EntityAccount;
@@ -157,6 +162,8 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
       this.entityRolesMap.clear();
       this.systemEntityRolesMap.clear();
       this.loadedSystemEntityIds.clear();
+      this.accountEntityNamesMap.clear();
+      this.loadedAccountEntityNameIds.clear();
       this.loadAccounts();
       if (!this.entityName && !this.isSystemScope()) {
         this.loadEntity();
@@ -187,6 +194,10 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
         this.entityName = this.isRegional
           ? (entity?.Name_Regional || entity?.Name || '')
           : (entity?.Name || '');
+        const ctxId = parseInt(this.entityId, 10);
+        if (!isNaN(ctxId) && ctxId > 0 && this.entityName) {
+          this.accountEntityNamesMap.set(ctxId, this.entityName);
+        }
       },
 
       complete: () => this.loadingEntity = false
@@ -266,12 +277,10 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
       this.textFilter
     ).subscribe({
       next: (response: any) => {
-        console.log('reloadAccounts response', response);
         if (!response?.success) {
           this.handleBusinessError('accounts', response);
           return;
         }
-        console.log('reloadAccounts response', response);
         this.totalRecords = Number(response.message.Total_Count || 0);
         const accountsData = response?.message?.Accounts || {};
         this.mapAccountsData(accountsData);
@@ -286,10 +295,12 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
   private mapAccountsData(accountsData: any): void {
     const accounts = accountsData || {};
     const accountsArray = Array.isArray(accounts) ? accounts : Object.values(accounts);
+    this.lastAccountsSourceForMap = accountsArray;
 
     if (this.isSystemScope()) {
       this.loadSystemRolesForCurrentPage(accountsArray);
     }
+    this.loadAccountEntityNamesForCurrentPage(accountsArray);
 
     this.entityAccounts = accountsArray.map((account: any) => {
       const accountId = String(account?.Account_ID || '');
@@ -305,6 +316,7 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
       const accountEntityId = account?.Entity_ID || 0;
       const entityRoleId = account?.Entity_Role_ID || 0;
       const entityRoleName = this.resolveEntityRoleName(accountEntityId, entityRoleId);
+      const entityNameLabel = this.resolveAccountEntityNameLabel(accountEntityId);
 
       return {
         accountId,
@@ -312,12 +324,60 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
         email,
         systemRoleId,
         roleName,
+        accountEntityId,
+        entityNameLabel,
         entityRoleId,
         entityRoleName,
         accountState,
         Two_FA: twoFA,
         Last_Login: lastLogin
       };
+    });
+  }
+
+  private resolveAccountEntityNameLabel(accountEntityId: number): string | null | undefined {
+    if (accountEntityId <= 0) {
+      return null;
+    }
+    if (this.accountEntityNamesMap.has(accountEntityId)) {
+      const name = this.accountEntityNamesMap.get(accountEntityId) || '';
+      return name || null;
+    }
+    return undefined;
+  }
+
+  private loadAccountEntityNamesForCurrentPage(accountsArray: any[]): void {
+    const entityIds = [...new Set(
+      accountsArray
+        .map((account: any) => Number(account?.Entity_ID || 0))
+        .filter((id: number) => id > 0)
+    )];
+
+    entityIds.forEach((id: number) => {
+      if (this.loadedAccountEntityNameIds.has(id)) {
+        return;
+      }
+      this.loadedAccountEntityNameIds.add(id);
+      const sub = this.entitiesService.getEntityDetails(String(id)).subscribe({
+        next: (response: any) => {
+          if (!response?.success) {
+            this.accountEntityNamesMap.set(id, '');
+            this.mapAccountsData(this.lastAccountsSourceForMap);
+            return;
+          }
+          const entity = response?.message || {};
+          const name = this.isRegional
+            ? (entity?.Name_Regional || entity?.Name || '')
+            : (entity?.Name || '');
+          this.accountEntityNamesMap.set(id, name || '');
+          this.mapAccountsData(this.lastAccountsSourceForMap);
+        },
+        error: () => {
+          this.accountEntityNamesMap.set(id, '');
+          this.mapAccountsData(this.lastAccountsSourceForMap);
+        }
+      });
+      this.subscriptions.push(sub);
     });
   }
 

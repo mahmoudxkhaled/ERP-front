@@ -49,6 +49,7 @@
                     <th class="text-center">{{ 'entityAccounts.list.table.accountId' | translate }}</th>
                     <th class="text-center">{{ 'entityAccounts.list.table.userId' | translate }}</th>
                     <th>{{ 'entityAccounts.list.table.email' | translate }}</th>
+                    <th>{{ 'entityAccounts.list.table.entity' | translate }}</th>
                     <th class="text-center">{{ 'entityAccounts.list.table.role' | translate }}</th>
                     <th class="text-center">{{ 'entityAccounts.list.table.entityRole' | translate }}</th>
                     <th class="text-center">{{ 'entityAccounts.list.table.accountState' | translate }}</th>
@@ -80,6 +81,25 @@
                         </ng-container>
                         <ng-template #normalEmail>
                             <span class="text-600">{{ account.email }}</span>
+                        </ng-template>
+                    </td>
+                    <td>
+                        <ng-container *ngIf="loadingAccounts; else normalEntityName">
+                            <p-skeleton height="1.5rem" width="10rem"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalEntityName>
+                            <ng-container *ngIf="!account.accountEntityId || account.accountEntityId <= 0">
+                                <span class="text-600">{{ 'entityAccounts.list.na' | translate }}</span>
+                            </ng-container>
+                            <ng-container *ngIf="account.accountEntityId > 0 && account.entityNameLabel === undefined">
+                                <p-skeleton height="1.5rem" width="10rem"></p-skeleton>
+                            </ng-container>
+                            <ng-container *ngIf="account.accountEntityId > 0 && account.entityNameLabel !== undefined && account.entityNameLabel !== null">
+                                <span class="text-600">{{ account.entityNameLabel }}</span>
+                            </ng-container>
+                            <ng-container *ngIf="account.accountEntityId > 0 && account.entityNameLabel === null">
+                                <span class="text-600">{{ 'entityAccounts.list.na' | translate }}</span>
+                            </ng-container>
                         </ng-template>
                     </td>
                     <td class="text-center">
@@ -134,7 +154,7 @@
             </ng-template>
             <ng-template pTemplate="emptymessage">
                 <tr>
-                    <td colspan="8" class="text-center">{{ 'entityAccounts.list.noAccounts' | translate }}</td>
+                    <td colspan="9" class="text-center">{{ 'entityAccounts.list.noAccounts' | translate }}</td>
                 </tr>
             </ng-template>
         </p-table>

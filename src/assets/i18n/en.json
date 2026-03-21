@@ -1792,6 +1792,7 @@
                 "accountId": "Account ID",
                 "userId": "User ID",
                 "email": "Email",
+                "entity": "Entity",
                 "role": "Role",
                 "entityRole": "Entity Role",
                 "accountState": "Account State",

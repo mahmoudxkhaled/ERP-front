@@ -198,6 +198,7 @@ export class EntityGroupMembersComponent implements OnInit, OnDestroy {
                         email: account?.Email || '',
                         systemRoleId: account?.System_Role_ID || 0,
                         roleName: '',
+                        accountEntityId: account?.Entity_ID || 0,
                         entityRoleId: account?.Entity_Role_ID || 0,
                         entityRoleName: '',
                         accountState: account?.Account_State || 0,

@@ -238,6 +238,7 @@ export class EntityAccountAdminListComponent implements OnInit, OnDestroy, OnCha
                 email,
                 systemRoleId,
                 roleName,
+                accountEntityId: account?.Entity_ID || 0,
                 entityRoleId,
                 entityRoleName,
                 accountState,

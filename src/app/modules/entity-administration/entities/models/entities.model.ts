@@ -47,6 +47,9 @@ export interface EntityAccount {
     email: string;
     systemRoleId: number;
     roleName: string;
+    accountEntityId: number;
+    /** Resolved display name; undefined while loading, null means show N/A */
+    entityNameLabel?: string | null;
     entityRoleId: number;
     entityRoleName: string;
     accountState: number; // 1 = Active, 0 = Inactive
