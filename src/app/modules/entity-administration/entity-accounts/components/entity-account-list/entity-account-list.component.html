@@ -207,6 +207,34 @@
                     {{ lastNameError }}
                 </small>
             </div>
+
+            <ng-container *ngIf="isSystemCreateFlow">
+                <div class="field p-fluid">
+                    <label for="entitySelector">{{ 'entityAccounts.list.addAccountDialog.entity' | translate }} <span class="text-red-500">*</span></label>
+                    <div class="flex gap-2 cursor-pointer" (click)="openCreateEntityDialog()">
+                        <input id="entitySelector" pInputText type="text" [value]="getCreateEntityDisplayText()" readonly
+                            [placeholder]="'entityAccounts.list.addAccountDialog.selectEntity' | translate" class="w-full"
+                            style="cursor: pointer;" />
+                        <p-button icon="pi pi-search" [disabled]="loading" styleClass="cursor-pointer"></p-button>
+                    </div>
+                    <small class="p-error" *ngIf="submitted && f['entityId'].invalid">
+                        {{ 'entityAccounts.list.addAccountDialog.entityRequired' | translate }}
+                    </small>
+                </div>
+            </ng-container>
+
+            <div class="field p-fluid">
+                <label for="entityRoleSelector">{{ 'entityAccounts.list.addAccountDialog.entityRole' | translate }} <span class="text-red-500">*</span></label>
+                <div class="flex gap-2 cursor-pointer" (click)="!loading && !!f['entityId'].value && openCreateRoleDialog()">
+                    <input id="entityRoleSelector" pInputText type="text" [value]="getCreateRoleDisplayText()" readonly
+                        [placeholder]="'entityAccounts.list.addAccountDialog.selectEntityRole' | translate" class="w-full"
+                        style="cursor: pointer;" />
+                    <p-button icon="pi pi-search" [disabled]="loading || !f['entityId'].value" styleClass="cursor-pointer"></p-button>
+                </div>
+                <small class="p-error" *ngIf="submitted && f['entityRoleId'].invalid">
+                    {{ 'entityAccounts.list.addAccountDialog.entityRoleRequired' | translate }}
+                </small>
+            </div>
         </div>
 
         <!-- Action Buttons -->
@@ -218,6 +246,118 @@
             </p-button>
         </div>
     </form>
+</p-dialog>
+
+<p-dialog [(visible)]="entityDialogVisible" [modal]="true" [style]="{ width: '800px' }" [closable]="true"
+    [draggable]="false" [resizable]="false" (onHide)="closeCreateEntityDialog()">
+    <ng-template pTemplate="header">
+        <h3>{{ 'entityAccounts.list.addAccountDialog.selectEntity' | translate }}</h3>
+    </ng-template>
+
+    <div class="flex flex-column gap-3">
+        <span class="p-input-icon-left w-full">
+            <i class="pi pi-search"></i>
+            <input pInputText type="text" [placeholder]="'entityAccounts.list.searchPlaceholder' | translate" class="w-full"
+                [value]="entityTableTextFilter" (input)="onEntityTableSearchInput($event)" />
+        </span>
+
+        <div style="position: relative; min-height: 400px;">
+            <p-table [value]="entityTableValue" [paginator]="true" [first]="entityTableFirst"
+                [rows]="entityTableRows" [rowsPerPageOptions]="[10, 25, 50, 100]"
+                [totalRecords]="entityTableTotalRecords" [showCurrentPageReport]="true" [lazy]="true"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                (onLazyLoad)="onEntityTablePageChange($event)" styleClass="p-datatable-sm">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: 150px;">{{ 'entityRoles.form.entityDialog.code' | translate }}</th>
+                        <th>{{ 'entityRoles.form.entityDialog.name' | translate }}</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-entity>
+                    <tr [class.selected-row]="isCreateEntitySelected(entity)" (click)="selectCreateEntity(entity)" style="cursor: pointer;">
+                        <td>
+                            <ng-container *ngIf="loadingEntitiesTable; else entityCodeContent">
+                                <p-skeleton height="1.25rem" width="5rem"></p-skeleton>
+                            </ng-container>
+                            <ng-template #entityCodeContent>
+                                <span class="font-semibold">{{ entity.code }}</span>
+                            </ng-template>
+                        </td>
+                        <td>
+                            <ng-container *ngIf="loadingEntitiesTable; else entityNameContent">
+                                <p-skeleton height="1.25rem" width="12rem"></p-skeleton>
+                            </ng-container>
+                            <ng-template #entityNameContent>
+                                <span class="font-semibold">{{ entity.name }}</span>
+                            </ng-template>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="2" class="text-center p-4">{{ 'entityRoles.form.entityDialog.noEntities' | translate }}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <p-button [label]="'common.cancel' | translate" icon="pi pi-times" class="p-button-text" (onClick)="closeCreateEntityDialog()"></p-button>
+        <p-button [label]="'common.select' | translate" icon="pi pi-check" (onClick)="closeCreateEntityDialog()" [disabled]="!selectedCreateEntity"></p-button>
+    </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="roleDialogVisible" [modal]="true" [style]="{ width: '700px' }" [closable]="true"
+    [draggable]="false" [resizable]="false" (onHide)="closeCreateRoleDialog()">
+    <ng-template pTemplate="header">
+        <h3>{{ 'entityAccounts.list.addAccountDialog.selectEntityRole' | translate }}</h3>
+    </ng-template>
+
+    <div style="position: relative; min-height: 350px;">
+        <p-table [value]="roleTableValue" [paginator]="true" [first]="roleTableFirst"
+            [rows]="roleTableRows" [rowsPerPageOptions]="[10, 25, 50, 100]"
+            [totalRecords]="roleTableTotalRecords" [showCurrentPageReport]="true" [lazy]="true"
+            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+            (onLazyLoad)="onRoleTablePageChange($event)" styleClass="p-datatable-sm">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th style="width: 150px;">ID</th>
+                    <th>{{ 'entityAccounts.list.addAccountDialog.entityRole' | translate }}</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-role>
+                <tr [class.selected-row]="isCreateRoleSelected(role)" (click)="selectCreateRole(role)" style="cursor: pointer;">
+                    <td>
+                        <ng-container *ngIf="loadingRolesTable; else roleIdContent">
+                            <p-skeleton height="1.25rem" width="4rem"></p-skeleton>
+                        </ng-container>
+                        <ng-template #roleIdContent>
+                            <span class="font-semibold">{{ role.id }}</span>
+                        </ng-template>
+                    </td>
+                    <td>
+                        <ng-container *ngIf="loadingRolesTable; else roleTitleContent">
+                            <p-skeleton height="1.25rem" width="12rem"></p-skeleton>
+                        </ng-container>
+                        <ng-template #roleTitleContent>
+                            <span class="font-semibold">{{ role.title }}</span>
+                        </ng-template>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="2" class="text-center p-4">{{ 'entityAccounts.list.noAccounts' | translate }}</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <p-button [label]="'common.cancel' | translate" icon="pi pi-times" class="p-button-text" (onClick)="closeCreateRoleDialog()"></p-button>
+        <p-button [label]="'common.select' | translate" icon="pi pi-check" (onClick)="closeCreateRoleDialog()" [disabled]="!selectedCreateRole"></p-button>
+    </ng-template>
 </p-dialog>
 
 <!-- Activate Account Confirmation Dialog -->

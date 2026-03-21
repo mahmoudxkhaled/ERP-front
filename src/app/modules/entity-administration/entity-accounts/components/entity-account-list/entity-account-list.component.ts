@@ -1,13 +1,13 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
-import { Subscription, throwError } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { textFieldValidator, getTextFieldError, nameFieldValidator, getNameFieldError } from 'src/app/core/validators/text-field.validator';
 import { EntityAccount } from '../../../entities/models/entities.model';
+import { Entity } from '../../../entities/models/entities.model';
 import { EntitiesService } from '../../../entities/services/entities.service';
 import { RolesService } from '../../../roles/services/roles.service';
 
@@ -74,6 +74,35 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
   submitted: boolean = false;
   loadingEntity: boolean = false;
   entityName: string = '';
+  entityDialogVisible: boolean = false;
+  roleDialogVisible: boolean = false;
+  loadingEntitiesTable: boolean = false;
+  loadingRolesTable: boolean = false;
+  entitiesForSelection: Entity[] = [];
+  rolesForSelection: { id: number; title: string }[] = [];
+  selectedCreateEntity?: Entity;
+  selectedCreateRole?: { id: number; title: string };
+  entityTableFirst: number = 0;
+  entityTableRows: number = 10;
+  entityTableTotalRecords: number = 0;
+  entityTableTextFilter: string = '';
+  roleTableFirst: number = 0;
+  roleTableRows: number = 10;
+  roleTableTotalRecords: number = 0;
+
+  get entityTableValue(): Entity[] {
+    if (this.loadingEntitiesTable && this.entitiesForSelection.length === 0) {
+      return Array(10).fill(null).map(() => ({} as Entity));
+    }
+    return this.entitiesForSelection;
+  }
+
+  get roleTableValue(): { id: number; title: string }[] {
+    if (this.loadingRolesTable && this.rolesForSelection.length === 0) {
+      return Array(10).fill(null).map(() => ({ id: 0, title: '' }));
+    }
+    return this.rolesForSelection;
+  }
 
   // Account management dialogs
   viewAccountDetailsDialog: boolean = false;
@@ -91,7 +120,11 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
   }
 
   get canCreateAccount(): boolean {
-    return !this.isSystemScope();
+    return true;
+  }
+
+  get isSystemCreateFlow(): boolean {
+    return this.isSystemScope();
   }
 
   constructor(
@@ -108,6 +141,7 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
 
   ngOnInit(): void {
     this.initForm();
+    this.applyCreateFormValidators();
     this.initAccountManagementForms();
 
     if (this.entityId) {
@@ -128,6 +162,10 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
       if (!this.entityName && !this.isSystemScope()) {
         this.loadEntity();
       }
+    }
+
+    if (changes['entityId']) {
+      this.applyCreateFormValidators();
     }
   }
 
@@ -366,8 +404,29 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       firstName: ['', [Validators.required, nameFieldValidator()]],
-      lastName: ['', [Validators.required, nameFieldValidator()]]
+      lastName: ['', [Validators.required, nameFieldValidator()]],
+      entityId: [null],
+      entityRoleId: [null]
     });
+  }
+
+  private applyCreateFormValidators(): void {
+    if (!this.form) {
+      return;
+    }
+
+    const entityIdControl = this.form.get('entityId');
+    const entityRoleIdControl = this.form.get('entityRoleId');
+
+    if (this.isSystemScope()) {
+      entityIdControl?.setValidators([Validators.required]);
+    } else {
+      entityIdControl?.clearValidators();
+    }
+    entityRoleIdControl?.setValidators([Validators.required]);
+
+    entityIdControl?.updateValueAndValidity({ emitEvent: false });
+    entityRoleIdControl?.updateValueAndValidity({ emitEvent: false });
   }
 
   initAccountManagementForms(): void {
@@ -402,6 +461,14 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
       this.form.reset();
       this.submitted = false;
     }
+
+    if (!this.isSystemScope()) {
+      const currentEntityId = Number(this.entityId || 0);
+      this.form.patchValue({
+        entityId: currentEntityId > 0 ? currentEntityId : null
+      });
+    }
+
     this.addAccountDialog = true;
   }
 
@@ -409,6 +476,13 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     this.addAccountDialog = false;
     this.form.reset();
     this.submitted = false;
+    this.selectedCreateEntity = undefined;
+    this.selectedCreateRole = undefined;
+    this.entitiesForSelection = [];
+    this.rolesForSelection = [];
+    this.entityDialogVisible = false;
+    this.roleDialogVisible = false;
+    this.roleTableFirst = 0;
   }
 
   /** Creates a new account with role and assigns it to the entity. */
@@ -433,9 +507,10 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     const email = this.form.value.email;
     const firstName = this.form.value.firstName;
     const lastName = this.form.value.lastName;
-    const entityIdNum = parseInt(this.entityId, 10);
 
-    if (isNaN(entityIdNum)) {
+    const selectedEntityId = Number(this.form.value.entityId || 0);
+    const selectedEntityRoleId = Number(this.form.value.entityRoleId || 0);
+    if (selectedEntityId <= 0) {
       this.messageService.add({
         severity: 'error',
         summary: 'Error',
@@ -445,31 +520,9 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     }
 
     this.loading = true;
-
-    // Generate random suffix to ensure unique role title
-    const generateRandomString = (length: number): string => {
-      const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-      let result = '';
-      for (let i = 0; i < length; i++) {
-        result += letters.charAt(Math.floor(Math.random() * letters.length));
-      }
-      return result;
-    };
-    const uniqueSuffix = generateRandomString(8);
-    const roleTitle = `${this.entityName} System User ${uniqueSuffix}`;
-    const roleDescription = `Default System User role for ${this.entityName}`;
-
-    const sub = this.entitiesService.createEntityRole(entityIdNum, roleTitle, roleDescription).pipe(
-      switchMap((roleResponse: any) => {
-        if (!roleResponse?.success) {
-          this.handleCreateEntityRoleError(roleResponse);
-          return throwError(() => roleResponse);
-        }
-
-        const entityRoleId = roleResponse.message.Entity_Role_ID;
-        return this.entitiesService.createAccount(email, firstName, lastName, entityIdNum, entityRoleId);
-      })
-    ).subscribe({
+    const sub = this.entitiesService
+      .createAccount(email, firstName, lastName, selectedEntityId, selectedEntityRoleId)
+      .subscribe({
       next: (accountResponse: any) => {
         if (!accountResponse?.success) {
           this.handleCreateAccountError(accountResponse);
@@ -489,6 +542,8 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
         this.submitted = false;
         this.loading = false;
         this.addAccountDialog = false;
+        this.selectedCreateEntity = undefined;
+        this.selectedCreateRole = undefined;
         this.accountCreated.emit(accountId);
         this.accountUpdated.emit();
         this.reloadAccounts();
@@ -497,6 +552,171 @@ export class EntityAccountListComponent implements OnInit, OnDestroy, OnChanges 
     });
 
     this.subscriptions.push(sub);
+  }
+
+  openCreateEntityDialog(): void {
+    this.entityDialogVisible = true;
+    this.entityTableTextFilter = '';
+    this.entityTableFirst = 0;
+    this.loadEntitiesForSelection(true);
+  }
+
+  closeCreateEntityDialog(): void {
+    this.entityDialogVisible = false;
+  }
+
+  loadEntitiesForSelection(forceReload: boolean = false): void {
+    if (this.entitiesService.isLoadingSubject.value && !forceReload) {
+      return;
+    }
+
+    this.loadingEntitiesTable = true;
+    const currentPage = Math.floor(this.entityTableFirst / this.entityTableRows) + 1;
+    const lastEntityId = -currentPage;
+
+    const sub = this.entitiesService.listEntities(
+      lastEntityId,
+      this.entityTableRows,
+      this.entityTableTextFilter,
+      this.requestedSystemRole
+    ).subscribe({
+      next: (response: any) => {
+        if (!response?.success) {
+          this.loadingEntitiesTable = false;
+          return;
+        }
+
+        this.entityTableTotalRecords = Number(response.message.Total_Count || 0);
+        const entitiesData = response.message.Entities_List || response.message.Entities || {};
+
+        this.entitiesForSelection = Object.values(entitiesData).map((item: any) => ({
+          id: String(item?.Entity_ID || ''),
+          code: item?.Code || '',
+          name: this.isRegional ? (item?.Name_Regional || item?.Name || '') : (item?.Name || ''),
+          description: this.isRegional ? (item?.Description_Regional || item?.Description || '') : (item?.Description || ''),
+          parentEntityId: item?.Parent_Entity_ID ? String(item?.Parent_Entity_ID) : '',
+          active: Boolean(item?.Is_Active),
+          isPersonal: Boolean(item?.Is_Personal)
+        }));
+        this.loadingEntitiesTable = false;
+      },
+      error: () => this.loadingEntitiesTable = false
+    });
+
+    this.subscriptions.push(sub);
+  }
+
+  onEntityTablePageChange(event: any): void {
+    this.entityTableFirst = event?.first ?? 0;
+    this.entityTableRows = event?.rows ?? this.entityTableRows;
+    this.loadEntitiesForSelection(true);
+  }
+
+  onEntityTableSearchInput(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.entityTableTextFilter = target?.value || '';
+    this.entityTableFirst = 0;
+    this.loadEntitiesForSelection(true);
+  }
+
+  selectCreateEntity(entity: Entity): void {
+    this.selectedCreateEntity = entity;
+    this.selectedCreateRole = undefined;
+    this.form.patchValue({
+      entityId: Number(entity.id),
+      entityRoleId: null
+    });
+  }
+
+  isCreateEntitySelected(entity: Entity): boolean {
+    return this.selectedCreateEntity?.id === entity.id;
+  }
+
+  getCreateEntityDisplayText(): string {
+    if (!this.selectedCreateEntity) {
+      return this.isRegional ? 'اختر الجهة' : 'Select entity';
+    }
+    return `${this.selectedCreateEntity.name} (${this.selectedCreateEntity.code})`;
+  }
+
+  openCreateRoleDialog(): void {
+    const selectedEntityId = Number(this.form.get('entityId')?.value || 0);
+    if (selectedEntityId <= 0) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Validation',
+        detail: this.isRegional ? 'يرجى اختيار الجهة أولاً.' : 'Please select an entity first.'
+      });
+      return;
+    }
+
+    this.roleDialogVisible = true;
+    this.roleTableFirst = 0;
+    this.loadRolesForSelection(true);
+  }
+
+  closeCreateRoleDialog(): void {
+    this.roleDialogVisible = false;
+  }
+
+  loadRolesForSelection(forceReload: boolean = false): void {
+    const selectedEntityId = Number(this.form.get('entityId')?.value || 0);
+    if (selectedEntityId <= 0) {
+      return;
+    }
+
+    if (this.rolesService.isLoadingSubject.value && !forceReload) {
+      return;
+    }
+
+    this.loadingRolesTable = true;
+    const currentPage = Math.floor(this.roleTableFirst / this.roleTableRows) + 1;
+    const lastRoleId = -currentPage;
+
+    const sub = this.rolesService.listEntityRoles(selectedEntityId, lastRoleId, this.roleTableRows).subscribe({
+      next: (response: any) => {
+        if (!response?.success) {
+          this.loadingRolesTable = false;
+          return;
+        }
+
+        this.roleTableTotalRecords = Number(response?.message?.Total_Count || 0);
+        const rolesData = response?.message?.Entity_Roles || {};
+        this.rolesForSelection = Object.values(rolesData)
+          .map((item: any) => ({
+            id: Number(item?.Entity_Role_ID || 0),
+            title: this.isRegional ? (item?.Title_Regional || item?.Title || '') : (item?.Title || '')
+          }))
+          .filter((item: { id: number; title: string }) => item.id > 0);
+
+        this.loadingRolesTable = false;
+      },
+      error: () => this.loadingRolesTable = false
+    });
+
+    this.subscriptions.push(sub);
+  }
+
+  onRoleTablePageChange(event: any): void {
+    this.roleTableFirst = event?.first ?? 0;
+    this.roleTableRows = event?.rows ?? this.roleTableRows;
+    this.loadRolesForSelection(true);
+  }
+
+  selectCreateRole(role: { id: number; title: string }): void {
+    this.selectedCreateRole = role;
+    this.form.patchValue({ entityRoleId: role.id });
+  }
+
+  isCreateRoleSelected(role: { id: number; title: string }): boolean {
+    return this.selectedCreateRole?.id === role.id;
+  }
+
+  getCreateRoleDisplayText(): string {
+    if (!this.selectedCreateRole) {
+      return this.isRegional ? 'اختر دور الجهة' : 'Select entity role';
+    }
+    return this.selectedCreateRole.title;
   }
 
   confirmActivateAccount(account: EntityAccount): void {
