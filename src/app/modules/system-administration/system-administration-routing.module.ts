@@ -32,6 +32,11 @@ const routes: Routes = [
         loadChildren: () => import('./system-dashboard/system-dashboard.module').then((m) => m.SystemDashboardModule),
         data: { breadcrumb: 'systemAdminDashboard' }
     },
+    {
+        path: 'dashboard-v2',
+        loadChildren: () => import('./system-dashboard-v2/system-dashboard-v2.module').then((m) => m.SystemDashboardV2Module),
+        data: { breadcrumb: 'systemAdminDashboardV2' }
+    },
     { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
 ];
 

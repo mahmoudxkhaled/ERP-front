@@ -1,6 +1,6 @@
 # System Administration Dashboard
 
-This document describes the **System Administration** analytics dashboard in the ERP frontend: what it does, how it is wired, and what remains to connect to real APIs.
+This document describes the **default** System Administration dashboard (`system-dashboard` module). For the **observability-rich** UI (logs, traces, health, alerts, percentiles, etc.), use the **v2** module: route `/system-administration/dashboard-v2` — see [`system-administration-dashboard-v2.md`](./system-administration-dashboard-v2.md).
 
 ## Purpose
 

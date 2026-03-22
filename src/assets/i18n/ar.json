@@ -979,6 +979,7 @@
             "erpFunctions": "وظائف ERP",
             "erpModules": "وحدات ERP",
             "systemAdminDashboard": "لوحة إدارة النظام",
+            "systemAdminDashboardV2": "لوحة إدارة النظام (المراقبة)",
             "modulesList": "قائمة الوحدات",
             "newModule": "وحدة جديدة",
             "moduleDetails": "تفاصيل الوحدة",
@@ -2332,16 +2333,94 @@
     "systemAdministration": {
         "dashboard": {
             "title": "لوحة إدارة النظام",
+            "titleV2": "لوحة إدارة النظام (الإصدار 2)",
             "lastUpdated": "آخر تحديث",
             "filters": {
                 "dateRange": "الفترة الزمنية",
                 "dateRangePlaceholder": "اختر الفترة الزمنية",
-                "apply": "تطبيق المرشحات"
+                "apply": "تطبيق المرشحات",
+                "environment": "البيئة",
+                "environmentProd": "إنتاج",
+                "environmentStaging": "اختبار مرحلي",
+                "environmentDev": "تطوير"
+            },
+            "autoRefresh": {
+                "label": "تحديث تلقائي",
+                "off": "إيقاف",
+                "seconds10": "10 ثوانٍ",
+                "seconds30": "30 ثانية",
+                "seconds60": "60 ثانية"
             },
             "tabs": {
                 "general": "إحصائيات عامة",
                 "apiOverview": "نظرة عامة على واجهات API",
-                "requestAnalysis": "تحليل الطلبات"
+                "requestAnalysis": "تحليل الطلبات",
+                "logs": "السجلات",
+                "traces": "التتبع"
+            },
+            "health": {
+                "title": "صحة النظام",
+                "database": "قاعدة البيانات",
+                "cache": "التخزين المؤقت",
+                "queue": "قائمة الرسائل",
+                "externalApi": "واجهات خارجية",
+                "statusHealthy": "سليم",
+                "statusDegraded": "متدهور",
+                "statusDown": "متوقف",
+                "lastChecked": "آخر فحص"
+            },
+            "alerts": {
+                "title": "تنبيهات نشطة",
+                "severityCritical": "حرج",
+                "severityWarning": "تحذير",
+                "severityInfo": "معلومات",
+                "mock": {
+                    "highLatency": "ارتفاع زمن استجابة API",
+                    "highLatencyDetail": "تجاوز زمن P95 عتبة التحذير لمسار /api/documents/upload.",
+                    "deploy": "اكتمال النشر",
+                    "deployDetail": "تم طرح الإصدار 2.4.1 بنجاح على مجموعة API.",
+                    "errorSpike": "ارتفاع معدل الأخطاء",
+                    "errorSpikeDetail": "زادت استجابات 5xx خلال آخر 15 دقيقة."
+                }
+            },
+            "rankings": {
+                "slowest": "أبطأ نقاط النهاية",
+                "busiest": "الأكثر استدعاءً",
+                "mostErrors": "الأكثر أخطاءً"
+            },
+            "logs": {
+                "query": "نص البحث",
+                "queryPlaceholder": "ابحث في الرسالة أو الخدمة",
+                "traceId": "معرّف التتبع",
+                "traceIdPlaceholder": "تصفية بمعرّف التتبع",
+                "level": "مستوى السجل",
+                "levelAll": "كل المستويات",
+                "levelError": "خطأ",
+                "levelWarn": "تحذير",
+                "levelInfo": "معلومات",
+                "levelDebug": "تصحيح",
+                "search": "بحث في السجلات",
+                "empty": "لا توجد سجلات مطابقة للمرشحات.",
+                "colTime": "الوقت",
+                "colLevel": "المستوى",
+                "colService": "الخدمة",
+                "colMessage": "الرسالة",
+                "colTrace": "التتبع",
+                "openTrace": "فتح التتبع"
+            },
+            "traces": {
+                "traceIdLabel": "معرّف التتبع",
+                "traceIdPlaceholder": "أدخل معرّف التتبع (مثلاً من العينات أو السجلات)",
+                "loadTrace": "تحميل التتبع",
+                "operation": "العملية",
+                "service": "الخدمة",
+                "duration": "المدة",
+                "startOffset": "إزاحة البداية",
+                "status": "الحالة",
+                "statusOk": "موافق",
+                "statusError": "خطأ",
+                "empty": "لا توجد أجزاء (spans) لهذا التتبع.",
+                "hint": "أدخل معرّف تتبع واضغط تحميل لعرض مسار الطلب (بيانات تجريبية)."
             },
             "stats": {
                 "totalUsers": "إجمالي المستخدمين",
@@ -2354,6 +2433,10 @@
                 "totalCalls": "إجمالي استدعاءات API",
                 "peakHour": "ساعة الذروة",
                 "avgResponse": "متوسط زمن الاستجابة",
+                "latencyP50": "زمن P50",
+                "latencyP95": "زمن P95",
+                "latencyP99": "زمن P99",
+                "rps": "طلبات في الثانية (متوسط)",
                 "errorRate": "معدل الخطأ"
             },
             "apiTable": {
@@ -2361,6 +2444,8 @@
                 "endpoint": "Endpoint",
                 "totalCalls": "عدد الاستدعاءات",
                 "avgResponse": "متوسط زمن الاستجابة",
+                "p95": "P95 (ملي ث)",
+                "p99": "P99 (ملي ث)",
                 "errors": "الأخطاء",
                 "successRate": "نسبة النجاح",
                 "lastCalled": "آخر استدعاء"
@@ -2372,6 +2457,10 @@
             "requestMetrics": {
                 "totalCalls": "إجمالي الاستدعاءات",
                 "avgLatency": "متوسط زمن الاستجابة",
+                "latencyP50": "زمن P50",
+                "latencyP95": "زمن P95",
+                "latencyP99": "زمن P99",
+                "rps": "طلبات في الثانية",
                 "maxLatency": "أقصى زمن استجابة",
                 "minLatency": "أدنى زمن استجابة",
                 "errorRate": "معدل الخطأ"
@@ -2395,6 +2484,10 @@
                 "responseTime": "زمن الاستجابة",
                 "status": "الحالة",
                 "statusCode": "رمز HTTP",
+                "traceId": "معرّف التتبع",
+                "actions": "إجراءات",
+                "openLogs": "السجلات",
+                "openTrace": "التتبع",
                 "statusSuccess": "نجاح",
                 "statusError": "خطأ"
             },

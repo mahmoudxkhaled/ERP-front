@@ -978,6 +978,7 @@
             "erpFunctions": "ERP Functions",
             "erpModules": "ERP Modules",
             "systemAdminDashboard": "System Administration Dashboard",
+            "systemAdminDashboardV2": "System Administration Dashboard (Observability)",
             "modulesList": "Modules List",
             "newModule": "New Module",
             "moduleDetails": "Module Details",
@@ -2472,16 +2473,94 @@
     "systemAdministration": {
         "dashboard": {
             "title": "System Administration Dashboard",
+            "titleV2": "System Administration Dashboard (V2)",
             "lastUpdated": "Last updated",
             "filters": {
                 "dateRange": "Date range",
                 "dateRangePlaceholder": "Select date range",
-                "apply": "Apply filters"
+                "apply": "Apply filters",
+                "environment": "Environment",
+                "environmentProd": "Production",
+                "environmentStaging": "Staging",
+                "environmentDev": "Development"
+            },
+            "autoRefresh": {
+                "label": "Auto refresh",
+                "off": "Off",
+                "seconds10": "10 seconds",
+                "seconds30": "30 seconds",
+                "seconds60": "60 seconds"
             },
             "tabs": {
                 "general": "General statistics",
                 "apiOverview": "API overview",
-                "requestAnalysis": "Request analysis"
+                "requestAnalysis": "Request analysis",
+                "logs": "Logs",
+                "traces": "Traces"
+            },
+            "health": {
+                "title": "System health",
+                "database": "Database",
+                "cache": "Cache",
+                "queue": "Message queue",
+                "externalApi": "External APIs",
+                "statusHealthy": "Healthy",
+                "statusDegraded": "Degraded",
+                "statusDown": "Down",
+                "lastChecked": "Last check"
+            },
+            "alerts": {
+                "title": "Active alerts",
+                "severityCritical": "Critical",
+                "severityWarning": "Warning",
+                "severityInfo": "Info",
+                "mock": {
+                    "highLatency": "Elevated API latency",
+                    "highLatencyDetail": "P95 latency exceeded the warning threshold for /api/documents/upload.",
+                    "deploy": "Deployment completed",
+                    "deployDetail": "Version 2.4.1 rolled out successfully to API cluster.",
+                    "errorSpike": "Error rate spike",
+                    "errorSpikeDetail": "5xx responses increased in the last 15 minutes."
+                }
+            },
+            "rankings": {
+                "slowest": "Slowest endpoints",
+                "busiest": "Most called",
+                "mostErrors": "Most errors"
+            },
+            "logs": {
+                "query": "Search text",
+                "queryPlaceholder": "Search message or service",
+                "traceId": "Trace ID",
+                "traceIdPlaceholder": "Filter by trace ID",
+                "level": "Log level",
+                "levelAll": "All levels",
+                "levelError": "Error",
+                "levelWarn": "Warning",
+                "levelInfo": "Info",
+                "levelDebug": "Debug",
+                "search": "Search logs",
+                "empty": "No log entries match your filters.",
+                "colTime": "Time",
+                "colLevel": "Level",
+                "colService": "Service",
+                "colMessage": "Message",
+                "colTrace": "Trace",
+                "openTrace": "Open trace"
+            },
+            "traces": {
+                "traceIdLabel": "Trace ID",
+                "traceIdPlaceholder": "Enter a trace ID (e.g. from samples or logs)",
+                "loadTrace": "Load trace",
+                "operation": "Operation",
+                "service": "Service",
+                "duration": "Duration",
+                "startOffset": "Start offset",
+                "status": "Status",
+                "statusOk": "OK",
+                "statusError": "Error",
+                "empty": "No spans found for this trace.",
+                "hint": "Enter a trace ID and load to view the request journey (mock data)."
             },
             "stats": {
                 "totalUsers": "Total users",
@@ -2494,6 +2573,10 @@
                 "totalCalls": "Total API calls",
                 "peakHour": "Peak hour",
                 "avgResponse": "Average response time",
+                "latencyP50": "P50 latency",
+                "latencyP95": "P95 latency",
+                "latencyP99": "P99 latency",
+                "rps": "Requests per second (avg)",
                 "errorRate": "Error rate"
             },
             "apiTable": {
@@ -2501,6 +2584,8 @@
                 "endpoint": "Endpoint",
                 "totalCalls": "Total calls",
                 "avgResponse": "Avg response time",
+                "p95": "P95 (ms)",
+                "p99": "P99 (ms)",
                 "errors": "Errors",
                 "successRate": "Success rate",
                 "lastCalled": "Last called"
@@ -2512,6 +2597,10 @@
             "requestMetrics": {
                 "totalCalls": "Total calls",
                 "avgLatency": "Average latency",
+                "latencyP50": "P50 latency",
+                "latencyP95": "P95 latency",
+                "latencyP99": "P99 latency",
+                "rps": "Requests per second",
                 "maxLatency": "Maximum latency",
                 "minLatency": "Minimum latency",
                 "errorRate": "Error rate"
@@ -2535,6 +2624,10 @@
                 "responseTime": "Response time",
                 "status": "Status",
                 "statusCode": "HTTP status",
+                "traceId": "Trace ID",
+                "actions": "Actions",
+                "openLogs": "Logs",
+                "openTrace": "Trace",
                 "statusSuccess": "Success",
                 "statusError": "Error"
             },
