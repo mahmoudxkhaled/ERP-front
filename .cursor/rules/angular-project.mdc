@@ -1,5 +1,5 @@
 ---
-description: Angular style — junior-friendly, PrimeNG, simple RxJS; no code comments; use #region blocks
+description: Angular style — junior-friendly, avoid RxJS when possible, PrimeNG; no code comments; use #region blocks
 alwaysApply: true
 ---
 
