@@ -133,6 +133,7 @@ export class AuthService {
     }
 
     getLoginDataPackage(email: string) {
+        this.entityLogoService.setCurrentEntityLogoResolved(false);
         return this.apiServices.callAPI(110, this.getAccessToken(), [email]).pipe(
             tap((response: any) => {
                 const accountData: IAccountStatusResponse = response.message;
@@ -158,6 +159,9 @@ export class AuthService {
                     catchError(() => of(null)),
                     map(() => response)
                 );
+            }),
+            finalize(() => {
+                this.entityLogoService.setCurrentEntityLogoResolved(true);
             })
         );
     }

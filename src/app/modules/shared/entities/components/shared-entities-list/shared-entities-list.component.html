@@ -35,7 +35,8 @@
             <ng-template pTemplate="header">
                 <tr>
                     <th>{{ 'entities.list.table.id' | translate }}</th>
-                    <th style="width: 70px; text-align: center !important;">{{ 'entities.list.table.logo' | translate }}</th>
+                    <th style="width: 70px; text-align: center !important;">{{ 'entities.list.table.logo' | translate }}
+                    </th>
                     <th style="width: 100px;">{{ 'entities.list.table.code' | translate }}</th>
                     <th style="width: 200px;">{{ 'entities.list.table.name' | translate }}</th>
                     <th style="width: 300px;">{{ 'entities.list.table.description' | translate }}</th>
@@ -65,20 +66,19 @@
                             <p-skeleton width="2rem" height="2rem" borderRadius="50%"></p-skeleton>
                         </ng-container>
                         <ng-template #normalLogo>
-                            <button type="button" class="entity-logo-btn" (click)="viewDetails(entity)" [disabled]="!entity?.id">
+                            <button type="button" class="entity-logo-btn" (click)="viewDetails(entity)"
+                                [disabled]="!entity?.id">
                                 <ng-container *ngIf="isEntityLogoLoading(entity); else logoContent">
                                     <i class="pi pi-spin pi-spinner" aria-hidden="true"></i>
                                 </ng-container>
                                 <ng-template #logoContent>
-                                    <p-avatar
-                                        *ngIf="getEntityLogoUrl(entity); else placeholderLogo"
-                                        [image]="getEntityLogoUrl(entity)!"
-                                        shape="circle"
-                                        size="large"
+                                    <p-avatar *ngIf="getEntityLogoUrl(entity); else placeholderLogo"
+                                        [image]="getEntityLogoUrl(entity)!" shape="circle" size="large"
                                         styleClass="entity-logo-avatar">
                                     </p-avatar>
                                     <ng-template #placeholderLogo>
-                                        <p-avatar icon="pi pi-building" shape="circle" size="large" styleClass="entity-logo-avatar"></p-avatar>
+                                        <p-avatar icon="pi pi-building" shape="circle" size="large"
+                                            styleClass="entity-logo-avatar"></p-avatar>
                                     </ng-template>
                                 </ng-template>
                             </button>
@@ -90,7 +90,8 @@
                                 <p-skeleton height="1.5rem" width="6rem"></p-skeleton>
                             </ng-container>
                             <ng-template #normalCode>
-                                <span class="font-semibold text-lg code-text cursor-pointer" (click)="viewDetails(entity)">
+                                <span class="font-semibold text-lg code-text cursor-pointer"
+                                    (click)="viewDetails(entity)">
                                     {{ entity.code }}
                                 </span>
                             </ng-template>
@@ -115,7 +116,8 @@
                             <p-skeleton height="3rem" width="100%" class="line-height-3"></p-skeleton>
                         </ng-container>
                         <ng-template #normalDescription>
-                            <span class="text-600 line-height-3 description-text cursor-pointer" (click)="viewDetails(entity)">
+                            <span class="text-600 line-height-3 description-text cursor-pointer"
+                                (click)="viewDetails(entity)">
                                 {{ entity.description || ('entities.list.noDescription' | translate) }}
                             </span>
                         </ng-template>
@@ -243,4 +245,3 @@
         </p-button>
     </ng-template>
 </p-dialog>
-

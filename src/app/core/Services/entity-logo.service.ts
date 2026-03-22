@@ -8,6 +8,9 @@ export class EntityLogoService {
     private logoSubject = new BehaviorSubject<string | null>(null);
     public logo$: Observable<string | null> = this.logoSubject.asObservable();
 
+    private currentEntityLogoResolvedSubject = new BehaviorSubject<boolean>(false);
+    public currentEntityLogoResolved$: Observable<boolean> = this.currentEntityLogoResolvedSubject.asObservable();
+
     constructor() { }
     updateLogo(base64Logo: string | null): void {
         this.logoSubject.next(base64Logo);
@@ -15,6 +18,14 @@ export class EntityLogoService {
 
     getCurrentLogo(): string | null {
         return this.logoSubject.value;
+    }
+
+    setCurrentEntityLogoResolved(resolved: boolean): void {
+        this.currentEntityLogoResolvedSubject.next(resolved);
+    }
+
+    isCurrentEntityLogoResolved(): boolean {
+        return this.currentEntityLogoResolvedSubject.value;
     }
 }
 

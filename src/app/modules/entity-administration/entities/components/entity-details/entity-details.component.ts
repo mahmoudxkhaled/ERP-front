@@ -66,6 +66,11 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
         this.loadAllData();
     }
 
+    private isCurrentAccountEntity(): boolean {
+        const ed = this.localStorageService.getEntityDetails() as IEntityDetails | null;
+        return !!(ed && String(ed.Entity_ID) === this.entityId);
+    }
+
     ngOnDestroy(): void {
         this.subscriptions.forEach((sub) => sub.unsubscribe());
     }
@@ -102,13 +107,14 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
                         this.hasLogo = true;
 
                         const base64String = logoData.Image;
-                        const entityDetails = this.localStorageService.getEntityDetails() as IEntityDetails;
-                        if (entityDetails) {
-                            entityDetails.Logo = base64String;
-                            this.localStorageService.setItem('Entity_Details', entityDetails);
+                        if (this.isCurrentAccountEntity()) {
+                            const entityDetails = this.localStorageService.getEntityDetails() as IEntityDetails;
+                            if (entityDetails) {
+                                entityDetails.Logo = base64String;
+                                this.localStorageService.setItem('Entity_Details', entityDetails);
+                            }
+                            this.entityLogoService.updateLogo(base64String);
                         }
-
-                        this.entityLogoService.updateLogo(base64String);
                     } else {
                         this.setPlaceholderLogo();
                     }
@@ -130,6 +136,9 @@ export class EntityDetailsComponent implements OnInit, OnDestroy {
     private setPlaceholderLogo(): void {
         this.entityLogo = 'assets/media/upload-photo.jpg';
         this.hasLogo = false;
+        if (!this.isCurrentAccountEntity()) {
+            return;
+        }
         const entityDetails = this.localStorageService.getEntityDetails() as IEntityDetails;
         if (entityDetails) {
             entityDetails.Logo = '';
