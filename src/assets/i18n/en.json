@@ -977,6 +977,7 @@
             "editEntity": "Edit Entity",
             "erpFunctions": "ERP Functions",
             "erpModules": "ERP Modules",
+            "systemAdminDashboard": "System Administration Dashboard",
             "modulesList": "Modules List",
             "newModule": "New Module",
             "moduleDetails": "Module Details",
@@ -2469,6 +2470,88 @@
         }
     },
     "systemAdministration": {
+        "dashboard": {
+            "title": "System Administration Dashboard",
+            "lastUpdated": "Last updated",
+            "filters": {
+                "dateRange": "Date range",
+                "dateRangePlaceholder": "Select date range",
+                "apply": "Apply filters"
+            },
+            "tabs": {
+                "general": "General statistics",
+                "apiOverview": "API overview",
+                "requestAnalysis": "Request analysis"
+            },
+            "stats": {
+                "totalUsers": "Total users",
+                "totalEntities": "Total entities",
+                "totalOperations": "Total operations",
+                "vsPrevious": "vs previous period"
+            },
+            "apiSummary": {
+                "totalCalls": "Total API calls",
+                "peakHour": "Peak hour",
+                "avgResponse": "Average response time",
+                "errorRate": "Error rate"
+            },
+            "apiTable": {
+                "title": "API calls",
+                "endpoint": "Endpoint",
+                "totalCalls": "Total calls",
+                "avgResponse": "Avg response time",
+                "errors": "Errors",
+                "successRate": "Success rate",
+                "lastCalled": "Last called"
+            },
+            "requestSelector": {
+                "label": "Endpoint / request type",
+                "placeholder": "Select an endpoint"
+            },
+            "requestMetrics": {
+                "totalCalls": "Total calls",
+                "avgLatency": "Average latency",
+                "maxLatency": "Maximum latency",
+                "minLatency": "Minimum latency",
+                "errorRate": "Error rate"
+            },
+            "charts": {
+                "trafficSeries": "API calls",
+                "trafficByHourTitle": "Traffic by hour",
+                "callsPerHour": "Calls",
+                "operationsTrend": "Operations",
+                "operationsTrendTitle": "Operations trend (sample week)",
+                "requestCount": "Request count",
+                "requestCountTitle": "Requests by hour",
+                "avgLatencyMs": "Average latency (ms)",
+                "latencyTitle": "Latency by hour",
+                "errorCount": "Errors",
+                "errorTrendTitle": "Errors by hour"
+            },
+            "samplesTable": {
+                "title": "Recent samples",
+                "timestamp": "Timestamp",
+                "responseTime": "Response time",
+                "status": "Status",
+                "statusCode": "HTTP status",
+                "statusSuccess": "Success",
+                "statusError": "Error"
+            },
+            "table": {
+                "pageReport": "Showing {first} to {last} of {totalRecords} entries"
+            },
+            "empty": {
+                "general": "No statistics available for the selected period.",
+                "apiEndpoints": "No API endpoints found.",
+                "selectEndpoint": "Select an endpoint to analyze request details.",
+                "samples": "No sample rows available."
+            },
+            "messages": {
+                "warnTitle": "Warning",
+                "invalidDateRange": "Please select a valid date range.",
+                "loadFailed": "Could not load dashboard data. Please try again."
+            }
+        },
         "erpFunctions": {
             "functionDetails": {
                 "title": "Function Details",

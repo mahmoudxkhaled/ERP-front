@@ -27,6 +27,11 @@ const routes: Routes = [
         loadChildren: () => import('./user-accounts/user-accounts.module').then((m) => m.SystemUserAccountsModule),
         data: { breadcrumb: 'userAccounts' }
     },
+    {
+        path: 'dashboard',
+        loadChildren: () => import('./system-dashboard/system-dashboard.module').then((m) => m.SystemDashboardModule),
+        data: { breadcrumb: 'systemAdminDashboard' }
+    },
     { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
 ];
 

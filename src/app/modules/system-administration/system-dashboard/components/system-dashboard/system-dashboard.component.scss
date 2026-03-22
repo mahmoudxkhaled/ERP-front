@@ -1,0 +1,27 @@
+.system-dashboard {
+    .system-dashboard__endpoint-dropdown {
+        width: 100%;
+        max-width: 30rem;
+    }
+
+    .chart-panel {
+        position: relative;
+        min-height: 280px;
+    }
+
+    .chart-panel--compact {
+        min-height: 220px;
+    }
+
+    :host ::ng-deep .p-chart {
+        min-height: inherit;
+    }
+
+    tr.cursor-pointer {
+        cursor: pointer;
+    }
+
+    tr.cursor-pointer:hover {
+        background: var(--surface-hover);
+    }
+}

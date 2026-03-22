@@ -978,6 +978,7 @@
             "editEntity": "تعديل الشركة",
             "erpFunctions": "وظائف ERP",
             "erpModules": "وحدات ERP",
+            "systemAdminDashboard": "لوحة إدارة النظام",
             "modulesList": "قائمة الوحدات",
             "newModule": "وحدة جديدة",
             "moduleDetails": "تفاصيل الوحدة",
@@ -2329,6 +2330,88 @@
         }
     },
     "systemAdministration": {
+        "dashboard": {
+            "title": "لوحة إدارة النظام",
+            "lastUpdated": "آخر تحديث",
+            "filters": {
+                "dateRange": "الفترة الزمنية",
+                "dateRangePlaceholder": "اختر الفترة الزمنية",
+                "apply": "تطبيق المرشحات"
+            },
+            "tabs": {
+                "general": "إحصائيات عامة",
+                "apiOverview": "نظرة عامة على واجهات API",
+                "requestAnalysis": "تحليل الطلبات"
+            },
+            "stats": {
+                "totalUsers": "إجمالي المستخدمين",
+                "totalEntities": "إجمالي الكيانات",
+                "totalOperations": "إجمالي العمليات",
+                "vsPrevious": "مقارنة بالفترة السابقة"
+            },
+            "apiSummary": {
+                "totalCalls": "إجمالي استدعاءات API",
+                "peakHour": "ساعة الذروة",
+                "avgResponse": "متوسط زمن الاستجابة",
+                "errorRate": "معدل الخطأ"
+            },
+            "apiTable": {
+                "title": "استدعاءات API",
+                "endpoint": "Endpoint",
+                "totalCalls": "عدد الاستدعاءات",
+                "avgResponse": "متوسط زمن الاستجابة",
+                "errors": "الأخطاء",
+                "successRate": "نسبة النجاح",
+                "lastCalled": "آخر استدعاء"
+            },
+            "requestSelector": {
+                "label": "Endpoint / نوع الطلب",
+                "placeholder": "اختر نقطة النهاية"
+            },
+            "requestMetrics": {
+                "totalCalls": "إجمالي الاستدعاءات",
+                "avgLatency": "متوسط زمن الاستجابة",
+                "maxLatency": "أقصى زمن استجابة",
+                "minLatency": "أدنى زمن استجابة",
+                "errorRate": "معدل الخطأ"
+            },
+            "charts": {
+                "trafficSeries": "استدعاءات API",
+                "trafficByHourTitle": "الحركة حسب الساعة",
+                "callsPerHour": "عدد الاستدعاءات",
+                "operationsTrend": "العمليات",
+                "operationsTrendTitle": "اتجاه العمليات (أسبوع نموذجي)",
+                "requestCount": "عدد الطلبات",
+                "requestCountTitle": "الطلبات حسب الساعة",
+                "avgLatencyMs": "متوسط زمن الاستجابة (ملي ثانية)",
+                "latencyTitle": "زمن الاستجابة حسب الساعة",
+                "errorCount": "الأخطاء",
+                "errorTrendTitle": "الأخطاء حسب الساعة"
+            },
+            "samplesTable": {
+                "title": "عينات حديثة",
+                "timestamp": "الوقت",
+                "responseTime": "زمن الاستجابة",
+                "status": "الحالة",
+                "statusCode": "رمز HTTP",
+                "statusSuccess": "نجاح",
+                "statusError": "خطأ"
+            },
+            "table": {
+                "pageReport": "عرض {first} إلى {last} من {totalRecords} سجلًا"
+            },
+            "empty": {
+                "general": "لا توجد إحصائيات للفترة المحددة.",
+                "apiEndpoints": "لم يتم العثور على نقاط نهاية API.",
+                "selectEndpoint": "اختر نقطة نهاية لعرض تفاصيل التحليل.",
+                "samples": "لا توجد عينات لعرضها."
+            },
+            "messages": {
+                "warnTitle": "تنبيه",
+                "invalidDateRange": "يرجى اختيار فترة زمنية صالحة.",
+                "loadFailed": "تعذر تحميل بيانات اللوحة. يرجى المحاولة مرة أخرى."
+            }
+        },
         "erpFunctions": {
             "functionDetails": {
                 "title": "تفاصيل الوظيفة",

@@ -1,0 +1,327 @@
+<div class="system-dashboard card p-4">
+    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-start gap-4 mb-4">
+        <div>
+            <h1 class="text-2xl font-semibold m-0 mb-2">{{ 'systemAdministration.dashboard.title' | translate }}</h1>
+            <p class="text-600 text-sm m-0" *ngIf="lastUpdated">
+                {{ 'systemAdministration.dashboard.lastUpdated' | translate }}:
+                {{ lastUpdated | date: 'short' }}
+            </p>
+        </div>
+        <div class="flex flex-column sm:flex-row gap-3 align-items-stretch sm:align-items-end">
+            <div class="flex flex-column gap-2">
+                <label class="text-sm text-600" for="dashboardDateRange">{{
+                    'systemAdministration.dashboard.filters.dateRange' | translate
+                    }}</label>
+                <p-calendar inputId="dashboardDateRange" [(ngModel)]="rangeDates" selectionMode="range"
+                    [readonlyInput]="true" [showIcon]="true" [numberOfMonths]="2" dateFormat="yy-mm-dd"
+                    [placeholder]="'systemAdministration.dashboard.filters.dateRangePlaceholder' | translate"></p-calendar>
+            </div>
+            <p-button [label]="'systemAdministration.dashboard.filters.apply' | translate" icon="pi pi-filter"
+                (onClick)="applyFilters()" [disabled]="loadingStats || loadingApi"></p-button>
+        </div>
+    </div>
+
+    <p-tabView [(activeIndex)]="activeTabIndex">
+        <p-tabPanel [header]="'systemAdministration.dashboard.tabs.general' | translate">
+            <ng-container *ngIf="loadingStats; else generalContent">
+                <div class="grid">
+                    <div class="col-12 md:col-4" *ngFor="let _ of [1, 2, 3]">
+                        <p-card>
+                            <p-skeleton width="60%" height="1.25rem" class="mb-3"></p-skeleton>
+                            <p-skeleton width="40%" height="2rem"></p-skeleton>
+                        </p-card>
+                    </div>
+                    <div class="col-12">
+                        <p-skeleton width="100%" height="16rem"></p-skeleton>
+                    </div>
+                </div>
+            </ng-container>
+            <ng-template #generalContent>
+                <div class="grid" *ngIf="generalStats">
+                    <div class="col-12 md:col-4">
+                        <p-card>
+                            <div class="text-600 text-sm mb-2">{{ 'systemAdministration.dashboard.stats.totalUsers' |
+                                translate }}</div>
+                            <div class="text-3xl font-bold text-900">{{ generalStats.totalUsers | number }}</div>
+                            <div class="text-sm mt-2"
+                                [ngClass]="generalStats.usersTrendPercent >= 0 ? 'text-green-500' : 'text-orange-500'">
+                                {{ generalStats.usersTrendPercent >= 0 ? '+' : '' }}{{ generalStats.usersTrendPercent |
+                                number: '1.1-1' }}%
+                                {{ 'systemAdministration.dashboard.stats.vsPrevious' | translate }}
+                            </div>
+                        </p-card>
+                    </div>
+                    <div class="col-12 md:col-4">
+                        <p-card>
+                            <div class="text-600 text-sm mb-2">{{ 'systemAdministration.dashboard.stats.totalEntities' |
+                                translate }}</div>
+                            <div class="text-3xl font-bold text-900">{{ generalStats.totalEntities | number }}</div>
+                            <div class="text-sm mt-2"
+                                [ngClass]="generalStats.entitiesTrendPercent >= 0 ? 'text-green-500' : 'text-orange-500'">
+                                {{ generalStats.entitiesTrendPercent >= 0 ? '+' : '' }}{{
+                                generalStats.entitiesTrendPercent | number: '1.1-1' }}%
+                                {{ 'systemAdministration.dashboard.stats.vsPrevious' | translate }}
+                            </div>
+                        </p-card>
+                    </div>
+                    <div class="col-12 md:col-4">
+                        <p-card>
+                            <div class="text-600 text-sm mb-2">{{ 'systemAdministration.dashboard.stats.totalOperations'
+                                | translate }}</div>
+                            <div class="text-3xl font-bold text-900">{{ generalStats.totalOperations | number }}</div>
+                            <div class="text-sm mt-2 text-green-500">
+                                +{{ generalStats.operationsTrendPercent | number: '1.1-1' }}%
+                                {{ 'systemAdministration.dashboard.stats.vsPrevious' | translate }}
+                            </div>
+                        </p-card>
+                    </div>
+                    <div class="col-12">
+                        <p-card [header]="'systemAdministration.dashboard.charts.operationsTrendTitle' | translate">
+                            <div class="chart-panel" *ngIf="operationsTrendChartData">
+                                <p-chart type="line" [data]="operationsTrendChartData"
+                                    [options]="operationsTrendChartOptions"></p-chart>
+                            </div>
+                        </p-card>
+                    </div>
+                </div>
+                <div *ngIf="!generalStats && !loadingStats" class="text-center text-600 py-6">
+                    {{ 'systemAdministration.dashboard.empty.general' | translate }}
+                </div>
+            </ng-template>
+        </p-tabPanel>
+
+        <p-tabPanel [header]="'systemAdministration.dashboard.tabs.apiOverview' | translate">
+            <ng-container *ngIf="loadingApi; else apiContent">
+                <div class="grid mb-4">
+                    <div class="col-12 md:col-3" *ngFor="let _ of [1, 2, 3, 4]">
+                        <p-skeleton width="100%" height="4rem"></p-skeleton>
+                    </div>
+                </div>
+                <p-skeleton width="100%" height="18rem" class="mb-4"></p-skeleton>
+                <p-skeleton width="100%" height="12rem"></p-skeleton>
+            </ng-container>
+            <ng-template #apiContent>
+                <div class="grid mb-4" *ngIf="apiOverviewSummary">
+                    <div class="col-12 md:col-3">
+                        <p-card>
+                            <div class="text-600 text-sm">{{ 'systemAdministration.dashboard.apiSummary.totalCalls' |
+                                translate }}</div>
+                            <div class="text-2xl font-bold">{{ apiOverviewSummary.totalCalls | number }}</div>
+                        </p-card>
+                    </div>
+                    <div class="col-12 md:col-3">
+                        <p-card>
+                            <div class="text-600 text-sm">{{ 'systemAdministration.dashboard.apiSummary.peakHour' |
+                                translate }}</div>
+                            <div class="text-2xl font-bold">{{ apiOverviewSummary.peakHourLabel }}</div>
+                        </p-card>
+                    </div>
+                    <div class="col-12 md:col-3">
+                        <p-card>
+                            <div class="text-600 text-sm">{{ 'systemAdministration.dashboard.apiSummary.avgResponse' |
+                                translate }}</div>
+                            <div class="text-2xl font-bold">{{ apiOverviewSummary.averageResponseTimeMs | number:
+                                '1.0-0' }} ms</div>
+                        </p-card>
+                    </div>
+                    <div class="col-12 md:col-3">
+                        <p-card>
+                            <div class="text-600 text-sm">{{ 'systemAdministration.dashboard.apiSummary.errorRate' |
+                                translate }}</div>
+                            <div class="text-2xl font-bold">{{ apiOverviewSummary.errorRatePercent | number: '1.2-2' }}%
+                            </div>
+                        </p-card>
+                    </div>
+                </div>
+                <p-card [header]="'systemAdministration.dashboard.charts.trafficByHourTitle' | translate" class="mb-4">
+                    <div class="chart-panel" *ngIf="trafficChartData">
+                        <p-chart type="line" [data]="trafficChartData" [options]="trafficChartOptions"></p-chart>
+                    </div>
+                </p-card>
+                <p-card [header]="'systemAdministration.dashboard.apiTable.title' | translate">
+                    <p-table [value]="endpoints" [sortField]="'totalCalls'" [sortOrder]="-1" [paginator]="true"
+                        [rows]="10" [showCurrentPageReport]="true"
+                        [currentPageReportTemplate]="'systemAdministration.dashboard.table.pageReport' | translate"
+                        responsiveLayout="scroll" styleClass="p-datatable-sm">
+                        <ng-template pTemplate="header">
+                            <tr>
+                                <th pSortableColumn="endpoint">
+                                    {{ 'systemAdministration.dashboard.apiTable.endpoint' | translate }}
+                                    <p-sortIcon field="endpoint"></p-sortIcon>
+                                </th>
+                                <th pSortableColumn="totalCalls" class="text-right">
+                                    {{ 'systemAdministration.dashboard.apiTable.totalCalls' | translate }}
+                                    <p-sortIcon field="totalCalls"></p-sortIcon>
+                                </th>
+                                <th pSortableColumn="avgResponseTimeMs" class="text-right">
+                                    {{ 'systemAdministration.dashboard.apiTable.avgResponse' | translate }}
+                                    <p-sortIcon field="avgResponseTimeMs"></p-sortIcon>
+                                </th>
+                                <th pSortableColumn="errorCount" class="text-right">
+                                    {{ 'systemAdministration.dashboard.apiTable.errors' | translate }}
+                                    <p-sortIcon field="errorCount"></p-sortIcon>
+                                </th>
+                                <th pSortableColumn="successRatePercent" class="text-right">
+                                    {{ 'systemAdministration.dashboard.apiTable.successRate' | translate }}
+                                    <p-sortIcon field="successRatePercent"></p-sortIcon>
+                                </th>
+                                <th pSortableColumn="lastCalled">
+                                    {{ 'systemAdministration.dashboard.apiTable.lastCalled' | translate }}
+                                    <p-sortIcon field="lastCalled"></p-sortIcon>
+                                </th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-row>
+                            <tr class="cursor-pointer" (click)="onEndpointRowSelect(row)">
+                                <td>{{ row.endpoint }}</td>
+                                <td class="text-right">{{ row.totalCalls | number }}</td>
+                                <td class="text-right">{{ row.avgResponseTimeMs | number: '1.0-0' }} ms</td>
+                                <td class="text-right">{{ row.errorCount | number }}</td>
+                                <td class="text-right">{{ row.successRatePercent | number: '1.2-2' }}%</td>
+                                <td>{{ row.lastCalled | date: 'short' }}</td>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td colspan="6" class="text-center text-600 py-4">
+                                    {{ 'systemAdministration.dashboard.empty.apiEndpoints' | translate }}
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </p-card>
+            </ng-template>
+        </p-tabPanel>
+
+        <p-tabPanel [header]="'systemAdministration.dashboard.tabs.requestAnalysis' | translate">
+            <div class="mb-4 flex flex-column gap-2" *ngIf="endpoints.length">
+                <label class="text-sm text-600" for="endpointSelect">{{
+                    'systemAdministration.dashboard.requestSelector.label' | translate }}</label>
+                <p-dropdown inputId="endpointSelect" [options]="endpoints" [(ngModel)]="selectedEndpointId"
+                    optionLabel="endpoint" optionValue="id"
+                    [placeholder]="'systemAdministration.dashboard.requestSelector.placeholder' | translate"
+                    (onChange)="onEndpointDropdownChange()"
+                    styleClass="system-dashboard__endpoint-dropdown"></p-dropdown>
+            </div>
+
+            <ng-container *ngIf="loadingRequest; else requestContent">
+                <div class="grid mb-4">
+                    <div class="col-12 md:col-3" *ngFor="let _ of [1, 2, 3, 4]">
+                        <p-skeleton width="100%" height="4rem"></p-skeleton>
+                    </div>
+                </div>
+                <p-skeleton width="100%" height="14rem" class="mb-3"></p-skeleton>
+                <p-skeleton width="100%" height="14rem" class="mb-3"></p-skeleton>
+                <p-skeleton width="100%" height="14rem" class="mb-3"></p-skeleton>
+                <p-skeleton width="100%" height="10rem"></p-skeleton>
+            </ng-container>
+            <ng-template #requestContent>
+                <div *ngIf="!selectedEndpointId" class="text-center text-600 py-6">
+                    {{ 'systemAdministration.dashboard.empty.selectEndpoint' | translate }}
+                </div>
+                <div *ngIf="selectedEndpointId && requestMetrics" class="grid mb-4">
+                    <div class="col-12 md:col-3">
+                        <p-card>
+                            <div class="text-600 text-sm">{{ 'systemAdministration.dashboard.requestMetrics.totalCalls'
+                                | translate }}</div>
+                            <div class="text-2xl font-bold">{{ requestMetrics.totalCalls | number }}</div>
+                        </p-card>
+                    </div>
+                    <div class="col-12 md:col-3">
+                        <p-card>
+                            <div class="text-600 text-sm">{{ 'systemAdministration.dashboard.requestMetrics.avgLatency'
+                                | translate }}</div>
+                            <div class="text-2xl font-bold">{{ requestMetrics.avgLatencyMs | number: '1.0-0' }} ms</div>
+                        </p-card>
+                    </div>
+                    <div class="col-12 md:col-3">
+                        <p-card>
+                            <div class="text-600 text-sm">{{ 'systemAdministration.dashboard.requestMetrics.maxLatency'
+                                | translate }}</div>
+                            <div class="text-2xl font-bold">{{ requestMetrics.maxLatencyMs | number: '1.0-0' }} ms</div>
+                            <div class="text-600 text-sm mt-2">
+                                {{ 'systemAdministration.dashboard.requestMetrics.minLatency' | translate }}:
+                                {{ requestMetrics.minLatencyMs | number: '1.0-0' }} ms
+                            </div>
+                        </p-card>
+                    </div>
+                    <div class="col-12 md:col-3">
+                        <p-card>
+                            <div class="text-600 text-sm">{{ 'systemAdministration.dashboard.requestMetrics.errorRate' |
+                                translate }}</div>
+                            <div class="text-2xl font-bold">{{ requestMetrics.errorRatePercent | number: '1.2-2' }}%
+                            </div>
+                        </p-card>
+                    </div>
+                </div>
+                <div class="grid" *ngIf="selectedEndpointId && requestMetrics">
+                    <div class="col-12 lg:col-4">
+                        <p-card [header]="'systemAdministration.dashboard.charts.requestCountTitle' | translate">
+                            <div class="chart-panel chart-panel--compact" *ngIf="requestCountChartData">
+                                <p-chart type="line" [data]="requestCountChartData"
+                                    [options]="requestCountChartOptions"></p-chart>
+                            </div>
+                        </p-card>
+                    </div>
+                    <div class="col-12 lg:col-4">
+                        <p-card [header]="'systemAdministration.dashboard.charts.latencyTitle' | translate">
+                            <div class="chart-panel chart-panel--compact" *ngIf="latencyChartData">
+                                <p-chart type="line" [data]="latencyChartData"
+                                    [options]="latencyChartOptions"></p-chart>
+                            </div>
+                        </p-card>
+                    </div>
+                    <div class="col-12 lg:col-4">
+                        <p-card [header]="'systemAdministration.dashboard.charts.errorTrendTitle' | translate">
+                            <div class="chart-panel chart-panel--compact" *ngIf="errorChartData">
+                                <p-chart type="line" [data]="errorChartData" [options]="errorChartOptions"></p-chart>
+                            </div>
+                        </p-card>
+                    </div>
+                    <div class="col-12">
+                        <p-card [header]="'systemAdministration.dashboard.samplesTable.title' | translate">
+                            <p-table [value]="requestSamples" [paginator]="true" [rows]="10" responsiveLayout="scroll"
+                                styleClass="p-datatable-sm">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th>{{ 'systemAdministration.dashboard.samplesTable.timestamp' | translate }}
+                                        </th>
+                                        <th class="text-right">{{
+                                            'systemAdministration.dashboard.samplesTable.responseTime' | translate }}
+                                        </th>
+                                        <th>{{ 'systemAdministration.dashboard.samplesTable.status' | translate }}</th>
+                                        <th class="text-right">{{
+                                            'systemAdministration.dashboard.samplesTable.statusCode' | translate }}</th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-row>
+                                    <tr>
+                                        <td>{{ row.timestamp | date: 'medium' }}</td>
+                                        <td class="text-right">{{ row.responseTimeMs | number: '1.0-0' }} ms</td>
+                                        <td>
+                                            <p-tag [severity]="row.status === 'success' ? 'success' : 'danger'" [value]="
+                                                    row.status === 'success'
+                                                        ? ('systemAdministration.dashboard.samplesTable.statusSuccess' | translate)
+                                                        : ('systemAdministration.dashboard.samplesTable.statusError' | translate)
+                                                "></p-tag>
+                                        </td>
+                                        <td class="text-right">{{ row.statusCode }}</td>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="emptymessage">
+                                    <tr>
+                                        <td colspan="4" class="text-center text-600 py-4">
+                                            {{ 'systemAdministration.dashboard.empty.samples' | translate }}
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </p-card>
+                    </div>
+                </div>
+            </ng-template>
+        </p-tabPanel>
+    </p-tabView>
+</div>
+
+<p-toast></p-toast>
