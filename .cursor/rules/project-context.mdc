@@ -10,28 +10,28 @@ This workspace is **avalon-ng** (ERP frontend): Angular 17, PrimeNG 17, TypeScri
 ## Tech stack
 
 - **Angular 17** (standalone-friendly; some NgModules still used). Style: **SCSS**. Prefix: **app**.
-- **PrimeNG** for UI (p-button, p-table, p-dialog, p-inputText, p-dropdown, etc.).
-- **@ngx-translate** for i18n; keys in `src/assets/i18n/en.json` and `ar.json`.
+- **UI library:** PrimeNG — use **`angular-project`** for conventions and component preference.
+- **i18n:** **`i18n-translations`** (authoritative: pipes, keys, `en.json` / `ar.json`, toasts).
 - **Auth:** `AuthGuard` in `core/Guards/auth.guard.ts`; auth routes under `/auth` (login, 2FA, reset-password, etc.).
 
 ## App structure
 
-- **`core/`** – Guards, interceptors, shared services, landing, notfound.
+- **`core/`** – Guards, interceptors, shared services; standalone routes: `landing`, `notfound`, `under-development`.
 - **`layout/`** – Main shell: `AppLayoutComponent`, breadcrumb, sidebar (routes under this are protected).
 - **`Shared/`** – Reusable UI (e.g. table-loading-spinner, erp-variables).
 - **`modules/`** – Feature modules, lazy-loaded via `app-routing.module.ts`:
   - **dashboard** – `/`
-  - **summary** – `/summary`
-  - **system-administration** – `/system-administration` (erp-modules, erp-functions)
-  - **entity-administration** – `/entity-administration` (entities, roles, user-accounts, entity-groups, workflows, entity-storage-management)
-  - **document-control** – `/document-control` (file system, SSM, ESM, storage content)
-  - **finance-accounting** – `/financials` (e.g. invoices)
-  - **auth** – `/auth` (no layout, no guard)
+  - **summary** – `/summary` (actions, notifications, notifications-management, profile, settings, groups)
+  - **system-administration** – `/system-administration` (default → `dashboard`; also `erp-modules`, `erp-functions`, `system-storage-management`, `system-entities`, `user-accounts`)
+  - **entity-administration** – `/entity-administration` (entities, roles, `user-accounts`, `entity-user-accounts`, entity-groups, workflows, entity-storage-management)
+  - **document-control** – `/document-control` (file-system landing; `system-storage-management`, `entity-storage-management`, `storage-content-management`)
+  - **finance-accounting** – `/financials` (invoices)
+  - **auth** – `/auth` (and `GetQuote`; no layout, no guard)
 
-## Conventions
+## Conventions (pointers — avoid duplicating other rules)
 
-- Prefer **simple, junior-friendly** Angular; avoid over-engineering and heavy RxJS.
-- User-visible text in templates must use the **translate** pipe and keys in both `en.json` and `ar.json` (see rule **i18n-translations**).
-- File-system / document-control features: follow **Docs/storage-management-file-system-api.md** (see rule **storage-file-system-api**).
+- **Code style:** **`angular-project`** (junior-friendly; avoid RxJS as much as possible; PrimeNG; `#region`; no comments).
+- **Strings & toasts:** **`i18n-translations`**. **Loading / skeleton UI:** **`ui-defaults`**.
+- **File-system / document-control APIs:** **`storage-file-system-api`** and **Docs/storage-management-file-system-api.md**.
 
 When starting a new task, use this context to locate the right module, routing, and existing patterns.

@@ -1,20 +1,20 @@
 ---
-description: UI changes must use PrimeNG skeleton (exact layout, no shift), existing loading flags only, and full i18n (en + ar) including toasts
+description: UI changes — PrimeNG skeleton (exact layout, no shift), existing loading flags only; strings via i18n-translations
 alwaysApply: true
 ---
 
-# UI defaults (skeleton + i18n)
+# UI defaults (skeleton)
 
-When writing or editing UI code, apply these by default.
+When writing or editing **UI** (templates), apply this by default for **loading states**. For **all user-visible text, keys, en/ar files, and toasts**, follow the dedicated rule **`i18n-translations`** (single source of truth).
 
 ---
 
-## 1. Loading state — use PrimeNG Skeleton
+## Loading state — use PrimeNG Skeleton
 
 - Use **`<p-skeleton>`** for loading; do not add spinners or new loading flags.
 - Use existing loading flags only (e.g. `loading`, `loadingDetails`, `isLoading$`).
 
-### Mandatory rule (updated)
+### Mandatory rule
 
 - **Any change in ANY component MUST include a proper skeleton state.**
 - The skeleton must:
@@ -60,81 +60,27 @@ Skeleton **must** be:
 </div>
 ```
 
-- Same container
-- Same padding (`p-3`)
-- Same margin (`mb-3`)
-- Same spacing (`mb-2`)
+- Same container, padding, margins, and spacing as loaded content.
 
 ---
 
 ### Wrong
 
-- Removing wrappers
-- Changing spacing
-- Using random skeleton sizes
-- Adding new loading flags
-- Replacing full layout instead of inner content
+- Removing wrappers, changing spacing, random skeleton sizes, new loading flags, or replacing the full layout instead of inner content.
 
 ---
 
 ### Important notes
 
-- Do not change TypeScript logic; only change the HTML template.
-- Skeleton should visually represent the final UI (shape + spacing).
-- Always think: **“If skeleton disappears, layout should not move at all.”**
+- Do not change TypeScript logic; only change the HTML template for skeleton wiring unless the task requires TS.
+- Skeleton should visually match the final UI (shape + spacing).
+- **If the skeleton disappears, the layout should not move at all.**
 
 ---
 
-## 2. Translations — everything in en + ar
+## Summary (UI work)
 
-- **Templates:** All user-visible text must use:
-
-  ```html
-  {{ 'key' | translate }}
-  ```
-
-  or:
-
-  ```html
-  [placeholder]="'key' | translate"
-  ```
-
-- Add keys to **both**:
-  - `src/assets/i18n/en.json`
-  - `src/assets/i18n/ar.json`
-
----
-
-### Toaster / notifications (MessageService)
-
-- **Never** use hardcoded text
-- **Always** use:
-
-```ts
-this.messageService.add({
-  severity: 'success',
-  summary: this.translate.instant('common.success'),
-  detail: this.translate.instant('entityAccounts.messages.created')
-});
-```
-
----
-
-### Arabic guidelines
-
-- Use **formal, professional UI Arabic**
-- Avoid slang or casual tone
-
----
-
-## Final rule summary
-
-Any UI change **must**:
-
-1. Include a skeleton state
-2. Match exact layout (size + spacing + structure)
-3. Use existing loading flags only
-4. Use translation keys (EN + AR)
-5. Use translated text in toasts (no hardcoded strings)
-
-Apply skeleton and i18n (including toasts) on every new or modified UI.
+1. Include a proper skeleton state on any component you touch.
+2. Match exact layout (size + spacing + structure); no layout shift.
+3. Use existing loading flags only.
+4. **Strings / i18n / toasts:** see **`i18n-translations`**.
