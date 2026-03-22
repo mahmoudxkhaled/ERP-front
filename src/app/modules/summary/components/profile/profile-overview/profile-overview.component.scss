@@ -11,6 +11,11 @@
     .avatar-container {
         width: 150px;
         height: 150px;
+
+        &:has(.avatar-loading) {
+            height: auto;
+            min-height: 150px;
+        }
     }
 
     .avatar-with-status {
@@ -27,24 +32,34 @@
 
     .avatar-loading {
         width: 150px;
-        height: 150px;
-        border-radius: 50%;
+        min-height: 150px;
+        height: auto;
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
         gap: 0.5rem;
+        padding-bottom: 0.125rem;
+    }
+
+    .avatar-skeleton-circle {
+        width: 150px;
+        height: 150px;
+        flex-shrink: 0;
+        border-radius: 50%;
+        overflow: hidden;
+
+        ::ng-deep .p-skeleton {
+            width: 150px !important;
+            height: 150px !important;
+            border-radius: 50% !important;
+        }
     }
 
     .avatar-loading-text {
         font-size: 0.75rem;
         color: var(--text-color-secondary);
         font-weight: 500;
-    }
-
-    ::ng-deep .avatar-loading-spinner.p-progress-spinner {
-        width: 2.5rem;
-        height: 2.5rem;
     }
 
     .status-ring {
@@ -197,14 +212,6 @@
             font-weight: 500;
         }
 
-        ::ng-deep .picture-upload-spinner.p-progress-spinner {
-            width: 2.5rem;
-            height: 2.5rem;
-
-            circle {
-                stroke: rgba(255, 255, 255, 0.9);
-            }
-        }
     }
 
     .crop-area {
