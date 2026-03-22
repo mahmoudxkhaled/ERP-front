@@ -139,7 +139,17 @@ export class DashboardComponent implements OnInit, AfterViewInit {
             'QS': '📏',
             'BUDG': '💵',
             'CRPT': '📈',
-            'PRPT': '📊'
+            'PRPT': '📊',
+            'SCP': '🎛️',
+            'SU': '🧑‍💻',
+            'GP': '👥',
+            'NOTM': '🛎️',
+            'SSM': '💾',
+            'ESM': '🗃️',
+            'SCM': '📂',
+            'SDBV2': '📊',
+            'SENT': '🗂️',
+            'EUA': '👥'
         };
         return iconMap[moduleCode] || '📁';
     }
