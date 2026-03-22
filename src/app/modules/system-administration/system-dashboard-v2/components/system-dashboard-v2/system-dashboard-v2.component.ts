@@ -1,4 +1,4 @@
-﻿import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
@@ -133,8 +133,12 @@ export class SystemDashboardV2Component implements OnInit, OnDestroy {
             queueMicrotask(() => this.loadTraceSpans());
         }
         this.querySub = this.route.queryParams.subscribe((params) => {
+            const trace = params['trace'];
             const ep = params['endpoint'];
-            if (ep) {
+            if (trace) {
+                this.traceLookupId = trace;
+                this.activeTabIndex = 4;
+            } else if (ep) {
                 this.selectedEndpointId = ep;
                 this.activeTabIndex = 2;
             }
@@ -512,7 +516,9 @@ export class SystemDashboardV2Component implements OnInit, OnDestroy {
                 },
             ],
         };
-        this.requestCountChartOptions = this.lineChartOptions(this.translate.instant('systemAdministration.dashboard.charts.requestCount'));
+        this.requestCountChartOptions = this.hourlyLineChartOptions(
+            this.translate.instant('systemAdministration.dashboard.charts.requestCount')
+        );
     }
 
     private rebuildLatencyChart(): void {
@@ -528,7 +534,9 @@ export class SystemDashboardV2Component implements OnInit, OnDestroy {
                 },
             ],
         };
-        this.latencyChartOptions = this.lineChartOptions(this.translate.instant('systemAdministration.dashboard.charts.avgLatencyMs'));
+        this.latencyChartOptions = this.hourlyLineChartOptions(
+            this.translate.instant('systemAdministration.dashboard.charts.avgLatencyMs')
+        );
     }
 
     private rebuildErrorChart(): void {
@@ -544,7 +552,51 @@ export class SystemDashboardV2Component implements OnInit, OnDestroy {
                 },
             ],
         };
-        this.errorChartOptions = this.lineChartOptions(this.translate.instant('systemAdministration.dashboard.charts.errorCount'));
+        this.errorChartOptions = this.hourlyLineChartOptions(
+            this.translate.instant('systemAdministration.dashboard.charts.errorCount')
+        );
+    }
+
+    private hourlyLineChartOptions(yAxisTitle: string): Record<string, unknown> {
+        return {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: { color: this.chartTextColor },
+                },
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        color: this.chartTextColor,
+                        autoSkip: true,
+                        autoSkipPadding: 12,
+                        maxTicksLimit: 8,
+                        maxRotation: 0,
+                        minRotation: 0,
+                        font: { size: 10 },
+                        callback: function (
+                            this: unknown,
+                            tickValue: string | number,
+                            index: number
+                        ): string | undefined {
+                            const scale = this as { getLabelForValue: (v: string | number) => string };
+                            if (index % 3 !== 0) {
+                                return undefined;
+                            }
+                            return scale.getLabelForValue(tickValue);
+                        },
+                    },
+                    grid: { color: this.chartGridColor },
+                },
+                y: {
+                    title: { display: true, text: yAxisTitle, color: this.chartTextColor },
+                    ticks: { color: this.chartTextColor },
+                    grid: { color: this.chartGridColor },
+                },
+            },
+        };
     }
 
     private lineChartOptions(yAxisTitle: string): Record<string, unknown> {

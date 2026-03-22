@@ -1,4 +1,8 @@
 .system-dashboard-v2 {
+    .system-dashboard-v2__tippable {
+        cursor: help;
+    }
+
     .stat-card {
         position: relative;
         padding: 1.25rem 1.35rem;
@@ -46,6 +50,39 @@
 
         &--skeleton-compact {
             min-height: 7.5rem;
+        }
+
+        &--has-trend {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+
+            .stat-card__main {
+                flex: 1 1 auto;
+                min-height: 0;
+            }
+
+            .stat-card__value {
+                margin-bottom: 0;
+            }
+
+            .stat-card__trend-row {
+                display: flex;
+                justify-content: flex-start;
+                width: 100%;
+                flex-shrink: 0;
+                margin-top: auto;
+                padding-top: 0.75rem;
+            }
+
+            .stat-card__trend {
+                flex-wrap: nowrap;
+                max-width: none;
+
+                span {
+                    white-space: nowrap;
+                }
+            }
         }
     }
 
