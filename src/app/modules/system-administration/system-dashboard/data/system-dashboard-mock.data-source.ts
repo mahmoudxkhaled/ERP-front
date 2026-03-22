@@ -85,9 +85,11 @@ export class SystemDashboardMockDataSource {
         const h = hashFilters(filters);
         const stats: GeneralStats = {
             totalUsers: 1240 + h * 3,
+            totalAccounts: 2180 + h * 4,
             totalEntities: 86 + (h % 5),
             totalOperations: 45820 + h * 100,
             usersTrendPercent: 2.4 + (h % 10) * 0.1,
+            accountsTrendPercent: 1.9 + (h % 8) * 0.15,
             entitiesTrendPercent: -0.5 + (h % 3) * 0.2,
             operationsTrendPercent: 5.1,
         };

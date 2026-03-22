@@ -2345,6 +2345,7 @@
             },
             "stats": {
                 "totalUsers": "إجمالي المستخدمين",
+                "totalAccounts": "إجمالي الحسابات",
                 "totalEntities": "إجمالي الكيانات",
                 "totalOperations": "إجمالي العمليات",
                 "vsPrevious": "مقارنة بالفترة السابقة"

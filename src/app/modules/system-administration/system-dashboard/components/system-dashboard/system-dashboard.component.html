@@ -25,7 +25,7 @@
         <p-tabPanel [header]="'systemAdministration.dashboard.tabs.general' | translate">
             <ng-container *ngIf="loadingStats; else generalContent">
                 <div class="grid">
-                    <div class="col-12 md:col-4" *ngFor="let _ of [1, 2, 3]">
+                    <div class="col-12 md:col-6 lg:col-3" *ngFor="let _ of [1, 2, 3, 4]">
                         <div class="stat-card stat-card--skeleton surface-card border-round-xl h-full">
                             <div class="flex align-items-start gap-3 md:gap-4">
                                 <div class="stat-card__icon stat-card__icon--skeleton" aria-hidden="true">
@@ -51,7 +51,7 @@
             </ng-container>
             <ng-template #generalContent>
                 <div class="grid" *ngIf="generalStats">
-                    <div class="col-12 md:col-4">
+                    <div class="col-12 md:col-6 lg:col-3">
                         <div class="stat-card surface-card border-round-xl h-full">
                             <div class="flex align-items-start gap-3 md:gap-4">
                                 <div class="stat-card__icon" aria-hidden="true">
@@ -76,7 +76,32 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 md:col-4">
+                    <div class="col-12 md:col-6 lg:col-3">
+                        <div class="stat-card surface-card border-round-xl h-full">
+                            <div class="flex align-items-start gap-3 md:gap-4">
+                                <div class="stat-card__icon" aria-hidden="true">
+                                    <i class="pi pi-key"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="stat-card__label">{{
+                                        'systemAdministration.dashboard.stats.totalAccounts' | translate }}</div>
+                                    <div class="stat-card__value">{{ generalStats.totalAccounts | number }}</div>
+                                    <div class="stat-card__trend" [ngClass]="
+                                            generalStats.accountsTrendPercent >= 0 ? 'stat-card__trend--up' : 'stat-card__trend--down'
+                                        ">
+                                        <i class="pi"
+                                            [ngClass]="generalStats.accountsTrendPercent >= 0 ? 'pi-arrow-up-right' : 'pi-arrow-down-right'"></i>
+                                        <span>
+                                            {{ generalStats.accountsTrendPercent >= 0 ? '+' : '' }}{{
+                                            generalStats.accountsTrendPercent | number: '1.1-1' }}%
+                                            {{ 'systemAdministration.dashboard.stats.vsPrevious' | translate }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 md:col-6 lg:col-3">
                         <div class="stat-card surface-card border-round-xl h-full">
                             <div class="flex align-items-start gap-3 md:gap-4">
                                 <div class="stat-card__icon" aria-hidden="true">
@@ -101,7 +126,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 md:col-4">
+                    <div class="col-12 md:col-6 lg:col-3">
                         <div class="stat-card surface-card border-round-xl h-full">
                             <div class="flex align-items-start gap-3 md:gap-4">
                                 <div class="stat-card__icon" aria-hidden="true">
@@ -250,26 +275,26 @@
                     <p-table [value]="endpoints" [sortField]="'totalCalls'" [sortOrder]="-1" [paginator]="true"
                         [rows]="10" [showCurrentPageReport]="true"
                         [currentPageReportTemplate]="'systemAdministration.dashboard.table.pageReport' | translate"
-                        responsiveLayout="scroll" styleClass="p-datatable-sm">
+                        responsiveLayout="scroll" styleClass="p-datatable-sm system-dashboard__datatable">
                         <ng-template pTemplate="header">
                             <tr>
                                 <th pSortableColumn="endpoint">
                                     {{ 'systemAdministration.dashboard.apiTable.endpoint' | translate }}
                                     <p-sortIcon field="endpoint"></p-sortIcon>
                                 </th>
-                                <th pSortableColumn="totalCalls" class="text-right">
+                                <th pSortableColumn="totalCalls">
                                     {{ 'systemAdministration.dashboard.apiTable.totalCalls' | translate }}
                                     <p-sortIcon field="totalCalls"></p-sortIcon>
                                 </th>
-                                <th pSortableColumn="avgResponseTimeMs" class="text-right">
+                                <th pSortableColumn="avgResponseTimeMs">
                                     {{ 'systemAdministration.dashboard.apiTable.avgResponse' | translate }}
                                     <p-sortIcon field="avgResponseTimeMs"></p-sortIcon>
                                 </th>
-                                <th pSortableColumn="errorCount" class="text-right">
+                                <th pSortableColumn="errorCount">
                                     {{ 'systemAdministration.dashboard.apiTable.errors' | translate }}
                                     <p-sortIcon field="errorCount"></p-sortIcon>
                                 </th>
-                                <th pSortableColumn="successRatePercent" class="text-right">
+                                <th pSortableColumn="successRatePercent">
                                     {{ 'systemAdministration.dashboard.apiTable.successRate' | translate }}
                                     <p-sortIcon field="successRatePercent"></p-sortIcon>
                                 </th>
@@ -282,10 +307,10 @@
                         <ng-template pTemplate="body" let-row>
                             <tr class="cursor-pointer" (click)="onEndpointRowSelect(row)">
                                 <td>{{ row.endpoint }}</td>
-                                <td class="text-right">{{ row.totalCalls | number }}</td>
-                                <td class="text-right">{{ row.avgResponseTimeMs | number: '1.0-0' }} ms</td>
-                                <td class="text-right">{{ row.errorCount | number }}</td>
-                                <td class="text-right">{{ row.successRatePercent | number: '1.2-2' }}%</td>
+                                <td>{{ row.totalCalls | number }}</td>
+                                <td>{{ row.avgResponseTimeMs | number: '1.0-0' }} ms</td>
+                                <td>{{ row.errorCount | number }}</td>
+                                <td>{{ row.successRatePercent | number: '1.2-2' }}%</td>
                                 <td>{{ row.lastCalled | date: 'short' }}</td>
                             </tr>
                         </ng-template>
@@ -471,23 +496,23 @@
                         <p-card [header]="'systemAdministration.dashboard.samplesTable.title' | translate"
                             styleClass="dashboard-panel">
                             <p-table [value]="requestSamples" [paginator]="true" [rows]="10" responsiveLayout="scroll"
-                                styleClass="p-datatable-sm">
+                                styleClass="p-datatable-sm system-dashboard__datatable">
                                 <ng-template pTemplate="header">
                                     <tr>
                                         <th>{{ 'systemAdministration.dashboard.samplesTable.timestamp' | translate }}
                                         </th>
-                                        <th class="text-right">{{
+                                        <th>{{
                                             'systemAdministration.dashboard.samplesTable.responseTime' | translate }}
                                         </th>
                                         <th>{{ 'systemAdministration.dashboard.samplesTable.status' | translate }}</th>
-                                        <th class="text-right">{{
+                                        <th>{{
                                             'systemAdministration.dashboard.samplesTable.statusCode' | translate }}</th>
                                     </tr>
                                 </ng-template>
                                 <ng-template pTemplate="body" let-row>
                                     <tr>
                                         <td>{{ row.timestamp | date: 'medium' }}</td>
-                                        <td class="text-right">{{ row.responseTimeMs | number: '1.0-0' }} ms</td>
+                                        <td>{{ row.responseTimeMs | number: '1.0-0' }} ms</td>
                                         <td>
                                             <p-tag [severity]="row.status === 'success' ? 'success' : 'danger'" [value]="
                                                     row.status === 'success'
@@ -495,7 +520,7 @@
                                                         : ('systemAdministration.dashboard.samplesTable.statusError' | translate)
                                                 "></p-tag>
                                         </td>
-                                        <td class="text-right">{{ row.statusCode }}</td>
+                                        <td>{{ row.statusCode }}</td>
                                     </tr>
                                 </ng-template>
                                 <ng-template pTemplate="emptymessage">

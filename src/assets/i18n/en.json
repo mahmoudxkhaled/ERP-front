@@ -2485,6 +2485,7 @@
             },
             "stats": {
                 "totalUsers": "Total users",
+                "totalAccounts": "Total accounts",
                 "totalEntities": "Total entities",
                 "totalOperations": "Total operations",
                 "vsPrevious": "vs previous period"

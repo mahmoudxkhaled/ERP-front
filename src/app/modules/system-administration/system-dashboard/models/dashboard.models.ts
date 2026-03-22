@@ -5,9 +5,11 @@ export interface DashboardFilters {
 
 export interface GeneralStats {
     totalUsers: number;
+    totalAccounts: number;
     totalEntities: number;
     totalOperations: number;
     usersTrendPercent: number;
+    accountsTrendPercent: number;
     entitiesTrendPercent: number;
     operationsTrendPercent: number;
 }

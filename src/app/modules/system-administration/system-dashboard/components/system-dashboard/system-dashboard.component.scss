@@ -223,4 +223,15 @@
     tr.cursor-pointer:hover {
         background: var(--surface-hover);
     }
+
+    :host ::ng-deep .system-dashboard__datatable {
+        .p-datatable-thead > tr > th,
+        .p-datatable-tbody > tr > td {
+            text-align: start;
+        }
+
+        .p-paginator {
+            justify-content: start;
+        }
+    }
 }
