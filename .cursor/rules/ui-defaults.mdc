@@ -1,5 +1,5 @@
 ---
-description: Default when writing UI code — use skeleton for loading and translate everything (including toasts)
+description: UI changes must use PrimeNG skeleton (exact layout, no shift), existing loading flags only, and full i18n (en + ar) including toasts
 alwaysApply: true
 ---
 
@@ -7,20 +7,108 @@ alwaysApply: true
 
 When writing or editing UI code, apply these by default.
 
+---
+
 ## 1. Loading state — use PrimeNG Skeleton
 
-- Use **&lt;p-skeleton&gt;** for loading; do not add spinners or new loading flags.
+- Use **`<p-skeleton>`** for loading; do not add spinners or new loading flags.
 - Use existing loading flags only (e.g. `loading`, `loadingDetails`, `isLoading$`).
-- Pattern: `*ngIf="loading; else realContent"` with `<ng-template #realContent>`; skeleton replaces inner content only; keep layout (containers, spacing, alignment) unchanged.
-- Skeleton size must match the final content (height/width) to avoid layout shift.
+
+### Mandatory rule (updated)
+
+- **Any change in ANY component MUST include a proper skeleton state.**
+- The skeleton must:
+  - Match the **exact original size** of the content (height & width)
+  - Preserve the **same layout structure**
+  - Keep the **same spacing, gaps, padding, and margins**
+  - Avoid any layout shift when switching between loading and loaded states
+
+---
+
+### Pattern
+
+```html
+*ngIf="loading; else realContent"
+<ng-template #realContent>
+```
+
+- Skeleton replaces **only inner content**
+- **Do not:**
+  - Remove or change containers
+  - Modify layout structure
+  - Change CSS affecting spacing
+
+---
+
+### Correct example
+
+If original content:
+
+```html
+<div class="card p-3 mb-3">
+  <h3 class="mb-2">Title</h3>
+  <p>Description</p>
+</div>
+```
+
+Skeleton **must** be:
+
+```html
+<div class="card p-3 mb-3">
+  <p-skeleton height="24px" class="mb-2"></p-skeleton>
+  <p-skeleton height="16px" width="80%"></p-skeleton>
+</div>
+```
+
+- Same container
+- Same padding (`p-3`)
+- Same margin (`mb-3`)
+- Same spacing (`mb-2`)
+
+---
+
+### Wrong
+
+- Removing wrappers
+- Changing spacing
+- Using random skeleton sizes
+- Adding new loading flags
+- Replacing full layout instead of inner content
+
+---
+
+### Important notes
+
 - Do not change TypeScript logic; only change the HTML template.
+- Skeleton should visually represent the final UI (shape + spacing).
+- Always think: **“If skeleton disappears, layout should not move at all.”**
+
+---
 
 ## 2. Translations — everything in en + ar
 
-- **Templates:** All user-visible text via `{{ 'key' | translate }}` or `[placeholder]="'key' | translate"`. Add keys to both `src/assets/i18n/en.json` and `src/assets/i18n/ar.json`.
-- **Toaster / notifications (MessageService):** Never use hardcoded `summary` or `detail`. Use `this.translate.instant('key')` (or `translate.instant('key')`) and add those keys to both en.json and ar.json. Arabic: professional, formal UI Arabic.
+- **Templates:** All user-visible text must use:
 
-Example toaster:
+  ```html
+  {{ 'key' | translate }}
+  ```
+
+  or:
+
+  ```html
+  [placeholder]="'key' | translate"
+  ```
+
+- Add keys to **both**:
+  - `src/assets/i18n/en.json`
+  - `src/assets/i18n/ar.json`
+
+---
+
+### Toaster / notifications (MessageService)
+
+- **Never** use hardcoded text
+- **Always** use:
 
 ```ts
 this.messageService.add({
@@ -29,5 +117,24 @@ this.messageService.add({
   detail: this.translate.instant('entityAccounts.messages.created')
 });
 ```
+
+---
+
+### Arabic guidelines
+
+- Use **formal, professional UI Arabic**
+- Avoid slang or casual tone
+
+---
+
+## Final rule summary
+
+Any UI change **must**:
+
+1. Include a skeleton state
+2. Match exact layout (size + spacing + structure)
+3. Use existing loading flags only
+4. Use translation keys (EN + AR)
+5. Use translated text in toasts (no hardcoded strings)
 
 Apply skeleton and i18n (including toasts) on every new or modified UI.
