@@ -2,9 +2,14 @@
     <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-start gap-4 mb-4">
         <div>
             <h1 class="text-2xl font-semibold m-0 mb-2">{{ 'systemAdministration.dashboard.titleV2' | translate }}</h1>
-            <p class="text-600 text-sm m-0" *ngIf="lastUpdated">
+            <p class="text-600 text-sm m-0" *ngIf="lastUpdated || loadingStats">
                 {{ 'systemAdministration.dashboard.lastUpdated' | translate }}:
-                {{ lastUpdated | date: 'short' }}
+                <ng-container *ngIf="loadingStats; else lastUpdatedValue">
+                    <p-skeleton width="9rem" height="0.875rem" class="inline-block align-middle ml-1"></p-skeleton>
+                </ng-container>
+                <ng-template #lastUpdatedValue>
+                    <span>{{ lastUpdated | date: 'short' }}</span>
+                </ng-template>
             </p>
         </div>
         <div class="flex flex-column lg:flex-row flex-wrap gap-3 align-items-stretch lg:align-items-end">
@@ -65,9 +70,55 @@
                                 </div>
                             </div>
                             <div class="stat-card__trend-row">
-                                <p-skeleton width="100%" height="1.75rem" borderRadius="8px"></p-skeleton>
+                                <div class="stat-card__trend stat-card__trend--up">
+                                    <p-skeleton width="0.75rem" height="0.75rem" borderRadius="2px"></p-skeleton>
+                                    <span class="inline-flex align-items-center gap-2 flex-wrap">
+                                        <p-skeleton width="3.25rem" height="0.875rem" borderRadius="4px"></p-skeleton>
+                                        <span>{{ 'systemAdministration.dashboard.stats.vsPrevious' | translate }}</span>
+                                    </span>
+                                </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="col-12">
+                        <p-card [header]="'systemAdministration.dashboard.health.title' | translate"
+                            styleClass="dashboard-panel system-dashboard-v2__tippable"
+                            [pTooltip]="'systemAdministration.dashboard.cardTooltips.panelHealth' | translate"
+                            tooltipPosition="top">
+                            <div class="flex flex-wrap gap-3">
+                                <div *ngFor="let _ of [1, 2, 3]"
+                                    class="system-dashboard-v2__health-chip surface-card border-round-lg p-3 flex align-items-center gap-3 flex-1 min-w-0"
+                                    style="min-width: 12rem">
+                                    <p-skeleton width="4rem" height="1.5rem" borderRadius="6px"></p-skeleton>
+                                    <div class="flex flex-column gap-2 flex-1 min-w-0">
+                                        <p-skeleton width="72%" height="1rem" borderRadius="4px"></p-skeleton>
+                                        <p-skeleton width="88%" height="0.75rem" borderRadius="4px"></p-skeleton>
+                                        <p-skeleton width="92%" height="0.75rem" borderRadius="4px"></p-skeleton>
+                                    </div>
+                                </div>
+                            </div>
+                        </p-card>
+                    </div>
+                    <div class="col-12">
+                        <p-card [header]="'systemAdministration.dashboard.alerts.title' | translate"
+                            styleClass="dashboard-panel system-dashboard-v2__tippable"
+                            [pTooltip]="'systemAdministration.dashboard.cardTooltips.panelAlerts' | translate"
+                            tooltipPosition="top">
+                            <div class="flex flex-column gap-2">
+                                <div *ngFor="let _ of [1, 2]"
+                                    class="system-dashboard-v2__alert surface-card border-round-lg p-3">
+                                    <div class="flex flex-column gap-1">
+                                        <div class="flex flex-wrap align-items-center gap-2">
+                                            <p-skeleton width="4.5rem" height="1.25rem" borderRadius="6px"></p-skeleton>
+                                            <p-skeleton width="42%" height="1rem" borderRadius="4px"></p-skeleton>
+                                        </div>
+                                        <p-skeleton width="100%" height="0.875rem" borderRadius="4px"></p-skeleton>
+                                        <p-skeleton width="78%" height="0.875rem" borderRadius="4px"></p-skeleton>
+                                        <p-skeleton width="60%" height="0.75rem" borderRadius="4px"></p-skeleton>
+                                    </div>
+                                </div>
+                            </div>
+                        </p-card>
                     </div>
                     <div class="col-12">
                         <p-card [header]="'systemAdministration.dashboard.charts.operationsTrendTitle' | translate"
@@ -273,7 +324,7 @@
         <p-tabPanel [header]="'systemAdministration.dashboard.tabs.apiOverview' | translate">
             <ng-container *ngIf="loadingApi; else apiContent">
                 <div class="grid mb-4">
-                    <div class="col-12 md:col-3" *ngFor="let _ of [1, 2, 3, 4]">
+                    <div class="col-12 md:col-3" *ngFor="let _ of [1, 2, 3, 4, 5, 6, 7, 8]">
                         <div
                             class="stat-card stat-card--skeleton stat-card--skeleton-compact surface-card border-round-xl h-full">
                             <div class="flex align-items-start gap-3 md:gap-4">
@@ -602,7 +653,7 @@
 
             <ng-container *ngIf="loadingRequest; else requestContent">
                 <div class="grid mb-4">
-                    <div class="col-12 md:col-3" *ngFor="let _ of [1, 2, 3, 4]">
+                    <div class="col-12 md:col-3" *ngFor="let _ of [1, 2, 3, 4, 5, 6, 7, 8]">
                         <div class="stat-card stat-card--skeleton surface-card border-round-xl h-full">
                             <div class="flex align-items-start gap-3 md:gap-4">
                                 <div class="stat-card__icon stat-card__icon--skeleton" aria-hidden="true">
@@ -928,11 +979,28 @@
                 <div class="col-12 lg:col-3 flex flex-column justify-content-end gap-2">
                     <p-button class="w-full lg:w-auto"
                         [label]="'systemAdministration.dashboard.logs.search' | translate" icon="pi pi-search"
-                        (onClick)="searchLogs()" [loading]="loadingLogs"></p-button>
+                        (onClick)="searchLogs()"></p-button>
                 </div>
             </div>
             <ng-container *ngIf="loadingLogs; else logsTableBlock">
-                <p-skeleton width="100%" height="14rem" borderRadius="8px"></p-skeleton>
+                <div class="surface-card border-round-lg border-1 surface-border overflow-hidden">
+                    <div class="flex gap-2 p-3 surface-100">
+                        <p-skeleton height="1rem" class="flex-1" borderRadius="4px"></p-skeleton>
+                        <p-skeleton height="1rem" class="flex-1" borderRadius="4px"></p-skeleton>
+                        <p-skeleton height="1rem" class="flex-1" borderRadius="4px"></p-skeleton>
+                        <p-skeleton height="1rem" class="flex-1" borderRadius="4px"></p-skeleton>
+                        <p-skeleton height="1rem" class="flex-1" borderRadius="4px"></p-skeleton>
+                    </div>
+                    <div class="p-2 flex flex-column gap-2">
+                        <div class="flex gap-2 align-items-center" *ngFor="let _ of [1, 2, 3, 4, 5, 6]">
+                            <p-skeleton height="1.25rem" class="flex-1" borderRadius="4px"></p-skeleton>
+                            <p-skeleton height="1.25rem" class="flex-1" borderRadius="4px"></p-skeleton>
+                            <p-skeleton height="1.25rem" class="flex-1" borderRadius="4px"></p-skeleton>
+                            <p-skeleton height="1.25rem" class="flex-1" borderRadius="4px"></p-skeleton>
+                            <p-skeleton height="1.25rem" class="flex-1" borderRadius="4px"></p-skeleton>
+                        </div>
+                    </div>
+                </div>
             </ng-container>
             <ng-template #logsTableBlock>
                 <p-table [value]="logLines" styleClass="p-datatable-sm system-dashboard-v2__datatable">
@@ -981,11 +1049,28 @@
                     <input pInputText inputId="traceLookupInput" [(ngModel)]="traceLookupId" class="flex-1"
                         [placeholder]="'systemAdministration.dashboard.traces.traceIdPlaceholder' | translate" />
                     <p-button [label]="'systemAdministration.dashboard.traces.loadTrace' | translate"
-                        icon="pi pi-search" (onClick)="loadTraceSpans()" [loading]="loadingTrace"></p-button>
+                        icon="pi pi-search" (onClick)="loadTraceSpans()"></p-button>
                 </div>
             </div>
             <ng-container *ngIf="loadingTrace; else tracesTableBlock">
-                <p-skeleton width="100%" height="12rem" borderRadius="8px"></p-skeleton>
+                <div class="surface-card border-round-lg border-1 surface-border overflow-hidden">
+                    <div class="flex gap-2 p-3 surface-100">
+                        <p-skeleton height="1rem" class="flex-1" borderRadius="4px"></p-skeleton>
+                        <p-skeleton height="1rem" class="flex-1" borderRadius="4px"></p-skeleton>
+                        <p-skeleton height="1rem" class="flex-1" borderRadius="4px"></p-skeleton>
+                        <p-skeleton height="1rem" class="flex-1" borderRadius="4px"></p-skeleton>
+                        <p-skeleton height="1rem" class="flex-1" borderRadius="4px"></p-skeleton>
+                    </div>
+                    <div class="p-2 flex flex-column gap-2">
+                        <div class="flex gap-2 align-items-center" *ngFor="let _ of [1, 2, 3, 4, 5]">
+                            <p-skeleton height="1.25rem" class="flex-1" borderRadius="4px"></p-skeleton>
+                            <p-skeleton height="1.25rem" class="flex-1" borderRadius="4px"></p-skeleton>
+                            <p-skeleton height="1.25rem" class="flex-1" borderRadius="4px"></p-skeleton>
+                            <p-skeleton height="1.25rem" class="flex-1" borderRadius="4px"></p-skeleton>
+                            <p-skeleton height="1.25rem" class="flex-1" borderRadius="4px"></p-skeleton>
+                        </div>
+                    </div>
+                </div>
             </ng-container>
             <ng-template #tracesTableBlock>
                 <p-table *ngIf="traceSpans.length" [value]="traceSpans" responsiveLayout="scroll"

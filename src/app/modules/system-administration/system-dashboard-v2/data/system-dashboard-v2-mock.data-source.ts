@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
 import {
@@ -197,12 +197,6 @@ export class SystemDashboardV2MockDataSource {
                 id: 'cache',
                 nameKey: 'systemAdministration.dashboard.health.cache',
                 status: 'healthy',
-                lastCheckedAt: new Date().toISOString(),
-            },
-            {
-                id: 'queue',
-                nameKey: 'systemAdministration.dashboard.health.queue',
-                status: h % 7 === 0 ? 'degraded' : 'healthy',
                 lastCheckedAt: new Date().toISOString(),
             },
             {

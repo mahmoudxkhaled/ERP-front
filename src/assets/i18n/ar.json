@@ -2362,7 +2362,6 @@
                 "title": "صحة النظام",
                 "database": "قاعدة البيانات",
                 "cache": "التخزين المؤقت",
-                "queue": "قائمة الرسائل",
                 "externalApi": "واجهات خارجية",
                 "statusHealthy": "سليم",
                 "statusDegraded": "متدهور",

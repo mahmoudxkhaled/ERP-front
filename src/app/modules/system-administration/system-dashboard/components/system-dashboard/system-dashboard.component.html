@@ -37,7 +37,13 @@
                                 </div>
                             </div>
                             <div class="stat-card__trend-row">
-                                <p-skeleton width="100%" height="1.75rem" borderRadius="8px"></p-skeleton>
+                                <div class="stat-card__trend stat-card__trend--up">
+                                    <p-skeleton width="0.75rem" height="0.75rem" borderRadius="2px"></p-skeleton>
+                                    <span class="inline-flex align-items-center gap-2 flex-wrap">
+                                        <p-skeleton width="3.25rem" height="0.875rem" borderRadius="4px"></p-skeleton>
+                                        <span>{{ 'systemAdministration.dashboard.stats.vsPrevious' | translate }}</span>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
