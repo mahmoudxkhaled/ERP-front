@@ -23,6 +23,9 @@ import { SystemDashboardService } from '../../services/system-dashboard.service'
     styleUrls: ['./system-dashboard.component.scss'],
 })
 export class SystemDashboardComponent implements OnInit, OnDestroy {
+    readonly chartHeightMain = '320px';
+    readonly chartHeightCompact = '220px';
+
     rangeDates: Date[] | null = null;
     activeTabIndex = 0;
     loadingStats = false;

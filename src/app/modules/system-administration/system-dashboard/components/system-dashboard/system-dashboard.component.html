@@ -40,7 +40,12 @@
                         </div>
                     </div>
                     <div class="col-12">
-                        <p-skeleton width="100%" height="16rem" borderRadius="12px"></p-skeleton>
+                        <p-card [header]="'systemAdministration.dashboard.charts.operationsTrendTitle' | translate"
+                            styleClass="dashboard-panel">
+                            <div class="chart-panel">
+                                <p-skeleton width="100%" height="320px" borderRadius="8px"></p-skeleton>
+                            </div>
+                        </p-card>
                     </div>
                 </div>
             </ng-container>
@@ -122,7 +127,8 @@
                             styleClass="dashboard-panel">
                             <div class="chart-panel" *ngIf="operationsTrendChartData">
                                 <p-chart type="line" [data]="operationsTrendChartData"
-                                    [options]="operationsTrendChartOptions"></p-chart>
+                                    [options]="operationsTrendChartOptions"
+                                    [height]="chartHeightMain"></p-chart>
                             </div>
                         </p-card>
                     </div>
@@ -152,8 +158,22 @@
                         </div>
                     </div>
                 </div>
-                <p-skeleton width="100%" height="18rem" borderRadius="12px" class="mb-4"></p-skeleton>
-                <p-skeleton width="100%" height="12rem" borderRadius="12px"></p-skeleton>
+                <p-card [header]="'systemAdministration.dashboard.charts.trafficByHourTitle' | translate"
+                    styleClass="dashboard-panel mb-4">
+                    <div class="chart-panel">
+                        <p-skeleton width="100%" height="320px" borderRadius="8px"></p-skeleton>
+                    </div>
+                </p-card>
+                <p-card [header]="'systemAdministration.dashboard.apiTable.title' | translate"
+                    styleClass="dashboard-panel">
+                    <div class="chart-panel" style="min-height: 12rem">
+                        <p-skeleton width="100%" height="0.875rem" class="mb-3" borderRadius="4px"></p-skeleton>
+                        <p-skeleton width="100%" height="2.25rem" class="mb-2" borderRadius="4px"></p-skeleton>
+                        <p-skeleton width="100%" height="2.25rem" class="mb-2" borderRadius="4px"></p-skeleton>
+                        <p-skeleton width="100%" height="2.25rem" class="mb-2" borderRadius="4px"></p-skeleton>
+                        <p-skeleton width="72%" height="2.25rem" borderRadius="4px"></p-skeleton>
+                    </div>
+                </p-card>
             </ng-container>
             <ng-template #apiContent>
                 <div class="grid mb-4" *ngIf="apiOverviewSummary">
@@ -221,7 +241,8 @@
                 <p-card [header]="'systemAdministration.dashboard.charts.trafficByHourTitle' | translate"
                     styleClass="dashboard-panel mb-4">
                     <div class="chart-panel" *ngIf="trafficChartData">
-                        <p-chart type="line" [data]="trafficChartData" [options]="trafficChartOptions"></p-chart>
+                        <p-chart type="line" [data]="trafficChartData" [options]="trafficChartOptions"
+                            [height]="chartHeightMain"></p-chart>
                     </div>
                 </p-card>
                 <p-card [header]="'systemAdministration.dashboard.apiTable.title' | translate"
@@ -308,15 +329,43 @@
                         </div>
                     </div>
                 </div>
-                <div class="grid mb-3">
-                    <div class="col-12 lg:col-4"><p-skeleton width="100%" height="14rem"
-                            borderRadius="12px"></p-skeleton></div>
-                    <div class="col-12 lg:col-4"><p-skeleton width="100%" height="14rem"
-                            borderRadius="12px"></p-skeleton></div>
-                    <div class="col-12 lg:col-4"><p-skeleton width="100%" height="14rem"
-                            borderRadius="12px"></p-skeleton></div>
+                <div class="grid">
+                    <div class="col-12 lg:col-4">
+                        <p-card [header]="'systemAdministration.dashboard.charts.requestCountTitle' | translate"
+                            styleClass="dashboard-panel">
+                            <div class="chart-panel chart-panel--compact">
+                                <p-skeleton width="100%" height="220px" borderRadius="8px"></p-skeleton>
+                            </div>
+                        </p-card>
+                    </div>
+                    <div class="col-12 lg:col-4">
+                        <p-card [header]="'systemAdministration.dashboard.charts.latencyTitle' | translate"
+                            styleClass="dashboard-panel">
+                            <div class="chart-panel chart-panel--compact">
+                                <p-skeleton width="100%" height="220px" borderRadius="8px"></p-skeleton>
+                            </div>
+                        </p-card>
+                    </div>
+                    <div class="col-12 lg:col-4">
+                        <p-card [header]="'systemAdministration.dashboard.charts.errorTrendTitle' | translate"
+                            styleClass="dashboard-panel">
+                            <div class="chart-panel chart-panel--compact">
+                                <p-skeleton width="100%" height="220px" borderRadius="8px"></p-skeleton>
+                            </div>
+                        </p-card>
+                    </div>
+                    <div class="col-12">
+                        <p-card [header]="'systemAdministration.dashboard.samplesTable.title' | translate"
+                            styleClass="dashboard-panel">
+                            <div class="chart-panel" style="min-height: 10rem">
+                                <p-skeleton width="100%" height="0.875rem" class="mb-3" borderRadius="4px"></p-skeleton>
+                                <p-skeleton width="100%" height="2rem" class="mb-2" borderRadius="4px"></p-skeleton>
+                                <p-skeleton width="100%" height="2rem" class="mb-2" borderRadius="4px"></p-skeleton>
+                                <p-skeleton width="55%" height="2rem" borderRadius="4px"></p-skeleton>
+                            </div>
+                        </p-card>
+                    </div>
                 </div>
-                <p-skeleton width="100%" height="10rem" borderRadius="12px"></p-skeleton>
             </ng-container>
             <ng-template #requestContent>
                 <div *ngIf="!selectedEndpointId" class="text-center text-600 py-6">
@@ -394,7 +443,8 @@
                             styleClass="dashboard-panel">
                             <div class="chart-panel chart-panel--compact" *ngIf="requestCountChartData">
                                 <p-chart type="line" [data]="requestCountChartData"
-                                    [options]="requestCountChartOptions"></p-chart>
+                                    [options]="requestCountChartOptions"
+                                    [height]="chartHeightCompact"></p-chart>
                             </div>
                         </p-card>
                     </div>
@@ -403,7 +453,8 @@
                             styleClass="dashboard-panel">
                             <div class="chart-panel chart-panel--compact" *ngIf="latencyChartData">
                                 <p-chart type="line" [data]="latencyChartData"
-                                    [options]="latencyChartOptions"></p-chart>
+                                    [options]="latencyChartOptions"
+                                    [height]="chartHeightCompact"></p-chart>
                             </div>
                         </p-card>
                     </div>
@@ -411,7 +462,8 @@
                         <p-card [header]="'systemAdministration.dashboard.charts.errorTrendTitle' | translate"
                             styleClass="dashboard-panel">
                             <div class="chart-panel chart-panel--compact" *ngIf="errorChartData">
-                                <p-chart type="line" [data]="errorChartData" [options]="errorChartOptions"></p-chart>
+                                <p-chart type="line" [data]="errorChartData" [options]="errorChartOptions"
+                                    [height]="chartHeightCompact"></p-chart>
                             </div>
                         </p-card>
                     </div>

@@ -32,7 +32,21 @@ Examples:
 
 ---
 
-### 4. VERY IMPORTANT — Preserve layout structure (STRICT)
+### 4. Static vs dynamic (reload / first visit)
+
+When the user **reloads** or **navigates** to the page and loading is true:
+
+| Kind | Rule |
+| ------ | ------ |
+| **Static text** | **Keep it visible.** Do **not** replace with `<p-skeleton>`. Examples: fixed page/section titles, labels, helper text, tab names, button labels that use only i18n (`translate` pipe) and **no** data from an API/async load. |
+| **Dynamic content** | **Use `<p-skeleton>`** for anything that appears only after data arrives: bound values (`{{ ... }}` from loaded models), lists (`*ngFor`), tables, charts, KPI numbers, avatars/images whose `src` depends on data, empty slots that will fill from the server. |
+
+- If a line mixes static + dynamic (e.g. label + value), keep the **label** as real text; skeletonize **only the value** part so layout stays stable.
+- Do not skeletonize i18n strings that are known upfront; skeletonize the **data-driven** parts.
+
+---
+
+### 5. VERY IMPORTANT — Preserve layout structure (STRICT)
 
 - **DO NOT** change containers (`div`, grid, flex, etc.)
 - **DO NOT** remove or change:
@@ -50,7 +64,7 @@ Examples:
 
 ---
 
-### 5. CRITICAL — Size, spacing & alignment fidelity
+### 6. CRITICAL — Size, spacing & alignment fidelity
 
 #### Mandatory
 
@@ -90,7 +104,7 @@ Detect and preserve alignment:
 
 ---
 
-### 6. Pattern to follow
+### 7. Pattern to follow
 
 Instead of:
 
@@ -118,7 +132,7 @@ Use:
 
 ---
 
-### 7. Complex blocks
+### 8. Complex blocks
 
 - Keep **ALL** wrappers exactly as-is
 - Replace **ONLY** text, icons, images, buttons, and dynamic values with skeletons
@@ -138,7 +152,7 @@ Skeleton **MUST**:
 
 ---
 
-### 8. Images / avatars
+### 9. Images / avatars
 
 - **DO NOT** remove the container
 - Replace only inner content
@@ -151,7 +165,7 @@ Skeleton **MUST**:
 
 ---
 
-### 9. Forms
+### 10. Forms
 
 - Label → small skeleton line
 - Input → full-width rectangular skeleton matching input height
@@ -161,14 +175,14 @@ Skeleton **MUST**:
 
 ---
 
-### 10. Tabs / panels
+### 11. Tabs / panels
 
 - **DO NOT** modify tab structure
 - Apply skeleton **ONLY** inside the active content area
 
 ---
 
-### 11. Async handling
+### 12. Async handling
 
 - **Do NOT** duplicate async pipes
 - Use **existing loading flags** only
@@ -181,6 +195,7 @@ Create a skeleton state that is:
 
 - Visually consistent with the final UI (size + spacing + alignment)
 - Preserves layout, padding, gaps, and alignment
+- Keeps **static** copy visible; skeletonizes **dynamic** data only (see **Static vs dynamic** above)
 - Causes **zero layout shift (CLS)** when switching loading → loaded
 
 ## Golden rule

@@ -178,15 +178,15 @@
 
     .chart-panel {
         position: relative;
-        min-height: 280px;
+        min-height: 320px;
     }
 
     .chart-panel--compact {
         min-height: 220px;
     }
 
-    :host ::ng-deep .p-chart {
-        min-height: inherit;
+    :host ::ng-deep .chart-panel .p-chart {
+        display: block;
     }
 
     :host ::ng-deep .p-card.dashboard-panel {
