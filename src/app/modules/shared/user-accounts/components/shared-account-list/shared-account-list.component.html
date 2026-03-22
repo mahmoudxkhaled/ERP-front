@@ -43,7 +43,8 @@
             [rowsPerPageOptions]="[10, 25, 50, 100]"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
             [lazy]="true"
-            (onLazyLoad)="onPageChange($event)">
+            (onLazyLoad)="onPageChange($event)"
+            styleClass="account-list-table p-datatable-sm">
             <ng-template pTemplate="header">
                 <tr>
                     <th class="text-center">{{ 'entityAccounts.list.table.accountId' | translate }}</th>
@@ -59,40 +60,50 @@
             </ng-template>
             <ng-template pTemplate="body" let-account>
                 <tr>
-                    <td class="text-center">
+                    <td class="text-center account-list-td">
                         <ng-container *ngIf="loadingAccounts; else normalAccountId">
-                            <p-skeleton height="1.5rem" width="4rem"></p-skeleton>
+                            <div class="flex justify-content-center w-full">
+                                <p-skeleton height="1.5rem" width="4rem" borderRadius="4px"></p-skeleton>
+                            </div>
                         </ng-container>
                         <ng-template #normalAccountId>
                             <span class="text-600">{{ account.accountId }}</span>
                         </ng-template>
                     </td>
-                    <td class="text-center">
+                    <td class="text-center account-list-td">
                         <ng-container *ngIf="loadingAccounts; else normalUserId">
-                            <p-skeleton height="1.5rem" width="4rem"></p-skeleton>
+                            <div class="flex justify-content-center w-full">
+                                <p-skeleton height="1.5rem" width="4rem" borderRadius="4px"></p-skeleton>
+                            </div>
                         </ng-container>
                         <ng-template #normalUserId>
                             <span class="text-600">{{ account.userId }}</span>
                         </ng-template>
                     </td>
-                    <td>
+                    <td class="account-list-td">
                         <ng-container *ngIf="loadingAccounts; else normalEmail">
-                            <p-skeleton height="1.5rem" width="12rem"></p-skeleton>
+                            <div class="account-list-skeleton-line">
+                                <p-skeleton height="1.5rem" width="100%" borderRadius="4px"></p-skeleton>
+                            </div>
                         </ng-container>
                         <ng-template #normalEmail>
                             <span class="text-600">{{ account.email }}</span>
                         </ng-template>
                     </td>
-                    <td>
+                    <td class="account-list-td">
                         <ng-container *ngIf="loadingAccounts; else normalEntityName">
-                            <p-skeleton height="1.5rem" width="10rem"></p-skeleton>
+                            <div class="account-list-skeleton-line">
+                                <p-skeleton height="1.5rem" width="100%" borderRadius="4px"></p-skeleton>
+                            </div>
                         </ng-container>
                         <ng-template #normalEntityName>
                             <ng-container *ngIf="!account.accountEntityId || account.accountEntityId <= 0">
                                 <span class="text-600">{{ 'entityAccounts.list.na' | translate }}</span>
                             </ng-container>
                             <ng-container *ngIf="account.accountEntityId > 0 && account.entityNameLabel === undefined">
-                                <p-skeleton height="1.5rem" width="10rem"></p-skeleton>
+                                <div class="account-list-skeleton-line">
+                                    <p-skeleton height="1.5rem" width="100%" borderRadius="4px"></p-skeleton>
+                                </div>
                             </ng-container>
                             <ng-container *ngIf="account.accountEntityId > 0 && account.entityNameLabel !== undefined && account.entityNameLabel !== null">
                                 <span class="text-600">{{ account.entityNameLabel }}</span>
@@ -102,35 +113,43 @@
                             </ng-container>
                         </ng-template>
                     </td>
-                    <td class="text-center">
+                    <td class="text-center account-list-td">
                         <ng-container *ngIf="loadingAccounts; else normalRole">
-                            <p-skeleton height="1.5rem" width="5rem" borderRadius="4px"></p-skeleton>
+                            <div class="flex justify-content-center w-full">
+                                <p-skeleton height="1.75rem" width="5.5rem" borderRadius="6px"></p-skeleton>
+                            </div>
                         </ng-container>
                         <ng-template #normalRole>
                             <p-tag [value]="account.roleName"
                                 [severity]="account.systemRoleId === 4 ? 'info' : 'secondary'"></p-tag>
                         </ng-template>
                     </td>
-                    <td class="text-center">
+                    <td class="text-center account-list-td">
                         <ng-container *ngIf="loadingAccounts; else normalEntityRole">
-                            <p-skeleton height="1.5rem" width="5rem" borderRadius="4px"></p-skeleton>
+                            <div class="flex justify-content-center w-full">
+                                <p-skeleton height="1.5rem" width="6rem" borderRadius="4px"></p-skeleton>
+                            </div>
                         </ng-container>
                         <ng-template #normalEntityRole>
                             <span class="text-600">{{ account.entityRoleName || ('entityAccounts.list.na' | translate) }}</span>
                         </ng-template>
                     </td>
-                    <td class="text-center">
+                    <td class="text-center account-list-td">
                         <ng-container *ngIf="loadingAccounts; else normalAccountState">
-                            <p-skeleton height="1.5rem" width="5rem" borderRadius="4px"></p-skeleton>
+                            <div class="flex justify-content-center w-full">
+                                <p-skeleton height="1.75rem" width="4.5rem" borderRadius="6px"></p-skeleton>
+                            </div>
                         </ng-container>
                         <ng-template #normalAccountState>
                             <p-tag [value]="account.accountState === 1 ? ('entityAccounts.list.active' | translate) : ('entityAccounts.list.inactive' | translate)"
                                 [severity]="account.accountState === 1 ? 'success' : 'danger'"></p-tag>
                         </ng-template>
                     </td>
-                    <td class="text-center">
+                    <td class="text-center account-list-td">
                         <ng-container *ngIf="loadingAccounts; else normalLastLogin">
-                            <p-skeleton height="1.5rem" width="6rem"></p-skeleton>
+                            <div class="flex justify-content-center w-full">
+                                <p-skeleton height="1.5rem" width="7rem" borderRadius="4px"></p-skeleton>
+                            </div>
                         </ng-container>
                         <ng-template #normalLastLogin>
                             <span class="text-600">
@@ -138,9 +157,11 @@
                             </span>
                         </ng-template>
                     </td>
-                    <td class="text-start">
+                    <td class="text-start account-list-td account-list-td--actions">
                         <ng-container *ngIf="loadingAccounts; else normalActions">
-                            <p-skeleton height="2rem" width="2rem" borderRadius="50%"></p-skeleton>
+                            <div class="account-list-actions-skeleton">
+                                <p-skeleton shape="circle" size="2rem"></p-skeleton>
+                            </div>
                         </ng-container>
                         <ng-template #normalActions>
                             <button pButton pRipple type="button" icon="pi pi-ellipsis-v"
@@ -175,16 +196,18 @@
         <p-button [label]="'entityAccounts.list.deleteDialog.cancel' | translate" icon="pi pi-times" class="p-button-text" (onClick)="onCancelDeleteAccountDialog()"
             [disabled]="loadingAccounts">
         </p-button>
-        <p-button class="p-button-danger" (onClick)="deleteAccount()" [disabled]="loadingAccounts">
-            <ng-container *ngIf="loadingAccounts">
-                <span class="indicator-progress" [style.display]="'block'">
-                    {{ 'entityAccounts.list.pleaseWait' | translate }}
-                    <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
-                </span>
-            </ng-container>
-            <ng-container *ngIf="!loadingAccounts">
-                <span>{{ 'entityAccounts.list.deleteDialog.delete' | translate }}</span>
-            </ng-container>
+        <p-button styleClass="p-button-danger account-list-footer-primary-btn" (onClick)="deleteAccount()" [disabled]="loadingAccounts">
+            <span class="account-list-footer-primary-inner">
+                <ng-container *ngIf="loadingAccounts">
+                    <span class="indicator-progress flex align-items-center justify-content-center gap-2">
+                        {{ 'entityAccounts.list.pleaseWait' | translate }}
+                        <p-skeleton width="1rem" height="1rem" shape="circle"></p-skeleton>
+                    </span>
+                </ng-container>
+                <ng-container *ngIf="!loadingAccounts">
+                    <span>{{ 'entityAccounts.list.deleteDialog.delete' | translate }}</span>
+                </ng-container>
+            </span>
         </p-button>
     </ng-template>
 </p-dialog>
@@ -262,7 +285,21 @@
             <p-button [label]="'entityAccounts.list.addAccountDialog.cancel' | translate" icon="pi pi-times" class="p-button-text" (onClick)="onAccountCancelled()"
                 [disabled]="loading">
             </p-button>
-            <p-button [label]="'entityAccounts.list.addAccountDialog.createAccount' | translate" icon="pi pi-check" type="submit" [loading]="loading" [disabled]="loading">
+            <p-button type="submit" [disabled]="loading" styleClass="account-list-footer-primary-btn">
+                <span class="account-list-footer-primary-inner">
+                    <ng-container *ngIf="loading">
+                        <span class="indicator-progress flex align-items-center justify-content-center gap-2">
+                            {{ 'entityAccounts.list.pleaseWait' | translate }}
+                            <p-skeleton width="1rem" height="1rem" shape="circle"></p-skeleton>
+                        </span>
+                    </ng-container>
+                    <ng-container *ngIf="!loading">
+                        <span class="flex align-items-center justify-content-center gap-2">
+                            <i class="pi pi-check"></i>
+                            {{ 'entityAccounts.list.addAccountDialog.createAccount' | translate }}
+                        </span>
+                    </ng-container>
+                </span>
             </p-button>
         </div>
     </form>
@@ -393,16 +430,18 @@
         <p-button [label]="'entityAccounts.list.activateDialog.cancel' | translate" icon="pi pi-times" class="p-button-text" (onClick)="onCancelActivateAccountDialog()"
             [disabled]="loadingAccounts">
         </p-button>
-        <p-button (onClick)="activateAccount()" [disabled]="loadingAccounts">
-            <ng-container *ngIf="loadingAccounts">
-                <span class="indicator-progress" [style.display]="'block'">
-                    {{ 'entityAccounts.list.pleaseWait' | translate }}
-                    <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
-                </span>
-            </ng-container>
-            <ng-container *ngIf="!loadingAccounts">
-                <span>{{ 'entityAccounts.list.activateDialog.activate' | translate }}</span>
-            </ng-container>
+        <p-button (onClick)="activateAccount()" [disabled]="loadingAccounts" styleClass="account-list-footer-primary-btn">
+            <span class="account-list-footer-primary-inner">
+                <ng-container *ngIf="loadingAccounts">
+                    <span class="indicator-progress flex align-items-center justify-content-center gap-2">
+                        {{ 'entityAccounts.list.pleaseWait' | translate }}
+                        <p-skeleton width="1rem" height="1rem" shape="circle"></p-skeleton>
+                    </span>
+                </ng-container>
+                <ng-container *ngIf="!loadingAccounts">
+                    <span>{{ 'entityAccounts.list.activateDialog.activate' | translate }}</span>
+                </ng-container>
+            </span>
         </p-button>
     </ng-template>
 </p-dialog>
@@ -420,16 +459,18 @@
         <p-button [label]="'entityAccounts.list.deactivateDialog.cancel' | translate" icon="pi pi-times" class="p-button-text" (onClick)="onCancelDeactivateAccountDialog()"
             [disabled]="loadingAccounts">
         </p-button>
-        <p-button (onClick)="deactivateAccount()" [disabled]="loadingAccounts">
-            <ng-container *ngIf="loadingAccounts">
-                <span class="indicator-progress" [style.display]="'block'">
-                    {{ 'entityAccounts.list.pleaseWait' | translate }}
-                    <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
-                </span>
-            </ng-container>
-            <ng-container *ngIf="!loadingAccounts">
-                <span>{{ 'entityAccounts.list.deactivateDialog.deactivate' | translate }}</span>
-            </ng-container>
+        <p-button (onClick)="deactivateAccount()" [disabled]="loadingAccounts" styleClass="account-list-footer-primary-btn">
+            <span class="account-list-footer-primary-inner">
+                <ng-container *ngIf="loadingAccounts">
+                    <span class="indicator-progress flex align-items-center justify-content-center gap-2">
+                        {{ 'entityAccounts.list.pleaseWait' | translate }}
+                        <p-skeleton width="1rem" height="1rem" shape="circle"></p-skeleton>
+                    </span>
+                </ng-container>
+                <ng-container *ngIf="!loadingAccounts">
+                    <span>{{ 'entityAccounts.list.deactivateDialog.deactivate' | translate }}</span>
+                </ng-container>
+            </span>
         </p-button>
     </ng-template>
 </p-dialog>
@@ -447,16 +488,18 @@
         <p-button [label]="'entityAccounts.list.assignAdminDialog.cancel' | translate" icon="pi pi-times" class="p-button-text" (onClick)="onCancelAssignAdminDialog()"
             [disabled]="loadingAccounts">
         </p-button>
-        <p-button (onClick)="assignAccountAsAdmin()" [disabled]="loadingAccounts">
-            <ng-container *ngIf="loadingAccounts">
-                <span class="indicator-progress" [style.display]="'block'">
-                    {{ 'entityAccounts.list.pleaseWait' | translate }}
-                    <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
-                </span>
-            </ng-container>
-            <ng-container *ngIf="!loadingAccounts">
-                <span>{{ 'entityAccounts.list.assignAdminDialog.assign' | translate }}</span>
-            </ng-container>
+        <p-button (onClick)="assignAccountAsAdmin()" [disabled]="loadingAccounts" styleClass="account-list-footer-primary-btn">
+            <span class="account-list-footer-primary-inner">
+                <ng-container *ngIf="loadingAccounts">
+                    <span class="indicator-progress flex align-items-center justify-content-center gap-2">
+                        {{ 'entityAccounts.list.pleaseWait' | translate }}
+                        <p-skeleton width="1rem" height="1rem" shape="circle"></p-skeleton>
+                    </span>
+                </ng-container>
+                <ng-container *ngIf="!loadingAccounts">
+                    <span>{{ 'entityAccounts.list.assignAdminDialog.assign' | translate }}</span>
+                </ng-container>
+            </span>
         </p-button>
     </ng-template>
 </p-dialog>
@@ -505,8 +548,21 @@
             <p-button [label]="'entityAccounts.list.updateEmailDialog.cancel' | translate" icon="pi pi-times" class="p-button-text"
                 (onClick)="onCloseUpdateAccountEmailDialog()" [disabled]="savingAccountEmail">
             </p-button>
-            <p-button [label]="'entityAccounts.list.updateEmailDialog.updateEmail' | translate" icon="pi pi-check" type="submit" [loading]="savingAccountEmail"
-                [disabled]="savingAccountEmail || updateEmailForm.invalid">
+            <p-button type="submit" [disabled]="savingAccountEmail || updateEmailForm.invalid" styleClass="account-list-footer-primary-btn">
+                <span class="account-list-footer-primary-inner">
+                    <ng-container *ngIf="savingAccountEmail">
+                        <span class="indicator-progress flex align-items-center justify-content-center gap-2">
+                            {{ 'entityAccounts.list.pleaseWait' | translate }}
+                            <p-skeleton width="1rem" height="1rem" shape="circle"></p-skeleton>
+                        </span>
+                    </ng-container>
+                    <ng-container *ngIf="!savingAccountEmail">
+                        <span class="flex align-items-center justify-content-center gap-2">
+                            <i class="pi pi-check"></i>
+                            {{ 'entityAccounts.list.updateEmailDialog.updateEmail' | translate }}
+                        </span>
+                    </ng-container>
+                </span>
             </p-button>
         </div>
     </form>
