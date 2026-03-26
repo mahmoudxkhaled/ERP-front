@@ -1,0 +1,25 @@
+# March 2026 Timesheet
+
+| Date   | Category Code | Project | Task                          | Sub-Task                                                                                                                                                                                                                                                                                                | Hours |
+| ------ | ------------- | ------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- |
+| 11-Mar | Angular       | ERP     | UI/Layout                     | Improved wrong-route experience and language switching behavior to reduce screen flicker, and polished header behavior so navigation feels more stable and clear to users.                                                                                                                           | 2     |
+| 12-Mar | Angular       | ERP     | Entity Module                 | Updated entity title/header behavior so entity name changes reflect correctly in the top bar without forcing logout/login, and refined header content structure for better readability.                                                                                                              | 5     |
+| 13-Mar | Angular       | ERP     | Profile Module                | Enhanced profile image management by adding upload improvements, crop flow, default avatar logic, and loading feedback; improved top bar logo loading to reduce flicker and keep branding consistent after refresh and login.                                                                    | 7     |
+| 14-Mar | Angular       | ERP     | Form Validation & UX          | Fixed status toggle behavior in confirmation popups (cancel/close/Esc consistency), and improved function logo management flow to avoid wrong logo display and reduce confusing refresh side effects.                                                                                              | 7     |
+| 15-Mar | Angular       | ERP     | Project Setup & Configuration | Added under-development route and continued refactoring function/module details (including dialog mode and modules tab), while improving language/state persistence and dashboard logo caching to keep configuration behavior stable and maintainable.                                            | 5     |
+| 16-Mar | Angular       | ERP     | Profile Module                | Extended profile overview with account details and account title editing, and improved profile image handling to provide clearer personal/account data visibility for users.                                                                                                                         | 2     |
+| 19-Mar | Angular       | ERP     | Entity Module                 | Updated administration structure so entity/system responsibilities are better separated, and added entity logo visibility in entities list to improve management clarity.                                                                                                                            | 5     |
+| 20-Mar | Angular       | ERP     | Project Setup & Configuration | Performed iterative integration and stabilization updates to prepare for module split and shared component migration, helping keep the transition safe and predictable.                                                                                                                               | 7     |
+| 21-Mar | Angular       | ERP     | Account Management            | Refactored user accounts and entity accounts into shared structure, added entity/role selection dialogs, and split user-account responsibilities across System Users, User Accounts, and Entity User Accounts to streamline account workflows and simplify maintenance.                            | 7     |
+| 22-Mar | Angular       | ERP     | UI/Layout                     | Implemented system dashboard enhancements (observability, health metrics, account statistics, loading states, trend visualization), improved branding across auth/error/under-development pages, and refined pagination/account fields/translations for clearer system administration experience. | 5     |
+| 23-Mar | Angular       | ERP     | Profile Module                | Improved loading behavior in profile overview and entity details, enhanced entity logo management and top bar display, and refined large-screen top bar image positioning for more stable and polished visual behavior.                                                                            | 2     |
+
+---
+
+## Summary
+
+| Metric                 | Value    |
+| ---------------------- | -------- |
+| **Total Working Days** | 11       |
+| **Total Hours**        | 54 hours |
+| **Total Commits**      | 70       |
