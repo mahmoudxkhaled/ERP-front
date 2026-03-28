@@ -24,6 +24,20 @@
                     [disabled]="!selectedDriveId || loadingFileSystemsInDrive"
                     [placeholder]="(selectedDriveId && fileSystemOptionsInDrive.length === 0) ? ('fileSystem.companyStorageView.noFileSystemToSelect' | translate) : (loadingFileSystemsInDrive ? ('fileSystem.companyStorage.loading' | translate) : ('fileSystem.companyStorageView.selectFileSystem' | translate))"
                     (onChange)="onFileSystemSelected()"></p-dropdown>
+                <div class="mt-2 flex align-items-center gap-2" *ngIf="selectedFileSystemId">
+                    <span class="text-500 text-sm">{{ 'fileSystem.entityAdmin.permissions' | translate }}:</span>
+                    <ng-container *ngIf="permissionsLoading; else permBadge">
+                        <p-skeleton height="1.5rem" width="5.5rem" borderRadius="16px"></p-skeleton>
+                    </ng-container>
+                    <ng-template #permBadge>
+                        <span class="cursor-pointer" (click)="showPermissionsDialog()">
+                            <p-tag [value]="selectedFileSystemEffectiveRight" severity="info"></p-tag>
+                        </span>
+                        <a class="text-sm cursor-pointer" (click)="showPermissionsDialog()">
+                            {{ 'fileSystem.entityAdmin.permissionsAdmin.permissionsTitle' | translate }}
+                        </a>
+                    </ng-template>
+                </div>
             </div>
         </div>
     </section>
@@ -120,3 +134,46 @@
     <!-- Folder Management Component -->
     <app-folder-management *ngIf="selectedFileSystemId" [fileSystemId]="selectedFileSystemId"></app-folder-management>
 </div>
+
+<!-- Read-only permissions dialog (current account on selected File System) -->
+<p-dialog [header]="'fileSystem.entityAdmin.permissionsAdmin.permissionsTitle' | translate"
+    [(visible)]="permissionsDialogVisible" [modal]="true" [style]="{ width: '720px' }" [draggable]="false"
+    [resizable]="false" (onHide)="hidePermissionsDialog()">
+    <div class="p-fluid">
+        <div class="mb-3 flex align-items-center gap-2">
+            <span class="font-semibold">{{ 'fileSystem.entityAdmin.permissionsAdmin.accessRight' | translate }}:</span>
+            <p-tag [value]="selectedFileSystemEffectiveRight" severity="info"></p-tag>
+        </div>
+
+        <p-table [value]="selectedFileSystemPermissionsRows" [paginator]="false"
+            styleClass="p-datatable-sm p-datatable-gridlines" responsiveLayout="scroll">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th style="width: 12rem">{{ 'fileSystem.entityAdmin.permissionsAdmin.accessType' | translate }}</th>
+                    <th style="width: 10rem">{{ 'fileSystem.entityAdmin.permissionsAdmin.accessRight' | translate }}
+                    </th>
+                    <th style="width: 10rem">Permission ID</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-row>
+                <tr>
+                    <td>{{ getAccessTypeLabel(row.accessType) }}</td>
+                    <td>{{ getAccessRightLabel(row.accessRight) }}</td>
+                    <td>{{ row.permissionId || '—' }}</td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="3" class="text-center p-4 text-500">
+                        {{ 'fileSystem.entityAdmin.permissionsAdmin.noPermissions' | translate }}
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+
+    <ng-template pTemplate="footer">
+        <p-button [label]="'fileSystem.companyStorage.close' | translate" styleClass="p-button-secondary"
+            (onClick)="hidePermissionsDialog()"></p-button>
+    </ng-template>
+</p-dialog>

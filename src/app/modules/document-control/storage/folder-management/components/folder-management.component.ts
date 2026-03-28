@@ -10,6 +10,7 @@ import { getFileSystemErrorDetail } from 'src/app/modules/document-control/share
 import { FileUploadService } from 'src/app/core/file-system-lib/services/file-upload.service';
 import { FileDownloadService } from 'src/app/core/file-system-lib/services/file-download.service';
 import { isFolderNameValid } from 'src/app/core/validators/folder-name.validator';
+import { AccessRight, FsPermissionsService } from '../services/fs-permissions.service';
 
 /**
  * Represents a folder tree node with additional metadata.
@@ -54,6 +55,10 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   isLoading$: Observable<boolean>;
   treeLoading = false;
   tableLoadingSpinner = false;
+
+  /** Effective access right for current account on the selected file system. */
+  effectiveAccessRight: AccessRight = 'None';
+  permissionsLoading = false;
 
   folderTreeNodes: TreeNode[] = [];
   selectedFolderNode: TreeNode | null = null;
@@ -146,6 +151,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     private fileUploadService: FileUploadService,
     private fileDownloadService: FileDownloadService,
     private localStorageService: LocalStorageService,
+    private fsPermissionsService: FsPermissionsService,
     private cdr: ChangeDetectorRef
   ) {
     this.isLoading$ = this.folderService.isLoadingSubject.asObservable();
@@ -153,6 +159,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     if (this.fileSystemId > 0) {
+      this.loadFileSystemPermissions();
       this.loadFolderStructure();
       this.loadFolderContents(0);
     }
@@ -165,13 +172,68 @@ export class FolderManagementComponent implements OnInit, OnChanges {
         this.currentFolderId = 0;
         this.parentFolderId = 0;
         this.selectedFolderNode = null;
+        this.loadFileSystemPermissions();
         this.loadFolderStructure();
         this.loadFolderContents(0);
       } else {
         this.folderTreeNodes = [];
         this.folderContents = [];
+        this.effectiveAccessRight = 'None';
       }
     }
+  }
+
+  /**
+   * Fetch effective access right for the current account on this file system.
+   * UI uses this to hide actions that are not allowed.
+   */
+  loadFileSystemPermissions(): void {
+    const accountId = this.localStorageService.getAccountDetails()?.Account_ID ?? 0;
+    if (this.fileSystemId <= 0 || accountId <= 0) {
+      this.effectiveAccessRight = 'None';
+      return;
+    }
+
+    this.permissionsLoading = true;
+    this.fsPermissionsService.listAccountFsPermissions(accountId, this.fileSystemId).subscribe({
+      next: (result) => {
+        console.log('listAccountFsPermissions response:', result);
+        this.permissionsLoading = false;
+        this.effectiveAccessRight = result?.effectiveAccessRight ?? 'None';
+      },
+      error: (response: any) => {
+        this.permissionsLoading = false;
+        this.effectiveAccessRight = 'None';
+        this.handleBusinessError('getStructure', response);
+      }
+    });
+  }
+
+  private accessRank(right: AccessRight): number {
+    const map: Record<AccessRight, number> = {
+      None: 0,
+      List: 1,
+      Read: 2,
+      Amend: 3,
+      Modify: 4,
+      Full: 5,
+    };
+    return map[right] ?? 0;
+  }
+
+  /** Read-only actions (download/details) */
+  get canRead(): boolean {
+    return this.accessRank(this.effectiveAccessRight) >= this.accessRank('Read');
+  }
+
+  /** Amend actions (rename/update details) */
+  get canAmend(): boolean {
+    return this.accessRank(this.effectiveAccessRight) >= this.accessRank('Amend');
+  }
+
+  /** Modify actions (create/upload/move/delete/restore) */
+  get canModify(): boolean {
+    return this.accessRank(this.effectiveAccessRight) >= this.accessRank('Modify');
   }
 
   /**
@@ -426,34 +488,49 @@ export class FolderManagementComponent implements OnInit, OnChanges {
       return;
     }
 
-    this.folderMenuItems = [
-      {
-        label: this.translate.getInstant('fileSystem.folderManagement.createFolder'),
-        icon: 'pi pi-plus',
-        command: () => this.showCreateFolderDialogForFolder(folder)
-      },
-      {
-        label: this.translate.getInstant('fileSystem.folderManagement.upload'),
-        icon: 'pi pi-upload',
-        command: () => this.showUploadDialogForFolder(folder)
-      },
-      { separator: true },
-      {
-        label: this.translate.getInstant('fileSystem.folderManagement.renameFolder'),
-        icon: 'pi pi-pencil',
-        command: () => this.showRenameFolderDialog(folder)
-      },
-      {
-        label: this.translate.getInstant('fileSystem.folderManagement.moveFolder'),
-        icon: 'pi pi-arrows-h',
-        command: () => this.showMoveFolderDialog(folder)
-      },
-      {
-        label: this.translate.getInstant('fileSystem.folderManagement.deleteFolder'),
-        icon: 'pi pi-trash',
-        command: () => this.showDeleteFolderConfirm(folder)
+    const items: MenuItem[] = [];
+
+    if (this.canModify) {
+      items.push(
+        {
+          label: this.translate.getInstant('fileSystem.folderManagement.createFolder'),
+          icon: 'pi pi-plus',
+          command: () => this.showCreateFolderDialogForFolder(folder)
+        },
+        {
+          label: this.translate.getInstant('fileSystem.folderManagement.upload'),
+          icon: 'pi pi-upload',
+          command: () => this.showUploadDialogForFolder(folder)
+        }
+      );
+    }
+
+    if (this.canAmend || this.canModify) {
+      if (items.length > 0) items.push({ separator: true });
+      if (this.canAmend) {
+        items.push({
+          label: this.translate.getInstant('fileSystem.folderManagement.renameFolder'),
+          icon: 'pi pi-pencil',
+          command: () => this.showRenameFolderDialog(folder)
+        });
       }
-    ];
+      if (this.canModify) {
+        items.push(
+          {
+            label: this.translate.getInstant('fileSystem.folderManagement.moveFolder'),
+            icon: 'pi pi-arrows-h',
+            command: () => this.showMoveFolderDialog(folder)
+          },
+          {
+            label: this.translate.getInstant('fileSystem.folderManagement.deleteFolder'),
+            icon: 'pi pi-trash',
+            command: () => this.showDeleteFolderConfirm(folder)
+          }
+        );
+      }
+    }
+
+    this.folderMenuItems = items;
   }
 
   /**
@@ -686,29 +763,41 @@ export class FolderManagementComponent implements OnInit, OnChanges {
       return;
     }
 
-    this.fileMenuItems = [
-      {
-        label: this.translate.getInstant('fileSystem.folderManagement.downloadFile'),
-        icon: 'pi pi-download',
-        command: () => this.downloadFile(file)
-      },
-      {
-        label: this.translate.getInstant('fileSystem.folderManagement.viewFileDetails'),
-        icon: 'pi pi-info-circle',
-        command: () => this.showFileDetailsDialog(file)
-      },
-      {
+    const items: MenuItem[] = [];
+
+    if (this.canRead) {
+      items.push(
+        {
+          label: this.translate.getInstant('fileSystem.folderManagement.downloadFile'),
+          icon: 'pi pi-download',
+          command: () => this.downloadFile(file)
+        },
+        {
+          label: this.translate.getInstant('fileSystem.folderManagement.viewFileDetails'),
+          icon: 'pi pi-info-circle',
+          command: () => this.showFileDetailsDialog(file)
+        }
+      );
+    }
+
+    if (this.canAmend) {
+      items.push({
         label: this.translate.getInstant('fileSystem.folderManagement.renameFile'),
         icon: 'pi pi-pencil',
         command: () => this.showRenameFileDialog(file)
-      },
-      { separator: true },
-      {
+      });
+    }
+
+    if (this.canModify) {
+      if (items.length > 0) items.push({ separator: true });
+      items.push({
         label: this.translate.getInstant('fileSystem.folderManagement.deleteFile'),
         icon: 'pi pi-trash',
         command: () => this.showDeleteFileConfirm(file)
-      }
-    ];
+      });
+    }
+
+    this.fileMenuItems = items;
   }
 
   /**

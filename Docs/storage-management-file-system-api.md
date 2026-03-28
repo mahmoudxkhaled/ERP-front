@@ -135,7 +135,7 @@ Filtering depends on logged-in account; **Developer** role can filter all. Also:
 | 29 | Update_File_Allocation_Details | File_ID, Folder_ID, File_System_ID, Allocation_Type | -  |
 | 30 | Delete_File_Allocation     | File_ID, Folder_ID, File_System_ID          | - (use this instead of Delete_File in ERP) |
 | 31 | Move_File                  | File_ID, Folder_ID, File_System_ID, New_Parent_Folder_ID | -   |
-| 32 | Restore_Deleted_Files      | List&lt;long&gt; File_IDs, File_System_ID   | -                |
+| 32 | Restore_Deleted_Files      | List&lt;long&gt; File_IDs, List&lt;long&gt; Folder_IDs, File_System_ID | List&lt;(long,long)&gt; Skipped IDs |
 
 ---
 
@@ -173,7 +173,7 @@ Roles: **DEV | SADMIN | EADMIN | USER | GUEST**
 - **File Systems (1120–1129):** DEV, SADMIN, EADMIN, USER ✅  
 - **Folders (1130–1137):** DEV, SADMIN, EADMIN, USER ✅  
 - **File Allocations (1140–1146):** DEV, SADMIN, EADMIN, USER ✅  
-- **Virtual Drives (1150–1156):** List/Create/Get/Rename/Update ✅ all; **Activate/Deactivate** ✅ DEV, SADMIN only (EADMIN/USER/GUEST ❌)  
+- **Virtual Drives (1150–1156):** **List/Get/Rename/Update** ✅ DEV, SADMIN, EADMIN, USER; **Create/Activate/Deactivate** ✅ DEV & SADMIN only; GUEST ❌  
 - **Synchronization (1160–1162):** DEV, SADMIN, EADMIN, USER ✅  
 
 ---
@@ -202,6 +202,10 @@ Roles: **DEV | SADMIN | EADMIN | USER | GUEST**
 - ERP12290 – Invalid Drive ID  
 - ERP12291 – Drive is inactive  
 - ERP12292 – Access Denied to the drive(s) of this Owner ID  
+- ERP12295 – Not enough File System Access Right to perform this action  
+- ERP12297 – Access Denied. This action can only be performed by the File System owner or an account with ‘Full’ Access Right  
+- ERP12298 – This action cannot be performed on a ‘Reference’ file allocation  
+- ERP12299 – This action cannot be performed on a ‘Copy’ file allocation  
 
 ### Upload_Request
 - ERP12220 – Invalid File Name  
@@ -227,20 +231,32 @@ Roles: **DEV | SADMIN | EADMIN | USER | GUEST**
 - ERP12241 – File contents currently unavailable  
 - ERP12245 – Invalid/Expired Download Token  
 - ERP12246 – Invalid File Chunk ID (1 to nChunks)  
-- ERP12249 – File Chunk not yet ready, retry later  
+- ERP12249 – File Chunk not yet ready, retry in few seconds  
 
 ### Other APIs
 - List_File_Systems: ERP12248 – Invalid Entity Filter  
-- Create_File_System: ERP12251 Invalid Name, ERP12252 Invalid Type  
+- Create_File_System: ERP12251 Invalid File System Name, ERP12252 Invalid File System Type  
+- Update_File_System_Details: FWA12251 Invalid File System Name, FWA12252 Invalid File System Type  
+- Delete_File_System: FWA12255 Cannot delete File System, already in use  
 - Create_Folder: ERP12261 Invalid Folder Name, ERP12262 Invalid Parent Folder ID  
 - Update_Folder_Details: ERP12261 Invalid Folder Name  
-- Move_Folder: ERP12262 Invalid Parent Folder ID, ERP12266 Same folder or its child  
+- Move_Folder: ERP12262 Invalid Parent Folder ID, ERP12266 Invalid Parent Folder ID -> Same Folder or one of its children  
 - Restore_Deleted_Folders/Files: ERP12267 Invalid Array Length  
+- Delete_File: ERP12247 File still contains active allocations  
+- Update_File_Details: ERP12220 Invalid File Name, ERP12221 Invalid File Type  
 - Update_File_Allocation_Details: ERP12263 Invalid File Allocation Type  
-- Move_File: ERP12262 Invalid Parent Folder ID  
-- Create_Virtual_Drive: ERP12271 Invalid Name, ERP12272 Invalid License ID, ERP12273 License already has drive, ERP12274 Invalid Capacity  
-- Rename_Virtual_Drive: ERP12271 Invalid Name  
-- Update_Drive_Capacity: ERP12274 Invalid Capacity  
+- Allocate_File: ERP12263 Invalid File Allocation Type, ERP12227 File with same name exists in folder  
+- Move_File: ERP12227 File with same name exists in selected folder, ERP12262 Invalid Parent Folder ID  
+- Create_Virtual_Drive: ERP12271 Invalid Drive Name, ERP12272 Invalid License ID, ERP12273 This License already has an assigned drive, ERP12274 Invalid Drive Capacity (should be from 0 to License max)  
+- Rename_Virtual_Drive: ERP12271 Invalid Drive Name  
+- Update_Drive_Capacity: ERP12274 Invalid Drive Capacity (should be from 0 to License max)  
+- Set_File_System_Access_Permission: ERP12293 Invalid Access Type, ERP12294 Invalid Access Right  
+- List_Account_File_Systems: ERP12296 Invalid Account ID  
+- List_Account_FS_Permissions: ERP12260 Invalid File System ID, ERP12296 Invalid Account ID  
+
+### List_File_System_Permissions (1170) — response interpretation
+
+For the **`message`** shape (`access_Rights` raw rows vs `accounts_Access_Rights` effective per-account map), enums, and frontend usage, see **[file-system-permissions-list-response.md](./file-system-permissions-list-response.md)**.
 
 ---
 

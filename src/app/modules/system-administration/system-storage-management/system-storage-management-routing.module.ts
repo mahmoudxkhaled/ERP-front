@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { SsmPageComponent } from './ssm-page.component';
+import { SystemStorageManagementComponent } from './system-storage-management.component';
 
 const routes: Routes = [
     {
         path: '',
-        component: SsmPageComponent,
+        component: SystemStorageManagementComponent,
         data: { breadcrumb: 'fileSystemSSM' }
     }
 ];

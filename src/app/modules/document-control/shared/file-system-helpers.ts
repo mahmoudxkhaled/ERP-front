@@ -53,6 +53,13 @@ const FILE_SYSTEM_ERROR_KEYS: Record<string, string> = {
   ERP12290: 'fileSystem.admin.errorInvalidDriveId',
   ERP12291: 'fileSystem.admin.errorDriveInactive',
   ERP12292: 'fileSystem.admin.errorAccessDeniedDriveOwner',
+  ERP12295: 'fileSystem.admin.errorNotEnoughFileSystemAccessRight',
+  ERP12293: 'fileSystem.admin.errorInvalidAccessType',
+  ERP12294: 'fileSystem.admin.errorInvalidAccessRight',
+  ERP12296: 'fileSystem.admin.errorInvalidAccountId',
+  ERP12297: 'fileSystem.admin.errorOwnerOrFullRequired',
+  ERP12298: 'fileSystem.admin.errorActionNotAllowedOnReferenceAllocation',
+  ERP12299: 'fileSystem.admin.errorActionNotAllowedOnCopyAllocation',
   // Upload_Request
   ERP12220: 'fileSystem.admin.errorInvalidFileName',
   ERP12221: 'fileSystem.admin.errorInvalidFileType',
@@ -77,6 +84,7 @@ const FILE_SYSTEM_ERROR_KEYS: Record<string, string> = {
   ERP12252: 'fileSystem.admin.errorInvalidFileSystemName',
   ERP12255: 'fileSystem.admin.errorFileSystemInUse',
   ERP12267: 'fileSystem.folderManagement.errorInvalidRestoreSelection',
+  ERP12263: 'fileSystem.admin.errorInvalidFileAllocationType',
   // FWA variants (some APIs may return FWA prefix)
   FWA12251: 'fileSystem.admin.errorInvalidFileSystemName',
   FWA12252: 'fileSystem.admin.errorInvalidFileSystemName',

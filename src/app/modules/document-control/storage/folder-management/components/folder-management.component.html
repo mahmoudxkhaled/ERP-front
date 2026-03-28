@@ -1,8 +1,8 @@
 <div class="folder-management-container card" *ngIf="fileSystemId > 0">
     <div class="toolbar mb-3">
         <div class="flex align-items-center gap-2">
-            <p-button [label]="'fileSystem.folderManagement.createFolder' | translate" icon="pi pi-plus"
-                (onClick)="showCreateFolderDialog()"></p-button>
+            <p-button *ngIf="canModify" [label]="'fileSystem.folderManagement.createFolder' | translate"
+                icon="pi pi-plus" (onClick)="showCreateFolderDialog()"></p-button>
             <p-button [label]="'fileSystem.folderManagement.recycleBin' | translate" icon="pi pi-replay"
                 styleClass="p-button-outlined" (onClick)="showRecycleBinDialog()"></p-button>
         </div>
@@ -32,7 +32,7 @@
                                     <span class="tree-node-label">{{ node.label }}</span>
                                 </span>
                                 <span class="tree-node-actions">
-                                    <button pButton type="button" icon="pi pi-ellipsis-v"
+                                    <button *ngIf="canModify || canAmend" pButton type="button" icon="pi pi-ellipsis-v"
                                         class="p-button-rounded p-button-text p-button-plain p-button-sm"
                                         (click)="openFolderMenu(folderRowMenu, node, $event)"
                                         [pTooltip]="'fileSystem.folderManagement.actions' | translate"></button>
@@ -78,11 +78,11 @@
                                         class="p-button-sm p-button-outlined" (click)="goBack()"></button>
                                     <span *ngIf="currentFolderId === 0"></span>
                                     <div class="flex gap-2 ml-auto">
-                                        <button pButton type="button"
+                                        <button *ngIf="canModify" pButton type="button"
                                             [label]="'fileSystem.folderManagement.uploadHere' | translate"
                                             icon="pi pi-upload" class="p-button-sm p-button-outlined"
                                             (click)="showUploadDialog()"></button>
-                                        <button pButton type="button"
+                                        <button *ngIf="canModify" pButton type="button"
                                             [label]="'fileSystem.folderManagement.createFolder' | translate"
                                             icon="pi pi-plus" class="p-button-sm p-button-outlined"
                                             (click)="showCreateFolderDialogInCurrentFolder()"></button>
@@ -160,12 +160,14 @@
                                         <p-skeleton height="1.5rem" width="2rem" borderRadius="4px"></p-skeleton>
                                     </ng-container>
                                     <ng-template #normalActions>
-                                        <button *ngIf="row.isFolder" pButton type="button" icon="pi pi-ellipsis-v"
+                                        <button *ngIf="row.isFolder && (canModify || canAmend)" pButton type="button"
+                                            icon="pi pi-ellipsis-v"
                                             class="p-button-rounded p-button-text p-button-plain p-button-sm"
                                             (click)="openFolderMenuForContentRow(folderRowMenu, row, $event)"
                                             [pTooltip]="'fileSystem.folderManagement.actions' | translate">
                                         </button>
-                                        <button *ngIf="!row.isFolder" pButton type="button" icon="pi pi-ellipsis-v"
+                                        <button *ngIf="!row.isFolder && (canRead || canAmend || canModify)" pButton
+                                            type="button" icon="pi pi-ellipsis-v"
                                             class="p-button-rounded p-button-text p-button-plain p-button-sm"
                                             (click)="openFileMenu(fileRowMenu, row, $event)"
                                             [pTooltip]="'fileSystem.folderManagement.actions' | translate">

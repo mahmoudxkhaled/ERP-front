@@ -12,7 +12,7 @@ export interface LicenseRow {
     templateUrl: './system-storage-management.component.html',
     styleUrls: ['./system-storage-management.component.scss']
 })
-export class AdminComponent implements OnInit {
+export class SystemStorageManagementComponent implements OnInit {
     capacityUsedPercent = 65;
     capacityUsedLabel = '';
 

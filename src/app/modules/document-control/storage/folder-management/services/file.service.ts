@@ -77,7 +77,7 @@ export class FileService {
   }
 
   /**
-   * Delete_File_Allocation (1145)
+   * Delete_File_Allocation (1144)
    * Input: File_ID, Folder_ID, File_System_ID
    */
   deleteFileAllocation(

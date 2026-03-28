@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { EntityStorageManagementRoutingModule } from './entity-storage-management-routing.module';
 import { SharedModule } from 'src/app/Shared/shared/shared.module';
 import { FileSystemSharedModule } from 'src/app/modules/document-control/shared/file-system-shared.module';
-import { EsmPageComponent } from './esm-page.component';
+import { EntityStorageManagementComponent } from './entity-storage-management.component';
+import { FileSystemsPermissionsComponent } from './file-systems-permissions/file-systems-permissions.component';
 
 /**
  * Entity Storage Management (ESM) Module.
@@ -12,7 +13,8 @@ import { EsmPageComponent } from './esm-page.component';
  */
 @NgModule({
     declarations: [
-        EsmPageComponent
+        EntityStorageManagementComponent,
+        FileSystemsPermissionsComponent
     ],
     imports: [
         CommonModule,

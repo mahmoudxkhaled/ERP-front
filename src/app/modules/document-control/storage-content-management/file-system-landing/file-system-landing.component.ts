@@ -23,6 +23,14 @@ export class FileSystemLandingComponent {
     constructor(private router: Router) {}
 
     onBoxClick(box: FileSystemBox): void {
+        if (box.id === 'esm') {
+            this.router.navigate(['/entity-administration/entity-storage-management']);
+            return;
+        }
+        if (box.id === 'ssm') {
+            this.router.navigate(['/system-administration/system-storage-management']);
+            return;
+        }
         this.router.navigate(['/document-control', box.route]);
     }
 }

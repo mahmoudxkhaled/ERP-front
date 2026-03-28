@@ -35,9 +35,9 @@ export class FileSystemsSectionComponent implements OnInit {
   entityFilterFileSystems = 0;
   /** Stable reference so dropdown (onChange) does not re-fire when options are re-evaluated. */
   entityFilterOptions: { label: string; value: number }[] = [];
-  /** Drive_ID for filter (0 = ignore / all drives). */
+  /** Drive_ID for filter (0 only when no drives are available). */
   driveFilterId = 0;
-  /** Drive options for filter: "All" (0) + list from API. Stable reference to avoid loop. */
+  /** Drive options for filter from API. */
   driveOptionsWithAll: { id: number; name: string }[] = [];
   /** Active_Only: true = exclude deleted file systems. */
   activeOnlyFilter = false;
@@ -123,7 +123,6 @@ export class FileSystemsSectionComponent implements OnInit {
     this.buildDriveOptionsWithAll();
     this.loadDrives();
     this.loadTypes();
-    this.refreshList();
   }
 
   private buildEntityFilterOptions(): void {
@@ -135,8 +134,17 @@ export class FileSystemsSectionComponent implements OnInit {
   }
 
   private buildDriveOptionsWithAll(): void {
-    const allLabel = this.translate.getInstant('fileSystem.admin.filterAllDrives');
-    this.driveOptionsWithAll = [{ id: 0, name: allLabel }, ...this.driveOptions];
+    this.driveOptionsWithAll = [...this.driveOptions];
+  }
+
+  private applyDriveFilterDefault(): void {
+    if (this.driveOptions.length === 0) {
+      return;
+    }
+    const valid = this.driveOptions.some(d => d.id === this.driveFilterId);
+    if (this.driveFilterId === 0 || !valid) {
+      this.driveFilterId = this.driveOptions[0].id;
+    }
   }
 
   loadDrives(): void {
@@ -149,6 +157,7 @@ export class FileSystemsSectionComponent implements OnInit {
       next: (response: any) => {
         if (!response?.success) {
           this.handleError('loadDrives', response);
+          this.refreshList();
           return;
         }
         const raw = response.message;
@@ -158,13 +167,18 @@ export class FileSystemsSectionComponent implements OnInit {
           name: String(item?.Name ?? item?.name ?? '')
         })).filter((d: { id: number; name: string }) => d.id > 0);
         this.buildDriveOptionsWithAll();
+        this.applyDriveFilterDefault();
+        this.refreshList();
       },
-      error: () => { }
+      error: () => {
+        this.refreshList();
+      }
     });
   }
 
   refreshList(): void {
     this.loadingFileSystems = true;
+    console.log('refreshList', this.entityFilterFileSystems, this.driveFilterId, this.activeOnlyFilter);
     this.fileSystemsService.listFileSystems({
       entityFilter: this.entityFilterFileSystems,
       driveId: this.driveFilterId,
