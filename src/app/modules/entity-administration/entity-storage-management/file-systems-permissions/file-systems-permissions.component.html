@@ -1,13 +1,12 @@
 <div class="permissions-admin-view card p-4">
-  <div class="page-top flex flex-col gap-3">
-    <a (click)="goBack()" class="back-link cursor-pointer">
-      <i class="pi pi-arrow-left"></i>
-      <span>{{ 'fileSystem.entityAdmin.permissionsAdmin.backToEsm' | translate }}</span>
-    </a>
-
-    <div class="page-header">
+  <div class="page-top flex flex-column sm:flex-row sm:align-items-start sm:justify-content-between gap-3">
+    <div class="page-header flex-1 min-w-0">
       <h1 class="page-title">{{ 'fileSystem.entityAdmin.permissionsAdmin.title' | translate }}</h1>
       <p class="page-description">{{ 'fileSystem.entityAdmin.permissionsAdmin.description' | translate }}</p>
+    </div>
+    <div class="permissions-admin-view__back flex-shrink-0 align-self-end sm:align-self-start">
+      <p-button [label]="'fileSystem.entityAdmin.permissionsAdmin.backToEsm' | translate" icon="pi pi-arrow-left"
+        (onClick)="goBack()"></p-button>
     </div>
   </div>
 
@@ -31,10 +30,10 @@
     </div>
   </div>
 
-  <div class="block-section" *ngIf="selectedFileSystemId">
+  <div class="block-section">
     <h2 class="block-title">{{ 'fileSystem.entityAdmin.permissionsAdmin.permissionsTitle' | translate }}</h2>
     <div class="block-card">
-      <div class="mb-3 flex flex-wrap gap-2 align-items-center">
+      <div class="mb-3 flex flex-wrap gap-2 align-items-center" *ngIf="selectedFileSystemId">
         <p-button [label]="'fileSystem.entityAdmin.permissionsAdmin.addPermission' | translate" icon="pi pi-plus"
           (onClick)="showAddDialog()"></p-button>
         <p-button [label]="'fileSystem.entityAdmin.permissionsAdmin.clearAll' | translate" icon="pi pi-trash"
@@ -45,13 +44,54 @@
           (onClick)="refreshPermissions()"></p-button>
       </div>
 
-      <p-table [value]="getPermissionsTableValue()" [paginator]="false"
-        styleClass="p-datatable-sm p-datatable-gridlines permissions-admin-table" responsiveLayout="scroll">
+      <p-table #permissionsTable [value]="permissionsTableValue" [rowHover]="true" [paginator]="true"
+        [rows]="permissionsTableRows" [rowsPerPageOptions]="permissionsRowsPerPageOptions"
+        [showCurrentPageReport]="true"
+        [currentPageReportTemplate]="('fileSystem.entityAdmin.permissionsAdmin.permissionsPageReport' | translate)"
+        [globalFilterFields]="['tableSearchText']" responsiveLayout="scroll"
+        styleClass="p-datatable-sm p-datatable-gridlines p-datatable-striped permissions-admin-table">
+        <ng-template pTemplate="caption">
+          <div class="flex align-items-center justify-content-between gap-3 mb-2 flex-wrap"
+            *ngIf="selectedFileSystemId">
+            <span class="p-input-icon-left flex-1 min-w-200px max-w-md">
+              <i class="pi pi-search"></i>
+              <input pInputText type="text"
+                (input)="permissionsTable.filterGlobal($any($event.target).value, 'contains')"
+                [placeholder]="'fileSystem.entityAdmin.permissionsAdmin.permissionsSearchPlaceholder' | translate"
+                class="w-full" />
+            </span>
+          </div>
+        </ng-template>
         <ng-template pTemplate="header">
           <tr>
-            <th style="width: 12rem">{{ 'fileSystem.entityAdmin.permissionsAdmin.accessType' | translate }}</th>
-            <th>{{ 'fileSystem.entityAdmin.permissionsAdmin.relatedIds' | translate }}</th>
-            <th style="width: 10rem">{{ 'fileSystem.entityAdmin.permissionsAdmin.accessRight' | translate }}</th>
+            <th pSortableColumn="accessType" style="width: 12rem">
+              {{ 'fileSystem.entityAdmin.permissionsAdmin.accessType' | translate }}
+              <p-sortIcon field="accessType"></p-sortIcon>
+              <p-columnFilter field="accessType" matchMode="equals" display="menu" [showMenu]="false">
+                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                  <p-dropdown [options]="accessTypeFilterOptions" [ngModel]="value" (onChange)="filter($event.value)"
+                    optionLabel="label" optionValue="value" [showClear]="true"
+                    [placeholder]="'fileSystem.admin.filterAll' | translate" styleClass="w-full"
+                    [ngStyle]="{ 'min-width': '12rem' }"></p-dropdown>
+                </ng-template>
+              </p-columnFilter>
+            </th>
+            <th pSortableColumn="relatedTargetDisplay">
+              {{ 'fileSystem.entityAdmin.permissionsAdmin.relatedIds' | translate }}
+              <p-sortIcon field="relatedTargetDisplay"></p-sortIcon>
+            </th>
+            <th pSortableColumn="accessRight" style="width: 11rem" class="text-center">
+              {{ 'fileSystem.entityAdmin.permissionsAdmin.accessRight' | translate }}
+              <p-sortIcon field="accessRight"></p-sortIcon>
+              <p-columnFilter field="accessRight" matchMode="equals" display="menu" [showMenu]="false">
+                <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                  <p-dropdown [options]="accessRightOptions" [ngModel]="value" (onChange)="filter($event.value)"
+                    optionLabel="label" optionValue="value" [showClear]="true"
+                    [placeholder]="'fileSystem.admin.filterAll' | translate" styleClass="w-full"
+                    [ngStyle]="{ 'min-width': '12rem' }"></p-dropdown>
+                </ng-template>
+              </p-columnFilter>
+            </th>
             <th style="width: 7rem" class="text-center">{{ 'fileSystem.companyStorage.actions' | translate }}</th>
           </tr>
         </ng-template>
@@ -59,7 +99,7 @@
         <ng-template pTemplate="body" let-row>
           <tr>
             <td>
-              <ng-container *ngIf="loadingPermissions && permissions.length === 0; else normalType">
+              <ng-container *ngIf="permissionsTableSkeletonActive; else normalType">
                 <p-skeleton height="1.25rem" width="7rem" borderRadius="4px"></p-skeleton>
               </ng-container>
               <ng-template #normalType>
@@ -68,7 +108,7 @@
             </td>
 
             <td>
-              <ng-container *ngIf="loadingPermissions && permissions.length === 0; else normalRelated">
+              <ng-container *ngIf="permissionsTableSkeletonActive; else normalRelated">
                 <p-skeleton height="1.25rem" width="18rem" borderRadius="4px"></p-skeleton>
               </ng-container>
               <ng-template #normalRelated>
@@ -82,7 +122,7 @@
             </td>
 
             <td>
-              <ng-container *ngIf="loadingPermissions && permissions.length === 0; else normalRight">
+              <ng-container *ngIf="permissionsTableSkeletonActive; else normalRight">
                 <p-skeleton height="1.5rem" width="5.5rem" borderRadius="16px"></p-skeleton>
               </ng-container>
               <ng-template #normalRight>
@@ -92,7 +132,7 @@
             </td>
 
             <td class="text-center">
-              <ng-container *ngIf="loadingPermissions && permissions.length === 0; else normalActions">
+              <ng-container *ngIf="permissionsTableSkeletonActive; else normalActions">
                 <p-skeleton height="2rem" width="2rem" borderRadius="50%"></p-skeleton>
               </ng-container>
               <ng-template #normalActions>

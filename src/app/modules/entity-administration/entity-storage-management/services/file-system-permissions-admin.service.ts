@@ -23,6 +23,8 @@ export interface FileSystemAccessPermissionRow {
   permissionId?: number | null;
   raw?: any;
   relatedTargetDisplay?: string;
+  /** Built by the permissions admin UI for PrimeNG global filter. */
+  tableSearchText?: string;
 }
 
 export interface FileSystemPermissionsAdminResult {

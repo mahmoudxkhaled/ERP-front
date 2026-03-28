@@ -144,6 +144,8 @@
             "deleteAllContents": "حذف جميع المحتويات",
             "deleteAllContentsHint": "إذا تم تحديده، سيتم حذف جميع المجلدات والملفات في نظام الملفات هذا نهائياً. وإلا، سيتم نقلها إلى سلة المحذوفات.",
             "restoreFileSystem": "استعادة",
+            "managePermissions": "الصلاحيات",
+            "managePermissionsTooltip": "إدارة صلاحيات الوصول لهذا النظام",
             "addPermission": "إضافة صلاحية",
             "addPermissionDialogTitle": "إضافة صلاحية",
             "editPermission": "تعديل",
@@ -187,6 +189,8 @@
                 "removePermission": "إزالة",
                 "clearAll": "مسح جميع الصلاحيات",
                 "refreshPermissions": "تحديث",
+                "permissionsPageReport": "عرض {first} إلى {last} من أصل {totalRecords} صلاحية",
+                "permissionsSearchPlaceholder": "ابحث بنوع الوصول أو الجهة أو مستوى الصلاحية...",
                 "noPermissions": "لا توجد صلاحيات لهذا النظام.",
                 "accessTypeHint": "المالك و EntityAdmin صلاحيات مشتقة ولا يمكن تعيينها يدويًا.",
                 "relatedIdsPlaceholder": "مثال: 12, 15, 18",
@@ -213,7 +217,9 @@
                 "errorTitle": "خطأ",
                 "genericError": "حدث خطأ. حاول مرة أخرى.",
                 "notAuthorizedTitle": "غير مصرح",
-                "notAuthorizedMessage": "ليس لديك صلاحية لفتح هذه الصفحة."
+                "notAuthorizedMessage": "ليس لديك صلاحية لفتح هذه الصفحة.",
+                "fileSystemNotFoundTitle": "نظام الملفات غير موجود",
+                "fileSystemNotFoundMessage": "هذا النظام غير مدرج في القائمة أو غير متاح. حدّث القائمة أو اختر نظامًا آخر."
             }
         },
         "permissions": {
@@ -1023,6 +1029,7 @@
             "summary": "الملخص",
             "documentControl": "التحكم في المستندات",
             "fileSystem": "نظام الملفات",
+            "fileSystem.entityAdmin.permissionsAdmin.title": "صلاحيات نظام الملفات",
             "fileSystemSSM": "إدارة تخزين النظام (SSM)",
             "fileSystemESM": "إدارة تخزين الكيانات (ESM)",
             "fileSystemStorageContent": "التخزين وإدارة المحتوى",

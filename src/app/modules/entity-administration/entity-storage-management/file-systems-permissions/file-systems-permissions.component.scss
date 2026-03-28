@@ -2,20 +2,7 @@
   margin: 0 auto;
 
   .page-top {
-    align-items: start;
-  }
-
-  .back-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--p-primary-color);
-    text-decoration: none;
-    font-size: 0.875rem;
-    margin-bottom: 1rem;
-  }
-  .back-link:hover {
-    text-decoration: underline;
+    margin-bottom: 0.5rem;
   }
 
   .page-header {

@@ -144,6 +144,8 @@
             "deleteAllContents": "Delete all contents",
             "deleteAllContentsHint": "If checked, all folders and files in this file system will be permanently deleted. Otherwise, they will be moved to the recycle bin.",
             "restoreFileSystem": "Restore",
+            "managePermissions": "Permissions",
+            "managePermissionsTooltip": "Manage access permissions for this file system",
             "addPermission": "Add Permission",
             "addPermissionDialogTitle": "Add Permission",
             "editPermission": "Edit",
@@ -187,6 +189,8 @@
                 "removePermission": "Remove",
                 "clearAll": "Clear all permissions",
                 "refreshPermissions": "Refresh",
+                "permissionsPageReport": "Showing {first} to {last} of {totalRecords} permissions",
+                "permissionsSearchPlaceholder": "Search by access type, target, or access right...",
                 "noPermissions": "No permissions found for this file system.",
                 "accessTypeHint": "Owner and EntityAdmin are derived and cannot be assigned manually.",
                 "relatedIdsPlaceholder": "Example: 12, 15, 18",
@@ -213,7 +217,9 @@
                 "errorTitle": "Error",
                 "genericError": "Something went wrong. Please try again.",
                 "notAuthorizedTitle": "Not authorized",
-                "notAuthorizedMessage": "You do not have permission to access this page."
+                "notAuthorizedMessage": "You do not have permission to access this page.",
+                "fileSystemNotFoundTitle": "File system not found",
+                "fileSystemNotFoundMessage": "This file system is not in the list or is unavailable. Refresh the list or choose another file system."
             }
         },
         "permissions": {
@@ -1022,6 +1028,7 @@
             "summary": "Summary",
             "documentControl": "Document Control",
             "fileSystem": "File System",
+            "fileSystem.entityAdmin.permissionsAdmin.title": "File System Permissions",
             "fileSystemSSM": "System Storage Management (SSM)",
             "fileSystemESM": "Entity Storage Management (ESM)",
             "fileSystemStorageContent": "Storage & Content Management",

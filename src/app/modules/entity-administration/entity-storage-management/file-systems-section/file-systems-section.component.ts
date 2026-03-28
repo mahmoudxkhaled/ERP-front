@@ -1,5 +1,7 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Router } from '@angular/router';
 import { MenuItem, MessageService } from 'primeng/api';
+import { firstValueFrom } from 'rxjs';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { VirtualDrivesService } from 'src/app/modules/system-administration/system-storage-management/services/virtual-drives.service';
@@ -7,6 +9,7 @@ import { FileSystemsService } from '../services/file-systems.service';
 import { VirtualDrivesFilters } from 'src/app/modules/system-administration/system-storage-management/models/virtual-drive.model';
 import { FileSystemListItem } from '../models/file-system.model';
 import { formatBytes, getFileSystemErrorDetail } from '../shared/file-system-helpers';
+import { FileSystemPermissionsAdminService } from '../services/file-system-permissions-admin.service';
 
 /** Result for Create_File_System: Owner_ID and Is_Entity_ID derived from scope and current user. */
 export interface FileSystemOwnerContext {
@@ -32,6 +35,9 @@ export class FileSystemsSectionComponent implements OnInit {
 
   fileSystems: FileSystemListItem[] = [];
   loadingFileSystems = false;
+  /** Permission entry counts per file system (active rows only); filled after list load. */
+  permissionCounts: Record<number, number> = {};
+  loadingPermissionCounts = false;
   driveOptions: { id: number; name: string }[] = [];
 
   /** Entity_Filter: -1 = Account, 1 = Entity, 0 = Both. Used when calling List_File_Systems. */
@@ -87,7 +93,9 @@ export class FileSystemsSectionComponent implements OnInit {
     private messageService: MessageService,
     private localStorage: LocalStorageService,
     private virtualDrivesService: VirtualDrivesService,
-    private fileSystemsService: FileSystemsService
+    private fileSystemsService: FileSystemsService,
+    private router: Router,
+    private fileSystemPermissionsAdminService: FileSystemPermissionsAdminService
   ) { }
 
   /**
@@ -198,10 +206,57 @@ export class FileSystemsSectionComponent implements OnInit {
         const list = Array.isArray(raw) ? raw : (raw?.File_Systems ?? raw?.file_Systems ?? []);
         this.fileSystems = (list || []).map((item: any) => this.mapItemToRow(item));
         this.fileSystemsCountChange.emit(this.fileSystems.length);
+        this.loadPermissionCountsForList();
       },
       error: () => this.loadingFileSystems = false
     });
   }
+
+  // #region Permission counts (ESM column)
+  getPermissionCount(row: FileSystemListItem): number {
+    const id = row?.file_System_ID ?? 0;
+    return this.permissionCounts[id] ?? 0;
+  }
+
+  private loadPermissionCountsForList(): void {
+    const activeIds = this.fileSystems
+      .filter((fs) => this.isFileSystemActive(fs))
+      .map((fs) => fs.file_System_ID)
+      .filter((id) => id > 0);
+    this.permissionCounts = {};
+    if (activeIds.length === 0) {
+      this.loadingPermissionCounts = false;
+      return;
+    }
+    this.loadingPermissionCounts = true;
+    void this.fetchPermissionCountsForIds(activeIds).then((counts) => {
+      this.permissionCounts = counts;
+      this.loadingPermissionCounts = false;
+    });
+  }
+
+  private async fetchPermissionCountsForIds(ids: number[]): Promise<Record<number, number>> {
+    const result: Record<number, number> = {};
+    await Promise.all(
+      ids.map(async (id) => {
+        try {
+          const response: any = await firstValueFrom(
+            this.fileSystemPermissionsAdminService.listFileSystemPermissions(id)
+          );
+          if (!response?.success) {
+            result[id] = 0;
+            return;
+          }
+          const mapped = this.fileSystemPermissionsAdminService.mapPermissionsResponse(response);
+          result[id] = mapped.permissions.length;
+        } catch {
+          result[id] = 0;
+        }
+      })
+    );
+    return result;
+  }
+  // #endregion
 
   loadTypes(): void {
     if (this.fileSystemTypes.length > 0) return;
@@ -271,6 +326,24 @@ export class FileSystemsSectionComponent implements OnInit {
     return !isDeleted;
   }
 
+  openFileSystemPermissionsAdmin(row: FileSystemListItem): void {
+    const id = Number(row?.file_System_ID ?? 0);
+    if (id <= 0 || !this.isFileSystemActive(row)) {
+      return;
+    }
+    void this.router.navigate(
+      ['/entity-administration/entity-storage-management/file-systems/permissions'],
+      { queryParams: { fileSystemId: id } }
+    );
+  }
+
+  goToFileSystemPermissionsAdminPage(): void {
+    void this.router.navigate(
+      ['/entity-administration/entity-storage-management/file-systems/permissions'],
+      { queryParams: { selectFirst: '1' } }
+    );
+  }
+
   /**
    * Build menu items for the 3-dot row menu. Uses selectedFileSystemForMenu.
    * Includes: View Details, Edit, Delete; Restore (if deleted); Recycle Bin, Restore contents, Clear.
@@ -295,6 +368,11 @@ export class FileSystemsSectionComponent implements OnInit {
         label: this.translate.getInstant('fileSystem.admin.viewDetails'),
         icon: 'pi pi-eye',
         command: () => { if (row) this.showDetailsDialog(row); }
+      },
+      {
+        label: this.translate.getInstant('fileSystem.entityAdmin.managePermissions'),
+        icon: 'pi pi-shield',
+        command: () => { if (row) this.openFileSystemPermissionsAdmin(row); }
       },
       {
         label: this.translate.getInstant('fileSystem.entityAdmin.editFileSystem'),

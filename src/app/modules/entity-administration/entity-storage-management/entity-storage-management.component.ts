@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { TranslationService } from 'src/app/core/services/translation.service';
 
@@ -49,8 +48,7 @@ export class EntityStorageManagementComponent implements OnInit {
 
     constructor(
         private translate: TranslationService,
-        private messageService: MessageService,
-        private router: Router
+        private messageService: MessageService
     ) {}
 
     ngOnInit(): void {
@@ -126,9 +124,5 @@ export class EntityStorageManagementComponent implements OnInit {
 
     hideSyncUnderDevDialog(): void {
         this.syncUnderDevDialogVisible = false;
-    }
-
-    goToFileSystemPermissions(): void {
-        this.router.navigate(['/entity-administration/entity-storage-management/file-systems/permissions']);
     }
 }

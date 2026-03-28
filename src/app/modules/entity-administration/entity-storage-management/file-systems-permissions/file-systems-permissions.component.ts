@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, DestroyRef, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { firstValueFrom } from 'rxjs';
 import { FileSystemsService } from '../services/file-systems.service';
@@ -46,12 +47,21 @@ export class FileSystemsPermissionsComponent implements OnInit {
   relatedTargetsTouched = false;
 
   accessTypeOptions: { label: string; value: number }[] = [];
+  /** Includes Owner / EntityAdmin for table column filter (rows may show derived types). */
+  accessTypeFilterOptions: { label: string; value: number }[] = [];
   accessRightOptions: { label: string; value: number }[] = [];
+  readonly permissionsTableRows = 10;
+  readonly permissionsRowsPerPageOptions = [5, 10, 25, 50];
   currentEntityId = 0;
   isRegional = false;
 
+  private pendingFileSystemIdFromQuery: number | null = null;
+  private selectFirstPending = false;
+
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
+    private destroyRef: DestroyRef,
     private translate: TranslationService,
     private messageService: MessageService,
     private localStorageService: LocalStorageService,
@@ -76,6 +86,47 @@ export class FileSystemsPermissionsComponent implements OnInit {
 
     this.currentEntityId = Number(this.localStorageService.getEntityId() || 0);
     this.isRegional = this.localStorageService.getAccountSettings()?.Language !== 'English';
+    this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+      const selectFirstRaw = params.get('selectFirst');
+      this.selectFirstPending =
+        selectFirstRaw === '1' || selectFirstRaw === 'true';
+      const id = Number(params.get('fileSystemId') || 0);
+      this.pendingFileSystemIdFromQuery = id > 0 ? id : null;
+
+      if (this.loadingFileSystems || this.fileSystems.length === 0) {
+        return;
+      }
+
+      const explicitId = this.pendingFileSystemIdFromQuery;
+      if (explicitId != null && explicitId > 0) {
+        if (this.fileSystems.some((f) => f.id === explicitId)) {
+          if (this.selectedFileSystemId !== explicitId) {
+            this.selectedFileSystemId = explicitId;
+            this.selectFirstPending = false;
+            this.refreshPermissions();
+          }
+        } else {
+          this.messageService.add({
+            severity: 'warn',
+            summary: this.translate.getInstant('fileSystem.entityAdmin.permissionsAdmin.fileSystemNotFoundTitle'),
+            detail: this.translate.getInstant('fileSystem.entityAdmin.permissionsAdmin.fileSystemNotFoundMessage'),
+          });
+          this.selectFirstPending = false;
+        }
+        return;
+      }
+
+      if (this.selectFirstPending) {
+        const firstId = this.fileSystems[0].id;
+        if (this.selectedFileSystemId !== firstId) {
+          this.selectedFileSystemId = firstId;
+          this.selectFirstPending = false;
+          this.refreshPermissions();
+        } else {
+          this.selectFirstPending = false;
+        }
+      }
+    });
     this.buildStaticOptions();
     this.loadFileSystems();
   }
@@ -95,6 +146,11 @@ export class FileSystemsPermissionsComponent implements OnInit {
       { label: this.translate.getInstant('fileSystem.permissions.accessType.organization'), value: 4 },
       { label: this.translate.getInstant('fileSystem.permissions.accessType.all'), value: 5 },
     ];
+    this.accessTypeFilterOptions = [
+      ...this.accessTypeOptions,
+      { label: this.translate.getInstant('fileSystem.permissions.accessType.owner'), value: 6 },
+      { label: this.translate.getInstant('fileSystem.permissions.accessType.entityAdmin'), value: 7 },
+    ];
 
     this.accessRightOptions = [
       { label: this.translate.getInstant('fileSystem.permissions.accessRight.none'), value: 0 },
@@ -107,68 +163,114 @@ export class FileSystemsPermissionsComponent implements OnInit {
   }
 
   loadFileSystems(): void {
+    void this.loadFileSystemsAsync();
+  }
+
+  private async loadFileSystemsAsync(): Promise<void> {
     this.loadingFileSystems = true;
     this.fileSystems = [];
     this.selectedFileSystemId = null;
 
-    this.virtualDrivesService.listDrives({
-      entityFilter: 1,
-      licenseId: 0,
-      activeOnly: true,
-    }).subscribe({
-      next: (drivesResponse: any) => {
-        if (!drivesResponse?.success) {
-          this.loadingFileSystems = false;
-          this.showErrorToast(drivesResponse);
-          return;
-        }
-
-        const rawDrives = drivesResponse.message;
-        const drivesList = Array.isArray(rawDrives) ? rawDrives : (rawDrives?.Drives ?? rawDrives?.message ?? []);
-        const drives = (drivesList || []).map((item: any) => ({
-          id: Number(item?.Drive_ID ?? item?.drive_ID ?? 0),
-          name: String(item?.Name ?? item?.name ?? ''),
-        })).filter((x: any) => x.id > 0 && x.name.trim() !== '');
-
-        if (drives.length === 0) {
-          this.loadingFileSystems = false;
-          this.fileSystems = [];
-          return;
-        }
-
-        const driveId = drives[0].id;
-
-        this.fileSystemsService.listFileSystems({
+    try {
+      const drivesResponse: any = await firstValueFrom(
+        this.virtualDrivesService.listDrives({
           entityFilter: 1,
-          driveId,
+          licenseId: 0,
           activeOnly: true,
-        }).subscribe({
-          next: (response: any) => {
-            this.loadingFileSystems = false;
-            if (!response?.success) {
-              this.showErrorToast(response);
-              return;
-            }
-            const raw = response?.message;
-            const list = Array.isArray(raw) ? raw : (raw?.File_Systems ?? raw?.file_Systems ?? []);
-            const fsList = (list || []).map((item: any) => ({
-              id: Number(item?.file_System_ID ?? item?.File_System_ID ?? 0),
-              name: String(item?.name ?? item?.Name ?? ''),
-            })).filter((x: any) => x.id > 0 && x.name.trim() !== '');
+        })
+      );
 
-            this.fileSystems = fsList;
-          },
-          error: (err) => {
-            this.loadingFileSystems = false;
-            this.showErrorToast(err);
-          },
-        });
-      },
-      error: (err) => {
-        this.loadingFileSystems = false;
-        this.showErrorToast(err);
-      },
-    });
+      if (!drivesResponse?.success) {
+        this.showErrorToast(drivesResponse);
+        return;
+      }
+
+      const rawDrives = drivesResponse.message;
+      const drivesList = Array.isArray(rawDrives) ? rawDrives : (rawDrives?.Drives ?? rawDrives?.message ?? []);
+      const drives = (drivesList || []).map((item: any) => ({
+        id: Number(item?.Drive_ID ?? item?.drive_ID ?? 0),
+        name: String(item?.Name ?? item?.name ?? ''),
+      })).filter((x: any) => x.id > 0 && x.name.trim() !== '');
+
+      if (drives.length === 0) {
+        this.fileSystems = [];
+        return;
+      }
+
+      const byId = new Map<number, { id: number; name: string }>();
+      for (const drive of drives) {
+        try {
+          const response: any = await firstValueFrom(
+            this.fileSystemsService.listFileSystems({
+              entityFilter: 0,
+              driveId: drive.id,
+              activeOnly: true,
+            })
+          );
+          if (!response?.success) {
+            continue;
+          }
+          const raw = response?.message;
+          const list = Array.isArray(raw) ? raw : (raw?.File_Systems ?? raw?.file_Systems ?? []);
+          for (const item of list || []) {
+            const id = Number(item?.file_System_ID ?? item?.File_System_ID ?? 0);
+            const name = String(item?.name ?? item?.Name ?? '');
+            if (id > 0 && name.trim() !== '' && !byId.has(id)) {
+              byId.set(id, { id, name });
+            }
+          }
+        } catch {
+          continue;
+        }
+      }
+
+      this.fileSystems = Array.from(byId.values()).sort((a, b) => a.name.localeCompare(b.name));
+    } catch (err) {
+      this.showErrorToast(err);
+    } finally {
+      this.loadingFileSystems = false;
+      this.applyPendingFileSystemFromQueryAfterLoad();
+    }
+  }
+
+  private applyPendingFileSystemFromQueryAfterLoad(): void {
+    const explicitId = this.pendingFileSystemIdFromQuery;
+    if (explicitId != null && explicitId > 0) {
+      if (this.fileSystems.some((f) => f.id === explicitId)) {
+        this.selectedFileSystemId = explicitId;
+        this.selectFirstPending = false;
+        this.refreshPermissions();
+        return;
+      }
+      this.messageService.add({
+        severity: 'warn',
+        summary: this.translate.getInstant('fileSystem.entityAdmin.permissionsAdmin.fileSystemNotFoundTitle'),
+        detail: this.translate.getInstant('fileSystem.entityAdmin.permissionsAdmin.fileSystemNotFoundMessage'),
+      });
+      this.selectFirstPending = false;
+      return;
+    }
+
+    if (this.selectFirstPending) {
+      if (this.fileSystems.length > 0) {
+        this.selectedFileSystemId = this.fileSystems[0].id;
+        this.selectFirstPending = false;
+        this.refreshPermissions();
+      } else {
+        this.selectFirstPending = false;
+      }
+    }
+  }
+
+  get permissionsTableSkeletonActive(): boolean {
+    if (this.loadingFileSystems) {
+      return true;
+    }
+    return (
+      this.selectedFileSystemId != null &&
+      this.loadingPermissions &&
+      this.permissions.length === 0
+    );
   }
 
   onFileSystemChange(): void {
@@ -195,6 +297,7 @@ export class FileSystemsPermissionsComponent implements OnInit {
         }
         const mapped = this.permissionsAdminService.mapPermissionsResponse(response);
         this.permissions = mapped.permissions;
+        this.refreshPermissionTableSearchText();
         void this.resolveRelatedTargetDisplays();
       },
       error: (err) => {
@@ -388,13 +491,15 @@ export class FileSystemsPermissionsComponent implements OnInit {
     return 'secondary';
   }
 
-  getPermissionsTableValue(): FileSystemAccessPermissionRow[] {
-    if (this.loadingPermissions && this.permissions.length === 0) {
+  get permissionsTableValue(): FileSystemAccessPermissionRow[] {
+    if (this.permissionsTableSkeletonActive) {
       return Array(5).fill(null).map(() => ({
         accessType: 0,
         relatedIds: [],
         accessRight: 0,
         permissionId: null,
+        relatedTargetDisplay: '',
+        tableSearchText: '',
       }));
     }
     return this.permissions;
@@ -686,7 +791,21 @@ export class FileSystemsPermissionsComponent implements OnInit {
       });
     } finally {
       this.loadingPermissionTargets = false;
+      this.refreshPermissionTableSearchText();
     }
+  }
+
+  private refreshPermissionTableSearchText(): void {
+    this.permissions = this.permissions.map((row) => {
+      const typeLabel = this.getAccessTypeLabel(row.accessType);
+      const rightLabel = this.getAccessRightLabel(row.accessRight);
+      const related = row.relatedTargetDisplay ?? this.getRelatedTargetCellText(row);
+      const ids = (row.relatedIds || []).join(' ');
+      const tableSearchText = [typeLabel, rightLabel, related, ids, String(row.permissionId ?? '')]
+        .join(' ')
+        .trim();
+      return { ...row, tableSearchText };
+    });
   }
 
   private async loadAccountEmailMap(neededIds: Set<number>): Promise<Map<number, string>> {

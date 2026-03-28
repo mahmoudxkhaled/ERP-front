@@ -5,7 +5,10 @@
             <h2 class="block-title mb-0">{{ 'fileSystem.entityAdmin.fileSystemsByEntity' | translate }}</h2>
             <p class="mb-0 text-500">{{ 'fileSystem.entityAdmin.fileSystemsHostedInDrives' | translate }}</p>
         </div>
-        <div class="file-systems-section__create flex-shrink-0 align-self-start md:align-self-center">
+        <div
+            class="file-systems-section__actions flex-shrink-0 align-self-start md:align-self-center flex flex-wrap align-items-center gap-2 justify-content-end">
+            <p-button [label]="'fileSystem.entityAdmin.permissionsAdmin.title' | translate" icon="pi pi-shield"
+                styleClass="p-button-outlined" (onClick)="goToFileSystemPermissionsAdminPage()"></p-button>
             <p-button [label]="'fileSystem.entityAdmin.createFileSystem' | translate" icon="pi pi-plus"
                 (onClick)="showCreateDialog()"></p-button>
         </div>
@@ -48,6 +51,8 @@
                     <th>{{ 'fileSystem.admin.driveName' | translate }}</th>
                     <th class="text-center">{{ 'fileSystem.admin.status' | translate }}</th>
                     <th class="text-center">{{ 'fileSystem.admin.createdAt' | translate }}</th>
+                    <th class="text-center" style="width: 10rem">{{ 'fileSystem.entityAdmin.managePermissions' |
+                        translate }}</th>
                     <th style="width: 12rem">{{ 'fileSystem.companyStorage.actions' | translate }}</th>
                 </tr>
             </ng-template>
@@ -92,6 +97,30 @@
                         </ng-container>
                         <ng-template #normalCreatedAt>
                             <span>{{ row.created_At ? (row.created_At | date:'d MMM y, h:mm a') : '—' }}</span>
+                        </ng-template>
+                    </td>
+                    <td class="text-center">
+                        <ng-container *ngIf="loadingFileSystems; else normalPermissions">
+                            <p-skeleton height="2rem" width="4.5rem" borderRadius="6px"></p-skeleton>
+                        </ng-container>
+                        <ng-template #normalPermissions>
+                            <div class="flex align-items-center justify-content-center gap-2">
+                                <button pButton pRipple type="button" icon="pi pi-shield"
+                                    class="p-button-rounded p-button-text p-button-plain flex-shrink-0"
+                                    [disabled]="!isFileSystemActive(row)"
+                                    [pTooltip]="'fileSystem.entityAdmin.managePermissionsTooltip' | translate"
+                                    (click)="openFileSystemPermissionsAdmin(row)">
+                                </button>
+                                <ng-container *ngIf="isFileSystemActive(row)">
+                                    <ng-container *ngIf="loadingPermissionCounts; else permCountReady">
+                                        <p-skeleton width="1.75rem" height="1.1rem"></p-skeleton>
+                                    </ng-container>
+                                    <ng-template #permCountReady>
+                                        <span class="text-600 text-sm font-semibold">{{ getPermissionCount(row)
+                                            }}</span>
+                                    </ng-template>
+                                </ng-container>
+                            </div>
                         </ng-template>
                     </td>
                     <td class="text-start">
