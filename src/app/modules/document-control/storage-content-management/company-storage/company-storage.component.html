@@ -1,45 +1,93 @@
 <div class="company-storage-view card">
-    <header class="storage-page-header">
-        <a routerLink="/document-control/storage-content-management" class="storage-back-link">
-            <i class="pi pi-arrow-left"></i>
-            <span>{{ 'fileSystem.backToHome' | translate }}</span>
-        </a>
-        <h1 class="storage-page-title">{{ 'fileSystem.companyStorageView.title' | translate }}</h1>
-    </header>
-
-    <section class="storage-selector-panel">
-        <p class="storage-selector-description">{{ 'fileSystem.companyStorageView.description' | translate }}</p>
-        <div class="storage-selector-fields">
-            <div class="storage-field">
-                <label>{{ 'fileSystem.companyStorageView.selectDrive' | translate }}</label>
-                <p-dropdown [options]="entityDriveOptions" [(ngModel)]="selectedDriveId" optionLabel="name"
-                    optionValue="id" [style]="{ width: '100%' }" [disabled]="loadingDrives"
-                    [placeholder]="loadingDrives ? ('fileSystem.companyStorage.loading' | translate) : ('fileSystem.companyStorageView.selectDrive' | translate)"
-                    (onChange)="onDriveSelected()"></p-dropdown>
+    <div class="company-storage-top flex flex-col gap-3">
+        <div class="page-header flex flex-column md:flex-row md:align-items-start md:justify-content-between gap-3">
+            <div class="page-header__text flex-1 min-w-0">
+                <h1 class="page-title">{{ 'fileSystem.companyStorageView.title' | translate }}</h1>
+                <p class="page-description">{{ 'fileSystem.companyStorageView.description' | translate }}</p>
             </div>
-            <div class="storage-field">
-                <label>{{ 'fileSystem.companyStorageView.selectFileSystem' | translate }}</label>
-                <p-dropdown [options]="fileSystemOptionsInDrive" [(ngModel)]="selectedFileSystemId" optionLabel="name"
-                    optionValue="id" [style]="{ width: '100%' }"
-                    [disabled]="!selectedDriveId || loadingFileSystemsInDrive"
-                    [placeholder]="(selectedDriveId && fileSystemOptionsInDrive.length === 0) ? ('fileSystem.companyStorageView.noFileSystemToSelect' | translate) : (loadingFileSystemsInDrive ? ('fileSystem.companyStorage.loading' | translate) : ('fileSystem.companyStorageView.selectFileSystem' | translate))"
-                    (onChange)="onFileSystemSelected()"></p-dropdown>
-                <div class="mt-2 flex align-items-center gap-2" *ngIf="selectedFileSystemId">
-                    <span class="text-500 text-sm">{{ 'fileSystem.entityAdmin.permissions' | translate }}:</span>
-                    <ng-container *ngIf="permissionsLoading; else permBadge">
-                        <p-skeleton height="1.5rem" width="5.5rem" borderRadius="16px"></p-skeleton>
-                    </ng-container>
-                    <ng-template #permBadge>
-                        <span class="cursor-pointer" (click)="showPermissionsDialog()">
-                            <p-tag [value]="selectedFileSystemEffectiveRight" severity="info"></p-tag>
-                        </span>
-                        <a class="text-sm cursor-pointer" (click)="showPermissionsDialog()">
-                            {{ 'fileSystem.entityAdmin.permissionsAdmin.permissionsTitle' | translate }}
-                        </a>
-                    </ng-template>
-                </div>
+            <div class="page-header__back flex-shrink-0 align-self-end md:align-self-start">
+                <button pButton pRipple type="button" [routerLink]="['/document-control/storage-content-management']"
+                    icon="pi pi-arrow-left" [label]="'fileSystem.backToHome' | translate"></button>
             </div>
         </div>
+    </div>
+
+    <section class="storage-selector-panel">
+        <ng-container *ngIf="loadingDrives || loadingFileSystemsInDrive; else companyStorageSelectorLoaded">
+            <div class="storage-selector-fields storage-selector-panel-skeleton">
+                <div class="storage-field storage-selector-panel-skeleton__field">
+                    <p-skeleton width="9rem" height="0.875rem" borderRadius="4px"
+                        styleClass="storage-selector-panel-skeleton__label-block"></p-skeleton>
+                    <p-skeleton width="100%" height="2.5rem" borderRadius="6px"
+                        styleClass="storage-selector-panel-skeleton__control"></p-skeleton>
+                </div>
+                <div class="storage-field storage-selector-panel-skeleton__field">
+                    <p-skeleton width="12rem" height="0.875rem" borderRadius="4px"
+                        styleClass="storage-selector-panel-skeleton__label-block"></p-skeleton>
+                    <div class="flex align-items-center company-storage-fs-dropdown-row storage-selector-panel-skeleton__control-row">
+                        <div class="company-storage-fs-dropdown-grow flex-1 min-w-0">
+                            <p-skeleton width="100%" height="2.5rem" borderRadius="6px"
+                                styleClass="storage-selector-panel-skeleton__control"></p-skeleton>
+                        </div>
+                        <p-skeleton width="2.5rem" height="2.5rem" borderRadius="6px"
+                            styleClass="flex-shrink-0 storage-selector-panel-skeleton__shield"></p-skeleton>
+                    </div>
+                </div>
+            </div>
+        </ng-container>
+        <ng-template #companyStorageSelectorLoaded>
+            <div class="storage-selector-fields">
+                <div class="storage-field">
+                    <label>{{ 'fileSystem.companyStorageView.selectDrive' | translate }}</label>
+                    <p-dropdown [options]="entityDriveOptions" [(ngModel)]="selectedDriveId" optionLabel="name"
+                        optionValue="id" [style]="{ width: '100%' }" [disabled]="loadingDrives"
+                        [placeholder]="loadingDrives ? ('fileSystem.companyStorage.loading' | translate) : ('fileSystem.companyStorageView.selectDrive' | translate)"
+                        (onChange)="onDriveSelected()"></p-dropdown>
+                </div>
+                <div class="storage-field">
+                    <label for="companyStorageFileSystem">{{ 'fileSystem.companyStorageView.selectFileSystem' | translate
+                        }}</label>
+                    <div class="flex align-items-center gap-2 company-storage-fs-dropdown-row">
+                        <div class="company-storage-fs-dropdown-grow flex-1 min-w-0">
+                            <p-dropdown inputId="companyStorageFileSystem" [options]="fileSystemOptionsInDrive"
+                                [(ngModel)]="selectedFileSystemId" optionLabel="name" optionValue="id"
+                                [style]="{ width: '100%' }" styleClass="w-full company-storage-fs-dropdown"
+                                [disabled]="!selectedDriveId || loadingFileSystemsInDrive"
+                                [placeholder]="(selectedDriveId && fileSystemOptionsInDrive.length === 0) ? ('fileSystem.companyStorageView.noFileSystemToSelect' | translate) : (loadingFileSystemsInDrive ? ('fileSystem.companyStorage.loading' | translate) : ('fileSystem.companyStorageView.selectFileSystem' | translate))"
+                                (onChange)="onFileSystemSelected()" appendTo="body"
+                                panelStyleClass="company-storage-fs-dropdown-panel">
+                                <ng-template let-item pTemplate="item">
+                                    <div
+                                        class="flex align-items-center justify-content-between gap-2 w-full min-w-0 company-storage-fs-option">
+                                        <span
+                                            class="company-storage-fs-option__name white-space-nowrap overflow-hidden text-overflow-ellipsis">{{
+                                            item.name }}</span>
+                                        <p-tag [value]="getAccessRightLabel(fileSystemOptionAccessRight(item))"
+                                            [severity]="getAccessRightSeverity(fileSystemOptionAccessRight(item))"
+                                            styleClass="permissions-access-right-tag flex-shrink-0"></p-tag>
+                                    </div>
+                                </ng-template>
+                                <ng-template let-item pTemplate="selectedItem">
+                                    <div *ngIf="item"
+                                        class="flex align-items-center justify-content-between gap-2 w-full min-w-0 company-storage-fs-option">
+                                        <span
+                                            class="company-storage-fs-option__name white-space-nowrap overflow-hidden text-overflow-ellipsis">{{
+                                            item.name }}</span>
+                                        <p-tag [value]="getAccessRightLabel(fileSystemOptionAccessRight(item))"
+                                            [severity]="getAccessRightSeverity(fileSystemOptionAccessRight(item))"
+                                            styleClass="permissions-access-right-tag flex-shrink-0"></p-tag>
+                                    </div>
+                                </ng-template>
+                            </p-dropdown>
+                        </div>
+                        <button *ngIf="selectedFileSystemId" pButton pRipple type="button" icon="pi pi-shield"
+                            class="p-button-outlined flex-shrink-0 company-storage-perm-details-btn"
+                            [pTooltip]="'fileSystem.entityAdmin.permissionsAdmin.permissionsTitle' | translate"
+                            (click)="showPermissionsDialog(); $event.preventDefault()"></button>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
     </section>
 
     <div class="storage-empty-state" *ngIf="!selectedFileSystemId && !loadingDrives && !loadingFileSystemsInDrive">
@@ -50,7 +98,7 @@
     <!-- Skeleton while loading drive or file system (matches folder-management layout) -->
     <div class="folder-management-skeleton card"
         *ngIf="(loadingDrives || loadingFileSystemsInDrive) && !selectedFileSystemId">
-        <div class="skeleton-toolbar mb-3">
+        <div class="skeleton-toolbar">
             <div class="flex align-items-center gap-2">
                 <p-skeleton width="10rem" height="2.5rem" borderRadius="6px"></p-skeleton>
                 <p-skeleton width="9rem" height="2.5rem" borderRadius="6px"></p-skeleton>
@@ -138,19 +186,26 @@
 <!-- Read-only permissions dialog (current account on selected File System) -->
 <p-dialog [header]="'fileSystem.entityAdmin.permissionsAdmin.permissionsTitle' | translate"
     [(visible)]="permissionsDialogVisible" [modal]="true" [style]="{ width: '720px' }" [draggable]="false"
-    [resizable]="false" (onHide)="hidePermissionsDialog()">
+    [resizable]="false" (onHide)="hidePermissionsDialog()" styleClass="company-storage-permissions-dialog">
     <div class="p-fluid">
         <div class="mb-3 flex align-items-center gap-2">
             <span class="font-semibold">{{ 'fileSystem.entityAdmin.permissionsAdmin.accessRight' | translate }}:</span>
-            <p-tag [value]="selectedFileSystemEffectiveRight" severity="info"></p-tag>
+            <p-tag [value]="getAccessRightLabel(selectedEffectiveAccessRightNumeric())"
+                [severity]="getAccessRightSeverity(selectedEffectiveAccessRightNumeric())"
+                styleClass="permissions-access-right-tag"></p-tag>
         </div>
 
-        <p-table [value]="selectedFileSystemPermissionsRows" [paginator]="false"
+        <div *ngIf="permissionsLoading" class="company-storage-dialog-perm-skeleton">
+            <p-skeleton width="100%" height="2.5rem" class="mb-2" borderRadius="6px"></p-skeleton>
+            <p-skeleton width="100%" height="12rem" borderRadius="6px"></p-skeleton>
+        </div>
+
+        <p-table *ngIf="!permissionsLoading" [value]="selectedFileSystemPermissionsRows" [paginator]="false"
             styleClass="p-datatable-sm p-datatable-gridlines" responsiveLayout="scroll">
             <ng-template pTemplate="header">
                 <tr>
                     <th style="width: 12rem">{{ 'fileSystem.entityAdmin.permissionsAdmin.accessType' | translate }}</th>
-                    <th style="width: 10rem">{{ 'fileSystem.entityAdmin.permissionsAdmin.accessRight' | translate }}
+                    <th style="width: 11rem" class="text-center">{{ 'fileSystem.entityAdmin.permissionsAdmin.accessRight' | translate }}
                     </th>
                     <th style="width: 10rem">Permission ID</th>
                 </tr>
@@ -158,7 +213,11 @@
             <ng-template pTemplate="body" let-row>
                 <tr>
                     <td>{{ getAccessTypeLabel(row.accessType) }}</td>
-                    <td>{{ getAccessRightLabel(row.accessRight) }}</td>
+                    <td class="text-center permissions-access-right-cell">
+                        <p-tag [value]="getAccessRightLabel(row.accessRight)"
+                            [severity]="getAccessRightSeverity(row.accessRight)"
+                            styleClass="permissions-access-right-tag"></p-tag>
+                    </td>
                     <td>{{ row.permissionId || '—' }}</td>
                 </tr>
             </ng-template>

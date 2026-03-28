@@ -80,6 +80,31 @@
   flex-direction: column;
 }
 
+.folder-tree-skeleton {
+  width: 100%;
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+
+  &__rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  &__row {
+    min-height: 2rem;
+    padding: 0.35rem 0.5rem;
+    box-sizing: border-box;
+  }
+}
+
+::ng-deep .folder-tree-skeleton__filter.p-skeleton {
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
 // Move folder dialog: content and tree take full height of dialog
 :host ::ng-deep .move-folder-dialog .p-dialog-content {
   display: flex;
@@ -275,12 +300,6 @@
   &.icon-file {
     color: var(--primary-color);
   }
-}
-
-// Spinner shown while calculating folder size in the Size column
-::ng-deep .size-calc-spinner {
-  display: inline-block;
-  vertical-align: middle;
 }
 
 .cursor-pointer {

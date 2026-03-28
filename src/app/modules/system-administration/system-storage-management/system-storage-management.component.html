@@ -1,10 +1,5 @@
 <div class="system-admin-view card p-4">
     <div class="system-admin-top flex flex-col gap-3">
-        <a routerLink="/system-administration" class="back-link">
-            <i class="pi pi-arrow-left"></i>
-            <span>{{ 'fileSystem.backToHome' | translate }}</span>
-        </a>
-
         <div class="page-header">
             <h1 class="page-title">{{ 'fileSystem.systemAdmin.title' | translate }}</h1>
             <p class="page-description">{{ 'fileSystem.systemAdmin.description' | translate }}</p>
@@ -13,26 +8,44 @@
 
     <div class="kpi-section">
         <h2 class="block-title">{{ 'fileSystem.systemAdmin.overview' | translate }}</h2>
-        <div class="kpi-cards">
-            <div class="kpi-card kpi-licenses under-dev-full">
-                <div class="kpi-icon"><i class="pi pi-key"></i></div>
-                <div class="kpi-info">
-                    <span class="kpi-value">{{ licenses.length }}</span>
-                    <span class="kpi-label">{{ 'fileSystem.systemAdmin.activeLicenses' | translate }}</span>
+        <div class="grid">
+            <div class="col-12 md:col-6 lg:col-4">
+                <div class="stat-card stat-card--no-trend surface-card border-round-xl h-full under-dev-full">
+                    <div class="stat-card__main flex align-items-start gap-3 md:gap-4">
+                        <div class="stat-card__icon" aria-hidden="true">
+                            <i class="pi pi-key"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="stat-card__label">{{ 'fileSystem.systemAdmin.activeLicenses' | translate }}</div>
+                            <div class="stat-card__value">{{ licenses.length | number }}</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="kpi-card kpi-capacity under-dev-full">
-                <div class="kpi-icon"><i class="pi pi-chart-bar"></i></div>
-                <div class="kpi-info">
-                    <span class="kpi-value">{{ capacityUsedPercent }}%</span>
-                    <span class="kpi-label">{{ 'fileSystem.systemAdmin.capacityUsed' | translate }}</span>
+            <div class="col-12 md:col-6 lg:col-4">
+                <div class="stat-card stat-card--no-trend surface-card border-round-xl h-full under-dev-full">
+                    <div class="stat-card__main flex align-items-start gap-3 md:gap-4">
+                        <div class="stat-card__icon" aria-hidden="true">
+                            <i class="pi pi-chart-bar"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="stat-card__label">{{ 'fileSystem.systemAdmin.capacityUsed' | translate }}</div>
+                            <div class="stat-card__value">{{ capacityUsedPercent | number }}%</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="kpi-card kpi-drives">
-                <div class="kpi-icon"><i class="pi pi-server"></i></div>
-                <div class="kpi-info">
-                    <span class="kpi-value">{{ virtualDrivesCount }}</span>
-                    <span class="kpi-label">{{ 'fileSystem.systemAdmin.virtualDrives' | translate }}</span>
+            <div class="col-12 md:col-6 lg:col-4">
+                <div class="stat-card stat-card--no-trend surface-card border-round-xl h-full">
+                    <div class="stat-card__main flex align-items-start gap-3 md:gap-4">
+                        <div class="stat-card__icon" aria-hidden="true">
+                            <i class="pi pi-server"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="stat-card__label">{{ 'fileSystem.systemAdmin.virtualDrives' | translate }}</div>
+                            <div class="stat-card__value">{{ virtualDrivesCount | number }}</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -88,26 +101,44 @@
         <h2 class="block-title">{{ 'fileSystem.admin.trafficMonitoring' | translate }}</h2>
         <div class="block-card">
             <p class="mb-3">{{ 'fileSystem.admin.trafficDescription' | translate }}</p>
-            <div class="kpi-cards flex flex-wrap gap-3">
-                <div class="kpi-card kpi-licenses">
-                    <div class="kpi-icon"><i class="pi pi-upload"></i></div>
-                    <div class="kpi-info">
-                        <span class="kpi-value">{{ totalUploads }}</span>
-                        <span class="kpi-label">{{ 'fileSystem.admin.totalUploads' | translate }}</span>
+            <div class="grid">
+                <div class="col-12 md:col-6 lg:col-4">
+                    <div class="stat-card stat-card--no-trend surface-card border-round-xl h-full">
+                        <div class="stat-card__main flex align-items-start gap-3 md:gap-4">
+                            <div class="stat-card__icon" aria-hidden="true">
+                                <i class="pi pi-upload"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="stat-card__label">{{ 'fileSystem.admin.totalUploads' | translate }}</div>
+                                <div class="stat-card__value stat-card__value--md">{{ totalUploads }}</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="kpi-card kpi-capacity">
-                    <div class="kpi-icon"><i class="pi pi-download"></i></div>
-                    <div class="kpi-info">
-                        <span class="kpi-value">{{ totalDownloads }}</span>
-                        <span class="kpi-label">{{ 'fileSystem.admin.totalDownloads' | translate }}</span>
+                <div class="col-12 md:col-6 lg:col-4">
+                    <div class="stat-card stat-card--no-trend surface-card border-round-xl h-full">
+                        <div class="stat-card__main flex align-items-start gap-3 md:gap-4">
+                            <div class="stat-card__icon" aria-hidden="true">
+                                <i class="pi pi-download"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="stat-card__label">{{ 'fileSystem.admin.totalDownloads' | translate }}</div>
+                                <div class="stat-card__value stat-card__value--md">{{ totalDownloads }}</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="kpi-card kpi-drives">
-                    <div class="kpi-icon"><i class="pi pi-file"></i></div>
-                    <div class="kpi-info">
-                        <span class="kpi-value">{{ totalFilesTraffic }}</span>
-                        <span class="kpi-label">{{ 'fileSystem.admin.totalFilesTraffic' | translate }}</span>
+                <div class="col-12 md:col-6 lg:col-4">
+                    <div class="stat-card stat-card--no-trend surface-card border-round-xl h-full">
+                        <div class="stat-card__main flex align-items-start gap-3 md:gap-4">
+                            <div class="stat-card__icon" aria-hidden="true">
+                                <i class="pi pi-file"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="stat-card__label">{{ 'fileSystem.admin.totalFilesTraffic' | translate }}</div>
+                                <div class="stat-card__value stat-card__value--md">{{ totalFilesTraffic }}</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

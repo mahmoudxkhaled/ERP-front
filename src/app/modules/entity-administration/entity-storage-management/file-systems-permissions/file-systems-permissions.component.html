@@ -121,13 +121,14 @@
               </ng-template>
             </td>
 
-            <td>
+            <td class="text-center permissions-access-right-cell">
               <ng-container *ngIf="permissionsTableSkeletonActive; else normalRight">
-                <p-skeleton height="1.5rem" width="5.5rem" borderRadius="16px"></p-skeleton>
+                <p-skeleton height="1.5rem" width="6.5rem" borderRadius="16px" styleClass="mx-auto"></p-skeleton>
               </ng-container>
               <ng-template #normalRight>
                 <p-tag [value]="getAccessRightLabel(row.accessRight)"
-                  [severity]="getAccessRightSeverity(row.accessRight)"></p-tag>
+                  [severity]="getAccessRightSeverity(row.accessRight)"
+                  styleClass="permissions-access-right-tag"></p-tag>
               </ng-template>
             </td>
 

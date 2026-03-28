@@ -5,6 +5,12 @@ import { VirtualDrivesService } from 'src/app/modules/system-administration/syst
 import { VirtualDrivesFilters } from 'src/app/modules/system-administration/system-storage-management/models/virtual-drive.model';
 import { AccessRight, FsPermissionsService } from '../../storage/folder-management/services/fs-permissions.service';
 
+export interface FileSystemOption {
+    id: number;
+    name: string;
+    accessRight: number;
+}
+
 @Component({
     selector: 'app-company-storage',
     templateUrl: './company-storage.component.html',
@@ -14,7 +20,7 @@ export class CompanyStorageComponent implements OnInit {
     selectedDriveId: number | null = null;
     selectedFileSystemId: number | null = null;
     entityDriveOptions: { id: number; name: string }[] = [];
-    fileSystemOptionsInDrive: { id: number; name: string }[] = [];
+    fileSystemOptionsInDrive: FileSystemOption[] = [];
     loadingDrives = false;
     loadingFileSystemsInDrive = false;
 
@@ -117,9 +123,12 @@ export class CompanyStorageComponent implements OnInit {
                 this.fileSystemOptionsInDrive = (list || [])
                     .map((item: any) => ({
                         id: Number(item?.file_system_id ?? item?.file_System_ID ?? item?.File_System_ID ?? 0),
-                        name: String(item?.file_system_name ?? item?.name ?? item?.Name ?? '')
+                        name: String(item?.file_system_name ?? item?.name ?? item?.Name ?? ''),
+                        accessRight: Number(
+                            item?.access_right ?? item?.access_Right ?? item?.Access_Right ?? item?.effective_access_right ?? -1
+                        )
                     }))
-                    .filter((fs: { id: number; name: string }) => fs.id > 0 && fs.name.trim() !== '');
+                    .filter((fs: FileSystemOption) => fs.id > 0 && fs.name.trim() !== '');
 
                 // Note: List_Account_File_Systems does not include drive_ID in the observed response,
                 // so we cannot reliably filter file systems by selected drive here.
@@ -141,6 +150,11 @@ export class CompanyStorageComponent implements OnInit {
             this.selectedFileSystemPermissionsRaw = [];
             this.selectedFileSystemPermissionsRows = [];
             return;
+        }
+
+        const selectedFs = this.fileSystemOptionsInDrive.find((o) => o.id === this.selectedFileSystemId);
+        if (selectedFs && Number.isFinite(selectedFs.accessRight) && selectedFs.accessRight >= 0) {
+            this.selectedFileSystemEffectiveRight = this.mapAccessRightNumberToEnum(selectedFs.accessRight);
         }
 
         const accountId = this.localStorageService.getAccountDetails()?.Account_ID ?? 0;
@@ -171,6 +185,67 @@ export class CompanyStorageComponent implements OnInit {
                 this.selectedFileSystemPermissionsRows = [];
             }
         });
+    }
+
+    mapAccessRightNumberToEnum(value: number): AccessRight {
+        const map: Record<number, AccessRight> = {
+            0: 'None',
+            1: 'List',
+            2: 'Read',
+            3: 'Amend',
+            4: 'Modify',
+            5: 'Full'
+        };
+        return map[value] ?? 'None';
+    }
+
+    fileSystemOptionAccessRight(option: FileSystemOption | null | undefined): number {
+        if (!option || !Number.isFinite(option.accessRight) || option.accessRight < 0) {
+            return 0;
+        }
+        return option.accessRight;
+    }
+
+    getAccessRightSeverity(accessRight: number): 'secondary' | 'info' | 'success' | 'warning' | 'danger' {
+        if (accessRight <= 0) {
+            return 'secondary';
+        }
+        if (accessRight === 1) {
+            return 'info';
+        }
+        if (accessRight === 2) {
+            return 'success';
+        }
+        if (accessRight === 3) {
+            return 'warning';
+        }
+        if (accessRight >= 4) {
+            return 'danger';
+        }
+        return 'secondary';
+    }
+
+    selectedEffectiveAccessRightNumeric(): number {
+        return this.accessRightEnumToNumber(this.selectedFileSystemEffectiveRight);
+    }
+
+    accessRightEnumToNumber(ar: AccessRight): number {
+        switch (ar) {
+            case 'None':
+                return 0;
+            case 'List':
+                return 1;
+            case 'Read':
+                return 2;
+            case 'Amend':
+                return 3;
+            case 'Modify':
+                return 4;
+            case 'Full':
+                return 5;
+            default:
+                return 0;
+        }
     }
 
     showPermissionsDialog(): void {

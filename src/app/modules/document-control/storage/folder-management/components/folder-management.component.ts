@@ -226,14 +226,13 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     return this.accessRank(this.effectiveAccessRight) >= this.accessRank('Read');
   }
 
-  /** Amend actions (rename/update details) */
-  get canAmend(): boolean {
-    return this.accessRank(this.effectiveAccessRight) >= this.accessRank('Amend');
-  }
-
-  /** Modify actions (create/upload/move/delete/restore) */
+  /** Modify or Full: create/upload/move/delete/rename/restore */
   get canModify(): boolean {
     return this.accessRank(this.effectiveAccessRight) >= this.accessRank('Modify');
+  }
+
+  get canFull(): boolean {
+    return this.effectiveAccessRight === 'Full';
   }
 
   /**
@@ -479,7 +478,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
 
   /**
    * Build menu items for the 3-dot row menu. Called when opening the menu.
-   * Every folder gets: Create folder, Upload, Rename, Move, Delete.
+   * Modify or Full: Create folder, Upload, Rename, Move, Delete.
    */
   buildFolderMenuItems(): void {
     const folder = this.selectedFolderForMenu;
@@ -501,33 +500,24 @@ export class FolderManagementComponent implements OnInit, OnChanges {
           label: this.translate.getInstant('fileSystem.folderManagement.upload'),
           icon: 'pi pi-upload',
           command: () => this.showUploadDialogForFolder(folder)
-        }
-      );
-    }
-
-    if (this.canAmend || this.canModify) {
-      if (items.length > 0) items.push({ separator: true });
-      if (this.canAmend) {
-        items.push({
+        },
+        { separator: true },
+        {
           label: this.translate.getInstant('fileSystem.folderManagement.renameFolder'),
           icon: 'pi pi-pencil',
           command: () => this.showRenameFolderDialog(folder)
-        });
-      }
-      if (this.canModify) {
-        items.push(
-          {
-            label: this.translate.getInstant('fileSystem.folderManagement.moveFolder'),
-            icon: 'pi pi-arrows-h',
-            command: () => this.showMoveFolderDialog(folder)
-          },
-          {
-            label: this.translate.getInstant('fileSystem.folderManagement.deleteFolder'),
-            icon: 'pi pi-trash',
-            command: () => this.showDeleteFolderConfirm(folder)
-          }
-        );
-      }
+        },
+        {
+          label: this.translate.getInstant('fileSystem.folderManagement.moveFolder'),
+          icon: 'pi pi-arrows-h',
+          command: () => this.showMoveFolderDialog(folder)
+        },
+        {
+          label: this.translate.getInstant('fileSystem.folderManagement.deleteFolder'),
+          icon: 'pi pi-trash',
+          command: () => this.showDeleteFolderConfirm(folder)
+        }
+      );
     }
 
     this.folderMenuItems = items;
@@ -754,7 +744,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
 
   /**
    * Build menu items for the 3-dot file menu. Called when opening the menu.
-   * Every file gets: Download, View Details, Rename, Delete.
+   * Read+: Download, View Details. Modify or Full: Rename, Delete.
    */
   buildFileMenuItems(): void {
     const file = this.selectedFileForMenu;
@@ -780,21 +770,22 @@ export class FolderManagementComponent implements OnInit, OnChanges {
       );
     }
 
-    if (this.canAmend) {
-      items.push({
-        label: this.translate.getInstant('fileSystem.folderManagement.renameFile'),
-        icon: 'pi pi-pencil',
-        command: () => this.showRenameFileDialog(file)
-      });
-    }
-
     if (this.canModify) {
-      if (items.length > 0) items.push({ separator: true });
-      items.push({
-        label: this.translate.getInstant('fileSystem.folderManagement.deleteFile'),
-        icon: 'pi pi-trash',
-        command: () => this.showDeleteFileConfirm(file)
-      });
+      if (items.length > 0) {
+        items.push({ separator: true });
+      }
+      items.push(
+        {
+          label: this.translate.getInstant('fileSystem.folderManagement.renameFile'),
+          icon: 'pi pi-pencil',
+          command: () => this.showRenameFileDialog(file)
+        },
+        {
+          label: this.translate.getInstant('fileSystem.folderManagement.deleteFile'),
+          icon: 'pi pi-trash',
+          command: () => this.showDeleteFileConfirm(file)
+        }
+      );
     }
 
     this.fileMenuItems = items;
@@ -1437,6 +1428,9 @@ export class FolderManagementComponent implements OnInit, OnChanges {
    * Show Recycle bin dialog and load deleted folders and files.
    */
   showRecycleBinDialog(): void {
+    if (!this.canFull) {
+      return;
+    }
     this.recycleBinDialogVisible = true;
     this.selectedFoldersToRestore = [];
     this.selectedFilesToRestore = [];

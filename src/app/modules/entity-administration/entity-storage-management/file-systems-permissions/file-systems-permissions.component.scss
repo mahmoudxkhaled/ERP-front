@@ -54,3 +54,11 @@
   color: var(--p-text-color);
 }
 
+::ng-deep .permissions-admin-view .permissions-admin-table .permissions-access-right-cell .permissions-access-right-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 6.5rem;
+  box-sizing: border-box;
+}
+
