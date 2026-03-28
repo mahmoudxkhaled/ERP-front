@@ -9,8 +9,10 @@
 
 
     <div style="position: relative;">
-        <p-table #drivesTable [value]="virtualDrivesTableValue" [paginator]="false" responsiveLayout="scroll"
-            [globalFilterFields]="['name', 'licenseId']">
+        <p-table #drivesTable [value]="virtualDrivesTableValue" [paginator]="true" [rows]="virtualDrivesTableRows"
+            [rowsPerPageOptions]="virtualDrivesRowsPerPageOptions" [showCurrentPageReport]="true"
+            [currentPageReportTemplate]="('fileSystem.admin.virtualDrivesPageReport' | translate)" responsiveLayout="scroll"
+            styleClass="p-datatable-sm" [globalFilterFields]="['name', 'licenseId']">
             <ng-template pTemplate="caption">
                 <div class="flex align-items-center justify-content-between gap-3 mb-2">
                     <span class="p-input-icon-left flex-1 max-w-md">

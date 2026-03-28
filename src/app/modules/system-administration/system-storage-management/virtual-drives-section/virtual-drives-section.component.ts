@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Observable } from 'rxjs';
 import { MenuItem, MessageService } from 'primeng/api';
 import { TranslationService } from 'src/app/core/services/translation.service';
@@ -27,6 +27,11 @@ export interface VirtualDriveRow {
     styleUrls: ['./virtual-drives-section.component.scss']
 })
 export class VirtualDrivesSectionComponent implements OnInit {
+
+    @Output() virtualDrivesCountChange = new EventEmitter<number>();
+
+    readonly virtualDrivesTableRows = 10;
+    readonly virtualDrivesRowsPerPageOptions = [5, 10, 25, 50];
 
     isLoading$: Observable<boolean>;
     tableLoadingSpinner = false;
@@ -231,11 +236,16 @@ export class VirtualDrivesSectionComponent implements OnInit {
                 const drivesRaw = Array.isArray(raw) ? raw : (raw?.Drives ?? []);
 
                 this.virtualDrives = drivesRaw.map((item: any) => this.mapDriveToRow(item));
+                this.notifyVirtualDrivesCount();
             },
             complete: () => {
                 this.tableLoadingSpinner = false;
             }
         });
+    }
+
+    private notifyVirtualDrivesCount(): void {
+        this.virtualDrivesCountChange.emit(this.virtualDrives.length);
     }
 
     getDriveName(row: VirtualDriveRow): string {

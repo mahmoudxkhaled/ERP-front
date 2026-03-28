@@ -1,16 +1,20 @@
 <p-toast />
 <div class="block-section card">
-    <h2 class="block-title">{{ 'fileSystem.entityAdmin.fileSystemsByEntity' | translate }}</h2>
-    <div class="block-card">
-        <p class="mb-3 text-500">{{ 'fileSystem.entityAdmin.fileSystemsHostedInDrives' | translate }}</p>
-
-        <div class="mb-3 flex flex-wrap gap-2 align-items-center">
+    <div class="flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+        <div class="flex flex-column gap-2 flex-1 min-w-0">
+            <h2 class="block-title mb-0">{{ 'fileSystem.entityAdmin.fileSystemsByEntity' | translate }}</h2>
+            <p class="mb-0 text-500">{{ 'fileSystem.entityAdmin.fileSystemsHostedInDrives' | translate }}</p>
+        </div>
+        <div class="file-systems-section__create flex-shrink-0 align-self-start md:align-self-center">
             <p-button [label]="'fileSystem.entityAdmin.createFileSystem' | translate" icon="pi pi-plus"
                 (onClick)="showCreateDialog()"></p-button>
         </div>
-
-        <p-table #fileSystemsTable [value]="fileSystemsTableValue" [paginator]="false" styleClass="   "
-            responsiveLayout="scroll" [globalFilterFields]="['name']">
+    </div>
+    <div class="block-card">
+        <p-table #fileSystemsTable [value]="fileSystemsTableValue" [paginator]="true" [rows]="fileSystemsTableRows"
+            [rowsPerPageOptions]="fileSystemsRowsPerPageOptions" [showCurrentPageReport]="true"
+            [currentPageReportTemplate]="('fileSystem.entityAdmin.fileSystemsPageReport' | translate)"
+            responsiveLayout="scroll" styleClass="p-datatable-sm" [globalFilterFields]="['name']">
             <ng-template pTemplate="caption">
                 <div class="flex align-items-center justify-content-between gap-3 mb-2 flex-wrap">
                     <span class="p-input-icon-left flex-1 min-w-200px max-w-md">

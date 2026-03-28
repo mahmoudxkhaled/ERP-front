@@ -27,6 +27,9 @@ export class FileSystemsSectionComponent implements OnInit {
   /** Emits when the file systems list changes (e.g. so parent can show count in KPI). */
   @Output() fileSystemsCountChange = new EventEmitter<number>();
 
+  readonly fileSystemsTableRows = 10;
+  readonly fileSystemsRowsPerPageOptions = [5, 10, 25, 50];
+
   fileSystems: FileSystemListItem[] = [];
   loadingFileSystems = false;
   driveOptions: { id: number; name: string }[] = [];
