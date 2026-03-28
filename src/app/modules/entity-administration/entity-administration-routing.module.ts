@@ -15,11 +15,6 @@ const routes: Routes = [
         data: { breadcrumb: 'roles&Permissions' }
     },
     {
-        path: 'user-accounts',
-        loadChildren: () => import('../entity-administration/user-accounts/user-accounts.module').then((m) => m.UserAccountsModule),
-        data: { breadcrumb: 'userAccounts' }
-    },
-    {
         path: 'entity-user-accounts',
         loadChildren: () => import('../entity-administration/entity-user-accounts/entity-user-accounts.module').then((m) => m.EntityUserAccountsModule),
         data: { breadcrumb: 'userAccounts' }

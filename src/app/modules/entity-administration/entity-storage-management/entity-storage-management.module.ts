@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EntityStorageManagementRoutingModule } from './entity-storage-management-routing.module';
 import { SharedModule } from 'src/app/Shared/shared/shared.module';
-import { FileSystemSharedModule } from 'src/app/modules/document-control/shared/file-system-shared.module';
+import { EntityStorageSharedModule } from './entity-storage-shared.module';
 import { EntityStorageManagementComponent } from './entity-storage-management.component';
 import { FileSystemsPermissionsComponent } from './file-systems-permissions/file-systems-permissions.component';
 
@@ -20,7 +20,7 @@ import { FileSystemsPermissionsComponent } from './file-systems-permissions/file
         CommonModule,
         EntityStorageManagementRoutingModule,
         SharedModule,
-        FileSystemSharedModule
+        EntityStorageSharedModule
     ]
 })
 export class EntityStorageManagementModule { }

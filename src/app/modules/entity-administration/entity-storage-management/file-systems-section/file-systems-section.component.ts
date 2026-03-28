@@ -2,11 +2,11 @@ import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { MenuItem, MessageService } from 'primeng/api';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
-import { VirtualDrivesService } from '../../services/virtual-drives.service';
-import { FileSystemsService } from '../../services/file-systems.service';
-import { VirtualDrivesFilters } from '../../models/virtual-drive.model';
-import { FileSystemListItem } from '../../models/file-system.model';
-import { formatBytes, getFileSystemErrorDetail } from '../file-system-helpers';
+import { VirtualDrivesService } from 'src/app/modules/system-administration/system-storage-management/services/virtual-drives.service';
+import { FileSystemsService } from '../services/file-systems.service';
+import { VirtualDrivesFilters } from 'src/app/modules/system-administration/system-storage-management/models/virtual-drive.model';
+import { FileSystemListItem } from '../models/file-system.model';
+import { formatBytes, getFileSystemErrorDetail } from '../shared/file-system-helpers';
 
 /** Result for Create_File_System: Owner_ID and Is_Entity_ID derived from scope and current user. */
 export interface FileSystemOwnerContext {

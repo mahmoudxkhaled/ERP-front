@@ -1,9 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { SystemStorageManagementRoutingModule } from './system-storage-management-routing.module';
 import { SharedModule } from 'src/app/Shared/shared/shared.module';
-import { FileSystemSharedModule } from 'src/app/modules/document-control/shared/file-system-shared.module';
 import { SystemStorageManagementComponent } from './system-storage-management.component';
+import { VirtualDrivesSectionComponent } from './virtual-drives-section/virtual-drives-section.component';
 
 /**
  * System Storage Management (SSM) Module.
@@ -12,13 +13,14 @@ import { SystemStorageManagementComponent } from './system-storage-management.co
  */
 @NgModule({
     declarations: [
-        SystemStorageManagementComponent
+        SystemStorageManagementComponent,
+        VirtualDrivesSectionComponent
     ],
     imports: [
         CommonModule,
+        FormsModule,
         SystemStorageManagementRoutingModule,
-        SharedModule,
-        FileSystemSharedModule
+        SharedModule
     ]
 })
 export class SystemStorageManagementModule { }

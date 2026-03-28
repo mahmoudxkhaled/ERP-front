@@ -6,7 +6,7 @@ import { LocalStorageService } from 'src/app/core/services/local-storage.service
 import { FolderService } from '../services/folder.service';
 import { FileService } from '../services/file.service';
 import { FolderStructureItem, Folder, FolderContents } from '../models/folder.model';
-import { getFileSystemErrorDetail } from 'src/app/modules/document-control/shared/file-system-helpers';
+import { getFileSystemErrorDetail } from 'src/app/modules/entity-administration/entity-storage-management/shared/file-system-helpers';
 import { FileUploadService } from 'src/app/core/file-system-lib/services/file-upload.service';
 import { FileDownloadService } from 'src/app/core/file-system-lib/services/file-download.service';
 import { isFolderNameValid } from 'src/app/core/validators/folder-name.validator';

@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { MenuItem, MessageService } from 'primeng/api';
 import { TranslationService } from 'src/app/core/services/translation.service';
-import { VirtualDrivesService } from '../../services/virtual-drives.service';
-import { VirtualDrivesFilters } from '../../models/virtual-drive.model';
+import { VirtualDrivesService } from '../services/virtual-drives.service';
+import { VirtualDrivesFilters } from '../models/virtual-drive.model';
 
 export interface VirtualDriveRow {
     id: number;

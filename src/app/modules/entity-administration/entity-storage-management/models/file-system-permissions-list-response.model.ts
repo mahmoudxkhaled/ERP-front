@@ -1,7 +1,7 @@
 import {
   getAccessRightKey,
   getAccessTypeKey,
-} from 'src/app/modules/document-control/shared/file-system-access-helpers';
+} from '../shared/file-system-access-helpers';
 
 /**
  * List_File_System_Permissions (1170) — `message` payload shape.

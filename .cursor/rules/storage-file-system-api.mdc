@@ -1,6 +1,6 @@
 ---
 description: Use Storage/File System API spec when working on upload, download, file-system, or storage features
-globs: "**/file-system*/**","**/file-system-lib/**","**/document-control/**"
+globs: "**/file-system*/**","**/file-system-lib/**","**/document-control/**","**/system-storage-management/**","**/entity-storage-management/**"
 alwaysApply: false
 ---
 

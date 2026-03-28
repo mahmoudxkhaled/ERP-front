@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
-import { VirtualDrivesService } from '../../services/virtual-drives.service';
-import { VirtualDrivesFilters } from '../../models/virtual-drive.model';
+import { VirtualDrivesService } from 'src/app/modules/system-administration/system-storage-management/services/virtual-drives.service';
+import { VirtualDrivesFilters } from 'src/app/modules/system-administration/system-storage-management/models/virtual-drive.model';
 import { AccessRight, FsPermissionsService } from '../../storage/folder-management/services/fs-permissions.service';
 
 @Component({
