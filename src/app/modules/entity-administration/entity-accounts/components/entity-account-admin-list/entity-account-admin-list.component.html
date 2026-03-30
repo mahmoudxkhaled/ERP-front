@@ -20,7 +20,7 @@
         <p-table [value]="tableValue" [paginator]="true" [rows]="10"
             [showCurrentPageReport]="true" responsiveLayout="scroll" [rowsPerPageOptions]="[10, 25, 50]">
             <ng-template pTemplate="header">
-                <tr>
+                <tr class="cursor-pointer" (click)="!loadingAdmins && openViewAccountDetails(admin)">
                     <th class="text-center">{{ 'entityAccounts.adminList.table.accountId' | translate }}</th>
                     <th class="text-center">{{ 'entityAccounts.adminList.table.userId' | translate }}</th>
                     <th>{{ 'entityAccounts.adminList.table.email' | translate }}</th>
@@ -90,7 +90,7 @@
                         <ng-template #normalActions>
                             <button pButton pRipple type="button" icon="pi pi-ellipsis-v"
                                 class="p-button-rounded p-button-text p-button-plain"
-                                (click)="openMenu(rowMenu, admin, $event)" [disabled]="loadingAdmins">
+                                (click)="$event.stopPropagation(); openMenu(rowMenu, admin, $event)" [disabled]="loadingAdmins">
                             </button>
                             <p-menu #rowMenu [model]="menuItems" [popup]="true" [appendTo]="'body'"></p-menu>
                         </ng-template>
@@ -113,7 +113,8 @@
         <h3>{{ 'entityAccounts.adminList.deleteDialog.title' | translate }}</h3>
     </ng-template>
     <div class="flex flex-column gap-3">
-        <p>{{ 'entityAccounts.adminList.deleteDialog.message' | translate: { email: accountToDelete?.email } }}</p>
+        <p>{{ 'entityAccounts.adminList.deleteDialog.messagePrefix' | translate }}<span
+                class="font-semibold">{{ accountToDelete?.email }}</span>{{ 'entityAccounts.adminList.deleteDialog.messageSuffix' | translate }}</p>
         <p class="text-red-500 font-semibold">{{ 'entityAccounts.adminList.deleteDialog.cannotUndo' | translate }}</p>
     </div>
     <ng-template pTemplate="footer">
@@ -246,7 +247,8 @@
         <h3>{{ 'entityAccounts.adminList.removeAdminDialog.title' | translate }}</h3>
     </ng-template>
     <div class="flex flex-column gap-3">
-        <p>{{ 'entityAccounts.adminList.removeAdminDialog.message' | translate: { email: adminToRemove?.email } }}</p>
+        <p>{{ 'entityAccounts.adminList.removeAdminDialog.messagePrefix' | translate }}<span
+                class="font-semibold">{{ adminToRemove?.email }}</span>{{ 'entityAccounts.adminList.removeAdminDialog.messageSuffix' | translate }}</p>
         <p class="text-600">
             {{ 'entityAccounts.adminList.removeAdminDialog.note' | translate }}
         </p>
@@ -284,16 +286,14 @@
     </ng-template>
     <form *ngIf="updateEmailForm" [formGroup]="updateEmailForm" (ngSubmit)="saveAccountEmail()">
         <div class="flex flex-column gap-3">
-            <!-- Account ID Field (Read-only) -->
-            <div class="field p-fluid">
-                <label for="emailAccountId">{{ 'entityAccounts.adminList.updateEmailDialog.accountId' | translate }}</label>
-                <input id="emailAccountId" type="text" pInputText formControlName="accountId" readonly />
+            <div class="field">
+                <span class="block text-600 mb-1">{{ 'entityAccounts.adminList.updateEmailDialog.accountId' | translate }}</span>
+                <span class="block text-900">{{ selectedAccountForDetails?.accountId }}</span>
             </div>
 
-            <!-- Current Email Field (Read-only) -->
-            <div class="field p-fluid">
-                <label for="currentEmail">{{ 'entityAccounts.adminList.updateEmailDialog.currentEmail' | translate }}</label>
-                <input id="currentEmail" type="email" pInputText formControlName="currentEmail" readonly />
+            <div class="field">
+                <span class="block text-600 mb-1">{{ 'entityAccounts.adminList.updateEmailDialog.currentEmail' | translate }}</span>
+                <span class="block text-900">{{ selectedAccountForDetails?.email }}</span>
             </div>
 
             <!-- New Email Field -->
@@ -315,8 +315,8 @@
             <p-button [label]="'entityAccounts.adminList.updateEmailDialog.cancel' | translate" icon="pi pi-times" class="p-button-text"
                 (onClick)="onCloseUpdateAccountEmailDialog()" [disabled]="savingAccountEmail">
             </p-button>
-            <p-button [label]="'entityAccounts.adminList.updateEmailDialog.updateEmail' | translate" icon="pi pi-check" type="submit" [loading]="savingAccountEmail"
-                [disabled]="savingAccountEmail || updateEmailForm.invalid">
+            <p-button [label]="'entityAccounts.adminList.updateEmailDialog.updateEmail' | translate" icon="pi pi-check" type="submit"
+                [loading]="savingAccountEmail" [disabled]="updateEmailForm.invalid">
             </p-button>
         </div>
     </form>

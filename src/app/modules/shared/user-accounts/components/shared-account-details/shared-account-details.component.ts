@@ -3,6 +3,7 @@ import { FormControl } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { PermissionService } from 'src/app/core/services/permission.service';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { EntityAccount } from 'src/app/modules/entity-administration/entities/models/entities.model';
 import { EntitiesService } from 'src/app/modules/entity-administration/entities/services/entities.service';
@@ -28,6 +29,7 @@ export class SharedAccountDetailsComponent implements OnInit, OnDestroy, OnChang
   userId: number = 0;
   entityId: number = 0;
   entityRoleId: number = 0;
+  systemRoleNameLabel: string = '';
   entityNameLabel: string = '';
   entityRoleNameLabel: string = '';
   accountState: number = 0;
@@ -46,7 +48,8 @@ export class SharedAccountDetailsComponent implements OnInit, OnDestroy, OnChang
     private entitiesService: EntitiesService,
     private rolesService: RolesService,
     private messageService: MessageService,
-    private localStorageService: LocalStorageService
+    private localStorageService: LocalStorageService,
+    private permissionService: PermissionService
   ) {
     this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
     this.isRegional = this.accountSettings?.Language !== 'English';
@@ -131,6 +134,11 @@ export class SharedAccountDetailsComponent implements OnInit, OnDestroy, OnChang
         this.userId = accountData.User_ID || 0;
         this.entityId = accountData.Entity_ID || 0;
         this.entityRoleId = accountData.Entity_Role_ID || 0;
+        const systemRoleId = Number(accountData.System_Role_ID || this.account?.systemRoleId || 0);
+        this.systemRoleNameLabel = this.account?.roleName || '';
+        if (systemRoleId > 0) {
+          this.systemRoleNameLabel = this.permissionService.getRoleName(systemRoleId) || this.systemRoleNameLabel;
+        }
         this.accountState = accountData.Account_State ?? 1;
         this.description = accountData.Description || '';
         this.descriptionRegional = accountData.Description_Regional || '';

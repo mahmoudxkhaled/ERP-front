@@ -173,6 +173,16 @@ export class EntityAccountAdminListComponent implements OnInit, OnDestroy, OnCha
                             this.entityRolesMap.set(roleId, roleName);
                         }
                     });
+                    this.entityAdmins = this.entityAdmins.map((admin: EntityAccount) => {
+                        const roleId = Number(admin.entityRoleId || 0);
+                        return {
+                            ...admin,
+                            entityRoleId: roleId,
+                            entityRoleName: roleId > 0 && this.entityRolesMap.has(roleId)
+                                ? this.entityRolesMap.get(roleId) || 'N/A'
+                                : 'N/A'
+                        };
+                    });
                 }
             },
             error: () => {
@@ -228,7 +238,7 @@ export class EntityAccountAdminListComponent implements OnInit, OnDestroy, OnCha
             const lastLogin = account?.Last_Login || null;
 
             // Extract entity role ID and look up role name
-            const entityRoleId = account?.Entity_Role_ID || 0;
+            const entityRoleId = Number(account?.Entity_Role_ID || 0);
             const entityRoleName = entityRoleId > 0 && this.entityRolesMap.has(entityRoleId)
                 ? this.entityRolesMap.get(entityRoleId) || 'N/A'
                 : 'N/A';
@@ -927,6 +937,7 @@ export class EntityAccountAdminListComponent implements OnInit, OnDestroy, OnCha
     }
 
     onCloseUpdateAccountEmailDialog(): void {
+        this.savingAccountEmail = false;
         this.updateAccountEmailDialog = false;
         this.updateEmailForm.reset();
     }

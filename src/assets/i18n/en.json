@@ -1981,6 +1981,7 @@
             "loadingText": "Loading account information...",
             "accountId": "Account ID",
             "userId": "User ID",
+            "systemRole": "System Role",
             "email": "Email",
             "entity": "Entity",
             "entityRole": "Entity role",
