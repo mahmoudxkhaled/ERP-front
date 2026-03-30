@@ -1860,6 +1860,8 @@
             "removeAdminDialog": {
                 "title": "Remove Admin Access",
                 "message": "Are you sure you want to remove admin access for {{email}}?",
+                "messagePrefix": "Are you sure you want to remove admin access for ",
+                "messageSuffix": "?",
                 "note": "This will demote the account to a system user. The account will lose administrator privileges but will remain active.",
                 "cancel": "Cancel",
                 "removeAdminAccess": "Remove Admin Access"
@@ -2099,6 +2101,7 @@
         "list": {
             "title": "Manage Roles",
             "pleaseWait": "Please wait",
+            "noEntityForNewRole": "Select an entity before adding a role.",
             "addNew": "Add New Role",
             "table": {
                 "id": "Id",
@@ -2111,6 +2114,8 @@
             "deleteDialog": {
                 "title": "Delete Role",
                 "message": "Are you sure you want to delete {{title}}?",
+                "messagePrefix": "Are you sure you want to delete ",
+                "messageSuffix": "?",
                 "cannotUndo": "This action cannot be undone.",
                 "cancel": "Cancel",
                 "delete": "Delete"
@@ -2153,8 +2158,15 @@
             "assigning": "Assigning...",
             "assignRole": "Assign Role"
         },
+        "messages": {
+            "created": "Role created successfully.",
+            "updated": "Role details saved successfully.",
+            "warningTitle": "Warning"
+        },
         "editDialog": {
             "title": "Edit Role",
+            "createTitleWithEntity": "Add new role to {entity}",
+            "editTitleWithEntity": "Edit role — {entity}",
             "currentRole": "Current Role",
             "titleLabel": "Title",
             "titlePlaceholder": "Enter role title",

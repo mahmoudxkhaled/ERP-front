@@ -1720,6 +1720,8 @@
             "removeAdminDialog": {
                 "title": "إزالة صلاحيات المدير",
                 "message": "هل أنت متأكد من إزالة صلاحيات المدير عن {{email}}؟",
+                "messagePrefix": "هل أنت متأكد من إزالة صلاحيات المدير عن ",
+                "messageSuffix": "؟",
                 "note": "سيتم تخفيض الحساب إلى مستخدم نظام. سيفقد الحساب صلاحيات المدير لكنه سيبقى نشطاً.",
                 "cancel": "إلغاء",
                 "removeAdminAccess": "إزالة صلاحيات المدير"
@@ -1959,6 +1961,7 @@
         "list": {
             "title": "إدارة الأدوار",
             "pleaseWait": "يرجى الانتظار",
+            "noEntityForNewRole": "يرجى اختيار شركة قبل إضافة دور.",
             "addNew": "إضافة دور جديد",
             "table": {
                 "id": "المعرف",
@@ -1971,6 +1974,8 @@
             "deleteDialog": {
                 "title": "حذف الدور",
                 "message": "هل أنت متأكد من حذف {{title}}؟",
+                "messagePrefix": "هل أنت متأكد من حذف ",
+                "messageSuffix": "؟",
                 "cannotUndo": "لا يمكن التراجع عن هذا الإجراء.",
                 "cancel": "إلغاء",
                 "delete": "حذف"
@@ -2013,8 +2018,15 @@
             "assigning": "جاري التعيين...",
             "assignRole": "تعيين الدور"
         },
+        "messages": {
+            "created": "تم إنشاء الدور بنجاح.",
+            "updated": "تم حفظ تفاصيل الدور بنجاح.",
+            "warningTitle": "تنبيه"
+        },
         "editDialog": {
             "title": "تعديل الدور",
+            "createTitleWithEntity": "إضافة دور جديد إلى {entity}",
+            "editTitleWithEntity": "تعديل الدور — {entity}",
             "currentRole": "الدور الحالي",
             "titleLabel": "العنوان",
             "titlePlaceholder": "أدخل عنوان الدور",

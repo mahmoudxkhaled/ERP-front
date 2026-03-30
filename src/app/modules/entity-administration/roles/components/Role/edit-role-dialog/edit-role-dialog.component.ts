@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { MessageService } from 'primeng/api';
@@ -6,13 +6,14 @@ import { RolesService } from '../../../services/roles.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { textFieldValidator, getTextFieldError } from 'src/app/core/validators/text-field.validator';
+import { TranslationService } from 'src/app/core/services/translation.service';
 
 @Component({
     selector: 'app-edit-role-dialog',
     templateUrl: './edit-role-dialog.component.html',
     styleUrls: ['./edit-role-dialog.component.scss']
 })
-export class EditRoleDialogComponent implements OnInit, OnDestroy {
+export class EditRoleDialogComponent implements OnInit, OnChanges, OnDestroy {
     private _visible: boolean = false;
 
     @Input()
@@ -21,11 +22,14 @@ export class EditRoleDialogComponent implements OnInit, OnDestroy {
     }
     set visible(value: boolean) {
         this._visible = value;
-        if (value) {
-            this.prepareDialog();
+        if (!value) {
+            this.resetFormState();
         }
     }
 
+    @Input() mode: 'create' | 'edit' = 'edit';
+    @Input() entityIdForCreate: number = 0;
+    @Input() entityName: string = '';
     @Input() roleId: string = '';
     @Input() roleTitle: string = '';
 
@@ -43,13 +47,20 @@ export class EditRoleDialogComponent implements OnInit, OnDestroy {
         private fb: FormBuilder,
         private rolesService: RolesService,
         private messageService: MessageService,
-        private localStorageService: LocalStorageService
+        private localStorageService: LocalStorageService,
+        private translate: TranslationService
     ) {
         this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
     }
 
     ngOnInit(): void {
         this.initForm();
+    }
+
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes['visible']?.currentValue === true) {
+            this.prepareDialog();
+        }
     }
 
     ngOnDestroy(): void {
@@ -64,6 +75,12 @@ export class EditRoleDialogComponent implements OnInit, OnDestroy {
     }
 
     private prepareDialog(): void {
+        if (this.mode === 'create') {
+            this.form.reset();
+            this.loadingDetails = false;
+            this.saving = false;
+            return;
+        }
         if (!this.roleId) {
             return;
         }
@@ -78,8 +95,9 @@ export class EditRoleDialogComponent implements OnInit, OnDestroy {
         this.loadingDetails = true;
         const sub = this.rolesService.getEntityRoleDetails(Number(this.roleId)).subscribe({
             next: (response) => {
+                console.log('response getEntityRoleDetails111', response);
                 if (!response?.success) {
-                    this.handleBusinessError(response);
+                    this.handleBusinessError(response, 'update');
                     this.loadingDetails = false;
                     return;
                 }
@@ -94,12 +112,47 @@ export class EditRoleDialogComponent implements OnInit, OnDestroy {
 
                 this.loadingDetails = false;
             },
+            error: () => {
+                this.loadingDetails = false;
+            }
         });
 
         this.subscriptions.push(sub);
     }
 
     submit(): void {
+        if (this.mode === 'create') {
+            this.form.markAllAsTouched();
+            if (this.form.invalid || !this.entityIdForCreate || this.entityIdForCreate <= 0) {
+                return;
+            }
+            const { title, description } = this.form.value;
+            this.saving = true;
+            const sub = this.rolesService
+                .createEntityRole(this.entityIdForCreate, title.trim(), description.trim())
+                .subscribe({
+                    next: (response) => {
+                        this.saving = false;
+                        if (!response?.success) {
+                            this.handleBusinessError(response, 'create');
+                            return;
+                        }
+                        this.messageService.add({
+                            severity: 'success',
+                            summary: this.translate.getInstant('common.success'),
+                            detail: this.translate.getInstant('entityRoles.messages.created')
+                        });
+                        this.saved.emit();
+                        this.closeDialog();
+                    },
+                    error: () => {
+                        this.saving = false;
+                    }
+                });
+            this.subscriptions.push(sub);
+            return;
+        }
+
         if (this.form.invalid || !this.roleId) {
             this.form.markAllAsTouched();
             return;
@@ -120,57 +173,75 @@ export class EditRoleDialogComponent implements OnInit, OnDestroy {
                 next: (response) => {
                     this.saving = false;
                     if (!response?.success) {
-                        this.handleBusinessError(response);
+                        this.handleBusinessError(response, 'update');
                         return;
                     }
 
                     this.messageService.add({
                         severity: 'success',
-                        summary: 'Updated',
-                        detail: 'Role details saved successfully.'
+                        summary: this.translate.getInstant('common.success'),
+                        detail: this.translate.getInstant('entityRoles.messages.updated')
                     });
 
                     this.saved.emit();
                     this.closeDialog();
                 },
-
+                error: () => {
+                    this.saving = false;
+                }
             });
 
         this.subscriptions.push(sub);
     }
 
     closeDialog(): void {
-        this.onVisibleChange(false);
-    }
-
-    onDialogHide(): void {
-        // Reset form when dialog is hidden (cancel or close)
-        this.form.reset();
-        this.loadingDetails = false;
-        this.saving = false;
-        this.onVisibleChange(false);
+        this.visibleChange.emit(false);
     }
 
     onVisibleChange(value: boolean): void {
-        this._visible = value;
         this.visibleChange.emit(value);
     }
 
-    private handleBusinessError(response: any): void | null {
+    private resetFormState(): void {
+        this.form.reset();
+        this.loadingDetails = false;
+        this.saving = false;
+    }
+
+    private handleBusinessError(response: any, context: 'create' | 'update'): void | null {
         const code = String(response?.message || '');
-        const detail = this.getErrorMessage(code);
+        const detail =
+            context === 'create' ? this.getCreationErrorMessage(code) : this.getUpdateErrorMessage(code);
 
         if (detail) {
             this.messageService.add({
                 severity: 'error',
-                summary: 'Error',
+                summary: this.translate.getInstant('common.error'),
                 detail
             });
         }
+        this.saving = false;
         return null;
     }
 
-    private getErrorMessage(code: string): string | null {
+    private getCreationErrorMessage(code: string): string | null {
+        switch (code) {
+            case 'ERP11300':
+                return 'Invalid Entity ID';
+            case 'ERP11301':
+                return 'Invalid Title Format';
+            case 'ERP11302':
+                return 'Invalid Description Format';
+            case 'ERP11303':
+                return 'Duplicate Title with another Role in the same Entity';
+            case 'ERP11305':
+                return 'Access Denied to Entity Roles';
+            default:
+                return null;
+        }
+    }
+
+    private getUpdateErrorMessage(code: string): string | null {
         switch (code) {
             case 'ERP11310':
                 return 'Invalid Entity Role ID';

@@ -6,7 +6,7 @@ import { RolesService } from '../../../services/roles.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { EntityRole, EntityRoleBackend } from '../../../models/roles.model';
-import { IAccountSettings } from 'src/app/core/models/account-status.model';
+import { IAccountSettings, IEntityDetails } from 'src/app/core/models/account-status.model';
 import { EntitiesService } from 'src/app/modules/entity-administration/entities/services/entities.service';
 
 type RoleActionContext = 'list' | 'delete';
@@ -43,6 +43,14 @@ export class RolesListComponent implements OnInit, OnDestroy, OnChanges {
         return this._entityId;
     }
 
+    get entityIdForDialog(): number {
+        return this._entityId;
+    }
+
+    entityNameForDialog: string = '';
+    roleFormDialogVisible: boolean = false;
+    roleFormMode: 'create' | 'edit' = 'edit';
+
     // Pagination
     first: number = 0;
     rows: number = 10;
@@ -67,6 +75,7 @@ export class RolesListComponent implements OnInit, OnDestroy, OnChanges {
             this._entityId = Number(this.localStorageService.getEntityId()) || 0;
         }
         this.configureMenuItems();
+        this.loadEntityNameForDialog();
         this.loadRoles();
     }
 
@@ -76,7 +85,8 @@ export class RolesListComponent implements OnInit, OnDestroy, OnChanges {
         if (changes['entityId'] && !changes['entityId'].firstChange) {
             if (this.entityId && this.entityId > 0) {
                 this._entityId = this.entityId;
-                this.first = 0; // Reset pagination
+                this.first = 0;
+                this.loadEntityNameForDialog();
                 this.loadRoles();
             }
         }
@@ -107,6 +117,7 @@ export class RolesListComponent implements OnInit, OnDestroy, OnChanges {
 
         const sub = this.rolesService.listEntityRoles(this._entityId, lastRoleId, this.rows).subscribe({
             next: (response: any) => {
+                console.log('response listEntityRoles111', response);
                 if (!response?.success) {
                     this.handleBusinessError('list', response);
                     return;
@@ -150,9 +161,56 @@ export class RolesListComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     openEditRoleDialog(role: EntityRole): void {
+        this.roleFormMode = 'edit';
         this.currentRoleForEdit = role;
-        console.log('currentRoleForEdit', this.currentRoleForEdit);
-        this.editRoleDialogVisible = true;
+        this.roleFormDialogVisible = true;
+    }
+
+    openCreateRoleDialog(): void {
+        if (!this._entityId || this._entityId <= 0) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: this.translate.getInstant('entityRoles.messages.warningTitle'),
+                detail: this.translate.getInstant('entityRoles.list.noEntityForNewRole')
+            });
+            return;
+        }
+        this.roleFormMode = 'create';
+        this.currentRoleForEdit = undefined;
+        this.loadEntityNameForDialog();
+        this.roleFormDialogVisible = true;
+    }
+
+    private loadEntityNameForDialog(): void {
+        if (!this._entityId || this._entityId <= 0) {
+            this.entityNameForDialog = '';
+            return;
+        }
+        this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
+        const isRegional = this.accountSettings?.Language !== 'English';
+        const stored = this.localStorageService.getEntityDetails() as IEntityDetails | null;
+        if (stored && String(stored.Entity_ID) === String(this._entityId)) {
+            this.entityNameForDialog = isRegional
+                ? (stored.Name_Regional || stored.Name || '')
+                : (stored.Name || '');
+            return;
+        }
+        const sub = this.entitiesService.getEntityDetails(String(this._entityId)).subscribe({
+            next: (response: any) => {
+                if (!response?.success || !response?.message) {
+                    this.entityNameForDialog = '';
+                    return;
+                }
+                const m = response.message;
+                this.entityNameForDialog = isRegional
+                    ? (m.Name_Regional || m.Name || '')
+                    : (m.Name || '');
+            },
+            error: () => {
+                this.entityNameForDialog = '';
+            }
+        });
+        this.subscriptions.push(sub);
     }
 
     viewDetails(role: EntityRole): void {
@@ -213,16 +271,6 @@ export class RolesListComponent implements OnInit, OnDestroy, OnChanges {
         this.subscriptions.push(sub);
     }
 
-    navigateToNew(): void {
-        // Include entityId as query param if we have it
-        const queryParams: any = {};
-        if (this._entityId && this._entityId > 0) {
-            queryParams.entityId = this._entityId;
-        }
-        this.router.navigate(['/entity-administration/roles/new'], { queryParams });
-    }
-
-    editRoleDialogVisible: boolean = false;
     currentRoleForEdit?: EntityRole;
 
     handleRoleUpdated(): void {

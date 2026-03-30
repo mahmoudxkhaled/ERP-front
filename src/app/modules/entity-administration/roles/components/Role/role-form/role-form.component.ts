@@ -36,6 +36,7 @@ export class RoleFormComponent implements OnInit, OnDestroy {
     entityTableTextFilter: string = '';
     loadingEntitiesTable: boolean = false;
     requestedSystemRole: number = 0;
+    entitySelectionHidden: boolean = false;
 
     /** Placeholder rows for entity selection table so skeleton cells show while loading. */
     get entityTableValue(): Entity[] {
@@ -73,18 +74,16 @@ export class RoleFormComponent implements OnInit, OnDestroy {
         if (this.isEdit) {
             this.loadRole();
         } else {
-            // Check for entityId in query params first (from entity details context)
             const queryParams = this.route.snapshot.queryParams;
             const entityIdFromQuery = queryParams['entityId'] ? Number(queryParams['entityId']) : 0;
+            const entityIdFromStorage = Number(this.localStorageService.getEntityId()) || 0;
 
             if (entityIdFromQuery > 0) {
+                this.entitySelectionHidden = true;
                 this.form.patchValue({ entityId: entityIdFromQuery });
-            } else {
-                // Fall back to localStorage
-                const entityId = Number(this.localStorageService.getEntityId()) || 0;
-                if (entityId > 0) {
-                    this.form.patchValue({ entityId: entityId });
-                }
+            } else if (entityIdFromStorage > 0) {
+                this.entitySelectionHidden = true;
+                this.form.patchValue({ entityId: entityIdFromStorage });
             }
         }
     }
@@ -109,6 +108,7 @@ export class RoleFormComponent implements OnInit, OnDestroy {
         this.loading = true;
         const sub = this.rolesService.getEntityRoleDetails(Number(this.roleId)).subscribe({
             next: (response: any) => {
+                console.log('response getEntityRoleDetails111', response);
                 if (!response?.success) {
                     this.handleBusinessError('details', response);
                     return;

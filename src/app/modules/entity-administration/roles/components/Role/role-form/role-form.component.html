@@ -3,7 +3,7 @@
 
     <form [formGroup]="form" (ngSubmit)="submit()">
         <div class="grid">
-            <div class="col-12 md:col-6" *ngIf="!isEdit">
+            <div class="col-12 md:col-6" *ngIf="!isEdit && !entitySelectionHidden">
                 <div class="field p-fluid">
                     <label for="entityId">{{ 'entityRoles.form.entity' | translate }} <span class="text-red-500">*</span></label>
                     <div class="p-inputgroup">

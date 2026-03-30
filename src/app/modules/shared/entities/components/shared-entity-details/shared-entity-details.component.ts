@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { FileUpload } from 'primeng/fileupload';
 import { Subscription } from 'rxjs';
@@ -75,7 +75,47 @@ export class SharedEntityDetailsComponent implements OnInit, OnDestroy {
         }
 
         this.preloadEntityDetailsFromAccountStorageIfSameEntity();
+        this.applyTabIndexFromQuery(this.route.snapshot.queryParamMap);
+        this.bindTabFromQueryParam();
         this.loadAllData();
+    }
+
+    private parseTabIndex(raw: string | null): number | null {
+        if (raw === null || raw === '') {
+            return null;
+        }
+        const n = parseInt(raw, 10);
+        if (Number.isNaN(n)) {
+            return null;
+        }
+        return Math.max(0, Math.min(4, n));
+    }
+
+    private applyTabIndexFromQuery(paramMap: ParamMap): void {
+        const idx = this.parseTabIndex(paramMap.get('tab'));
+        if (idx !== null) {
+            this.activeTabIndex = idx;
+        }
+    }
+
+    private bindTabFromQueryParam(): void {
+        const sub = this.route.queryParamMap.subscribe((params) => {
+            const idx = this.parseTabIndex(params.get('tab'));
+            if (idx !== null) {
+                this.activeTabIndex = idx;
+            }
+        });
+        this.subscriptions.push(sub);
+    }
+
+    onTabChange(index: number): void {
+        this.activeTabIndex = index;
+        this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: { tab: index },
+            queryParamsHandling: 'merge',
+            replaceUrl: true
+        });
     }
 
     ngOnDestroy(): void {

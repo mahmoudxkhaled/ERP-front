@@ -271,7 +271,8 @@
 
 
 <!-- Edit Role Dialog -->
-<app-edit-role-dialog [(visible)]="editRoleDialogVisible" [roleId]="roleId" [roleTitle]="roleDetails?.title || ''"
+<app-edit-role-dialog [(visible)]="editRoleDialogVisible" [mode]="'edit'" [entityName]="entityName"
+    [entityIdForCreate]="0" [roleId]="roleId" [roleTitle]="roleDetails?.title || ''"
     (saved)="handleRoleUpdated()">
 </app-edit-role-dialog>
 

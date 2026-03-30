@@ -1,77 +1,88 @@
 <div class="card">
-    <div class="flex justify-content-between align-items-center mb-4">
-        <h2>{{ 'entityRoles.list.title' | translate }}</h2>
-        <p-button (onClick)="navigateToNew()" [disabled]="!!(isLoading$ | async)">
-            <ng-container *ngIf="isLoading$ | async">
-                <span class="indicator-progress" [style.display]="'block'">
-                    {{ 'entityRoles.list.pleaseWait' | translate }}
-                    <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
-                </span>
-            </ng-container>
-            <ng-container *ngIf="(isLoading$ | async) === false">
-                <span>{{ 'entityRoles.list.addNew' | translate }}</span>
-            </ng-container>
-        </p-button>
-    </div>
+    <p-panel header=" " class="mb-4">
+        <ng-template pTemplate="header">
+            <div class="flex align-items-center justify-content-between w-full">
+                <div class="flex align-items-center gap-3">
+                    <i class="pi pi-shield text-primary text-2xl"></i>
+                    <span class="text-xl font-semibold">{{ 'entityRoles.list.title' | translate }}</span>
+                </div>
+                <div class="flex gap-2">
+                    <p-button [label]="'entityRoles.list.addNew' | translate" icon="pi pi-plus" iconPos="left"
+                        size="small" severity="contrast" (onClick)="openCreateRoleDialog()"
+                        [disabled]="tableLoadingSpinner"></p-button>
+                </div>
+            </div>
+        </ng-template>
 
-    <div class=" " style="position: relative;">
         <p-table #rolesTable [value]="tableValue" [paginator]="true" [first]="first" [rows]="rows"
             [rowsPerPageOptions]="[10, 25, 50, 100]" [totalRecords]="totalRecords" [showCurrentPageReport]="true"
             responsiveLayout="scroll" [lazy]="true"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-            (onLazyLoad)="onPageChange($event)">
+            (onLazyLoad)="onPageChange($event)" styleClass="account-list-table p-datatable-sm">
 
             <ng-template pTemplate="header">
                 <tr>
-                    <th style="width: 50px;">{{ 'entityRoles.list.table.id' | translate }}</th>
-                    <th style="width: 200px;">{{ 'entityRoles.list.table.title' | translate }}</th>
-                    <th style="width: 300px;">{{ 'entityRoles.list.table.description' | translate }}</th>
-                    <th style="width: 150px; text-align: start !important;">{{ 'entityRoles.list.table.actions' |
+                    <th class="text-center account-list-th account-list-th--id">{{ 'entityRoles.list.table.id' |
                         translate }}</th>
+                    <th class="account-list-th roles-list-th--title">{{ 'entityRoles.list.table.title' | translate }}
+                    </th>
+                    <th class="account-list-th roles-list-th--description">{{ 'entityRoles.list.table.description' |
+                        translate }}</th>
+                    <th class="text-start account-list-th account-list-th--actions">{{
+                        'entityRoles.list.table.actions' | translate }}</th>
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="body" let-role>
-                <tr>
-                    <td>
-                        <div>
-                            <ng-container *ngIf="isLoading$ | async; else normalId">
+                <tr class="account-list-row-clickable" (click)="!tableLoadingSpinner && viewDetails(role)">
+                    <td class="text-center account-list-td">
+                        <ng-container *ngIf="tableLoadingSpinner; else normalId">
+                            <div class="flex justify-content-center w-full">
                                 <p-skeleton height="1.5rem" width="4rem" borderRadius="4px"></p-skeleton>
-                            </ng-container>
-                            <ng-template #normalId>
-                                <p-tag [value]="'#' + role.id" severity="info"></p-tag>
-                            </ng-template>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="flex flex-column">
-                            <ng-container *ngIf="isLoading$ | async; else normalTitle">
-                                <p-skeleton height="1rem" width="10rem"></p-skeleton>
-                            </ng-container>
-                            <ng-template #normalTitle>
-                                <span style="cursor: pointer;" class="font-semibold name-text"
-                                    routerLink="/entity-administration/roles/{{ role.id }}">
-                                    {{ role.title }}</span>
-                            </ng-template>
-                        </div>
-                    </td>
-                    <td>
-                        <ng-container *ngIf="isLoading$ | async; else normalDescription">
-                            <p-skeleton height="3rem" width="100%" class="line-height-3"></p-skeleton>
+                            </div>
                         </ng-container>
-                        <ng-template #normalDescription>
-                            <span class="text-600 line-height-3 description-text">{{ role.description ||
-                                ('entityRoles.list.noDescription' | translate) }}</span>
+                        <ng-template #normalId>
+                            <span class="text-600 account-list-ellipsis account-list-ellipsis--center">#{{ role.id }}</span>
                         </ng-template>
                     </td>
-                    <td class="text-start">
-                        <ng-container *ngIf="isLoading$ | async; else normalActions">
-                            <p-skeleton height="2rem" width="2rem" borderRadius="50%"></p-skeleton>
+                    <td class="account-list-td roles-list-td--title">
+                        <ng-container *ngIf="tableLoadingSpinner; else normalTitle">
+                            <div class="account-list-skeleton-line">
+                                <p-skeleton height="1.5rem" width="100%" borderRadius="4px"></p-skeleton>
+                            </div>
+                        </ng-container>
+                        <ng-template #normalTitle>
+                            <div class="roles-list-cell-clip">
+                                <span
+                                    class="text-600 account-list-ellipsis account-list-ellipsis--start font-semibold name-text">{{
+                                    role.title }}</span>
+                            </div>
+                        </ng-template>
+                    </td>
+                    <td class="account-list-td roles-list-td--description">
+                        <ng-container *ngIf="tableLoadingSpinner; else normalDescription">
+                            <div class="account-list-skeleton-line">
+                                <p-skeleton height="1.5rem" width="100%" borderRadius="4px"></p-skeleton>
+                            </div>
+                        </ng-container>
+                        <ng-template #normalDescription>
+                            <div class="roles-list-cell-clip">
+                                <span class="text-600 account-list-ellipsis account-list-ellipsis--start">{{
+                                    role.description || ('entityRoles.list.noDescription' | translate) }}</span>
+                            </div>
+                        </ng-template>
+                    </td>
+                    <td class="text-start account-list-td account-list-td--actions">
+                        <ng-container *ngIf="tableLoadingSpinner; else normalActions">
+                            <div class="account-list-actions-skeleton">
+                                <p-skeleton shape="circle" size="2rem"></p-skeleton>
+                            </div>
                         </ng-container>
                         <ng-template #normalActions>
                             <button pButton pRipple type="button" icon="pi pi-ellipsis-v"
                                 class="p-button-rounded p-button-text p-button-plain"
-                                (click)="openMenu(rowMenu, role, $event)" [disabled]="menuItems.length === 0">
+                                (click)="$event.stopPropagation(); openMenu(rowMenu, role, $event)"
+                                [disabled]="menuItems.length === 0">
                             </button>
                             <p-menu #rowMenu [model]="menuItems" [popup]="true" [appendTo]="'body'"></p-menu>
                         </ng-template>
@@ -85,7 +96,7 @@
                 </tr>
             </ng-template>
         </p-table>
-    </div>
+    </p-panel>
 </div>
 
 <p-toast></p-toast>
@@ -96,28 +107,32 @@
         <h3>{{ 'entityRoles.list.deleteDialog.title' | translate }}</h3>
     </ng-template>
     <div class="flex flex-column gap-3">
-        <p>{{ 'entityRoles.list.deleteDialog.message' | translate: { title: currentRoleForDelete?.title } }}</p>
+        <p>{{ 'entityRoles.list.deleteDialog.messagePrefix' | translate }}<span class="font-semibold">{{ currentRoleForDelete?.title }}</span>{{ 'entityRoles.list.deleteDialog.messageSuffix' | translate }}</p>
         <p class="text-red-500 font-semibold">{{ 'entityRoles.list.deleteDialog.cannotUndo' | translate }}</p>
     </div>
     <ng-template pTemplate="footer">
         <p-button [label]="'entityRoles.list.deleteDialog.cancel' | translate" icon="pi pi-times" class="p-button-text"
             (onClick)="onCancelDeleteDialog()" [disabled]="!!(isLoading$ | async)">
         </p-button>
-        <p-button class="p-button-danger" (onClick)="deleteRole()" [disabled]="!!(isLoading$ | async)">
-            <ng-container *ngIf="isLoading$ | async">
-                <span class="indicator-progress" [style.display]="'block'">
-                    {{ 'entityRoles.list.pleaseWait' | translate }}
-                    <i class="pi pi-spin pi-spinner" style="font-size: 1rem"></i>
-                </span>
-            </ng-container>
-            <ng-container *ngIf="(isLoading$ | async) === false">
-                <span>{{ 'entityRoles.list.deleteDialog.delete' | translate }}</span>
-            </ng-container>
+        <p-button styleClass="p-button-danger account-list-footer-primary-btn" (onClick)="deleteRole()"
+            [disabled]="!!(isLoading$ | async)">
+            <span class="account-list-footer-primary-inner">
+                <ng-container *ngIf="isLoading$ | async">
+                    <span class="indicator-progress flex align-items-center justify-content-center gap-2">
+                        {{ 'entityRoles.list.pleaseWait' | translate }}
+                        <p-skeleton width="1rem" height="1rem" shape="circle"></p-skeleton>
+                    </span>
+                </ng-container>
+                <ng-container *ngIf="(isLoading$ | async) === false">
+                    <span>{{ 'entityRoles.list.deleteDialog.delete' | translate }}</span>
+                </ng-container>
+            </span>
         </p-button>
     </ng-template>
 </p-dialog>
 
-<!-- Edit Role Dialog -->
-<app-edit-role-dialog [(visible)]="editRoleDialogVisible" [roleId]="currentRoleForEdit?.id || ''"
-    [roleTitle]="currentRoleForEdit?.title || ''" (saved)="handleRoleUpdated()">
+<app-edit-role-dialog [(visible)]="roleFormDialogVisible" [mode]="roleFormMode"
+    [entityIdForCreate]="entityIdForDialog" [entityName]="entityNameForDialog"
+    [roleId]="currentRoleForEdit?.id || ''" [roleTitle]="currentRoleForEdit?.title || ''"
+    (saved)="handleRoleUpdated()">
 </app-edit-role-dialog>

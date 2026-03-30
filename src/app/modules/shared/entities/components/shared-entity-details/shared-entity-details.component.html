@@ -142,7 +142,8 @@
             </p-tabView>
         </ng-container>
         <ng-template #realContent>
-            <p-tabView *ngIf="entityDetails" [(activeIndex)]="activeTabIndex" class="w-full h-full">
+            <p-tabView *ngIf="entityDetails" [(activeIndex)]="activeTabIndex" (activeIndexChange)="onTabChange($event)"
+                class="w-full h-full">
                 <!-- Tab 1: Basic Information & Contacts -->
                 <p-tabPanel [header]="'entities.details.tabs.basicInfoContacts' | translate">
                     <!-- Section 1: Basic Information -->
