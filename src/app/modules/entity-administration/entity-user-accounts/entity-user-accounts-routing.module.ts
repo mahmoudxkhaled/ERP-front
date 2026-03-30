@@ -6,8 +6,7 @@ const routes: Routes = [
     { path: '', redirectTo: 'list', pathMatch: 'full' },
     {
         path: 'list',
-        component: EntityUserAccountsPageComponent,
-        data: { breadcrumb: 'userAccounts' }
+        component: EntityUserAccountsPageComponent
     }
 ];
 

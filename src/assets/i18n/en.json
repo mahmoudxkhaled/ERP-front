@@ -4,6 +4,7 @@
         "error": "Error",
         "loading": "Loading...",
         "cancel": "Cancel",
+        "select": "Select",
         "save": "Save",
         "actions": "Actions"
     },
@@ -970,6 +971,7 @@
             "editUser": "Edit User",
             "userContactInfo": "Contact Information",
             "userAccounts": "User Accounts",
+            "entityUserAccounts": "Entity User Accounts",
             "uikit": "UI Kit",
             "utilities": "Utilities",
             "pages": "Pages Management",
@@ -1840,13 +1842,14 @@
                 "deactivate": "Deactivate"
             },
             "menu": {
-                "viewEditAccountDetails": "View/Edit Account Details",
-                "updateAccountEmail": "Update Account Email",
-                "updateAccountEntity": "Update Account Entity",
-                "activateAccount": "Activate Account",
-                "deactivateAccount": "Deactivate Account",
-                "deleteAccount": "Delete Account",
-                "removeAdminAccess": "Remove Admin Access"
+                "viewAccountDetails": "View account details",
+                "editAccountDescription": "Edit description",
+                "updateAccountEmail": "Update account email",
+                "updateAccountEntity": "Update account entity",
+                "activateAccount": "Activate account",
+                "deactivateAccount": "Deactivate account",
+                "deleteAccount": "Delete account",
+                "removeAdminAccess": "Remove admin access"
             },
             "removeAdminDialog": {
                 "title": "Remove Admin Access",
@@ -1868,7 +1871,7 @@
             }
         },
         "list": {
-            "searchPlaceholder": "Search accounts",
+            "searchPlaceholder": "Search by account ID, email, or entity",
             "includeSubentities": "Include Sub-entities:",
             "activeOnly": "Active Only:",
             "title": "Accounts",
@@ -1944,14 +1947,29 @@
                 "validEmail": "Please enter a valid email address.",
                 "cancel": "Cancel",
                 "updateEmail": "Update Email"
+            },
+            "menu": {
+                "viewAccountDetails": "View account details",
+                "editAccountDescription": "Edit description",
+                "updateAccountEmail": "Update account email",
+                "updateAccountEntity": "Update account entity",
+                "activateAccount": "Activate account",
+                "deactivateAccount": "Deactivate account",
+                "deleteAccount": "Delete account",
+                "assignAsAdmin": "Assign as admin"
             }
         },
         "details": {
             "title": "Account Details",
+            "viewTitle": "Account details",
+            "editDescriptionTitle": "Edit account description",
+            "noDescription": "No description provided.",
             "loadingText": "Loading account information...",
             "accountId": "Account ID",
             "userId": "User ID",
             "email": "Email",
+            "entity": "Entity",
+            "entityRole": "Entity role",
             "entityId": "Entity ID",
             "entityRoleId": "Entity Role ID",
             "accountState": "Account State",

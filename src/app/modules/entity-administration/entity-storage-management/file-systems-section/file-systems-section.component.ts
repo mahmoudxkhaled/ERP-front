@@ -130,6 +130,7 @@ export class FileSystemsSectionComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadingFileSystems = true;
     this.buildEntityFilterOptions();
     this.buildDriveOptionsWithAll();
     this.loadDrives();

@@ -74,6 +74,7 @@ export class EntityAccountAdminListComponent implements OnInit, OnDestroy, OnCha
 
     // Account management dialogs
     viewAccountDetailsDialog: boolean = false;
+    editAccountDescriptionDialog: boolean = false;
     updateAccountEmailDialog: boolean = false;
     updateAccountEntityDialogVisible: boolean = false;
     accountEmailForUpdate: string = '';
@@ -442,11 +443,19 @@ export class EntityAccountAdminListComponent implements OnInit, OnDestroy, OnCha
         const canUpdateAccountEmail = this.permissionService.can('Update_Account_Email');
         const canUpdateAccountEntity = this.permissionService.can('Update_Account_Entity');
 
-        if (canGetAccountDetails || canUpdateAccountDetails) {
+        if (canGetAccountDetails) {
             menuItemsList.push({
-                label: this.translate.getInstant('entityAccounts.adminList.menu.viewEditAccountDetails'),
+                label: this.translate.getInstant('entityAccounts.adminList.menu.viewAccountDetails'),
                 icon: 'pi pi-eye',
                 command: () => this.currentAdmin && this.openViewAccountDetails(this.currentAdmin)
+            });
+        }
+
+        if (canUpdateAccountDetails) {
+            menuItemsList.push({
+                label: this.translate.getInstant('entityAccounts.adminList.menu.editAccountDescription'),
+                icon: 'pi pi-pencil',
+                command: () => this.currentAdmin && this.openEditAccountDescription(this.currentAdmin)
             });
         }
 
@@ -822,6 +831,11 @@ export class EntityAccountAdminListComponent implements OnInit, OnDestroy, OnCha
     openViewAccountDetails(admin: EntityAccount): void {
         this.selectedAccountForDetails = admin;
         this.viewAccountDetailsDialog = true;
+    }
+
+    openEditAccountDescription(admin: EntityAccount): void {
+        this.selectedAccountForDetails = admin;
+        this.editAccountDescriptionDialog = true;
     }
 
     onAccountDetailsSaved(): void {

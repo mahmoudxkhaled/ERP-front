@@ -17,7 +17,7 @@ const routes: Routes = [
     {
         path: 'entity-user-accounts',
         loadChildren: () => import('../entity-administration/entity-user-accounts/entity-user-accounts.module').then((m) => m.EntityUserAccountsModule),
-        data: { breadcrumb: 'userAccounts' }
+        data: { breadcrumb: 'entityUserAccounts' }
     },
     {
         path: 'entity-groups',

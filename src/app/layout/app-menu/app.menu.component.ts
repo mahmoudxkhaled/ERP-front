@@ -62,7 +62,7 @@ export class AppMenuComponent implements OnInit {
         // Add a Home entry at the top that always navigates to the main dashboard/home
         this.model = [
             {
-                label: this.translate.getInstant('layout.menu.home') || 'Home',
+                label: this.translate.getInstant('layout.menu.home'),
                 hasPermession: true,
                 icon: 'fa fa-home',
                 routerLink: ['/']

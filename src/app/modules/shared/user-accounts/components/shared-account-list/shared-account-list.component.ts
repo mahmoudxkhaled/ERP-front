@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { TranslationService } from 'src/app/core/services/translation.service';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { textFieldValidator, getTextFieldError, nameFieldValidator, getNameFieldError } from 'src/app/core/validators/text-field.validator';
@@ -65,6 +66,7 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
   // Context menu
   otherAccountsMenuItems: any[] = [];
   currentAccount?: EntityAccount;
+  activeRowMenu?: any;
 
   // Filters
   includeSubentities: boolean = false;
@@ -110,6 +112,7 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
 
   // Account management dialogs
   viewAccountDetailsDialog: boolean = false;
+  editAccountDescriptionDialog: boolean = false;
   updateAccountEmailDialog: boolean = false;
   updateAccountEntityDialogVisible: boolean = false;
   accountEmailForUpdate: string = '';
@@ -131,19 +134,25 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
     return this.isSystemScope();
   }
 
+  get isSystemUserAccountsPage(): boolean {
+    return this.requestedSystemRole === 2;
+  }
+
   constructor(
     private entitiesService: EntitiesService,
     private messageService: MessageService,
     private localStorageService: LocalStorageService,
     private permissionService: PermissionService,
     private fb: FormBuilder,
-    private rolesService: RolesService
+    private rolesService: RolesService,
+    private translationService: TranslationService
   ) {
     this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
     this.isRegional = this.accountSettings?.Language !== 'English';
   }
 
   ngOnInit(): void {
+    this.applyIncludeSubentitiesMode();
     this.initForm();
     this.applyCreateFormValidators();
     this.initAccountManagementForms();
@@ -157,6 +166,9 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes['requestedSystemRole']) {
+      this.applyIncludeSubentitiesMode();
+    }
     if (changes['entityId'] && !changes['entityId'].firstChange && this.entityId) {
       // Clear roles map when entity changes
       this.entityRolesMap.clear();
@@ -172,6 +184,12 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
 
     if (changes['entityId']) {
       this.applyCreateFormValidators();
+    }
+  }
+
+  private applyIncludeSubentitiesMode(): void {
+    if (this.isSystemUserAccountsPage) {
+      this.includeSubentities = true;
     }
   }
 
@@ -277,6 +295,7 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
       this.textFilter
     ).subscribe({
       next: (response: any) => {
+        console.log('reloadAccounts response', response);
         if (!response?.success) {
           this.handleBusinessError('accounts', response);
           return;
@@ -582,33 +601,33 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
     const sub = this.entitiesService
       .createAccount(email, firstName, lastName, selectedEntityId, selectedEntityRoleId)
       .subscribe({
-      next: (accountResponse: any) => {
-        if (!accountResponse?.success) {
-          this.handleCreateAccountError(accountResponse);
-          return;
-        }
+        next: (accountResponse: any) => {
+          if (!accountResponse?.success) {
+            this.handleCreateAccountError(accountResponse);
+            return;
+          }
 
-        const accountId = String(accountResponse?.message?.User_ID || '');
+          const accountId = String(accountResponse?.message?.User_ID || '');
 
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: 'Account created successfully.',
-          life: 3000
-        });
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Account created successfully.',
+            life: 3000
+          });
 
-        this.form.reset();
-        this.submitted = false;
-        this.loading = false;
-        this.addAccountDialog = false;
-        this.selectedCreateEntity = undefined;
-        this.selectedCreateRole = undefined;
-        this.accountCreated.emit(accountId);
-        this.accountUpdated.emit();
-        this.reloadAccounts();
-      },
-      error: () => this.loading = false
-    });
+          this.form.reset();
+          this.submitted = false;
+          this.loading = false;
+          this.addAccountDialog = false;
+          this.selectedCreateEntity = undefined;
+          this.selectedCreateRole = undefined;
+          this.accountCreated.emit(accountId);
+          this.accountUpdated.emit();
+          this.reloadAccounts();
+        },
+        error: () => this.loading = false
+      });
 
     this.subscriptions.push(sub);
   }
@@ -955,7 +974,17 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
   openOtherAccountMenu(menuRef: any, account: EntityAccount, event: Event): void {
     this.currentAccount = account;
     this.configureOtherAccountMenuItems(account);
+    if (this.activeRowMenu && this.activeRowMenu !== menuRef) {
+      this.activeRowMenu.hide();
+    }
+    this.activeRowMenu = menuRef;
     menuRef.toggle(event);
+  }
+
+  onRowMenuHide(menuRef: any): void {
+    if (this.activeRowMenu === menuRef) {
+      this.activeRowMenu = undefined;
+    }
   }
 
   /**
@@ -974,17 +1003,25 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
     const canUpdateAccountEmail = this.permissionService.can('Update_Account_Email');
     const canUpdateAccountEntity = this.permissionService.can('Update_Account_Entity');
 
-    if (canGetAccountDetails || canUpdateAccountDetails) {
+    if (canGetAccountDetails) {
       menuItemsList.push({
-        label: 'View/Edit Account Details',
+        label: this.translationService.getInstant('entityAccounts.list.menu.viewAccountDetails'),
         icon: 'pi pi-eye',
         command: () => this.currentAccount && this.openViewAccountDetails(this.currentAccount)
       });
     }
 
+    if (canUpdateAccountDetails) {
+      menuItemsList.push({
+        label: this.translationService.getInstant('entityAccounts.list.menu.editAccountDescription'),
+        icon: 'pi pi-pencil',
+        command: () => this.currentAccount && this.openEditAccountDescription(this.currentAccount)
+      });
+    }
+
     if (canUpdateAccountEmail) {
       menuItemsList.push({
-        label: 'Update Account Email',
+        label: this.translationService.getInstant('entityAccounts.list.menu.updateAccountEmail'),
         icon: 'pi pi-envelope',
         command: () => this.currentAccount && this.openUpdateAccountEmail(this.currentAccount)
       });
@@ -992,7 +1029,7 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
 
     if (canUpdateAccountEntity) {
       menuItemsList.push({
-        label: 'Update Account Entity',
+        label: this.translationService.getInstant('entityAccounts.list.menu.updateAccountEntity'),
         icon: 'pi pi-building',
         command: () => this.currentAccount && this.openUpdateAccountEntity(this.currentAccount)
       });
@@ -1000,7 +1037,7 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
 
     if (canActivateAccount && account.accountState === 0) {
       menuItemsList.push({
-        label: 'Activate Account',
+        label: this.translationService.getInstant('entityAccounts.list.menu.activateAccount'),
         icon: 'pi pi-check',
         command: () => this.currentAccount && this.confirmActivateAccount(this.currentAccount)
       });
@@ -1008,7 +1045,7 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
 
     if (canDeactivateAccount && account.accountState === 1) {
       menuItemsList.push({
-        label: 'Deactivate Account',
+        label: this.translationService.getInstant('entityAccounts.list.menu.deactivateAccount'),
         icon: 'pi pi-times',
         command: () => this.currentAccount && this.confirmDeactivateAccount(this.currentAccount)
       });
@@ -1016,7 +1053,7 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
 
     if (canDeleteAccount) {
       menuItemsList.push({
-        label: 'Delete Account',
+        label: this.translationService.getInstant('entityAccounts.list.menu.deleteAccount'),
         icon: 'pi pi-trash',
         command: () => this.currentAccount && this.confirmDeleteAccount(this.currentAccount)
       });
@@ -1024,7 +1061,7 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
 
     if (canAssignAdmin && this.isEligibleForAdmin(account)) {
       menuItemsList.push({
-        label: 'Assign as Admin',
+        label: this.translationService.getInstant('entityAccounts.list.menu.assignAsAdmin'),
         icon: 'pi pi-user-plus',
         command: () => this.currentAccount && this.confirmAssignAccountAsAdmin(this.currentAccount)
       });
@@ -1160,6 +1197,11 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
   openViewAccountDetails(account: EntityAccount): void {
     this.selectedAccountForDetails = account;
     this.viewAccountDetailsDialog = true;
+  }
+
+  openEditAccountDescription(account: EntityAccount): void {
+    this.selectedAccountForDetails = account;
+    this.editAccountDescriptionDialog = true;
   }
 
   onAccountDetailsSaved(): void {

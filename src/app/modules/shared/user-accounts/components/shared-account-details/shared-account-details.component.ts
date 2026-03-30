@@ -6,6 +6,7 @@ import { LocalStorageService } from 'src/app/core/services/local-storage.service
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { EntityAccount } from 'src/app/modules/entity-administration/entities/models/entities.model';
 import { EntitiesService } from 'src/app/modules/entity-administration/entities/services/entities.service';
+import { RolesService } from 'src/app/modules/entity-administration/roles/services/roles.service';
 
 @Component({
   selector: 'app-shared-account-details',
@@ -15,6 +16,7 @@ import { EntitiesService } from 'src/app/modules/entity-administration/entities/
 export class SharedAccountDetailsComponent implements OnInit, OnDestroy, OnChanges {
   @Input() visible: boolean = false;
   @Input() account?: EntityAccount;
+  @Input() dialogMode: 'viewEdit' | 'view' | 'editDescription' = 'viewEdit';
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() saved = new EventEmitter<void>();
 
@@ -26,6 +28,8 @@ export class SharedAccountDetailsComponent implements OnInit, OnDestroy, OnChang
   userId: number = 0;
   entityId: number = 0;
   entityRoleId: number = 0;
+  entityNameLabel: string = '';
+  entityRoleNameLabel: string = '';
   accountState: number = 0;
   description: string = '';
   descriptionRegional: string = '';
@@ -40,6 +44,7 @@ export class SharedAccountDetailsComponent implements OnInit, OnDestroy, OnChang
 
   constructor(
     private entitiesService: EntitiesService,
+    private rolesService: RolesService,
     private messageService: MessageService,
     private localStorageService: LocalStorageService
   ) {
@@ -58,9 +63,55 @@ export class SharedAccountDetailsComponent implements OnInit, OnDestroy, OnChang
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['visible']?.currentValue && changes['account']?.currentValue && this.account) {
+    if (!this.account?.email) {
+      return;
+    }
+    if (changes['visible']?.currentValue === true) {
+      this.loadAccountDetails(this.account.email);
+    } else if (changes['account'] && this.visible) {
       this.loadAccountDetails(this.account.email);
     }
+  }
+
+  get detailsTitleKey(): string {
+    if (this.dialogMode === 'view') {
+      return 'entityAccounts.details.viewTitle';
+    }
+    if (this.dialogMode === 'editDescription') {
+      return 'entityAccounts.details.editDescriptionTitle';
+    }
+    return 'entityAccounts.details.title';
+  }
+
+  get descriptionReadonlyText(): string {
+    const v = this.descriptionFormControl.value;
+    if (v === null || v === undefined) {
+      return '';
+    }
+    return String(v).trim();
+  }
+
+  get dialogContentWidth(): string {
+    if (this.dialogMode === 'viewEdit' || this.dialogMode === 'editDescription') {
+      return '520px';
+    }
+    return '420px';
+  }
+
+  getEntityDisplay(): string {
+    const name = (this.entityNameLabel || '').trim();
+    if (name) {
+      return name;
+    }
+    return '';
+  }
+
+  getEntityRoleDisplay(): string {
+    const name = (this.entityRoleNameLabel || '').trim();
+    if (name) {
+      return name;
+    }
+    return '';
   }
 
   /** Fetches account details from the API by email. */
@@ -90,6 +141,61 @@ export class SharedAccountDetailsComponent implements OnInit, OnDestroy, OnChang
 
         this.descriptionFormControl.setValue(descriptionToShow, { emitEvent: false });
         this.originalDescription = descriptionToShow;
+        this.resolveEntityAndRoleDisplay();
+      },
+      error: () => {
+        this.loadingAccountDetails = false;
+      }
+    });
+
+    this.subscriptions.push(sub);
+  }
+
+  private resolveEntityAndRoleDisplay(): void {
+    const eid = this.entityId;
+    const rid = this.entityRoleId;
+    this.entityNameLabel = '';
+    this.entityRoleNameLabel = '';
+
+    if (eid <= 0) {
+      this.loadingAccountDetails = false;
+      return;
+    }
+
+    const sub = this.entitiesService.getEntityDetails(String(eid)).subscribe({
+      next: (res: any) => {
+        if (res?.success) {
+          const entity = res?.message || {};
+          this.entityNameLabel = this.isRegional
+            ? (entity?.Name_Regional || entity?.Name || '')
+            : (entity?.Name || '');
+        }
+
+        if (rid > 0) {
+          const roleSub = this.rolesService.listEntityRoles(eid, 0, 100).subscribe({
+            next: (roleRes: any) => {
+              if (roleRes?.success) {
+                const rolesData = roleRes?.message?.Entity_Roles || {};
+                for (const item of Object.values(rolesData) as any[]) {
+                  const roleId = Number(item?.Entity_Role_ID || 0);
+                  if (roleId === rid) {
+                    this.entityRoleNameLabel = this.isRegional
+                      ? (item?.Title_Regional || item?.Title || '')
+                      : (item?.Title || '');
+                    break;
+                  }
+                }
+              }
+              this.loadingAccountDetails = false;
+            },
+            error: () => {
+              this.loadingAccountDetails = false;
+            }
+          });
+          this.subscriptions.push(roleSub);
+        } else {
+          this.loadingAccountDetails = false;
+        }
       },
       error: () => {
         this.loadingAccountDetails = false;
@@ -128,6 +234,9 @@ export class SharedAccountDetailsComponent implements OnInit, OnDestroy, OnChang
 
         this.originalDescription = description;
         this.saved.emit();
+        if (this.dialogMode === 'editDescription') {
+          this.closeDialog();
+        }
       },
       error: () => {
         this.savingAccountDetails = false;

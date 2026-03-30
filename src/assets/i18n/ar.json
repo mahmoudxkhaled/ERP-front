@@ -4,6 +4,7 @@
         "error": "خطأ",
         "loading": "جاري التحميل...",
         "cancel": "إلغاء",
+        "select": "اختيار",
         "save": "حفظ",
         "actions": "الإجراءات"
     },
@@ -970,6 +971,7 @@
             "editUser": "تعديل المستخدم",
             "userContactInfo": "معلومات الاتصال",
             "userAccounts": "حسابات المستخدمين",
+            "entityUserAccounts": "حسابات مستخدمي الكيان",
 
             "uikit": "أدوات واجهة المستخدم",
             "utilities": "الأدوات المساعدة",
@@ -1700,7 +1702,8 @@
                 "deactivate": "تعطيل"
             },
             "menu": {
-                "viewEditAccountDetails": "عرض/تعديل تفاصيل الحساب",
+                "viewAccountDetails": "عرض تفاصيل الحساب",
+                "editAccountDescription": "تعديل الوصف",
                 "updateAccountEmail": "تحديث بريد الحساب",
                 "updateAccountEntity": "تحديث شركة الحساب",
                 "activateAccount": "تفعيل الحساب",
@@ -1728,7 +1731,7 @@
             }
         },
         "list": {
-            "searchPlaceholder": "بحث الحسابات",
+            "searchPlaceholder": "ابحث بمعرف الحساب أو البريد الإلكتروني أو الجهة",
             "includeSubentities": "تضمين الشركات الفرعية:",
             "activeOnly": "النشطة فقط:",
             "title": "الحسابات",
@@ -1804,14 +1807,29 @@
                 "validEmail": "يرجى إدخال بريد إلكتروني صحيح.",
                 "cancel": "إلغاء",
                 "updateEmail": "تحديث البريد"
+            },
+            "menu": {
+                "viewAccountDetails": "عرض تفاصيل الحساب",
+                "editAccountDescription": "تعديل الوصف",
+                "updateAccountEmail": "تحديث بريد الحساب",
+                "updateAccountEntity": "تحديث جهة الحساب",
+                "activateAccount": "تفعيل الحساب",
+                "deactivateAccount": "تعطيل الحساب",
+                "deleteAccount": "حذف الحساب",
+                "assignAsAdmin": "تعيين كمدير"
             }
         },
         "details": {
             "title": "تفاصيل الحساب",
+            "viewTitle": "تفاصيل الحساب",
+            "editDescriptionTitle": "تعديل وصف الحساب",
+            "noDescription": "لا يوجد وصف.",
             "loadingText": "جاري تحميل معلومات الحساب...",
             "accountId": "معرف الحساب",
             "userId": "معرف المستخدم",
             "email": "البريد الإلكتروني",
+            "entity": "الشركة",
+            "entityRole": "دور الشركة",
             "entityId": "معرف الشركة",
             "entityRoleId": "معرف دور الشركة",
             "accountState": "حالة الحساب",

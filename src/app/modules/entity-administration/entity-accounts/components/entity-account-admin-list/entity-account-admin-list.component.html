@@ -269,8 +269,10 @@
     </ng-template>
 </p-dialog>
 
-<!-- View/Edit Account Details Component -->
-<app-shared-account-details [(visible)]="viewAccountDetailsDialog" [account]="selectedAccountForDetails"
+<app-shared-account-details [(visible)]="viewAccountDetailsDialog" [account]="selectedAccountForDetails" [dialogMode]="'view'"
+    (saved)="onAccountDetailsSaved()">
+</app-shared-account-details>
+<app-shared-account-details [(visible)]="editAccountDescriptionDialog" [account]="selectedAccountForDetails" [dialogMode]="'editDescription'"
     (saved)="onAccountDetailsSaved()">
 </app-shared-account-details>
 

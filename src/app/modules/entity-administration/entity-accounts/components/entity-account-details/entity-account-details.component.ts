@@ -8,6 +8,7 @@ import { EntityAccount } from 'src/app/modules/entity-administration/entities/mo
 export class EntityAccountDetailsComponent {
   @Input() visible: boolean = false;
   @Input() account?: EntityAccount;
+  @Input() dialogMode: 'viewEdit' | 'view' | 'editDescription' = 'viewEdit';
   @Output() visibleChange = new EventEmitter<boolean>();
   @Output() saved = new EventEmitter<void>();
 }

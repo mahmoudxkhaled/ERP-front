@@ -8,13 +8,110 @@
 
 :host ::ng-deep {
     .account-list-table {
+        .p-datatable-table {
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        .p-datatable-thead > tr > th.account-list-th,
         .p-datatable-tbody > tr > td.account-list-td {
+            overflow: hidden;
             vertical-align: middle;
+        }
+
+        .p-datatable-tbody > tr.account-list-row-clickable {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .p-datatable-tbody > tr.account-list-row-clickable:hover {
+            background-color: var(--surface-hover);
+        }
+
+        .account-list-th--id {
+            width: 6.5rem;
+            min-width: 6.5rem;
+            max-width: 6.5rem;
+        }
+
+        .account-list-th--email {
+            width: 18%;
+            min-width: 12rem;
+        }
+
+        .account-list-th--entity {
+            width: 16%;
+            min-width: 10rem;
+        }
+
+        .account-list-th--entityRole {
+            width: 9.5rem;
+            min-width: 9.5rem;
+            max-width: 9.5rem;
+        }
+
+        .account-list-th--state {
+            width: 7.5rem;
+            min-width: 7.5rem;
+            max-width: 7.5rem;
+        }
+
+        .account-list-th--login {
+            width: 10.5rem;
+            min-width: 10.5rem;
+            max-width: 10.5rem;
+        }
+
+        .account-list-th--actions {
+            width: 5.5rem;
+            min-width: 5.5rem;
+            max-width: 6rem;
+        }
+
+        .account-list-ellipsis {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            min-width: 0;
+        }
+
+        .account-list-ellipsis--start {
+            display: block;
+            width: 100%;
+        }
+
+        .account-list-ellipsis--center {
+            display: inline-block;
+            max-width: 100%;
+            vertical-align: middle;
+        }
+
+        .account-list-tag-clip {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 0;
+            width: 100%;
+            overflow: hidden;
+
+            .p-tag {
+                min-width: 0;
+                max-width: 100%;
+                min-inline-size: 4rem;
+                justify-content: center;
+            }
+
+            .p-tag-value {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                display: block;
+            }
         }
 
         .account-list-skeleton-line {
             width: 100%;
-            max-width: 18rem;
+            max-width: 100%;
         }
 
         .account-list-actions-skeleton {
@@ -28,12 +125,13 @@
 
         td.account-list-td--actions {
             min-width: 3rem;
+            white-space: nowrap;
         }
     }
 
     .account-list-footer-primary-btn.p-button {
-        min-width: 12rem;
-        min-height: 2.75rem;
+        min-width: auto;
+        min-height: auto;
     }
 
     .account-list-footer-primary-inner {
@@ -41,7 +139,7 @@
         align-items: center;
         justify-content: center;
         width: 100%;
-        min-height: 1.5rem;
+        min-height: auto;
         box-sizing: border-box;
     }
 }
