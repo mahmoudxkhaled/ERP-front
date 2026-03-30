@@ -1812,6 +1812,8 @@
             "deleteDialog": {
                 "title": "Delete Account",
                 "message": "Are you sure you want to delete the account for {{email}}?",
+                "messagePrefix": "Are you sure you want to delete the account for ",
+                "messageSuffix": "?",
                 "cannotUndo": "This action cannot be undone.",
                 "cancel": "Cancel",
                 "delete": "Delete"
@@ -1832,12 +1834,16 @@
             "activateDialog": {
                 "title": "Activate Account",
                 "message": "Are you sure you want to activate the account for {{email}}?",
+                "messagePrefix": "Are you sure you want to activate the account for ",
+                "messageSuffix": "?",
                 "cancel": "Cancel",
                 "activate": "Activate"
             },
             "deactivateDialog": {
                 "title": "Deactivate Account",
                 "message": "Are you sure you want to deactivate the account for {{email}}?",
+                "messagePrefix": "Are you sure you want to deactivate the account for ",
+                "messageSuffix": "?",
                 "cancel": "Cancel",
                 "deactivate": "Deactivate"
             },
@@ -1896,6 +1902,8 @@
             "deleteDialog": {
                 "title": "Delete Account",
                 "message": "Are you sure you want to delete the account for {{email}}?",
+                "messagePrefix": "Are you sure you want to delete the account for ",
+                "messageSuffix": "?",
                 "cannotUndo": "This action cannot be undone.",
                 "cancel": "Cancel",
                 "delete": "Delete"
@@ -1922,18 +1930,24 @@
             "activateDialog": {
                 "title": "Activate Account",
                 "message": "Are you sure you want to activate the account for {{email}}?",
+                "messagePrefix": "Are you sure you want to activate the account for ",
+                "messageSuffix": "?",
                 "cancel": "Cancel",
                 "activate": "Activate"
             },
             "deactivateDialog": {
                 "title": "Deactivate Account",
                 "message": "Are you sure you want to deactivate the account for {{email}}?",
+                "messagePrefix": "Are you sure you want to deactivate the account for ",
+                "messageSuffix": "?",
                 "cancel": "Cancel",
                 "deactivate": "Deactivate"
             },
             "assignAdminDialog": {
                 "title": "Assign As Entity Admin",
-                "message": "Promote {{email}} to entity administrator for {{entityName}}? They will gain full admin permissions.",
+                "messagePrefix": "Promote ",
+                "messageMiddle": " to entity administrator for ",
+                "messageSuffix": "? They will gain full admin permissions.",
                 "cancel": "Cancel",
                 "assign": "Assign"
             },

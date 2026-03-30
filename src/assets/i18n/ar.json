@@ -1672,6 +1672,8 @@
             "deleteDialog": {
                 "title": "حذف الحساب",
                 "message": "هل أنت متأكد من حذف الحساب الخاص بـ {{email}}؟",
+                "messagePrefix": "هل أنت متأكد من حذف الحساب الخاص بـ ",
+                "messageSuffix": "؟",
                 "cannotUndo": "لا يمكن التراجع عن هذا الإجراء.",
                 "cancel": "إلغاء",
                 "delete": "حذف"
@@ -1692,12 +1694,16 @@
             "activateDialog": {
                 "title": "تفعيل الحساب",
                 "message": "هل أنت متأكد من تفعيل الحساب الخاص بـ {{email}}؟",
+                "messagePrefix": "هل أنت متأكد من تفعيل الحساب الخاص بـ ",
+                "messageSuffix": "؟",
                 "cancel": "إلغاء",
                 "activate": "تفعيل"
             },
             "deactivateDialog": {
                 "title": "تعطيل الحساب",
                 "message": "هل أنت متأكد من تعطيل الحساب الخاص بـ {{email}}؟",
+                "messagePrefix": "هل أنت متأكد من تعطيل الحساب الخاص بـ ",
+                "messageSuffix": "؟",
                 "cancel": "إلغاء",
                 "deactivate": "تعطيل"
             },
@@ -1756,6 +1762,8 @@
             "deleteDialog": {
                 "title": "حذف الحساب",
                 "message": "هل أنت متأكد من حذف الحساب الخاص بـ {{email}}؟",
+                "messagePrefix": "هل أنت متأكد من حذف الحساب الخاص بـ ",
+                "messageSuffix": "؟",
                 "cannotUndo": "لا يمكن التراجع عن هذا الإجراء.",
                 "cancel": "إلغاء",
                 "delete": "حذف"
@@ -1782,18 +1790,24 @@
             "activateDialog": {
                 "title": "تفعيل الحساب",
                 "message": "هل أنت متأكد من تفعيل الحساب الخاص بـ {{email}}؟",
+                "messagePrefix": "هل أنت متأكد من تفعيل الحساب الخاص بـ ",
+                "messageSuffix": "؟",
                 "cancel": "إلغاء",
                 "activate": "تفعيل"
             },
             "deactivateDialog": {
                 "title": "تعطيل الحساب",
                 "message": "هل أنت متأكد من تعطيل الحساب الخاص بـ {{email}}؟",
+                "messagePrefix": "هل أنت متأكد من تعطيل الحساب الخاص بـ ",
+                "messageSuffix": "؟",
                 "cancel": "إلغاء",
                 "deactivate": "تعطيل"
             },
             "assignAdminDialog": {
                 "title": "تعيين كمدير للشركة",
-                "message": "ترقية {{email}} إلى مدير شركة لـ {{entityName}}؟ سيحصل على صلاحيات المدير الكاملة.",
+                "messagePrefix": "ترقية ",
+                "messageMiddle": " إلى مدير شركة لـ ",
+                "messageSuffix": "؟ سيحصل على صلاحيات المدير الكاملة.",
                 "cancel": "إلغاء",
                 "assign": "تعيين"
             },

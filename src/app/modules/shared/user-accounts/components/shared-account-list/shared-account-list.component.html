@@ -185,7 +185,8 @@
         <h3>{{ 'entityAccounts.list.deleteDialog.title' | translate }}</h3>
     </ng-template>
     <div class="flex flex-column gap-3">
-        <p>{{ 'entityAccounts.list.deleteDialog.message' | translate: { email: accountToDelete?.email } }}</p>
+        <p>{{ 'entityAccounts.list.deleteDialog.messagePrefix' | translate }}<span
+                class="font-semibold">{{ accountToDelete?.email }}</span>{{ 'entityAccounts.list.deleteDialog.messageSuffix' | translate }}</p>
         <p class="text-red-500 font-semibold">{{ 'entityAccounts.list.deleteDialog.cannotUndo' | translate }}</p>
     </div>
     <ng-template pTemplate="footer">
@@ -427,7 +428,8 @@
         <h3>{{ 'entityAccounts.list.activateDialog.title' | translate }}</h3>
     </ng-template>
     <div class="flex flex-column gap-3">
-        <p>{{ 'entityAccounts.list.activateDialog.message' | translate: { email: accountToActivate?.email } }}</p>
+        <p>{{ 'entityAccounts.list.activateDialog.messagePrefix' | translate }}<span
+                class="font-semibold">{{ accountToActivate?.email }}</span>{{ 'entityAccounts.list.activateDialog.messageSuffix' | translate }}</p>
     </div>
     <ng-template pTemplate="footer">
         <p-button [label]="'entityAccounts.list.activateDialog.cancel' | translate" icon="pi pi-times"
@@ -457,7 +459,8 @@
         <h3>{{ 'entityAccounts.list.deactivateDialog.title' | translate }}</h3>
     </ng-template>
     <div class="flex flex-column gap-3">
-        <p>{{ 'entityAccounts.list.deactivateDialog.message' | translate: { email: accountToDeactivate?.email } }}</p>
+        <p>{{ 'entityAccounts.list.deactivateDialog.messagePrefix' | translate }}<span
+                class="font-semibold">{{ accountToDeactivate?.email }}</span>{{ 'entityAccounts.list.deactivateDialog.messageSuffix' | translate }}</p>
     </div>
     <ng-template pTemplate="footer">
         <p-button [label]="'entityAccounts.list.deactivateDialog.cancel' | translate" icon="pi pi-times"
@@ -487,8 +490,9 @@
         <h3>{{ 'entityAccounts.list.assignAdminDialog.title' | translate }}</h3>
     </ng-template>
     <div class="flex flex-column gap-3">
-        <p>{{ 'entityAccounts.list.assignAdminDialog.message' | translate: { email: accountToAssign?.email, entityName:
-            getEntityName() } }}</p>
+        <p>{{ 'entityAccounts.list.assignAdminDialog.messagePrefix' | translate }}<span class="font-semibold">{{
+                accountToAssign?.email }}</span>{{ 'entityAccounts.list.assignAdminDialog.messageMiddle' | translate }}<span
+                class="font-semibold">{{ getEntityName() }}</span>{{ 'entityAccounts.list.assignAdminDialog.messageSuffix' | translate }}</p>
     </div>
     <ng-template pTemplate="footer">
         <p-button [label]="'entityAccounts.list.assignAdminDialog.cancel' | translate" icon="pi pi-times"
