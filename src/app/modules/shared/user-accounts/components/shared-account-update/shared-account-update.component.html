@@ -7,46 +7,64 @@
 
     <form *ngIf="updateEntityForm" [formGroup]="updateEntityForm" (ngSubmit)="saveAccountEntity()">
         <div class="flex flex-column gap-3">
-            <!-- Email Field (Read-only) -->
-            <div class="field p-fluid">
-                <label for="entityEmail">{{ 'entityAccounts.update.email' | translate }}</label>
-                <input id="entityEmail" type="email" pInputText formControlName="email" readonly />
-            </div>
-
-            <!-- Entity Selection Field -->
-            <div class="field p-fluid">
-                <label for="selectedEntity">{{ 'entityAccounts.update.entity' | translate }} <span class="text-red-500">*</span></label>
-                <div class="p-inputgroup">
-                    <input id="selectedEntity" type="text" pInputText [value]="getSelectedEntityDisplayText()" readonly
-                        [placeholder]="'entityAccounts.update.selectEntityPlaceholder' | translate" (click)="openEntitySelectionDialog()" style="cursor: pointer;" />
-                    <p-button icon="pi pi-search" (onClick)="openEntitySelectionDialog()"
-                        [disabled]="savingAccountEntity" class="p-button-secondary">
-                    </p-button>
+            <ng-container *ngIf="loadingAccountDetails; else updateEntityFormLoaded">
+                <div class="field p-fluid">
+                    <label for="entityEmailSk">{{ 'entityAccounts.update.email' | translate }}</label>
+                    <p-skeleton width="100%" height="2.75rem" borderRadius="6px"></p-skeleton>
                 </div>
-                <small class="p-error"
-                    *ngIf="updateEntityForm.get('entityId')?.invalid && updateEntityForm.get('entityId')?.touched">
-                    {{ 'entityAccounts.update.entityRequired' | translate }}
-                </small>
-            </div>
+                <div class="field p-fluid">
+                    <label for="selectedEntitySk">{{ 'entityAccounts.update.entity' | translate }} <span class="text-red-500">*</span></label>
+                    <div class="p-inputgroup">
+                        <div class="flex-1 min-w-0">
+                            <p-skeleton width="100%" height="2.75rem" borderRadius="6px"></p-skeleton>
+                        </div>
+                        <p-skeleton width="2.75rem" height="2.75rem" borderRadius="6px"></p-skeleton>
+                    </div>
+                </div>
+                <div class="field p-fluid">
+                    <label for="entityRoleIdSk">{{ 'entityAccounts.update.entityRole' | translate }} <span class="text-red-500">*</span></label>
+                    <p-skeleton width="100%" height="2.75rem" borderRadius="6px"></p-skeleton>
+                </div>
+            </ng-container>
+            <ng-template #updateEntityFormLoaded>
+                <div class="field p-fluid">
+                    <label for="entityEmail">{{ 'entityAccounts.update.email' | translate }}</label>
+                    <input id="entityEmail" type="email" pInputText formControlName="email" readonly />
+                </div>
 
-            <!-- Entity Role ID Field -->
-            <div class="field p-fluid">
-                <label for="entityRoleId">{{ 'entityAccounts.update.entityRole' | translate }} <span class="text-red-500">*</span></label>
-                <p-dropdown appendTo="body" id="entityRoleId" formControlName="entityRoleId"
-                    [options]="entityRoleOptions" optionLabel="label" optionValue="value"
-                    [placeholder]="'entityAccounts.update.selectEntityRolePlaceholder' | translate" [disabled]="!selectedEntityForUpdate || loadingRoles">
-                </p-dropdown>
-                <small class="p-error"
-                    *ngIf="updateEntityForm.get('entityRoleId')?.invalid && updateEntityForm.get('entityRoleId')?.touched">
-                    {{ 'entityAccounts.update.entityRoleRequired' | translate }}
-                </small>
-                <small class="text-500" *ngIf="!selectedEntityForUpdate">
-                    {{ 'entityAccounts.update.selectEntityFirst' | translate }}
-                </small>
-                <small class="text-500" *ngIf="selectedEntityForUpdate && loadingRoles">
-                    {{ 'entityAccounts.update.loadingRoles' | translate }}
-                </small>
-            </div>
+                <div class="field p-fluid">
+                    <label for="selectedEntity">{{ 'entityAccounts.update.entity' | translate }} <span class="text-red-500">*</span></label>
+                    <div class="p-inputgroup">
+                        <input id="selectedEntity" type="text" pInputText [value]="getSelectedEntityDisplayText()" readonly
+                            [placeholder]="'entityAccounts.update.selectEntityPlaceholder' | translate" (click)="openEntitySelectionDialog()" style="cursor: pointer;" />
+                        <p-button icon="pi pi-search" (onClick)="openEntitySelectionDialog()"
+                            [disabled]="savingAccountEntity" class="p-button-secondary">
+                        </p-button>
+                    </div>
+                    <small class="p-error"
+                        *ngIf="updateEntityForm.get('entityId')?.invalid && updateEntityForm.get('entityId')?.touched">
+                        {{ 'entityAccounts.update.entityRequired' | translate }}
+                    </small>
+                </div>
+
+                <div class="field p-fluid">
+                    <label for="entityRoleId">{{ 'entityAccounts.update.entityRole' | translate }} <span class="text-red-500">*</span></label>
+                    <p-dropdown appendTo="body" id="entityRoleId" formControlName="entityRoleId"
+                        [options]="entityRoleOptions" optionLabel="label" optionValue="value"
+                        [placeholder]="'entityAccounts.update.selectEntityRolePlaceholder' | translate" [disabled]="!selectedEntityForUpdate || loadingRoles">
+                    </p-dropdown>
+                    <small class="p-error"
+                        *ngIf="updateEntityForm.get('entityRoleId')?.invalid && updateEntityForm.get('entityRoleId')?.touched">
+                        {{ 'entityAccounts.update.entityRoleRequired' | translate }}
+                    </small>
+                    <small class="text-500" *ngIf="!selectedEntityForUpdate">
+                        {{ 'entityAccounts.update.selectEntityFirst' | translate }}
+                    </small>
+                    <small class="text-500" *ngIf="selectedEntityForUpdate && loadingRoles">
+                        {{ 'entityAccounts.update.loadingRoles' | translate }}
+                    </small>
+                </div>
+            </ng-template>
         </div>
     </form>
 
@@ -54,10 +72,10 @@
     <ng-template pTemplate="footer">
         <div class="flex justify-content-end gap-2">
             <p-button [label]="'entityAccounts.update.cancel' | translate" icon="pi pi-times" class="p-button-text" (onClick)="onCancelClick()"
-                [disabled]="savingAccountEntity">
+                [disabled]="savingAccountEntity || loadingAccountDetails">
             </p-button>
             <p-button [label]="'entityAccounts.update.updateEntity' | translate" icon="pi pi-check" (onClick)="saveAccountEntity()"
-                [loading]="savingAccountEntity" [disabled]="savingAccountEntity || updateEntityForm.invalid">
+                [loading]="savingAccountEntity" [disabled]="savingAccountEntity || loadingAccountDetails || updateEntityForm.invalid">
             </p-button>
         </div>
     </ng-template>

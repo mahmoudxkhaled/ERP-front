@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { Entity } from 'src/app/modules/entity-administration/entities/models/entities.model';
@@ -45,6 +46,7 @@ export class SharedAccountUpdateComponent implements OnInit, OnChanges, OnDestro
   loadingRoles: boolean = false;
 
   savingAccountEntity: boolean = false;
+  loadingAccountDetails: boolean = false;
   accountSettings: IAccountSettings;
   isRegional: boolean = false;
 
@@ -92,6 +94,7 @@ export class SharedAccountUpdateComponent implements OnInit, OnChanges, OnDestro
   }
 
   private resetState(): void {
+    this.loadingAccountDetails = false;
     this.updateEntityForm.reset();
     this.selectedEntityForUpdate = undefined;
     this.entityTableTextFilter = '';
@@ -111,38 +114,41 @@ export class SharedAccountUpdateComponent implements OnInit, OnChanges, OnDestro
     this.entityTableFirst = 0;
     // Don't auto-load entities table - only load when dialog opens
 
-    // Load account details
-    const sub = this.entitiesService.getAccountDetails(this.accountEmail).subscribe({
-      next: (response: any) => {
-        if (response?.success) {
-          const accountData = response?.message || {};
-          const currentEntityId = accountData.Entity_ID || 0;
-          this.updateEntityForm.patchValue({
-            email: this.accountEmail,
-            entityId: currentEntityId,
-            entityRoleId: accountData.Entity_Role_ID || 0
-          });
+    this.loadingAccountDetails = true;
+    const sub = this.entitiesService
+      .getAccountDetails(this.accountEmail)
+      .pipe(finalize(() => (this.loadingAccountDetails = false)))
+      .subscribe({
+        next: (response: any) => {
+          if (response?.success) {
+            const accountData = response?.message || {};
+            const currentEntityId = accountData.Entity_ID || 0;
+            this.updateEntityForm.patchValue({
+              email: this.accountEmail,
+              entityId: currentEntityId,
+              entityRoleId: accountData.Entity_Role_ID || 0
+            });
 
-          // Load roles for the current entity if entityId exists
-          if (currentEntityId && currentEntityId > 0) {
-            this.loadEntityRoles(currentEntityId);
+            if (currentEntityId && currentEntityId > 0) {
+              this.loadEntityRoles(currentEntityId);
+              this.resolveSelectedEntityFromDetails(currentEntityId);
+            }
+          } else {
+            this.updateEntityForm.patchValue({
+              email: this.accountEmail,
+              entityId: 0,
+              entityRoleId: 0
+            });
           }
-        } else {
+        },
+        error: () => {
           this.updateEntityForm.patchValue({
             email: this.accountEmail,
             entityId: 0,
             entityRoleId: 0
           });
         }
-      },
-      error: () => {
-        this.updateEntityForm.patchValue({
-          email: this.accountEmail,
-          entityId: 0,
-          entityRoleId: 0
-        });
-      }
-    });
+      });
 
     this.subscriptions.push(sub);
   }
@@ -231,15 +237,14 @@ export class SharedAccountUpdateComponent implements OnInit, OnChanges, OnDestro
   }
 
   selectEntityById(entityId: string): void {
-    // Try to find entity in current list
     const entity = this.entitiesForSelection.find(e => e.id === entityId);
     if (entity) {
       this.selectEntityForUpdate(entity);
     } else {
-      // If not found in current page, just set the form value
       this.updateEntityForm.patchValue({
         entityId: Number(entityId)
       });
+      this.resolveSelectedEntityFromDetails(Number(entityId));
     }
   }
 
@@ -301,15 +306,41 @@ export class SharedAccountUpdateComponent implements OnInit, OnChanges, OnDestro
     if (this.selectedEntityForUpdate) {
       return `${this.selectedEntityForUpdate.name} (${this.selectedEntityForUpdate.code})`;
     }
-    // Try to find in current selection list
     const entityId = this.updateEntityForm.get('entityId')?.value;
     if (entityId && entityId !== 0) {
       const entity = this.entitiesForSelection.find(e => e.id === String(entityId));
       if (entity) {
         return `${entity.name} (${entity.code})`;
       }
+      return `#${entityId}`;
     }
     return 'Select entity';
+  }
+
+  private resolveSelectedEntityFromDetails(entityId: number): void {
+    if (!entityId || entityId === 0) {
+      return;
+    }
+
+    const sub = this.entitiesService.getEntityDetails(String(entityId)).subscribe({
+      next: (res: any) => {
+        if (!res?.success) {
+          return;
+        }
+        const item = res?.message || {};
+        this.selectedEntityForUpdate = {
+          id: String(item?.Entity_ID || entityId),
+          code: item?.Code || '',
+          name: this.isRegional ? (item?.Name_Regional || item?.Name || '') : (item?.Name || ''),
+          description: this.isRegional ? (item?.Description_Regional || item?.Description || '') : (item?.Description || ''),
+          parentEntityId: item?.Parent_Entity_ID ? String(item?.Parent_Entity_ID) : '',
+          active: Boolean(item?.Is_Active),
+          isPersonal: Boolean(item?.Is_Personal)
+        };
+      }
+    });
+
+    this.subscriptions.push(sub);
   }
 
   saveAccountEntity(): void {

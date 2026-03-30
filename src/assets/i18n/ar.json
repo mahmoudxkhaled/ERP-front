@@ -1731,7 +1731,7 @@
             }
         },
         "list": {
-            "searchPlaceholder": "ابحث بمعرف الحساب أو البريد الإلكتروني أو الجهة",
+            "searchPlaceholder": "ابحث بالبريد الإلكتروني أو الجهة",
             "includeSubentities": "تضمين الشركات الفرعية:",
             "activeOnly": "النشطة فقط:",
             "title": "الحسابات",

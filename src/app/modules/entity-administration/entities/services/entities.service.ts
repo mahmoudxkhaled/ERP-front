@@ -273,9 +273,9 @@ export class EntitiesService {
     }
 
 
-    deleteAccount(accountId: string): Observable<any> {
+    deleteAccount(email: string): Observable<any> {
         this.isLoadingSubject.next(true);
-        return this.apiServices.callAPI(153, this.getAccessToken(), [accountId]).pipe(
+        return this.apiServices.callAPI(153, this.getAccessToken(), [email]).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );
     }

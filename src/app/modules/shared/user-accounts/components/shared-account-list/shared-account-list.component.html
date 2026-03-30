@@ -211,7 +211,7 @@
 
 <!-- Add Account Dialog -->
 <p-dialog [(visible)]="addAccountDialog" [modal]="true" [style]="{ width: '500px' }" [closable]="true"
-    [draggable]="false" [resizable]="false">
+    [draggable]="false" [resizable]="false" (onHide)="onAddAccountDialogHide()">
     <ng-template pTemplate="header">
         <h3>{{ 'entityAccounts.list.addAccountDialog.title' | translate }}</h3>
     </ng-template>
@@ -294,21 +294,8 @@
             <p-button [label]="'entityAccounts.list.addAccountDialog.cancel' | translate" icon="pi pi-times"
                 class="p-button-text" (onClick)="onAccountCancelled()" [disabled]="loading">
             </p-button>
-            <p-button type="submit" [disabled]="loading" styleClass="account-list-footer-primary-btn">
-                <span class="account-list-footer-primary-inner">
-                    <ng-container *ngIf="loading">
-                        <span class="indicator-progress flex align-items-center justify-content-center gap-2">
-                            {{ 'entityAccounts.list.pleaseWait' | translate }}
-                            <p-skeleton width="1rem" height="1rem" shape="circle"></p-skeleton>
-                        </span>
-                    </ng-container>
-                    <ng-container *ngIf="!loading">
-                        <span class="flex align-items-center justify-content-center gap-2">
-                            <i class="pi pi-check"></i>
-                            {{ 'entityAccounts.list.addAccountDialog.createAccount' | translate }}
-                        </span>
-                    </ng-container>
-                </span>
+            <p-button type="submit" [label]="'entityAccounts.list.addAccountDialog.createAccount' | translate"
+                icon="pi pi-check" [loading]="loading" styleClass="account-list-footer-primary-btn">
             </p-button>
         </div>
     </form>
@@ -323,7 +310,7 @@
     <div class="flex flex-column gap-3">
         <span class="p-input-icon-left w-full">
             <i class="pi pi-search"></i>
-            <input pInputText type="text" [placeholder]="'entityAccounts.list.searchPlaceholder' | translate"
+            <input pInputText type="text" [placeholder]="'entityRoles.form.entityDialog.searchPlaceholder' | translate"
                 class="w-full" [value]="entityTableTextFilter" (input)="onEntityTableSearchInput($event)" />
         </span>
 
@@ -539,23 +526,27 @@
     </ng-template>
     <form *ngIf="updateEmailForm" [formGroup]="updateEmailForm" (ngSubmit)="saveAccountEmail()">
         <div class="flex flex-column gap-3">
-            <!-- Account ID Field (Read-only) -->
-            <div class="field p-fluid">
-                <label for="emailAccountId">{{ 'entityAccounts.list.updateEmailDialog.accountId' | translate }}</label>
-                <input id="emailAccountId" type="text" pInputText formControlName="accountId" readonly />
+            <div class="account-details-content">
+                <div class="account-details-row">
+                    <span class="account-details-label">{{ 'entityAccounts.list.updateEmailDialog.accountId' | translate
+                        }}</span>
+                    <span class="account-details-value">{{ selectedAccountForDetails?.accountId }}</span>
+                </div>
+                <div class="account-details-divider"></div>
+                <div class="account-details-row account-details-name">
+                    <span class="account-details-label">{{ 'entityAccounts.list.updateEmailDialog.currentEmail' |
+                        translate }}</span>
+                    <span class="account-details-value account-details-description-value font-semibold">{{
+                        selectedAccountForDetails?.email }}</span>
+                </div>
+                <div class="account-details-divider"></div>
             </div>
 
-            <!-- Current Email Field (Read-only) -->
-            <div class="field p-fluid">
-                <label for="currentEmail">{{ 'entityAccounts.list.updateEmailDialog.currentEmail' | translate }}</label>
-                <input id="currentEmail" type="email" pInputText formControlName="currentEmail" readonly />
-            </div>
-
-            <!-- New Email Field -->
-            <div class="field p-fluid">
-                <label for="newEmail">{{ 'entityAccounts.list.updateEmailDialog.newEmail' | translate }} <span
+            <div class="account-details-description-edit pt-2">
+                <label for="newEmail" class="account-details-label block mb-2">{{
+                    'entityAccounts.list.updateEmailDialog.newEmail' | translate }} <span
                         class="text-red-500">*</span></label>
-                <input id="newEmail" type="email" pInputText formControlName="newEmail"
+                <input id="newEmail" type="email" pInputText formControlName="newEmail" class="w-full"
                     [class.ng-invalid]="updateEmailForm.get('newEmail')?.invalid && updateEmailForm.get('newEmail')?.touched"
                     [placeholder]="'entityAccounts.list.updateEmailDialog.placeholderNewEmail' | translate" />
                 <small class="p-error"
@@ -573,22 +564,9 @@
             <p-button [label]="'entityAccounts.list.updateEmailDialog.cancel' | translate" icon="pi pi-times"
                 class="p-button-text" (onClick)="onCloseUpdateAccountEmailDialog()" [disabled]="savingAccountEmail">
             </p-button>
-            <p-button type="submit" [disabled]="savingAccountEmail || updateEmailForm.invalid"
+            <p-button type="submit" [label]="'entityAccounts.list.updateEmailDialog.updateEmail' | translate"
+                icon="pi pi-check" [loading]="savingAccountEmail" [disabled]="updateEmailForm.invalid"
                 styleClass="account-list-footer-primary-btn">
-                <span class="account-list-footer-primary-inner">
-                    <ng-container *ngIf="savingAccountEmail">
-                        <span class="indicator-progress flex align-items-center justify-content-center gap-2">
-                            {{ 'entityAccounts.list.pleaseWait' | translate }}
-                            <p-skeleton width="1rem" height="1rem" shape="circle"></p-skeleton>
-                        </span>
-                    </ng-container>
-                    <ng-container *ngIf="!savingAccountEmail">
-                        <span class="flex align-items-center justify-content-center gap-2">
-                            <i class="pi pi-check"></i>
-                            {{ 'entityAccounts.list.updateEmailDialog.updateEmail' | translate }}
-                        </span>
-                    </ng-container>
-                </span>
             </p-button>
         </div>
     </form>

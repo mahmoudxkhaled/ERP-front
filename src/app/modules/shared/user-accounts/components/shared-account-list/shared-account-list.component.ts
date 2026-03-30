@@ -550,7 +550,12 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
     this.addAccountDialog = true;
   }
 
+  onAddAccountDialogHide(): void {
+    this.loading = false;
+  }
+
   onAccountCancelled(): void {
+    this.loading = false;
     this.addAccountDialog = false;
     this.form.reset();
     this.submitted = false;
@@ -895,15 +900,16 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
 
   /** Deletes an account. Allowed for SystemAdmin and EntityAdmin. */
   deleteAccount(): void {
-    if (!this.accountToDelete || !this.accountToDelete.accountId) {
+    if (!this.accountToDelete || !this.accountToDelete.email) {
       return;
     }
 
-    const accountId = this.accountToDelete.accountId;
+    const email = this.accountToDelete.email;
     this.loadingAccounts = true;
 
-    const sub = this.entitiesService.deleteAccount(accountId).subscribe({
+    const sub = this.entitiesService.deleteAccount(email).subscribe({
       next: (response: any) => {
+        
         if (!response?.success) {
           this.handleAccountError('delete', response);
           return;
@@ -1293,6 +1299,7 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
   }
 
   onCloseUpdateAccountEmailDialog(): void {
+    this.savingAccountEmail = false;
     this.updateAccountEmailDialog = false;
     this.updateEmailForm.reset();
   }

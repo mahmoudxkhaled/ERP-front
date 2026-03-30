@@ -345,14 +345,14 @@ export class EntityAccountAdminListComponent implements OnInit, OnDestroy, OnCha
 
     /** Deletes an account. Allowed for SystemAdmin and EntityAdmin. */
     deleteAccount(): void {
-        if (!this.accountToDelete || !this.accountToDelete.accountId) {
+        if (!this.accountToDelete || !this.accountToDelete.email) {
             return;
         }
 
-        const accountId = this.accountToDelete.accountId;
+        const email = this.accountToDelete.email;
         this.loadingAdmins = true;
 
-        const sub = this.entitiesService.deleteAccount(accountId).subscribe({
+        const sub = this.entitiesService.deleteAccount(email).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
                     this.handleAccountError('delete', response);

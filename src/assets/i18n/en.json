@@ -1871,7 +1871,7 @@
             }
         },
         "list": {
-            "searchPlaceholder": "Search by account ID, email, or entity",
+            "searchPlaceholder": "Search by email or entity",
             "includeSubentities": "Include Sub-entities:",
             "activeOnly": "Active Only:",
             "title": "Accounts",
