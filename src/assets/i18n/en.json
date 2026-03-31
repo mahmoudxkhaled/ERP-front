@@ -517,7 +517,7 @@
             "updateCapacity": "Update capacity",
             "activateDrive": "Activate",
             "deactivateDrive": "Deactivate",
-            "createDriveDialogTitle": "Create Virtual Drive",
+            "createDriveDialogTitle": "Create (Entity) Virtual Drive",
             "createDriveSuccess": "Virtual drive creation requested.",
             "renameDriveDialogTitle": "Rename Virtual Drive",
             "newDriveName": "New name",

@@ -394,3 +394,15 @@
     min-width: 6.5rem;
     box-sizing: border-box;
 }
+
+::ng-deep .company-storage-view .company-storage-drive-dropdown.p-dropdown,
+::ng-deep .company-storage-view .company-storage-fs-dropdown.p-dropdown {
+    min-height: 2.5rem;
+}
+
+::ng-deep .company-storage-view .company-storage-drive-dropdown .p-dropdown-label,
+::ng-deep .company-storage-view .company-storage-fs-dropdown .p-dropdown-label {
+    line-height: 2.5rem;
+    padding-top: 0;
+    padding-bottom: 0;
+}

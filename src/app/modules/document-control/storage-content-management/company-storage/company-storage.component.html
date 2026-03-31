@@ -40,7 +40,8 @@
                 <div class="storage-field">
                     <label>{{ 'fileSystem.companyStorageView.selectDrive' | translate }}</label>
                     <p-dropdown [options]="entityDriveOptions" [(ngModel)]="selectedDriveId" optionLabel="name"
-                        optionValue="id" [style]="{ width: '100%' }" [disabled]="loadingDrives"
+                        optionValue="id" [style]="{ width: '100%' }" styleClass="w-full company-storage-drive-dropdown"
+                        [disabled]="loadingDrives"
                         [placeholder]="loadingDrives ? ('fileSystem.companyStorage.loading' | translate) : ('fileSystem.companyStorageView.selectDrive' | translate)"
                         (onChange)="onDriveSelected()"></p-dropdown>
                 </div>

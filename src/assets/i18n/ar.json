@@ -517,7 +517,7 @@
             "updateCapacity": "تحديث السعة",
             "activateDrive": "تفعيل",
             "deactivateDrive": "إلغاء التفعيل",
-            "createDriveDialogTitle": "إنشاء قرص افتراضي",
+            "createDriveDialogTitle": "إنشاء قرص افتراضي للكيان",
             "createDriveSuccess": "تم طلب إنشاء القرص الافتراضي.",
             "renameDriveDialogTitle": "إعادة تسمية القرص الافتراضي",
             "newDriveName": "الاسم الجديد",

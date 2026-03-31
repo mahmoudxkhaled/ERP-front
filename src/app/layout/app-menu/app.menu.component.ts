@@ -33,7 +33,9 @@ export class AppMenuComponent implements OnInit {
     }
 
     buildMenu(): void {
-        const functions = this.moduleNavigationService.getFunctionsWithModules();
+        const functions = this.moduleNavigationService
+            .getFunctionsWithModules()
+            .filter(func => Array.isArray(func.modules) && func.modules.length > 0);
 
         const functionItems = functions.map(func => ({
             label: this.getDisplayName(func),

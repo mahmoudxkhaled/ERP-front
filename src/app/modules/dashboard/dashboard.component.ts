@@ -69,7 +69,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
 
     loadDashboardCategories(): void {
-        this.dashboardCategories = this.moduleNavigationService.getFunctionsWithModules();
+        this.dashboardCategories = this.moduleNavigationService
+            .getFunctionsWithModules()
+            .filter(func => Array.isArray(func.modules) && func.modules.length > 0);
         this.loadModuleLogos();
     }
 

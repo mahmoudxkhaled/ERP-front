@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, finalize } from 'rxjs';
+import { BehaviorSubject, Observable, finalize, map } from 'rxjs';
 import { ApiService } from 'src/app/core/api/api.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 
@@ -46,51 +46,21 @@ export class FsPermissionsService {
 
   /**
    * List_Account_FS_Permissions (1175)
-   * Input: File_System_ID, Account_ID (order may vary by backend version).
-   *
-   * To stay robust, we try [fileSystemId, accountId] first, then swap once if we
-   * detect an invalid ID error code.
+   * Input: Account_ID, File_System_ID
    */
   listAccountFsPermissions(accountId: number, fileSystemId: number): Observable<FileSystemPermissionsResult> {
     this.isLoadingSubject.next(true);
-
-    const tryRequest = (params: string[]) => this.apiService.callAPI(1175, this.getAccessToken(), params);
-
-    const primaryParams = [fileSystemId.toString(), accountId.toString()];
-    const fallbackParams = [accountId.toString(), fileSystemId.toString()];
-
-    return new Observable<FileSystemPermissionsResult>((subscriber) => {
-      tryRequest(primaryParams).subscribe({
-        next: (response: any) => {
-          console.log('List_Account_FS_Permissions response:', response);
+    return this.apiService
+      .callAPI(1175, this.getAccessToken(), [accountId.toString(), fileSystemId.toString()])
+      .pipe(
+        map((response: any) => {
           if (!response?.success) {
-            const code = String(response?.errorCode ?? response?.message?.code ?? response?.code ?? response?.message ?? '');
-            const shouldRetrySwap = code === 'ERP12260' || code === 'ERP12296';
-            if (!shouldRetrySwap) {
-              subscriber.error(response);
-              return;
-            }
-
-            tryRequest(fallbackParams).subscribe({
-              next: (fallbackResponse: any) => {
-                if (!fallbackResponse?.success) {
-                  subscriber.error(fallbackResponse);
-                  return;
-                }
-                subscriber.next(this.mapPermissionsResponse(fallbackResponse));
-                subscriber.complete();
-              },
-              error: (err) => subscriber.error(err),
-            });
-            return;
+            throw response;
           }
-
-          subscriber.next(this.mapPermissionsResponse(response));
-          subscriber.complete();
-        },
-        error: (err) => subscriber.error(err),
-      });
-    }).pipe(finalize(() => this.isLoadingSubject.next(false)));
+          return this.mapPermissionsResponse(response);
+        }),
+        finalize(() => this.isLoadingSubject.next(false))
+      );
   }
 
   private mapPermissionsResponse(response: any): FileSystemPermissionsResult {

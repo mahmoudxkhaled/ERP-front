@@ -4,6 +4,7 @@ import { LocalStorageService } from 'src/app/core/services/local-storage.service
 import { VirtualDrivesService } from 'src/app/modules/system-administration/system-storage-management/services/virtual-drives.service';
 import { VirtualDrivesFilters } from 'src/app/modules/system-administration/system-storage-management/models/virtual-drive.model';
 import { AccessRight, FsPermissionsService } from '../../storage/folder-management/services/fs-permissions.service';
+import { FileSystemsService } from 'src/app/modules/entity-administration/entity-storage-management/services/file-systems.service';
 
 export interface FileSystemOption {
     id: number;
@@ -35,7 +36,8 @@ export class CompanyStorageComponent implements OnInit {
         private translate: TranslationService,
         private localStorageService: LocalStorageService,
         private virtualDrivesService: VirtualDrivesService,
-        private fsPermissionsService: FsPermissionsService
+        private fsPermissionsService: FsPermissionsService,
+        private fileSystemsService: FileSystemsService
     ) { }
 
     ngOnInit(): void {
@@ -107,8 +109,8 @@ export class CompanyStorageComponent implements OnInit {
 
         this.fsPermissionsService.listAccountFileSystems(accountId, true).subscribe({
             next: (response: any) => {
-                this.loadingFileSystemsInDrive = false;
                 if (!response?.success) {
+                    this.loadingFileSystemsInDrive = false;
                     this.fileSystemOptionsInDrive = [];
                     return;
                 }
@@ -120,7 +122,7 @@ export class CompanyStorageComponent implements OnInit {
                     ? msg
                     : (msg && typeof msg === 'object' ? Object.values(msg) : []);
 
-                this.fileSystemOptionsInDrive = (list || [])
+                const accountAccessibleOptions: FileSystemOption[] = (list || [])
                     .map((item: any) => ({
                         id: Number(item?.file_system_id ?? item?.file_System_ID ?? item?.File_System_ID ?? 0),
                         name: String(item?.file_system_name ?? item?.name ?? item?.Name ?? ''),
@@ -130,12 +132,67 @@ export class CompanyStorageComponent implements OnInit {
                     }))
                     .filter((fs: FileSystemOption) => fs.id > 0 && fs.name.trim() !== '');
 
-                // Note: List_Account_File_Systems does not include drive_ID in the observed response,
-                // so we cannot reliably filter file systems by selected drive here.
-                if (this.selectedDriveId === driveId && this.fileSystemOptionsInDrive.length > 0) {
-                    this.selectedFileSystemId = this.fileSystemOptionsInDrive[0].id;
-                    this.onFileSystemSelected();
+                // If 1174 includes drive info, filter directly.
+                const hasDriveIn1174 = (list || []).some((item: any) =>
+                    Number(item?.drive_ID ?? item?.Drive_ID ?? item?.driveId ?? 0) > 0
+                );
+
+                if (hasDriveIn1174) {
+                    this.fileSystemOptionsInDrive = (list || [])
+                        .map((item: any) => ({
+                            id: Number(item?.file_system_id ?? item?.file_System_ID ?? item?.File_System_ID ?? 0),
+                            name: String(item?.file_system_name ?? item?.name ?? item?.Name ?? ''),
+                            accessRight: Number(
+                                item?.access_right ?? item?.access_Right ?? item?.Access_Right ?? item?.effective_access_right ?? -1
+                            ),
+                            driveId: Number(item?.drive_ID ?? item?.Drive_ID ?? item?.driveId ?? 0)
+                        }))
+                        .filter((fs: any) => fs.id > 0 && fs.name.trim() !== '' && fs.driveId === driveId)
+                        .map((fs: any) => ({ id: fs.id, name: fs.name, accessRight: fs.accessRight }));
+
+                    this.loadingFileSystemsInDrive = false;
+                    if (this.selectedDriveId === driveId && this.fileSystemOptionsInDrive.length > 0) {
+                        this.selectedFileSystemId = this.fileSystemOptionsInDrive[0].id;
+                        this.onFileSystemSelected();
+                    }
+                    return;
                 }
+
+                // 1174 currently may not include drive_ID.
+                // Enforce drive-based filtering by intersecting with 1121 list for selected drive.
+                this.fileSystemsService.listFileSystems({
+                    entityFilter: 0,
+                    driveId: driveId,
+                    activeOnly: true
+                }).subscribe({
+                    next: (fsResponse: any) => {
+                        this.loadingFileSystemsInDrive = false;
+                        if (!fsResponse?.success) {
+                            this.fileSystemOptionsInDrive = [];
+                            return;
+                        }
+
+                        const fsRaw = fsResponse?.message;
+                        const fsList = Array.isArray(fsRaw) ? fsRaw : (fsRaw?.File_Systems ?? fsRaw?.file_Systems ?? []);
+                        const idsInSelectedDrive = new Set<number>(
+                            (fsList || [])
+                                .map((item: any) => Number(item?.file_System_ID ?? item?.File_System_ID ?? 0))
+                                .filter((id: number) => id > 0)
+                        );
+
+                        this.fileSystemOptionsInDrive = accountAccessibleOptions
+                            .filter((fs: FileSystemOption) => idsInSelectedDrive.has(fs.id));
+
+                        if (this.selectedDriveId === driveId && this.fileSystemOptionsInDrive.length > 0) {
+                            this.selectedFileSystemId = this.fileSystemOptionsInDrive[0].id;
+                            this.onFileSystemSelected();
+                        }
+                    },
+                    error: () => {
+                        this.loadingFileSystemsInDrive = false;
+                        this.fileSystemOptionsInDrive = [];
+                    }
+                });
             },
             error: () => {
                 this.loadingFileSystemsInDrive = false;

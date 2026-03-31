@@ -211,8 +211,8 @@
                                             (click)="openFolderMenuForContentRow(folderRowMenu, row, $event)"
                                             [pTooltip]="'fileSystem.folderManagement.actions' | translate">
                                         </button>
-                                        <button *ngIf="!row.isFolder && (canRead || canModify)" pButton
-                                            type="button" icon="pi pi-ellipsis-v"
+                                        <button *ngIf="!row.isFolder && (canRead || canModify)" pButton type="button"
+                                            icon="pi pi-ellipsis-v"
                                             class="p-button-rounded p-button-text p-button-plain p-button-sm"
                                             (click)="openFileMenu(fileRowMenu, row, $event)"
                                             [pTooltip]="'fileSystem.folderManagement.actions' | translate">

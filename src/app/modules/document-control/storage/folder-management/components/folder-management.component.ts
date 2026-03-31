@@ -197,7 +197,6 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     this.permissionsLoading = true;
     this.fsPermissionsService.listAccountFsPermissions(accountId, this.fileSystemId).subscribe({
       next: (result) => {
-        console.log('listAccountFsPermissions response:', result);
         this.permissionsLoading = false;
         this.effectiveAccessRight = result?.effectiveAccessRight ?? 'None';
       },

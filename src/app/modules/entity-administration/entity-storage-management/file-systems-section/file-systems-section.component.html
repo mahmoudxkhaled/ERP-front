@@ -148,13 +148,13 @@
         <div class="field mb-3">
             <label>{{ 'fileSystem.admin.scopeLabel' | translate }}</label>
             <div class="flex flex-column gap-2 mt-2">
-                <div class="flex align-items-center">
+                <!-- <div class="flex align-items-center">
                     <p-radioButton name="scope" value="personal" [(ngModel)]="newFileSystemScope"
                         [inputId]="'scope-personal'" />
                     <label [for]="'scope-personal'" class="ml-2">{{ 'fileSystem.admin.scopePersonal' | translate
                         }}</label>
-                </div>
-                <div class="flex align-items-center" *ngIf="canChooseEntityScope">
+                </div> -->
+                <div class="flex align-items-center">
                     <p-radioButton name="scope" value="entity" [(ngModel)]="newFileSystemScope"
                         [inputId]="'scope-entity'" />
                     <label [for]="'scope-entity'" class="ml-2">{{ 'fileSystem.admin.scopeEntity' | translate }}</label>

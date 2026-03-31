@@ -99,15 +99,6 @@ export class FileSystemsSectionComponent implements OnInit {
   ) { }
 
   /**
-   * True if current user can create an Entity file system (Entity Admin or System Admin).
-   * When false, only Personal scope is allowed and the Entity option is hidden.
-   */
-  get canChooseEntityScope(): boolean {
-    const functions = this.localStorage.getFunctionsDetails();
-    return !!(functions?.EntAdm || functions?.SysAdm);
-  }
-
-  /**
    * When loading and the list is empty, return placeholder rows so the table can show skeleton cells.
    */
   get fileSystemsTableValue(): FileSystemListItem[] {
@@ -517,7 +508,7 @@ export class FileSystemsSectionComponent implements OnInit {
     this.newFileSystemName = '';
     this.newFileSystemTypeId = null;
     this.newFileSystemDriveId = this.driveOptions.length > 0 ? this.driveOptions[0].id : null;
-    this.newFileSystemScope = this.canChooseEntityScope ? 'entity' : 'personal';
+    this.newFileSystemScope = 'entity';
     this.loadTypes();
     this.createDialogVisible = true;
   }
