@@ -1,11 +1,4 @@
-/**
- * File system models for Storage (2B) APIs.
- * Aligned with Docs/storage-management-file-system-api.md.
- */
 
-/**
- * File system type from List_File_System_Types (API #8).
- */
 export interface FileSystemType {
   type_ID?: number;
   Type_ID?: number;
@@ -13,9 +6,7 @@ export interface FileSystemType {
   Name?: string;
 }
 
-/**
- * File system item from List_File_Systems API (backend response only).
- */
+
 export interface FileSystemListItem {
   file_System_ID: number;
   name: string;
@@ -30,9 +21,7 @@ export interface FileSystemListItem {
   delete_Account_ID: number;
 }
 
-/**
- * File system record from List_File_Systems / Get_File_System_Details (APIs #9, #11).
- */
+
 export interface FileSystem {
   file_System_ID?: number;
   File_System_ID?: number;
@@ -52,13 +41,15 @@ export interface FileSystem {
   Used_Capacity?: number;
 }
 
-/**
- * Filters for List_File_Systems (API #9).
- * Entity_Filter: -1 = Account, 1 = Entity, 0 = Both.
- */
+
 export interface FileSystemsFilters {
   entityFilter: number;
   driveId: number;
   activeOnly: boolean;
+}
+
+export interface FileSystemOwnerContext {
+  ownerId: number;
+  isEntityId: boolean;
 }
 

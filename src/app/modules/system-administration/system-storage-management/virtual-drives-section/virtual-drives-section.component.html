@@ -14,29 +14,39 @@
             [currentPageReportTemplate]="('fileSystem.admin.virtualDrivesPageReport' | translate)"
             responsiveLayout="scroll" styleClass="p-datatable-sm" [globalFilterFields]="['name', 'licenseId']">
             <ng-template pTemplate="caption">
-                <div class="flex align-items-center justify-content-between gap-3 mb-2">
-                    <span class="p-input-icon-left flex-1 max-w-md">
-                        <i class="pi pi-search"></i>
-                        <input pInputText type="text"
-                            (input)="drivesTable.filterGlobal($any($event.target).value, 'contains')"
-                            [placeholder]="'fileSystem.admin.searchPlaceholder' | translate" class="w-full" />
+                <div class="flex align-items-center justify-content-between gap-3 mb-2 flex-wrap">
+                    <span class="p-input-icon-left flex-1 min-w-200px max-w-md">
+                        <ng-container *ngIf="tableLoadingSpinner && virtualDrives.length === 0; else drivesSearchInput">
+                            <p-skeleton height="2.5rem" width="100%" borderRadius="6px"></p-skeleton>
+                        </ng-container>
+                        <ng-template #drivesSearchInput>
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text"
+                                (input)="drivesTable.filterGlobal($any($event.target).value, 'contains')"
+                                [placeholder]="'fileSystem.admin.searchPlaceholder' | translate" class="w-full" />
+                        </ng-template>
                     </span>
-                    <div class="flex align-items-center gap-2" *ngIf="showEntityFilter">
+                    <div class="flex align-items-center gap-2 flex-wrap" *ngIf="showEntityFilter">
                         <label class="font-medium mb-0">{{ 'fileSystem.admin.entityFilter' | translate }}</label>
-                        <p-dropdown [options]="entityFilterOptions" [(ngModel)]="entityFilter" optionLabel="label"
-                            optionValue="value" [style]="{ width: '10rem' }"
-                            (onChange)="loadVirtualDrives()"></p-dropdown>
+                        <ng-container *ngIf="tableLoadingSpinner && virtualDrives.length === 0; else drivesEntityFilter">
+                            <p-skeleton height="2.5rem" width="10rem" borderRadius="6px"></p-skeleton>
+                        </ng-container>
+                        <ng-template #drivesEntityFilter>
+                            <p-dropdown [options]="entityFilterOptions" [(ngModel)]="entityFilter" optionLabel="label"
+                                optionValue="value" [style]="{ width: '10rem' }"
+                                (onChange)="loadVirtualDrives()"></p-dropdown>
+                        </ng-template>
                     </div>
                 </div>
             </ng-template>
             <ng-template pTemplate="header">
                 <tr>
-                    <th style="width: 200px;">{{ 'fileSystem.admin.driveName' | translate }}</th>
-                    <th style="width: 120px;" pSortableColumn="licenseId">
+                    <th style="width: 13rem;">{{ 'fileSystem.admin.driveName' | translate }}</th>
+                    <th style="width: 7rem;" pSortableColumn="licenseId">
                         {{ 'fileSystem.admin.licenseId' | translate }}
                         <p-sortIcon field="licenseId"></p-sortIcon>
                     </th>
-                    <th style="width: 100px;">
+                    <th style="width: 6.5rem;">
                         {{ 'fileSystem.admin.driveType' | translate }}
                         <p-columnFilter field="isEntity" matchMode="equals" display="menu" [showMenu]="false">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -55,9 +65,9 @@
                             </ng-template>
                         </p-columnFilter>
                     </th>
-                    <th style="width: 120px;">{{ 'fileSystem.admin.size' | translate }}</th>
-                    <th style="width: 120px;">{{ 'fileSystem.admin.freeSpace' | translate }}</th>
-                    <th style="width: 120px;" pSortableColumn="active">
+                    <th style="width: 8rem;">{{ 'fileSystem.admin.size' | translate }}</th>
+                    <th style="width: 8rem;">{{ 'fileSystem.admin.freeSpace' | translate }}</th>
+                    <th class="text-center" style="width: 6.5rem;" pSortableColumn="active">
                         {{ 'fileSystem.admin.status' | translate }}
                         <p-sortIcon field="active"></p-sortIcon>
                         <p-columnFilter field="active" matchMode="equals" display="menu" [showMenu]="false">
@@ -77,37 +87,38 @@
                             </ng-template>
                         </p-columnFilter>
                     </th>
-                    <th style="width: 150px; text-align: start !important;">{{ 'fileSystem.companyStorage.actions' |
+                    <th style="width: 6rem; text-align: start !important;">{{ 'fileSystem.companyStorage.actions' |
                         translate }}</th>
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-row>
-                <tr>
-                    <td>
+                <tr class="virtual-drives-row-clickable" [style.cursor]="tableLoadingSpinner ? 'default' : 'pointer'"
+                    (click)="!tableLoadingSpinner && showDriveDetailsDialog(row)">
+                    <td style="width: 13rem;">
                         <ng-container *ngIf="tableLoadingSpinner; else normalName">
-                            <p-skeleton height="1rem" width="10rem"></p-skeleton>
+                            <p-skeleton height="1.25rem" width="10rem"></p-skeleton>
                         </ng-container>
                         <ng-template #normalName>
                             <span class="font-semibold">{{ getDriveName(row) }}</span>
                         </ng-template>
                     </td>
-                    <td>
+                    <td style="width: 7rem;">
                         <ng-container *ngIf="tableLoadingSpinner; else normalLicenseId">
-                            <p-skeleton height="1rem" width="3rem"></p-skeleton>
+                            <p-skeleton height="1.25rem" width="3rem"></p-skeleton>
                         </ng-container>
                         <ng-template #normalLicenseId>
                             <span>{{ row.licenseId }}</span>
                         </ng-template>
                     </td>
-                    <td>
+                    <td style="width: 6.5rem;">
                         <ng-container *ngIf="tableLoadingSpinner; else normalDriveType">
-                            <p-skeleton height="1rem" width="4rem"></p-skeleton>
+                            <p-skeleton height="1.25rem" width="4.5rem"></p-skeleton>
                         </ng-container>
                         <ng-template #normalDriveType>
                             <span>{{ getDriveTypeDisplay(row) }}</span>
                         </ng-template>
                     </td>
-                    <td>
+                    <td style="width: 8rem;">
                         <ng-container *ngIf="tableLoadingSpinner; else normalSize">
                             <p-skeleton height="1.5rem" width="5rem" borderRadius="4px"></p-skeleton>
                         </ng-container>
@@ -115,7 +126,7 @@
                             <strong>{{ getCapacityDisplay(row) }}</strong>
                         </ng-template>
                     </td>
-                    <td>
+                    <td style="width: 8rem;">
                         <ng-container *ngIf="tableLoadingSpinner; else normalFreeSpace">
                             <p-skeleton height="1.5rem" width="5rem" borderRadius="4px"></p-skeleton>
                         </ng-container>
@@ -123,34 +134,41 @@
                             <strong>{{ getFreeSpaceDisplay(row) }}</strong>
                         </ng-template>
                     </td>
-                    <td>
+                    <td class="text-center" style="width: 6.5rem;">
                         <ng-container *ngIf="tableLoadingSpinner; else normalStatus">
-                            <p-skeleton height="1.5rem" width="5rem" borderRadius="4px"></p-skeleton>
+                            <div class="flex justify-content-center">
+                                <p-skeleton height="1.5rem" width="3.75rem" borderRadius="16px"></p-skeleton>
+                            </div>
                         </ng-container>
                         <ng-template #normalStatus>
-                            <ng-container *ngIf="showActivateDeactivate; else statusTag">
-                                <p-inputSwitch [(ngModel)]="row.active" (onChange)="onStatusToggle(row, $event)"
-                                    [disabled]="togglingDriveId === row.id"
-                                    [pTooltip]="row.active ? ('fileSystem.admin.deactivateDrive' | translate) : ('fileSystem.admin.activateDrive' | translate)">
-                                </p-inputSwitch>
-                            </ng-container>
-                            <ng-template #statusTag>
-                                <p-tag
-                                    [value]="row.active ? ('fileSystem.entityAdminStatus.active' | translate) : ('fileSystem.admin.inactive' | translate)"
-                                    [severity]="row.active ? 'success' : 'secondary'"></p-tag>
-                            </ng-template>
+                            <div class="flex justify-content-center">
+                                <ng-container *ngIf="showActivateDeactivate; else statusTag">
+                                    <div (click)="$event.stopPropagation()">
+                                        <p-inputSwitch [(ngModel)]="row.active" (onChange)="onStatusToggle(row, $event)"
+                                            [disabled]="togglingDriveId === row.id"
+                                            [pTooltip]="row.active ? ('fileSystem.admin.deactivateDrive' | translate) : ('fileSystem.admin.activateDrive' | translate)">
+                                        </p-inputSwitch>
+                                    </div>
+                                </ng-container>
+                                <ng-template #statusTag>
+                                    <p-tag
+                                        [value]="row.active ? ('fileSystem.entityAdminStatus.active' | translate) : ('fileSystem.admin.inactive' | translate)"
+                                        [severity]="row.active ? 'success' : 'secondary'"></p-tag>
+                                </ng-template>
+                            </div>
                         </ng-template>
                     </td>
-                    <td class="text-start">
+                    <td class="text-start" style="width: 6rem;">
                         <ng-container *ngIf="tableLoadingSpinner; else normalActions">
                             <p-skeleton height="2rem" width="2rem" borderRadius="50%"></p-skeleton>
                         </ng-container>
                         <ng-template #normalActions>
                             <button pButton pRipple type="button" icon="pi pi-ellipsis-v"
                                 class="p-button-rounded p-button-text p-button-plain"
-                                (click)="openDriveMenu(rowMenu, row, $event)">
+                                (click)="$event.stopPropagation(); openDriveMenu(rowMenu, row, $event)">
                             </button>
-                            <p-menu #rowMenu [model]="driveMenuItems" [popup]="true" [appendTo]="'body'"></p-menu>
+                            <p-menu #rowMenu [model]="driveMenuItems" [popup]="true" [appendTo]="'body'"
+                                (onHide)="onRowMenuHide(rowMenu)"></p-menu>
                         </ng-template>
                     </td>
                 </tr>
@@ -277,9 +295,11 @@
             'fileSystem.admin.confirmDeactivateDriveTitle') | translate }}</h3>
     </ng-template>
     <p *ngIf="confirmStatusDrive">
-        {{ (confirmStatusToActive ? 'fileSystem.admin.confirmActivateDriveMessage' :
-        'fileSystem.admin.confirmDeactivateDriveMessage') | translate: { driveName: getDriveName(confirmStatusDrive) }
-        }}
+        {{ (confirmStatusToActive ? 'fileSystem.admin.confirmActivateDriveMessageBeforeName' :
+        'fileSystem.admin.confirmDeactivateDriveMessageBeforeName') | translate }}
+        <span class="font-bold text-900">{{ getDriveName(confirmStatusDrive) }}</span>
+        {{ (confirmStatusToActive ? 'fileSystem.admin.confirmActivateDriveMessageAfterName' :
+        'fileSystem.admin.confirmDeactivateDriveMessageAfterName') | translate }}
     </p>
     <ng-template pTemplate="footer">
         <p-button [label]="'fileSystem.companyStorage.close' | translate" icon="pi pi-times" class="p-button-secondary"

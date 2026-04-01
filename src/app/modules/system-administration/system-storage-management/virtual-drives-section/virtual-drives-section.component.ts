@@ -64,6 +64,7 @@ export class VirtualDrivesSectionComponent implements OnInit {
     virtualDrives: VirtualDriveRow[] = [];
 
     driveMenuItems: MenuItem[] = [];
+    activeRowMenu?: { hide: () => void };
     selectedDriveForMenu: VirtualDriveRow | null = null;
 
     togglingDriveId: number | null = null;
@@ -125,10 +126,21 @@ export class VirtualDrivesSectionComponent implements OnInit {
     }
 
 
-    openDriveMenu(menu: { toggle: (e: Event) => void }, row: VirtualDriveRow, event: Event): void {
+    openDriveMenu(menu: { toggle: (e: Event) => void; hide: () => void }, row: VirtualDriveRow, event: Event): void {
+        if (this.activeRowMenu && this.activeRowMenu !== menu) {
+            this.activeRowMenu.hide();
+        }
+
+        this.activeRowMenu = menu;
         this.selectedDriveForMenu = row;
         this.buildDriveMenuItems();
         menu.toggle(event);
+    }
+
+    onRowMenuHide(menu: { hide: () => void }): void {
+        if (this.activeRowMenu === menu) {
+            this.activeRowMenu = undefined;
+        }
     }
 
 
@@ -202,9 +214,7 @@ export class VirtualDrivesSectionComponent implements OnInit {
                 const drivesRaw = response.message ?? [];
 
                 const sorted = (drivesRaw || []).slice().sort((a: any, b: any) => {
-                    const aName = String(a.name ?? '').toLowerCase();
-                    const bName = String(b.name ?? '').toLowerCase();
-                    return aName.localeCompare(bName);
+                    return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' });
                 });
 
                 this.virtualDrives = sorted.map((item: any) => this.mapDriveToRow(item));

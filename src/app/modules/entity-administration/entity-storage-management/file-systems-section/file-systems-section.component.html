@@ -21,23 +21,43 @@
             <ng-template pTemplate="caption">
                 <div class="flex align-items-center justify-content-between gap-3 mb-2 flex-wrap">
                     <span class="p-input-icon-left flex-1 min-w-200px max-w-md">
-                        <i class="pi pi-search"></i>
-                        <input pInputText type="text"
-                            (input)="fileSystemsTable.filterGlobal($any($event.target).value, 'contains')"
-                            [placeholder]="'fileSystem.admin.searchPlaceholderFileSystems' | translate"
-                            class="w-full" />
+                        <ng-container *ngIf="loadingFileSystems && fileSystems.length === 0; else fileSystemsSearchInput">
+                            <p-skeleton height="2.5rem" width="100%" borderRadius="6px"></p-skeleton>
+                        </ng-container>
+                        <ng-template #fileSystemsSearchInput>
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text"
+                                (input)="fileSystemsTable.filterGlobal($any($event.target).value, 'contains')"
+                                [placeholder]="'fileSystem.admin.searchPlaceholderFileSystems' | translate"
+                                class="w-full" />
+                        </ng-template>
                     </span>
                     <div class="flex align-items-center gap-2 flex-wrap">
                         <label class="font-medium mb-0">{{ 'fileSystem.admin.entityFilter' | translate }}</label>
-                        <p-dropdown [options]="entityFilterOptions" [(ngModel)]="entityFilterFileSystems"
-                            optionLabel="label" optionValue="value" [style]="{ width: '10rem' }"
-                            (onChange)="refreshList()"></p-dropdown>
+                        <ng-container *ngIf="loadingFileSystems && fileSystems.length === 0; else fileSystemsEntityFilter">
+                            <p-skeleton height="2.5rem" width="10rem" borderRadius="6px"></p-skeleton>
+                        </ng-container>
+                        <ng-template #fileSystemsEntityFilter>
+                            <p-dropdown [options]="entityFilterOptions" [(ngModel)]="entityFilterFileSystems"
+                                optionLabel="label" optionValue="value" [style]="{ width: '10rem' }"
+                                (onChange)="listFileSystems()"></p-dropdown>
+                        </ng-template>
                         <label class="font-medium mb-0 ml-2">{{ 'fileSystem.admin.driveName' | translate }}</label>
-                        <p-dropdown [options]="driveOptionsWithAll" [(ngModel)]="driveFilterId" optionLabel="name"
-                            optionValue="id" [style]="{ width: '12rem' }" (onChange)="refreshList()"></p-dropdown>
+                        <ng-container *ngIf="loadingFileSystems && fileSystems.length === 0; else fileSystemsDriveFilter">
+                            <p-skeleton height="2.5rem" width="12rem" borderRadius="6px"></p-skeleton>
+                        </ng-container>
+                        <ng-template #fileSystemsDriveFilter>
+                            <p-dropdown [options]="driveOptions" [(ngModel)]="driveFilterId" optionLabel="name"
+                                optionValue="id" [style]="{ width: '12rem' }" (onChange)="listFileSystems()"></p-dropdown>
+                        </ng-template>
                         <div class="flex align-items-center gap-2 ml-2">
-                            <p-checkbox [(ngModel)]="activeOnlyFilter" [binary]="true" inputId="activeOnlyFs"
-                                (onChange)="refreshList()"></p-checkbox>
+                            <ng-container *ngIf="loadingFileSystems && fileSystems.length === 0; else fileSystemsActiveOnly">
+                                <p-skeleton height="1.25rem" width="1.25rem" borderRadius="4px"></p-skeleton>
+                            </ng-container>
+                            <ng-template #fileSystemsActiveOnly>
+                                <p-checkbox [(ngModel)]="activeOnlyFilter" [binary]="true" inputId="activeOnlyFs"
+                                    (onChange)="listFileSystems()"></p-checkbox>
+                            </ng-template>
                             <label for="activeOnlyFs" class="mb-0">{{ 'fileSystem.admin.activeOnly' | translate
                                 }}</label>
                         </div>
@@ -46,35 +66,36 @@
             </ng-template>
             <ng-template pTemplate="header">
                 <tr>
-                    <th>{{ 'fileSystem.entityAdmin.fileSystemName' | translate }}</th>
-                    <th>{{ 'fileSystem.entityAdmin.fileSystemType' | translate }}</th>
-                    <th>{{ 'fileSystem.admin.driveName' | translate }}</th>
-                    <th class="text-center">{{ 'fileSystem.admin.status' | translate }}</th>
-                    <th class="text-center">{{ 'fileSystem.admin.createdAt' | translate }}</th>
+                    <th style="width: 14rem">{{ 'fileSystem.entityAdmin.fileSystemName' | translate }}</th>
+                    <th style="width: 6.5rem">{{ 'fileSystem.entityAdmin.fileSystemTypeShort' | translate }}</th>
+                    <th style="width: 12rem">{{ 'fileSystem.admin.driveName' | translate }}</th>
+                    <th class="text-center" style="width: 6.5rem">{{ 'fileSystem.admin.status' | translate }}</th>
+                    <th class="text-center" style="width: 13rem">{{ 'fileSystem.admin.createdAt' | translate }}</th>
                     <th class="text-center" style="width: 10rem">{{ 'fileSystem.entityAdmin.managePermissions' |
                         translate }}</th>
                     <th style="width: 12rem">{{ 'fileSystem.companyStorage.actions' | translate }}</th>
                 </tr>
             </ng-template>
             <ng-template pTemplate="body" let-row>
-                <tr>
-                    <td>
+                <tr class="file-systems-row-clickable" [style.cursor]="loadingFileSystems ? 'default' : 'pointer'"
+                    (click)="!loadingFileSystems && showDetailsDialog(row)">
+                    <td style="width: 14rem">
                         <ng-container *ngIf="loadingFileSystems; else normalName">
-                            <p-skeleton height="1.25rem" width="14rem"></p-skeleton>
+                            <p-skeleton height="1.25rem" width="11rem"></p-skeleton>
                         </ng-container>
                         <ng-template #normalName>
                             <span class="font-semibold">{{ getFileSystemName(row) }}</span>
                         </ng-template>
                     </td>
-                    <td>
+                    <td style="width: 6.5rem">
                         <ng-container *ngIf="loadingFileSystems; else normalType">
-                            <p-skeleton height="1.25rem" width="6rem"></p-skeleton>
+                            <p-skeleton height="1.25rem" width="4.5rem"></p-skeleton>
                         </ng-container>
                         <ng-template #normalType>
-                            <span>{{ getTypeName(row) }}</span>
+                            <span [pTooltip]="getTypeDescription(row)" tooltipPosition="top">{{ getTypeName(row) }}</span>
                         </ng-template>
                     </td>
-                    <td>
+                    <td style="width: 12rem">
                         <ng-container *ngIf="loadingFileSystems; else normalDrive">
                             <p-skeleton height="1.25rem" width="10rem"></p-skeleton>
                         </ng-container>
@@ -82,26 +103,33 @@
                             <span>{{ getDriveName(row) }}</span>
                         </ng-template>
                     </td>
-                    <td class="text-center">
+                    <td class="text-center" style="width: 6.5rem">
                         <ng-container *ngIf="loadingFileSystems; else normalStatus">
-                            <p-skeleton height="1.5rem" width="4.5rem" borderRadius="16px"></p-skeleton>
+                            <div class="flex justify-content-center">
+                                <p-skeleton height="1.5rem" width="3.75rem" borderRadius="16px"></p-skeleton>
+                            </div>
                         </ng-container>
                         <ng-template #normalStatus>
-                            <p-tag [value]="getStatusLabel(row)"
-                                [severity]="isFileSystemActive(row) ? 'success' : 'secondary'"></p-tag>
+                            <div class="flex justify-content-center">
+                                <p-tag [value]="getStatusLabel(row)"
+                                    [severity]="isFileSystemActive(row) ? 'success' : 'secondary'"></p-tag>
+                            </div>
                         </ng-template>
                     </td>
-                    <td class="text-center">
+                    <td class="text-center" style="width: 13rem">
                         <ng-container *ngIf="loadingFileSystems; else normalCreatedAt">
-                            <p-skeleton height="1.25rem" width="8rem"></p-skeleton>
+                            <p-skeleton height="1.25rem" width="11rem"></p-skeleton>
                         </ng-container>
                         <ng-template #normalCreatedAt>
-                            <span>{{ row.created_At ? (row.created_At | date:'d MMM y, h:mm a') : '—' }}</span>
+                            <span style="white-space: nowrap;">{{ row.created_At ? (row.created_At | date:'d MMM y, h:mm a') : '—' }}</span>
                         </ng-template>
                     </td>
-                    <td class="text-center">
+                    <td class="text-center" style="width: 10rem">
                         <ng-container *ngIf="loadingFileSystems; else normalPermissions">
-                            <p-skeleton height="2rem" width="4.5rem" borderRadius="6px"></p-skeleton>
+                            <div class="flex align-items-center justify-content-center gap-2">
+                                <p-skeleton height="2rem" width="2rem" borderRadius="50%"></p-skeleton>
+                                <p-skeleton height="1.1rem" width="1.75rem"></p-skeleton>
+                            </div>
                         </ng-container>
                         <ng-template #normalPermissions>
                             <div class="flex align-items-center justify-content-center gap-2">
@@ -109,7 +137,7 @@
                                     class="p-button-rounded p-button-text p-button-plain flex-shrink-0"
                                     [disabled]="!isFileSystemActive(row)"
                                     [pTooltip]="'fileSystem.entityAdmin.managePermissionsTooltip' | translate"
-                                    (click)="openFileSystemPermissionsAdmin(row)">
+                                    (click)="$event.stopPropagation(); openFileSystemPermissionsAdmin(row)">
                                 </button>
                                 <ng-container *ngIf="isFileSystemActive(row)">
                                     <ng-container *ngIf="loadingPermissionCounts; else permCountReady">
@@ -123,16 +151,17 @@
                             </div>
                         </ng-template>
                     </td>
-                    <td class="text-start">
+                    <td class="text-start" style="width: 12rem">
                         <ng-container *ngIf="loadingFileSystems; else normalActions">
                             <p-skeleton height="2rem" width="2rem" borderRadius="50%"></p-skeleton>
                         </ng-container>
                         <ng-template #normalActions>
                             <button pButton pRipple type="button" icon="pi pi-ellipsis-v"
                                 class="p-button-rounded p-button-text p-button-plain"
-                                (click)="openFileSystemMenu(rowMenu, row, $event)">
+                                (click)="$event.stopPropagation(); openFileSystemMenu(rowMenu, row, $event)">
                             </button>
-                            <p-menu #rowMenu [model]="fileSystemMenuItems" [popup]="true" [appendTo]="'body'"></p-menu>
+                            <p-menu #rowMenu [model]="fileSystemMenuItems" [popup]="true" [appendTo]="'body'"
+                                (onHide)="onRowMenuHide(rowMenu)"></p-menu>
                         </ng-template>
                     </td>
                 </tr>
@@ -224,6 +253,10 @@
             <p-skeleton height="1rem" width="6rem"></p-skeleton>
         </div>
         <div class="drive-details-row">
+            <span class="drive-details-label">{{ 'fileSystem.admin.scopeLabel' | translate }}</span>
+            <p-skeleton height="1rem" width="8rem"></p-skeleton>
+        </div>
+        <div class="drive-details-row">
             <span class="drive-details-label">{{ 'fileSystem.admin.driveName' | translate }}</span>
             <p-skeleton height="1rem" width="8rem"></p-skeleton>
         </div>
@@ -246,6 +279,10 @@
         <div class="drive-details-row">
             <span class="drive-details-label">{{ 'fileSystem.entityAdmin.fileSystemType' | translate }}</span>
             <span class="drive-details-value">{{ detailsData.typeName }}</span>
+        </div>
+        <div class="drive-details-row">
+            <span class="drive-details-label">{{ 'fileSystem.admin.scopeLabel' | translate }}</span>
+            <span class="drive-details-value">{{ detailsData.scopeKey | translate }}</span>
         </div>
         <div class="drive-details-row">
             <span class="drive-details-label">{{ 'fileSystem.admin.driveName' | translate }}</span>
@@ -273,8 +310,11 @@
 <!-- Delete confirm (ESM) -->
 <p-dialog [header]="'fileSystem.entityAdmin.deleteFileSystem' | translate" [(visible)]="deleteConfirmVisible"
     [modal]="true" [style]="{ width: '450px' }" (onHide)="hideDeleteConfirm()" [draggable]="false" [resizable]="false">
-    <p *ngIf="selectedForDelete" class="mb-3">{{ 'fileSystem.entityAdmin.confirmDeleteFileSystem' | translate: { name:
-        selectedForDelete.name } }}</p>
+    <p *ngIf="selectedForDelete" class="mb-3">
+        {{ 'fileSystem.entityAdmin.confirmDeleteFileSystemBeforeName' | translate }}
+        <span class="font-bold text-900">{{ selectedForDelete.name }}</span>
+        {{ 'fileSystem.entityAdmin.confirmDeleteFileSystemAfterName' | translate }}
+    </p>
     <div class="field mb-3" *ngIf="selectedForDelete">
         <div class="flex align-items-center gap-2">
             <p-checkbox [(ngModel)]="deleteAllContents" [binary]="true" inputId="deleteAllContents"
@@ -298,8 +338,11 @@
     (onHide)="hideRestoreDeletedConfirm()" [draggable]="false" [resizable]="false">
     <div class="flex align-items-center gap-3 mb-3">
         <i class="pi pi-exclamation-triangle text-2xl text-yellow-500"></i>
-        <p class="mb-0" *ngIf="selectedFileSystemForMenu">{{ 'fileSystem.companyStorage.confirmRestoreDeletedMessage' |
-            translate: { name: selectedFileSystemForMenu.name } }}</p>
+        <p class="mb-0" *ngIf="selectedFileSystemForMenu">
+            {{ 'fileSystem.companyStorage.confirmRestoreDeletedMessageBeforeName' | translate }}
+            <span class="font-bold text-900">{{ selectedFileSystemForMenu.name }}</span>
+            {{ 'fileSystem.companyStorage.confirmRestoreDeletedMessageAfterName' | translate }}
+        </p>
     </div>
     <ng-template pTemplate="footer">
         <p-button [label]="'fileSystem.companyStorage.close' | translate" styleClass="p-button-secondary"
@@ -315,8 +358,11 @@
     (onHide)="hideRestoreRecycleBinConfirm()" [draggable]="false" [resizable]="false">
     <div class="flex align-items-center gap-3 mb-3">
         <i class="pi pi-info-circle text-2xl text-primary"></i>
-        <p class="mb-0" *ngIf="selectedFileSystemForMenu">{{ 'fileSystem.companyStorage.confirmRestoreRecycleBinMessage'
-            | translate: { name: selectedFileSystemForMenu.name } }}</p>
+        <p class="mb-0" *ngIf="selectedFileSystemForMenu">
+            {{ 'fileSystem.companyStorage.confirmRestoreRecycleBinMessageBeforeName' | translate }}
+            <span class="font-bold text-900">{{ selectedFileSystemForMenu.name }}</span>
+            {{ 'fileSystem.companyStorage.confirmRestoreRecycleBinMessageAfterName' | translate }}
+        </p>
     </div>
     <ng-template pTemplate="footer">
         <p-button [label]="'fileSystem.companyStorage.close' | translate" styleClass="p-button-secondary"
@@ -332,8 +378,11 @@
     (onHide)="hideClearRecycleBinConfirm()" [draggable]="false" [resizable]="false" styleClass="p-dialog-warning">
     <div class="flex align-items-center gap-3 mb-3">
         <i class="pi pi-exclamation-triangle text-2xl text-red-500"></i>
-        <p class="mb-0" *ngIf="selectedFileSystemForMenu">{{ 'fileSystem.companyStorage.confirmClearRecycleBinMessage' |
-            translate: { name: selectedFileSystemForMenu.name } }}</p>
+        <p class="mb-0" *ngIf="selectedFileSystemForMenu">
+            {{ 'fileSystem.companyStorage.confirmClearRecycleBinMessageBeforeName' | translate }}
+            <span class="font-bold text-900">{{ selectedFileSystemForMenu.name }}</span>
+            {{ 'fileSystem.companyStorage.confirmClearRecycleBinMessageAfterName' | translate }}
+        </p>
     </div>
     <ng-template pTemplate="footer">
         <p-button [label]="'fileSystem.companyStorage.close' | translate" styleClass="p-button-secondary"
