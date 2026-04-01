@@ -3,24 +3,11 @@ import { Observable } from 'rxjs';
 import { MenuItem, MessageService } from 'primeng/api';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { VirtualDrivesService } from '../services/virtual-drives.service';
-import { VirtualDrivesFilters } from '../models/virtual-drive.model';
+import { VirtualDriveRow, VirtualDrivesFilters } from '../models/virtual-drive.model';
 
-export interface VirtualDriveRow {
-    id: number;
-    name: string;
-    licenseId: number;
-    /** True = Entity drive, false = Account drive (from API is_Entity). */
-    isEntity: boolean;
-    capacity: number;
-    /** Free space in bytes (from API free_Space). */
-    freeSpace: number;
-    active: boolean;
-}
 
-/**
- * Virtual drives section for SSM (System Storage Management) only.
- * Full filters (entity, license, drive type, status), create, rename, capacity, activate/deactivate.
- */
+
+
 @Component({
     selector: 'app-virtual-drives-section',
     templateUrl: './virtual-drives-section.component.html',
@@ -41,16 +28,15 @@ export class VirtualDrivesSectionComponent implements OnInit {
         { label: 'Entity', value: 1 },
         { label: 'Both', value: 0 }
     ];
-    /** Default: Both (show Account and Entity drives). */
+
     entityFilter = 0;
 
-    /** Options for table column filter: Drive type (value matches row.isEntity). */
     driveTypeFilterOptions = [
         { label: 'fileSystem.admin.filterAll', value: null as boolean | null },
         { label: 'fileSystem.admin.driveTypeEntity', value: true },
         { label: 'fileSystem.admin.driveTypeAccount', value: false }
     ];
-    /** Options for table column filter: Status (value matches row.active). */
+
     statusFilterOptions = [
         { label: 'fileSystem.admin.filterAll', value: null as boolean | null },
         { label: 'fileSystem.entityAdminStatus.active', value: true },
@@ -63,7 +49,6 @@ export class VirtualDrivesSectionComponent implements OnInit {
     driveDetailsDialogVisible = false;
     confirmStatusDialogVisible = false;
 
-    /** Drive and target state for activate/deactivate confirmation. */
     confirmStatusDrive: VirtualDriveRow | null = null;
     confirmStatusToActive = false;
 
@@ -81,7 +66,6 @@ export class VirtualDrivesSectionComponent implements OnInit {
     driveMenuItems: MenuItem[] = [];
     selectedDriveForMenu: VirtualDriveRow | null = null;
 
-    /** Drive ID currently being toggled (activate/deactivate) so we can disable its switch. */
     togglingDriveId: number | null = null;
 
     constructor(
@@ -97,9 +81,7 @@ export class VirtualDrivesSectionComponent implements OnInit {
         this.loadVirtualDrives();
     }
 
-    /**
-     * Build menu items for the 3-dot row menu. Called when opening the menu so the correct drive is set.
-     */
+
     buildDriveMenuItems(): void {
         const drive = this.selectedDriveForMenu;
         this.driveMenuItems = [
@@ -142,19 +124,14 @@ export class VirtualDrivesSectionComponent implements OnInit {
         }
     }
 
-    /**
-     * Open the 3-dot row menu for a drive.
-     */
+
     openDriveMenu(menu: { toggle: (e: Event) => void }, row: VirtualDriveRow, event: Event): void {
         this.selectedDriveForMenu = row;
         this.buildDriveMenuItems();
         menu.toggle(event);
     }
 
-    /**
-     * When loading and the drives list is empty, return placeholder rows
-     * so the table can show skeleton cells.
-     */
+
     get virtualDrivesTableValue(): VirtualDriveRow[] {
         if (this.tableLoadingSpinner && this.virtualDrives.length === 0) {
             return Array(5).fill(null).map(() => ({
@@ -170,33 +147,27 @@ export class VirtualDrivesSectionComponent implements OnInit {
         return this.virtualDrives;
     }
 
-    /** Entity filter dropdown above the table. */
     get showEntityFilter(): boolean {
         return true;
     }
 
-    /** Create virtual drive button. */
     get showCreateButton(): boolean {
         return true;
     }
 
-    /** Activate/deactivate drive in row and in row menu. */
     get showActivateDeactivate(): boolean {
         return true;
     }
 
-    /**
-     * Map a drive object from the API to VirtualDriveRow.
-     * API returns: drive_ID, name, license_ID, owner_ID, is_Entity, capacity, free_Space, is_Active.
-     */
+
     private mapDriveToRow(item: any): VirtualDriveRow {
-        const id = Number(item?.drive_ID ?? item?.Drive_ID ?? 0);
-        const name = String(item?.name ?? item?.Drive_Name ?? '');
-        const licenseId = Number(item?.license_ID ?? item?.License_ID ?? 0);
-        const isEntity = Boolean(item?.is_Entity ?? item?.Is_Entity);
-        const capacity = Number(item?.capacity ?? item?.Capacity ?? 0);
-        const freeSpace = Number(item?.free_Space ?? item?.Free_Space ?? 0);
-        const active = Boolean(item?.is_Active ?? item?.Is_Active);
+        const id = Number(item.drive_ID ?? 0);
+        const name = String(item.name ?? '');
+        const licenseId = Number(item.license_ID ?? 0);
+        const isEntity = Boolean(item.is_Entity);
+        const capacity = Number(item.capacity ?? 0);
+        const freeSpace = Number(item.free_Space ?? 0);
+        const active = Boolean(item.is_Active);
         return { id, name, licenseId, isEntity, capacity, freeSpace, active };
     }
 
@@ -207,10 +178,7 @@ export class VirtualDrivesSectionComponent implements OnInit {
             : this.translate.getInstant('fileSystem.admin.driveTypeAccount');
     }
 
-    /**
-     * Build filters object for List_Drives API. Only entity is used; License ID and Status
-     * are filtered in the table (client-side) so we load all for the selected entity.
-     */
+
     private getCurrentFilters(): VirtualDrivesFilters {
         return {
             entityFilter: this.entityFilter,
@@ -219,23 +187,27 @@ export class VirtualDrivesSectionComponent implements OnInit {
         };
     }
 
-    /**
-     * Load virtual drives from backend using List_Drives API.
-     */
+
     loadVirtualDrives(): void {
         const filters = this.getCurrentFilters();
         this.tableLoadingSpinner = true;
 
         this.virtualDrivesService.listDrives(filters).subscribe({
             next: (response: any) => {
+                console.log('response listDrives: ', response);
                 if (!response?.success) {
                     this.handleBusinessError('list', response);
                     return;
                 }
-                const raw = response.message;
-                const drivesRaw = Array.isArray(raw) ? raw : (raw?.Drives ?? []);
+                const drivesRaw = response.message ?? [];
 
-                this.virtualDrives = drivesRaw.map((item: any) => this.mapDriveToRow(item));
+                const sorted = (drivesRaw || []).slice().sort((a: any, b: any) => {
+                    const aName = String(a.name ?? '').toLowerCase();
+                    const bName = String(b.name ?? '').toLowerCase();
+                    return aName.localeCompare(bName);
+                });
+
+                this.virtualDrives = sorted.map((item: any) => this.mapDriveToRow(item));
                 this.notifyVirtualDrivesCount();
             },
             complete: () => {
@@ -252,22 +224,18 @@ export class VirtualDrivesSectionComponent implements OnInit {
         return row.name;
     }
 
-    /** Bytes per GB (1024^3). Used to convert user input (GB) to API (bytes). */
     private readonly bytesPerGb = 1024 * 1024 * 1024;
 
-    /** Convert Gigabytes to bytes for the API. User enters e.g. 20 meaning 20 GB. */
     private gbToBytes(gb: number): number {
         return Math.round((gb ?? 0) * this.bytesPerGb);
     }
 
-    /** Convert bytes from API to Gigabytes for display/edit in the UI. */
     private bytesToGb(bytes: number): number {
         const b = bytes ?? 0;
         if (b <= 0) return 0;
         return Math.round(b / this.bytesPerGb);
     }
 
-    /** Format bytes to GB or MB for display (used for capacity and free space from API). */
     formatBytesToSize(bytes: number): string {
         const b = bytes ?? 0;
         const gb = b / (1024 * 1024 * 1024);
@@ -295,7 +263,6 @@ export class VirtualDrivesSectionComponent implements OnInit {
         this.createDriveDialogVisible = false;
     }
 
-    /** Max capacity in GB for new drive. */
     readonly maxCapacityGb = 200;
 
     onCreateDriveConfirm(): void {
@@ -460,17 +427,13 @@ export class VirtualDrivesSectionComponent implements OnInit {
         });
     }
 
-    /**
-     * Called when the status toggle is switched. Shows confirmation dialog first.
-     */
+
     onStatusToggle(row: VirtualDriveRow, event: { checked?: boolean } | boolean): void {
         const checked = typeof event === 'boolean' ? event : (event?.checked ?? false);
         this.showConfirmStatusDialog(row, checked);
     }
 
-    /**
-     * Show confirmation dialog before activating or deactivating a drive.
-     */
+
     showConfirmStatusDialog(row: VirtualDriveRow, toActive: boolean): void {
         this.confirmStatusDrive = row;
         this.confirmStatusToActive = toActive;
@@ -482,9 +445,7 @@ export class VirtualDrivesSectionComponent implements OnInit {
         this.confirmStatusDrive = null;
     }
 
-    /**
-     * User cancelled the activate/deactivate confirmation. Revert the toggle.
-     */
+
     onCancelStatusChange(): void {
         if (this.confirmStatusDrive) {
             this.confirmStatusDrive.active = !this.confirmStatusToActive;
@@ -492,9 +453,7 @@ export class VirtualDrivesSectionComponent implements OnInit {
         this.hideConfirmStatusDialog();
     }
 
-    /**
-     * User confirmed activate/deactivate. Call the service.
-     */
+
     onConfirmStatusChange(): void {
         const row = this.confirmStatusDrive;
         if (!row) {
@@ -544,9 +503,7 @@ export class VirtualDrivesSectionComponent implements OnInit {
         this.selectedDriveForDetails = null;
     }
 
-    /**
-     * Handle business error codes returned from Virtual Drives APIs.
-     */
+
     private handleBusinessError(context: 'list' | 'create' | 'rename' | 'updateCapacity' | 'activate' | 'deactivate', response: any): void {
         const code = String(response?.message || '');
         let detail = '';

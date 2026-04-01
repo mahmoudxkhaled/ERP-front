@@ -11,8 +11,8 @@
     <div style="position: relative;">
         <p-table #drivesTable [value]="virtualDrivesTableValue" [paginator]="true" [rows]="virtualDrivesTableRows"
             [rowsPerPageOptions]="virtualDrivesRowsPerPageOptions" [showCurrentPageReport]="true"
-            [currentPageReportTemplate]="('fileSystem.admin.virtualDrivesPageReport' | translate)" responsiveLayout="scroll"
-            styleClass="p-datatable-sm" [globalFilterFields]="['name', 'licenseId']">
+            [currentPageReportTemplate]="('fileSystem.admin.virtualDrivesPageReport' | translate)"
+            responsiveLayout="scroll" styleClass="p-datatable-sm" [globalFilterFields]="['name', 'licenseId']">
             <ng-template pTemplate="caption">
                 <div class="flex align-items-center justify-content-between gap-3 mb-2">
                     <span class="p-input-icon-left flex-1 max-w-md">
@@ -32,7 +32,10 @@
             <ng-template pTemplate="header">
                 <tr>
                     <th style="width: 200px;">{{ 'fileSystem.admin.driveName' | translate }}</th>
-                    <th style="width: 120px;">{{ 'fileSystem.admin.licenseId' | translate }}</th>
+                    <th style="width: 120px;" pSortableColumn="licenseId">
+                        {{ 'fileSystem.admin.licenseId' | translate }}
+                        <p-sortIcon field="licenseId"></p-sortIcon>
+                    </th>
                     <th style="width: 100px;">
                         {{ 'fileSystem.admin.driveType' | translate }}
                         <p-columnFilter field="isEntity" matchMode="equals" display="menu" [showMenu]="false">
@@ -214,9 +217,8 @@
     <div class="p-fluid">
         <div class="field">
             <label for="updateCapacityValue">{{ 'fileSystem.admin.newCapacity' | translate }}</label>
-            <input pInputText type="number" id="updateCapacityValue" [(ngModel)]="updateCapacityValue"
-                min="1" max="200" class="w-full mt-2"
-                [placeholder]="'fileSystem.admin.capacityPlaceholder' | translate" />
+            <input pInputText type="number" id="updateCapacityValue" [(ngModel)]="updateCapacityValue" min="1" max="200"
+                class="w-full mt-2" [placeholder]="'fileSystem.admin.capacityPlaceholder' | translate" />
             <small class="text-500 block mt-1">{{ 'fileSystem.admin.capacityMax200' | translate }}</small>
         </div>
     </div>
