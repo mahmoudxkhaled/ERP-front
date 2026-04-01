@@ -22,7 +22,7 @@ export class VirtualDrivesService {
   constructor(
     private apiService: ApiService,
     private localStorageService: LocalStorageService
-  ) {}
+  ) { }
 
   private getAccessToken(): string {
     return this.localStorageService.getAccessToken();
@@ -40,6 +40,7 @@ export class VirtualDrivesService {
       filters.licenseId.toString(),
       filters.activeOnly.toString(),
     ];
+    console.log('listDrives params', params);
 
     return this.apiService
       .callAPI(1150, this.getAccessToken(), params)

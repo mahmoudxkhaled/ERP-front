@@ -163,11 +163,10 @@ export class FileSystemsSectionComponent implements OnInit {
           this.refreshList();
           return;
         }
-        const raw = response.message;
-        const list = Array.isArray(raw) ? raw : (raw?.Drives ?? raw?.message ?? []);
-        this.driveOptions = (list || []).map((item: any) => ({
-          id: Number(item?.Drive_ID ?? item?.drive_ID ?? 0),
-          name: String(item?.Name ?? item?.name ?? '')
+        const list = response.message ?? [];
+        this.driveOptions = list.map((item: any) => ({
+          id: Number(item?.drive_ID ?? 0),
+          name: String(item?.name ?? '')
         })).filter((d: { id: number; name: string }) => d.id > 0);
         this.buildDriveOptionsWithAll();
         this.applyDriveFilterDefault();
@@ -181,22 +180,20 @@ export class FileSystemsSectionComponent implements OnInit {
 
   refreshList(): void {
     this.loadingFileSystems = true;
-    console.log('refreshList', this.entityFilterFileSystems, this.driveFilterId, this.activeOnlyFilter);
     this.fileSystemsService.listFileSystems({
       entityFilter: this.entityFilterFileSystems,
       driveId: this.driveFilterId,
       activeOnly: this.activeOnlyFilter
     }).subscribe({
       next: (response: any) => {
-        console.log('response list file systems', response);
+        console.log('response listFileSystems: ', response);
         this.loadingFileSystems = false;
         if (!response?.success) {
           this.handleError('list', response);
           return;
         }
-        const raw = response.message;
-        const list = Array.isArray(raw) ? raw : (raw?.File_Systems ?? raw?.file_Systems ?? []);
-        this.fileSystems = (list || []).map((item: any) => this.mapItemToRow(item));
+        const list = response.message ?? [];
+        this.fileSystems = list.map((item: any) => this.mapItemToRow(item));
         this.fileSystemsCountChange.emit(this.fileSystems.length);
         this.loadPermissionCountsForList();
       },
@@ -260,11 +257,10 @@ export class FileSystemsSectionComponent implements OnInit {
           this.handleError('loadTypes', response);
           return;
         }
-        const raw = response.message;
-        const list = Array.isArray(raw) ? raw : (raw ?? []);
-        this.fileSystemTypes = (list || []).map((item: any) => {
-          const id = Number(item?.['FS Type ID'] ?? item?.type_ID ?? item?.Type_ID ?? 0);
-          const name = String(item?.Title ?? item?.name ?? item?.Name ?? '');
+        const list = response.message ?? [];
+        this.fileSystemTypes = list.map((item: any) => {
+          const id = Number(item?.['FS Type ID'] ?? 0);
+          const name = String(item?.Title ?? '');
           return { id, name };
         }).filter((t: { id: number; name: string }) => t.name !== '');
       },
@@ -275,17 +271,17 @@ export class FileSystemsSectionComponent implements OnInit {
   /** Map API list item to FileSystemListItem (backend fields only). */
   private mapItemToRow(item: any): FileSystemListItem {
     return {
-      file_System_ID: Number(item?.file_System_ID ?? item?.File_System_ID ?? 0),
-      name: String(item?.name ?? item?.Name ?? ''),
-      type: Number(item?.type ?? item?.Type ?? 0),
-      guid: String(item?.guid ?? item?.Guid ?? ''),
-      owner_ID: Number(item?.owner_ID ?? item?.Owner_ID ?? 0),
-      is_Entity_FS: Boolean(item?.is_Entity_FS ?? item?.Is_Entity_FS),
-      drive_ID: Number(item?.drive_ID ?? item?.Drive_ID ?? 0),
-      created_At: String(item?.created_At ?? item?.Created_At ?? ''),
-      created_By: Number(item?.created_By ?? item?.Created_By ?? 0),
-      deleted_At: String(item?.deleted_At ?? item?.Deleted_At ?? ''),
-      delete_Account_ID: Number(item?.delete_Account_ID ?? item?.Delete_Account_ID ?? 0)
+      file_System_ID: Number(item?.file_System_ID ?? 0),
+      name: String(item?.name ?? ''),
+      type: Number(item?.type ?? 0),
+      guid: String(item?.guid ?? ''),
+      owner_ID: Number(item?.owner_ID ?? 0),
+      is_Entity_FS: Boolean(item?.is_Entity_FS),
+      drive_ID: Number(item?.drive_ID ?? 0),
+      created_At: String(item?.created_At ?? ''),
+      created_By: Number(item?.created_By ?? 0),
+      deleted_At: String(item?.deleted_At ?? ''),
+      delete_Account_ID: Number(item?.delete_Account_ID ?? 0)
     };
   }
 
@@ -559,7 +555,6 @@ export class FileSystemsSectionComponent implements OnInit {
       driveId
     ).subscribe({
       next: (response: any) => {
-        console.log('response create file system', response);
         this.creatingFileSystem = false;
         if (!response?.success) {
           this.handleError('create', response);
@@ -664,7 +659,6 @@ export class FileSystemsSectionComponent implements OnInit {
     this.deletingFileSystem = true;
     this.fileSystemsService.deleteFileSystem(this.selectedForDelete.file_System_ID, this.deleteAllContents).subscribe({
       next: (response: any) => {
-        console.log('response delete file system', response);
         this.deletingFileSystem = false;
         if (!response?.success) {
           this.handleError('delete', response);

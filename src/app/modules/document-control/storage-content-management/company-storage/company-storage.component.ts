@@ -4,11 +4,11 @@ import { LocalStorageService } from 'src/app/core/services/local-storage.service
 import { VirtualDrivesService } from 'src/app/modules/system-administration/system-storage-management/services/virtual-drives.service';
 import { VirtualDrivesFilters } from 'src/app/modules/system-administration/system-storage-management/models/virtual-drive.model';
 import { AccessRight, FsPermissionsService } from '../../storage/folder-management/services/fs-permissions.service';
-import { FileSystemsService } from 'src/app/modules/entity-administration/entity-storage-management/services/file-systems.service';
 
 export interface FileSystemOption {
     id: number;
     name: string;
+    /** From List_Account_File_Systems (1174); -1 if unknown or not listed for account. */
     accessRight: number;
 }
 
@@ -36,8 +36,7 @@ export class CompanyStorageComponent implements OnInit {
         private translate: TranslationService,
         private localStorageService: LocalStorageService,
         private virtualDrivesService: VirtualDrivesService,
-        private fsPermissionsService: FsPermissionsService,
-        private fileSystemsService: FileSystemsService
+        private fsPermissionsService: FsPermissionsService
     ) { }
 
     ngOnInit(): void {
@@ -51,7 +50,7 @@ export class CompanyStorageComponent implements OnInit {
         this.loadingDrives = true;
         const filters: VirtualDrivesFilters = {
             entityFilter: 1,
-            licenseId: 0,
+            licenseId: 3,
             activeOnly: false
         };
         this.virtualDrivesService.listDrives(filters).subscribe({
@@ -77,9 +76,7 @@ export class CompanyStorageComponent implements OnInit {
 
     onDriveSelected(): void {
         this.selectedFileSystemId = null;
-        this.selectedFileSystemEffectiveRight = 'None';
-        this.selectedFileSystemPermissionsRaw = [];
-        this.selectedFileSystemPermissionsRows = [];
+        this.clearPermissionsState();
         if (this.selectedDriveId == null) {
             this.fileSystemOptionsInDrive = [];
             return;
@@ -87,10 +84,6 @@ export class CompanyStorageComponent implements OnInit {
         this.loadFileSystemsInDrive();
     }
 
-    /**
-     * Load file systems for the current account using List_Account_File_Systems (1174).
-     * If the response includes Drive_ID/drive_ID, we filter by selectedDriveId.
-     */
     loadFileSystemsInDrive(): void {
         const driveId = this.selectedDriveId;
         if (driveId == null) {
@@ -99,45 +92,34 @@ export class CompanyStorageComponent implements OnInit {
         }
         this.loadingFileSystemsInDrive = true;
         this.fileSystemOptionsInDrive = [];
-
         const accountId = this.localStorageService.getAccountDetails()?.Account_ID ?? 0;
+
         if (accountId <= 0) {
             this.loadingFileSystemsInDrive = false;
-            this.fileSystemOptionsInDrive = [];
+            this.selectedFileSystemId = null;
+            this.clearPermissionsState();
             return;
         }
 
-        this.fsPermissionsService.listAccountFileSystems(accountId, true).subscribe({
-            next: (response: any) => {
-                if (!response?.success) {
+        this.fsPermissionsService
+            .listAccountFileSystems(accountId, true)
+            .subscribe({
+                next: (response: any) => {
+                    console.log('response listAccountFileSystems: ', response);
                     this.loadingFileSystemsInDrive = false;
-                    this.fileSystemOptionsInDrive = [];
-                    return;
-                }
-                const msg = response?.message;
+                    if (!response?.success) {
+                        this.fileSystemOptionsInDrive = [];
+                        this.selectedFileSystemId = null;
+                        this.clearPermissionsState();
+                        return;
+                    }
 
-                // Backend shape observed:
-                // { "1": { file_system_id, file_system_name, access_right, ... }, "2": { ... } }
-                const list = Array.isArray(msg)
-                    ? msg
-                    : (msg && typeof msg === 'object' ? Object.values(msg) : []);
+                    if (this.selectedDriveId !== driveId) {
+                        return;
+                    }
 
-                const accountAccessibleOptions: FileSystemOption[] = (list || [])
-                    .map((item: any) => ({
-                        id: Number(item?.file_system_id ?? item?.file_System_ID ?? item?.File_System_ID ?? 0),
-                        name: String(item?.file_system_name ?? item?.name ?? item?.Name ?? ''),
-                        accessRight: Number(
-                            item?.access_right ?? item?.access_Right ?? item?.Access_Right ?? item?.effective_access_right ?? -1
-                        )
-                    }))
-                    .filter((fs: FileSystemOption) => fs.id > 0 && fs.name.trim() !== '');
-
-                // If 1174 includes drive info, filter directly.
-                const hasDriveIn1174 = (list || []).some((item: any) =>
-                    Number(item?.drive_ID ?? item?.Drive_ID ?? item?.driveId ?? 0) > 0
-                );
-
-                if (hasDriveIn1174) {
+                    const msg = response?.message;
+                    const list = Array.isArray(msg) ? msg : msg && typeof msg === 'object' ? Object.values(msg as object) : [];
                     this.fileSystemOptionsInDrive = (list || [])
                         .map((item: any) => ({
                             id: Number(item?.file_system_id ?? item?.file_System_ID ?? item?.File_System_ID ?? 0),
@@ -145,80 +127,73 @@ export class CompanyStorageComponent implements OnInit {
                             accessRight: Number(
                                 item?.access_right ?? item?.access_Right ?? item?.Access_Right ?? item?.effective_access_right ?? -1
                             ),
-                            driveId: Number(item?.drive_ID ?? item?.Drive_ID ?? item?.driveId ?? 0)
+                            driveId: Number(item?.drive_ID ?? item?.Drive_ID ?? item?.driveId ?? 0),
                         }))
-                        .filter((fs: any) => fs.id > 0 && fs.name.trim() !== '' && fs.driveId === driveId)
-                        .map((fs: any) => ({ id: fs.id, name: fs.name, accessRight: fs.accessRight }));
+                        .filter(
+                            (fs: any) =>
+                                fs.id > 0 &&
+                                fs.name.trim() !== '' &&
+                                (fs.driveId <= 0 || fs.driveId === driveId)
+                        )
+                        .map((fs: any) => ({
+                            id: fs.id,
+                            name: fs.name,
+                            accessRight: fs.accessRight,
+                        }));
 
+                    if (this.fileSystemOptionsInDrive.length === 0) {
+                        this.loadingFileSystemsInDrive = false;
+                        this.selectedFileSystemId = null;
+                        this.clearPermissionsState();
+                        return;
+                    }
+
+                    this.applyDefaultFileSystemSelection(driveId);
+                },
+                error: () => {
                     this.loadingFileSystemsInDrive = false;
-                    if (this.selectedDriveId === driveId && this.fileSystemOptionsInDrive.length > 0) {
-                        this.selectedFileSystemId = this.fileSystemOptionsInDrive[0].id;
-                        this.onFileSystemSelected();
-                    }
-                    return;
-                }
+                    this.fileSystemOptionsInDrive = [];
+                    this.selectedFileSystemId = null;
+                    this.clearPermissionsState();
+                },
+            });
+    }
 
-                // 1174 currently may not include drive_ID.
-                // Enforce drive-based filtering by intersecting with 1121 list for selected drive.
-                this.fileSystemsService.listFileSystems({
-                    entityFilter: 0,
-                    driveId: driveId,
-                    activeOnly: true
-                }).subscribe({
-                    next: (fsResponse: any) => {
-                        this.loadingFileSystemsInDrive = false;
-                        if (!fsResponse?.success) {
-                            this.fileSystemOptionsInDrive = [];
-                            return;
-                        }
+    private applyDefaultFileSystemSelection(driveId: number): void {
+        if (this.selectedDriveId !== driveId) {
+            return;
+        }
+        if (this.fileSystemOptionsInDrive.length === 0) {
+            this.selectedFileSystemId = null;
+            this.clearPermissionsState();
+            return;
+        }
+        this.selectedFileSystemId = this.fileSystemOptionsInDrive[0].id;
+        this.onFileSystemSelected();
+    }
 
-                        const fsRaw = fsResponse?.message;
-                        const fsList = Array.isArray(fsRaw) ? fsRaw : (fsRaw?.File_Systems ?? fsRaw?.file_Systems ?? []);
-                        const idsInSelectedDrive = new Set<number>(
-                            (fsList || [])
-                                .map((item: any) => Number(item?.file_System_ID ?? item?.File_System_ID ?? 0))
-                                .filter((id: number) => id > 0)
-                        );
+    fileSystemOptionAccessRight(option: FileSystemOption | null | undefined): number {
+        if (!option) {
+            return -1;
+        }
+        return Number.isFinite(option.accessRight) ? option.accessRight : -1;
+    }
 
-                        this.fileSystemOptionsInDrive = accountAccessibleOptions
-                            .filter((fs: FileSystemOption) => idsInSelectedDrive.has(fs.id));
-
-                        if (this.selectedDriveId === driveId && this.fileSystemOptionsInDrive.length > 0) {
-                            this.selectedFileSystemId = this.fileSystemOptionsInDrive[0].id;
-                            this.onFileSystemSelected();
-                        }
-                    },
-                    error: () => {
-                        this.loadingFileSystemsInDrive = false;
-                        this.fileSystemOptionsInDrive = [];
-                    }
-                });
-            },
-            error: () => {
-                this.loadingFileSystemsInDrive = false;
-                this.fileSystemOptionsInDrive = [];
-            }
-        });
+    private clearPermissionsState(): void {
+        this.selectedFileSystemEffectiveRight = 'None';
+        this.selectedFileSystemPermissionsRaw = [];
+        this.selectedFileSystemPermissionsRows = [];
     }
 
     onFileSystemSelected(): void {
         if (!this.selectedFileSystemId) {
-            this.selectedFileSystemEffectiveRight = 'None';
-            this.selectedFileSystemPermissionsRaw = [];
-            this.selectedFileSystemPermissionsRows = [];
+            this.clearPermissionsState();
             return;
-        }
-
-        const selectedFs = this.fileSystemOptionsInDrive.find((o) => o.id === this.selectedFileSystemId);
-        if (selectedFs && Number.isFinite(selectedFs.accessRight) && selectedFs.accessRight >= 0) {
-            this.selectedFileSystemEffectiveRight = this.mapAccessRightNumberToEnum(selectedFs.accessRight);
         }
 
         const accountId = this.localStorageService.getAccountDetails()?.Account_ID ?? 0;
         if (accountId <= 0) {
-            this.selectedFileSystemEffectiveRight = 'None';
-            this.selectedFileSystemPermissionsRaw = [];
-            this.selectedFileSystemPermissionsRows = [];
+            this.clearPermissionsState();
             return;
         }
 
@@ -237,30 +212,9 @@ export class CompanyStorageComponent implements OnInit {
             },
             error: () => {
                 this.permissionsLoading = false;
-                this.selectedFileSystemEffectiveRight = 'None';
-                this.selectedFileSystemPermissionsRaw = [];
-                this.selectedFileSystemPermissionsRows = [];
+                this.clearPermissionsState();
             }
         });
-    }
-
-    mapAccessRightNumberToEnum(value: number): AccessRight {
-        const map: Record<number, AccessRight> = {
-            0: 'None',
-            1: 'List',
-            2: 'Read',
-            3: 'Amend',
-            4: 'Modify',
-            5: 'Full'
-        };
-        return map[value] ?? 'None';
-    }
-
-    fileSystemOptionAccessRight(option: FileSystemOption | null | undefined): number {
-        if (!option || !Number.isFinite(option.accessRight) || option.accessRight < 0) {
-            return 0;
-        }
-        return option.accessRight;
     }
 
     getAccessRightSeverity(accessRight: number): 'secondary' | 'info' | 'success' | 'warning' | 'danger' {

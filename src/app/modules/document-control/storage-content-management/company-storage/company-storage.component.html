@@ -54,7 +54,7 @@
                                 [(ngModel)]="selectedFileSystemId" optionLabel="name" optionValue="id"
                                 [style]="{ width: '100%' }" styleClass="w-full company-storage-fs-dropdown"
                                 [disabled]="!selectedDriveId || loadingFileSystemsInDrive"
-                                [placeholder]="(selectedDriveId && fileSystemOptionsInDrive.length === 0) ? ('fileSystem.companyStorageView.noFileSystemToSelect' | translate) : (loadingFileSystemsInDrive ? ('fileSystem.companyStorage.loading' | translate) : ('fileSystem.companyStorageView.selectFileSystem' | translate))"
+                                [placeholder]="loadingFileSystemsInDrive ? ('fileSystem.companyStorage.loading' | translate) : (fileSystemOptionsInDrive.length === 0 ? ('fileSystem.companyStorageView.noFileSystemToSelect' | translate) : ('fileSystem.companyStorageView.selectFileSystem' | translate))"
                                 (onChange)="onFileSystemSelected()" appendTo="body"
                                 panelStyleClass="company-storage-fs-dropdown-panel">
                                 <ng-template let-item pTemplate="item">
@@ -190,7 +190,7 @@
     [resizable]="false" (onHide)="hidePermissionsDialog()" styleClass="company-storage-permissions-dialog">
     <div class="p-fluid">
         <div class="mb-3 flex align-items-center gap-2">
-            <span class="font-semibold">{{ 'fileSystem.entityAdmin.permissionsAdmin.accessRight' | translate }}:</span>
+            <span class="font-semibold">{{ 'fileSystem.companyStorageView.effectiveAccessRight' | translate }}:</span>
             <p-tag [value]="getAccessRightLabel(selectedEffectiveAccessRightNumeric())"
                 [severity]="getAccessRightSeverity(selectedEffectiveAccessRightNumeric())"
                 styleClass="permissions-access-right-tag"></p-tag>
