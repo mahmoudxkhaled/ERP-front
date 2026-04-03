@@ -1,239 +1,91 @@
-<div class="company-storage-view card">
-    <div class="company-storage-top flex flex-col gap-3">
-        <div class="page-header flex flex-column md:flex-row md:align-items-start md:justify-content-between gap-3">
-            <div class="page-header__text flex-1 min-w-0">
-                <h1 class="page-title">{{ 'fileSystem.companyStorageView.title' | translate }}</h1>
-                <p class="page-description">{{ 'fileSystem.companyStorageView.description' | translate }}</p>
-            </div>
-            <div class="page-header__back flex-shrink-0 align-self-end md:align-self-start">
-                <button pButton pRipple type="button" [routerLink]="['/document-control/storage-content-management']"
-                    icon="pi pi-arrow-left" [label]="'fileSystem.backToHome' | translate"></button>
-            </div>
+<div class="company-storage-osfs card p-0 overflow-hidden">
+  <div class="company-storage-osfs__chrome border-bottom-1 surface-border">
+    <div class="company-storage-osfs__top flex flex-column gap-3 p-4">
+      <div class="flex flex-column md:flex-row md:align-items-start md:justify-content-between gap-3">
+        <div class="company-storage-osfs__header flex-1 min-w-0">
+          <h1 class="company-storage-osfs__title">{{ 'fileSystem.companyStorageView.title' | translate }}</h1>
+          <p class="company-storage-osfs__subtitle">{{ 'fileSystem.osfs.cardsSubtitle' | translate }}</p>
         </div>
+        <div class="flex-shrink-0 align-self-stretch md:align-self-start">
+          <button
+            pButton
+            pRipple
+            type="button"
+            icon="pi pi-arrow-left"
+            [label]="'fileSystem.backToHome' | translate"
+            [routerLink]="['/document-control', 'storage-content-management']"
+            class="p-button-outlined p-button-sm w-full md:w-auto">
+          </button>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <section class="storage-selector-panel">
-        <ng-container *ngIf="loadingDrives || loadingFileSystemsInDrive; else companyStorageSelectorLoaded">
-            <div class="storage-selector-fields storage-selector-panel-skeleton">
-                <div class="storage-field storage-selector-panel-skeleton__field">
-                    <p-skeleton width="9rem" height="0.875rem" borderRadius="4px"
-                        styleClass="storage-selector-panel-skeleton__label-block"></p-skeleton>
-                    <p-skeleton width="100%" height="2.5rem" borderRadius="6px"
-                        styleClass="storage-selector-panel-skeleton__control"></p-skeleton>
-                </div>
-                <div class="storage-field storage-selector-panel-skeleton__field">
-                    <p-skeleton width="12rem" height="0.875rem" borderRadius="4px"
-                        styleClass="storage-selector-panel-skeleton__label-block"></p-skeleton>
-                    <div class="flex align-items-center company-storage-fs-dropdown-row storage-selector-panel-skeleton__control-row">
-                        <div class="company-storage-fs-dropdown-grow flex-1 min-w-0">
-                            <p-skeleton width="100%" height="2.5rem" borderRadius="6px"
-                                styleClass="storage-selector-panel-skeleton__control"></p-skeleton>
-                        </div>
-                        <p-skeleton width="2.5rem" height="2.5rem" borderRadius="6px"
-                            styleClass="flex-shrink-0 storage-selector-panel-skeleton__shield"></p-skeleton>
-                    </div>
-                </div>
+  <div class="osfs-library">
+    <ng-container *ngIf="loadingList && fileSystems.length === 0; else osfsCardsLoaded">
+      <div class="osfs-library__grid" role="status" [attr.aria-label]="'fileSystem.osfs.loading' | translate">
+        <div *ngFor="let _ of cardSkeletonIndices" class="osfs-tile osfs-tile--skeleton">
+          <div class="osfs-tile__thumb">
+            <div class="osfs-tile__icon-wrap osfs-tile__icon-wrap--skeleton">
+              <div class="osfs-tile__folder-img-skeleton" aria-hidden="true">
+                <p-skeleton width="5.25rem" height="4.5rem" borderRadius="10px 10px 6px 6px"></p-skeleton>
+              </div>
             </div>
-        </ng-container>
-        <ng-template #companyStorageSelectorLoaded>
-            <div class="storage-selector-fields">
-                <div class="storage-field">
-                    <label>{{ 'fileSystem.companyStorageView.selectDrive' | translate }}</label>
-                    <p-dropdown [options]="entityDriveOptions" [(ngModel)]="selectedDriveId" optionLabel="name"
-                        optionValue="id" [style]="{ width: '100%' }" styleClass="w-full company-storage-drive-dropdown"
-                        [disabled]="loadingDrives"
-                        [placeholder]="loadingDrives ? ('fileSystem.companyStorage.loading' | translate) : ('fileSystem.companyStorageView.selectDrive' | translate)"
-                        (onChange)="onDriveSelected()"></p-dropdown>
-                </div>
-                <div class="storage-field">
-                    <label for="companyStorageFileSystem">{{ 'fileSystem.companyStorageView.selectFileSystem' | translate
-                        }}</label>
-                    <div class="flex align-items-center gap-2 company-storage-fs-dropdown-row">
-                        <div class="company-storage-fs-dropdown-grow flex-1 min-w-0">
-                            <p-dropdown inputId="companyStorageFileSystem" [options]="fileSystemOptionsInDrive"
-                                [(ngModel)]="selectedFileSystemId" optionLabel="name" optionValue="id"
-                                [style]="{ width: '100%' }" styleClass="w-full company-storage-fs-dropdown"
-                                [disabled]="!selectedDriveId || loadingFileSystemsInDrive"
-                                [placeholder]="loadingFileSystemsInDrive ? ('fileSystem.companyStorage.loading' | translate) : (fileSystemOptionsInDrive.length === 0 ? ('fileSystem.companyStorageView.noFileSystemToSelect' | translate) : ('fileSystem.companyStorageView.selectFileSystem' | translate))"
-                                (onChange)="onFileSystemSelected()" appendTo="body"
-                                panelStyleClass="company-storage-fs-dropdown-panel">
-                                <ng-template let-item pTemplate="item">
-                                    <div
-                                        class="flex align-items-center justify-content-between gap-2 w-full min-w-0 company-storage-fs-option">
-                                        <span
-                                            class="company-storage-fs-option__name white-space-nowrap overflow-hidden text-overflow-ellipsis">{{
-                                            item.name }}</span>
-                                        <p-tag [value]="getAccessRightLabel(fileSystemOptionAccessRight(item))"
-                                            [severity]="getAccessRightSeverity(fileSystemOptionAccessRight(item))"
-                                            styleClass="permissions-access-right-tag flex-shrink-0"></p-tag>
-                                    </div>
-                                </ng-template>
-                                <ng-template let-item pTemplate="selectedItem">
-                                    <div *ngIf="item"
-                                        class="flex align-items-center justify-content-between gap-2 w-full min-w-0 company-storage-fs-option">
-                                        <span
-                                            class="company-storage-fs-option__name white-space-nowrap overflow-hidden text-overflow-ellipsis">{{
-                                            item.name }}</span>
-                                        <p-tag [value]="getAccessRightLabel(fileSystemOptionAccessRight(item))"
-                                            [severity]="getAccessRightSeverity(fileSystemOptionAccessRight(item))"
-                                            styleClass="permissions-access-right-tag flex-shrink-0"></p-tag>
-                                    </div>
-                                </ng-template>
-                            </p-dropdown>
-                        </div>
-                        <button *ngIf="selectedFileSystemId" pButton pRipple type="button" icon="pi pi-shield"
-                            class="p-button-outlined flex-shrink-0 company-storage-perm-details-btn"
-                            [pTooltip]="'fileSystem.entityAdmin.permissionsAdmin.permissionsTitle' | translate"
-                            (click)="showPermissionsDialog(); $event.preventDefault()"></button>
-                    </div>
-                </div>
+          </div>
+          <div class="osfs-tile__caption osfs-tile__caption--skeleton">
+            <div class="osfs-tile__title-row">
+              <div class="osfs-tile__name--skeleton" aria-hidden="true">
+                <p-skeleton width="100%" height="2.19375rem" borderRadius="4px"></p-skeleton>
+              </div>
+              <div class="osfs-tile__permission-skeleton" aria-hidden="true">
+                <p-skeleton width="4.25rem" height="1.35rem" borderRadius="6px"></p-skeleton>
+              </div>
             </div>
-        </ng-template>
-    </section>
-
-    <div class="storage-empty-state" *ngIf="!selectedFileSystemId && !loadingDrives && !loadingFileSystemsInDrive">
-        <i class="pi pi-inbox storage-empty-icon"></i>
-        <p class="storage-empty-text">{{ 'fileSystem.companyStorageView.selectDriveAndFileSystem' | translate }}</p>
-    </div>
-
-    <!-- Skeleton while loading drive or file system (matches folder-management layout) -->
-    <div class="folder-management-skeleton card"
-        *ngIf="(loadingDrives || loadingFileSystemsInDrive) && !selectedFileSystemId">
-        <div class="skeleton-toolbar">
-            <div class="flex align-items-center gap-2">
-                <p-skeleton width="10rem" height="2.5rem" borderRadius="6px"></p-skeleton>
-                <p-skeleton width="9rem" height="2.5rem" borderRadius="6px"></p-skeleton>
+            <div class="osfs-tile__sub--skeleton" aria-hidden="true">
+              <p-skeleton width="78%" height="0.825rem" borderRadius="4px"></p-skeleton>
             </div>
+          </div>
         </div>
-        <div class="skeleton-folder-layout">
-            <div class="skeleton-tree-panel">
-                <div class="skeleton-folders-card">
-                    <div class="skeleton-folders-header">
-                        <span class="skeleton-folders-icon"></span>
-                        <p-skeleton width="5.5rem" height="1.1rem" borderRadius="4px"></p-skeleton>
-                    </div>
-                    <div class="skeleton-folders-body">
-                        <p-skeleton width="100%" height="2.25rem" class="skeleton-tree-filter"
-                            borderRadius="6px"></p-skeleton>
-                        <div class="skeleton-tree-rows">
-                            <div class="skeleton-tree-row"><p-skeleton width="1.25rem" height="1.25rem"
-                                    borderRadius="4px"></p-skeleton><p-skeleton width="70%" height="1.25rem"
-                                    borderRadius="4px"></p-skeleton></div>
-                            <div class="skeleton-tree-row skeleton-tree-row-indent"><p-skeleton width="1.25rem"
-                                    height="1.25rem" borderRadius="4px"></p-skeleton><p-skeleton width="60%"
-                                    height="1.25rem" borderRadius="4px"></p-skeleton></div>
-                            <div class="skeleton-tree-row skeleton-tree-row-indent"><p-skeleton width="1.25rem"
-                                    height="1.25rem" borderRadius="4px"></p-skeleton><p-skeleton width="55%"
-                                    height="1.25rem" borderRadius="4px"></p-skeleton></div>
-                            <div class="skeleton-tree-row"><p-skeleton width="1.25rem" height="1.25rem"
-                                    borderRadius="4px"></p-skeleton><p-skeleton width="65%" height="1.25rem"
-                                    borderRadius="4px"></p-skeleton></div>
-                            <div class="skeleton-tree-row skeleton-tree-row-indent"><p-skeleton width="1.25rem"
-                                    height="1.25rem" borderRadius="4px"></p-skeleton><p-skeleton width="50%"
-                                    height="1.25rem" borderRadius="4px"></p-skeleton></div>
-                        </div>
-                    </div>
-                </div>
+      </div>
+    </ng-container>
+    <ng-template #osfsCardsLoaded>
+      <div *ngIf="!loadingList && fileSystems.length === 0" class="osfs-empty flex flex-column align-items-center justify-content-center p-6 gap-3">
+        <div class="osfs-empty__illustration">
+          <img class="osfs-empty__folder-img" src="assets/images/PC_Folder_Icon.png" alt="" />
+        </div>
+        <p class="osfs-empty__text m-0 text-center">{{ 'fileSystem.osfs.empty' | translate }}</p>
+      </div>
+      <div *ngIf="fileSystems.length > 0" class="osfs-library__grid">
+        <div
+          *ngFor="let fs of fileSystems"
+          class="osfs-tile"
+          role="button"
+          tabindex="0"
+          [attr.aria-label]="('fileSystem.osfs.openCard' | translate) + ': ' + fs.name"
+          (click)="openFileSystem(fs)"
+          (keydown.enter)="openFileSystem(fs)"
+          (keydown.space)="$event.preventDefault(); openFileSystem(fs)">
+          <div class="osfs-tile__thumb">
+            <div class="osfs-tile__icon-wrap">
+              <img class="osfs-tile__folder-img" src="assets/images/PC_Folder_Icon.png" alt="" />
             </div>
-            <div class="skeleton-contents-panel">
-                <div class="skeleton-contents-card">
-                    <div class="skeleton-contents-header">
-                        <span class="skeleton-contents-icon"></span>
-                        <p-skeleton width="4.5rem" height="1.1rem" borderRadius="4px"></p-skeleton>
-                    </div>
-                    <div class="skeleton-contents-caption">
-                        <p-skeleton width="100%" height="2.5rem" borderRadius="6px"></p-skeleton>
-                        <div class="flex gap-2 justify-content-between">
-                            <p-skeleton width="6rem" height="2rem" borderRadius="4px"></p-skeleton>
-                            <div class="flex gap-2">
-                                <p-skeleton width="6rem" height="2rem" borderRadius="4px"></p-skeleton>
-                                <p-skeleton width="8rem" height="2rem" borderRadius="4px"></p-skeleton>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="skeleton-table-wrap">
-                        <table class="skeleton-table">
-                            <thead>
-                                <tr>
-                                    <th style="width: 3rem"></th>
-                                    <th style="width: 20rem"></th>
-                                    <th style="width: 5rem; text-align: center;"></th>
-                                    <th style="width: 12rem"></th>
-                                    <th style="width: 4rem"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr *ngFor="let i of [1,2,3,4,5,6]">
-                                    <td class="text-center"><p-skeleton height="1.5rem" width="1.5rem"
-                                            borderRadius="4px"></p-skeleton></td>
-                                    <td><p-skeleton height="1.25rem" width="14rem" borderRadius="4px"></p-skeleton></td>
-                                    <td class="text-center"><p-skeleton height="1.25rem" width="4rem"
-                                            borderRadius="4px"></p-skeleton></td>
-                                    <td><p-skeleton height="1.25rem" width="8rem" borderRadius="4px"></p-skeleton></td>
-                                    <td><p-skeleton height="1.5rem" width="2rem" borderRadius="4px"></p-skeleton></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+          </div>
+          <div class="osfs-tile__caption">
+            <div class="osfs-tile__title-row">
+              <span class="osfs-tile__name" [pTooltip]="fs.name">{{ fs.name }}</span>
+              <p-tag
+                [value]="getAccessRightLabel(fileSystemCardAccessRight(fs))"
+                [severity]="getAccessRightSeverity(fileSystemCardAccessRight(fs))"
+                styleClass="osfs-tile__tag">
+              </p-tag>
             </div>
+            <span *ngIf="fs.driveId > 0" class="osfs-tile__sub">
+              {{ 'fileSystem.osfs.driveId' | translate: { id: fs.driveId } }}
+            </span>
+            <span *ngIf="fs.driveId <= 0" class="osfs-tile__sub osfs-tile__sub--spacer" aria-hidden="true"></span>
+          </div>
         </div>
-    </div>
-
-    <!-- Folder Management Component -->
-    <app-folder-management *ngIf="selectedFileSystemId" [fileSystemId]="selectedFileSystemId"></app-folder-management>
-</div>
-
-<!-- Read-only permissions dialog (current account on selected File System) -->
-<p-dialog [header]="'fileSystem.entityAdmin.permissionsAdmin.permissionsTitle' | translate"
-    [(visible)]="permissionsDialogVisible" [modal]="true" [style]="{ width: '720px' }" [draggable]="false"
-    [resizable]="false" (onHide)="hidePermissionsDialog()" styleClass="company-storage-permissions-dialog">
-    <div class="p-fluid">
-        <div class="mb-3 flex align-items-center gap-2">
-            <span class="font-semibold">{{ 'fileSystem.companyStorageView.effectiveAccessRight' | translate }}:</span>
-            <p-tag [value]="getAccessRightLabel(selectedEffectiveAccessRightNumeric())"
-                [severity]="getAccessRightSeverity(selectedEffectiveAccessRightNumeric())"
-                styleClass="permissions-access-right-tag"></p-tag>
-        </div>
-
-        <div *ngIf="permissionsLoading" class="company-storage-dialog-perm-skeleton">
-            <p-skeleton width="100%" height="2.5rem" class="mb-2" borderRadius="6px"></p-skeleton>
-            <p-skeleton width="100%" height="12rem" borderRadius="6px"></p-skeleton>
-        </div>
-
-        <p-table *ngIf="!permissionsLoading" [value]="selectedFileSystemPermissionsRows" [paginator]="false"
-            styleClass="p-datatable-sm p-datatable-gridlines" responsiveLayout="scroll">
-            <ng-template pTemplate="header">
-                <tr>
-                    <th style="width: 12rem">{{ 'fileSystem.entityAdmin.permissionsAdmin.accessType' | translate }}</th>
-                    <th style="width: 11rem" class="text-center">{{ 'fileSystem.entityAdmin.permissionsAdmin.accessRight' | translate }}
-                    </th>
-                    <th style="width: 10rem">Permission ID</th>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="body" let-row>
-                <tr>
-                    <td>{{ getAccessTypeLabel(row.accessType) }}</td>
-                    <td class="text-center permissions-access-right-cell">
-                        <p-tag [value]="getAccessRightLabel(row.accessRight)"
-                            [severity]="getAccessRightSeverity(row.accessRight)"
-                            styleClass="permissions-access-right-tag"></p-tag>
-                    </td>
-                    <td>{{ row.permissionId || '—' }}</td>
-                </tr>
-            </ng-template>
-            <ng-template pTemplate="emptymessage">
-                <tr>
-                    <td colspan="3" class="text-center p-4 text-500">
-                        {{ 'fileSystem.entityAdmin.permissionsAdmin.noPermissions' | translate }}
-                    </td>
-                </tr>
-            </ng-template>
-        </p-table>
-    </div>
-
-    <ng-template pTemplate="footer">
-        <p-button [label]="'fileSystem.companyStorage.close' | translate" styleClass="p-button-secondary"
-            (onClick)="hidePermissionsDialog()"></p-button>
+      </div>
     </ng-template>
-</p-dialog>
+  </div>
+</div>

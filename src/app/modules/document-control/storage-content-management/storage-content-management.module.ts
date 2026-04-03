@@ -7,6 +7,8 @@ import { StorageContentManagementRoutingModule } from './storage-content-managem
 import { StorageContentLayoutComponent } from './storage-content-layout/storage-content-layout.component';
 import { StorageContentLandingComponent } from './storage-content-landing/storage-content-landing.component';
 import { CompanyStorageComponent } from './company-storage/company-storage.component';
+import { CompanyStorageShellComponent } from './company-storage-shell/company-storage-shell.component';
+import { CompanyStorageFolderComponent } from './company-storage-folder/company-storage-folder.component';
 import { SharedFilesComponent } from './shared-files/shared-files.component';
 import { DcsComponent } from './dcs/dcs.component';
 import { EdmsComponent } from './edms/edms.component';
@@ -17,6 +19,8 @@ import { FolderManagementModule } from '../storage/folder-management/folder-mana
         StorageContentLayoutComponent,
         StorageContentLandingComponent,
         CompanyStorageComponent,
+        CompanyStorageShellComponent,
+        CompanyStorageFolderComponent,
         SharedFilesComponent,
         DcsComponent,
         EdmsComponent

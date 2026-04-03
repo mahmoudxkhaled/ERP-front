@@ -238,7 +238,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
    */
   get folderContentsTableValue(): FolderContentRow[] {
     if (this.tableLoadingSpinner && this.folderContents.length === 0) {
-      return Array(5).fill(null).map(() => ({
+      return Array(12).fill(null).map(() => ({
         id: 0,
         name: '',
         type: 'folder',

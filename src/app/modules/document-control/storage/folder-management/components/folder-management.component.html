@@ -22,44 +22,171 @@
                 </div>
                 <div class="card-body folders-panel-body">
                     <ng-container *ngIf="treeLoading; else folderTreeLoaded">
-                        <div class="folder-tree-skeleton flex flex-column">
-                            <p-skeleton width="100%" height="2.25rem" borderRadius="6px"
-                                styleClass="folder-tree-skeleton__filter"></p-skeleton>
+                        <div class="folder-tree-skeleton flex flex-column" role="status"
+                            [attr.aria-label]="'fileSystem.folderManagement.loadingFolders' | translate">
+                            <div class="folder-tree-skeleton__filter-wrap">
+                                <p-skeleton width="100%" height="2.5rem" borderRadius="6px"></p-skeleton>
+                            </div>
                             <div class="folder-tree-skeleton__rows flex flex-column">
-                                <div class="folder-tree-skeleton__row flex align-items-center gap-2">
-                                    <p-skeleton width="1rem" height="1rem" borderRadius="4px"
-                                        styleClass="flex-shrink-0"></p-skeleton>
-                                    <p-skeleton height="1rem" width="88%" borderRadius="4px"></p-skeleton>
+                                <div class="folder-tree-skeleton__row folder-tree-skeleton__row--depth-0">
+                                    <div class="folder-tree-skeleton__toggler-slot">
+                                        <p-skeleton width="2rem" height="2rem" borderRadius="4px"></p-skeleton>
+                                    </div>
+                                    <div class="folder-tree-skeleton__mid flex flex-1 align-items-center min-w-0 gap-2">
+                                        <div class="folder-tree-skeleton__folder-slot">
+                                            <p-skeleton width="1rem" height="1rem" borderRadius="4px"></p-skeleton>
+                                        </div>
+                                        <div class="folder-tree-skeleton__label-slot flex-1 min-w-0">
+                                            <p-skeleton width="100%" height="0.95rem" borderRadius="4px"></p-skeleton>
+                                        </div>
+                                    </div>
+                                    <div class="folder-tree-skeleton__action-slot">
+                                        <p-skeleton width="1.5rem" height="1.75rem" borderRadius="6px"></p-skeleton>
+                                    </div>
                                 </div>
-                                <div class="folder-tree-skeleton__row flex align-items-center gap-2">
-                                    <p-skeleton width="1rem" height="1rem" borderRadius="4px"
-                                        styleClass="flex-shrink-0"></p-skeleton>
-                                    <p-skeleton height="1rem" width="72%" borderRadius="4px"></p-skeleton>
+                                <div class="folder-tree-skeleton__row folder-tree-skeleton__row--depth-1">
+                                    <div class="folder-tree-skeleton__toggler-slot">
+                                        <p-skeleton width="2rem" height="2rem" borderRadius="4px"></p-skeleton>
+                                    </div>
+                                    <div class="folder-tree-skeleton__mid flex flex-1 align-items-center min-w-0 gap-2">
+                                        <div class="folder-tree-skeleton__folder-slot">
+                                            <p-skeleton width="1rem" height="1rem" borderRadius="4px"></p-skeleton>
+                                        </div>
+                                        <div class="folder-tree-skeleton__label-slot flex-1 min-w-0">
+                                            <p-skeleton width="100%" height="0.95rem" borderRadius="4px"></p-skeleton>
+                                        </div>
+                                    </div>
+                                    <div class="folder-tree-skeleton__action-slot">
+                                        <p-skeleton width="1.5rem" height="1.75rem" borderRadius="6px"></p-skeleton>
+                                    </div>
                                 </div>
-                                <div class="folder-tree-skeleton__row flex align-items-center gap-2">
-                                    <p-skeleton width="1rem" height="1rem" borderRadius="4px"
-                                        styleClass="flex-shrink-0"></p-skeleton>
-                                    <p-skeleton height="1rem" width="80%" borderRadius="4px"></p-skeleton>
+                                <div class="folder-tree-skeleton__row folder-tree-skeleton__row--depth-1">
+                                    <div class="folder-tree-skeleton__toggler-slot">
+                                        <p-skeleton width="2rem" height="2rem" borderRadius="4px"></p-skeleton>
+                                    </div>
+                                    <div class="folder-tree-skeleton__mid flex flex-1 align-items-center min-w-0 gap-2">
+                                        <div class="folder-tree-skeleton__folder-slot">
+                                            <p-skeleton width="1rem" height="1rem" borderRadius="4px"></p-skeleton>
+                                        </div>
+                                        <div class="folder-tree-skeleton__label-slot flex-1 min-w-0">
+                                            <p-skeleton width="100%" height="0.95rem" borderRadius="4px"></p-skeleton>
+                                        </div>
+                                    </div>
+                                    <div class="folder-tree-skeleton__action-slot">
+                                        <p-skeleton width="1.5rem" height="1.75rem" borderRadius="6px"></p-skeleton>
+                                    </div>
                                 </div>
-                                <div class="folder-tree-skeleton__row flex align-items-center gap-2">
-                                    <p-skeleton width="1rem" height="1rem" borderRadius="4px"
-                                        styleClass="flex-shrink-0"></p-skeleton>
-                                    <p-skeleton height="1rem" width="65%" borderRadius="4px"></p-skeleton>
+                                <div class="folder-tree-skeleton__row folder-tree-skeleton__row--depth-2">
+                                    <div class="folder-tree-skeleton__toggler-slot">
+                                        <p-skeleton width="2rem" height="2rem" borderRadius="4px"></p-skeleton>
+                                    </div>
+                                    <div class="folder-tree-skeleton__mid flex flex-1 align-items-center min-w-0 gap-2">
+                                        <div class="folder-tree-skeleton__folder-slot">
+                                            <p-skeleton width="1rem" height="1rem" borderRadius="4px"></p-skeleton>
+                                        </div>
+                                        <div class="folder-tree-skeleton__label-slot flex-1 min-w-0">
+                                            <p-skeleton width="100%" height="0.95rem" borderRadius="4px"></p-skeleton>
+                                        </div>
+                                    </div>
+                                    <div class="folder-tree-skeleton__action-slot">
+                                        <p-skeleton width="1.5rem" height="1.75rem" borderRadius="6px"></p-skeleton>
+                                    </div>
                                 </div>
-                                <div class="folder-tree-skeleton__row flex align-items-center gap-2">
-                                    <p-skeleton width="1rem" height="1rem" borderRadius="4px"
-                                        styleClass="flex-shrink-0"></p-skeleton>
-                                    <p-skeleton height="1rem" width="76%" borderRadius="4px"></p-skeleton>
+                                <div class="folder-tree-skeleton__row folder-tree-skeleton__row--depth-0">
+                                    <div class="folder-tree-skeleton__toggler-slot">
+                                        <p-skeleton width="2rem" height="2rem" borderRadius="4px"></p-skeleton>
+                                    </div>
+                                    <div class="folder-tree-skeleton__mid flex flex-1 align-items-center min-w-0 gap-2">
+                                        <div class="folder-tree-skeleton__folder-slot">
+                                            <p-skeleton width="1rem" height="1rem" borderRadius="4px"></p-skeleton>
+                                        </div>
+                                        <div class="folder-tree-skeleton__label-slot flex-1 min-w-0">
+                                            <p-skeleton width="100%" height="0.95rem" borderRadius="4px"></p-skeleton>
+                                        </div>
+                                    </div>
+                                    <div class="folder-tree-skeleton__action-slot">
+                                        <p-skeleton width="1.5rem" height="1.75rem" borderRadius="6px"></p-skeleton>
+                                    </div>
                                 </div>
-                                <div class="folder-tree-skeleton__row flex align-items-center gap-2">
-                                    <p-skeleton width="1rem" height="1rem" borderRadius="4px"
-                                        styleClass="flex-shrink-0"></p-skeleton>
-                                    <p-skeleton height="1rem" width="58%" borderRadius="4px"></p-skeleton>
+                                <div class="folder-tree-skeleton__row folder-tree-skeleton__row--depth-1">
+                                    <div class="folder-tree-skeleton__toggler-slot">
+                                        <p-skeleton width="2rem" height="2rem" borderRadius="4px"></p-skeleton>
+                                    </div>
+                                    <div class="folder-tree-skeleton__mid flex flex-1 align-items-center min-w-0 gap-2">
+                                        <div class="folder-tree-skeleton__folder-slot">
+                                            <p-skeleton width="1rem" height="1rem" borderRadius="4px"></p-skeleton>
+                                        </div>
+                                        <div class="folder-tree-skeleton__label-slot flex-1 min-w-0">
+                                            <p-skeleton width="100%" height="0.95rem" borderRadius="4px"></p-skeleton>
+                                        </div>
+                                    </div>
+                                    <div class="folder-tree-skeleton__action-slot">
+                                        <p-skeleton width="1.5rem" height="1.75rem" borderRadius="6px"></p-skeleton>
+                                    </div>
                                 </div>
-                                <div class="folder-tree-skeleton__row flex align-items-center gap-2">
-                                    <p-skeleton width="1rem" height="1rem" borderRadius="4px"
-                                        styleClass="flex-shrink-0"></p-skeleton>
-                                    <p-skeleton height="1rem" width="84%" borderRadius="4px"></p-skeleton>
+                                <div class="folder-tree-skeleton__row folder-tree-skeleton__row--depth-1">
+                                    <div class="folder-tree-skeleton__toggler-slot">
+                                        <p-skeleton width="2rem" height="2rem" borderRadius="4px"></p-skeleton>
+                                    </div>
+                                    <div class="folder-tree-skeleton__mid flex flex-1 align-items-center min-w-0 gap-2">
+                                        <div class="folder-tree-skeleton__folder-slot">
+                                            <p-skeleton width="1rem" height="1rem" borderRadius="4px"></p-skeleton>
+                                        </div>
+                                        <div class="folder-tree-skeleton__label-slot flex-1 min-w-0">
+                                            <p-skeleton width="100%" height="0.95rem" borderRadius="4px"></p-skeleton>
+                                        </div>
+                                    </div>
+                                    <div class="folder-tree-skeleton__action-slot">
+                                        <p-skeleton width="1.5rem" height="1.75rem" borderRadius="6px"></p-skeleton>
+                                    </div>
+                                </div>
+                                <div class="folder-tree-skeleton__row folder-tree-skeleton__row--depth-2">
+                                    <div class="folder-tree-skeleton__toggler-slot">
+                                        <p-skeleton width="2rem" height="2rem" borderRadius="4px"></p-skeleton>
+                                    </div>
+                                    <div class="folder-tree-skeleton__mid flex flex-1 align-items-center min-w-0 gap-2">
+                                        <div class="folder-tree-skeleton__folder-slot">
+                                            <p-skeleton width="1rem" height="1rem" borderRadius="4px"></p-skeleton>
+                                        </div>
+                                        <div class="folder-tree-skeleton__label-slot flex-1 min-w-0">
+                                            <p-skeleton width="100%" height="0.95rem" borderRadius="4px"></p-skeleton>
+                                        </div>
+                                    </div>
+                                    <div class="folder-tree-skeleton__action-slot">
+                                        <p-skeleton width="1.5rem" height="1.75rem" borderRadius="6px"></p-skeleton>
+                                    </div>
+                                </div>
+                                <div class="folder-tree-skeleton__row folder-tree-skeleton__row--depth-2">
+                                    <div class="folder-tree-skeleton__toggler-slot">
+                                        <p-skeleton width="2rem" height="2rem" borderRadius="4px"></p-skeleton>
+                                    </div>
+                                    <div class="folder-tree-skeleton__mid flex flex-1 align-items-center min-w-0 gap-2">
+                                        <div class="folder-tree-skeleton__folder-slot">
+                                            <p-skeleton width="1rem" height="1rem" borderRadius="4px"></p-skeleton>
+                                        </div>
+                                        <div class="folder-tree-skeleton__label-slot flex-1 min-w-0">
+                                            <p-skeleton width="100%" height="0.95rem" borderRadius="4px"></p-skeleton>
+                                        </div>
+                                    </div>
+                                    <div class="folder-tree-skeleton__action-slot">
+                                        <p-skeleton width="1.5rem" height="1.75rem" borderRadius="6px"></p-skeleton>
+                                    </div>
+                                </div>
+                                <div class="folder-tree-skeleton__row folder-tree-skeleton__row--depth-0">
+                                    <div class="folder-tree-skeleton__toggler-slot">
+                                        <p-skeleton width="2rem" height="2rem" borderRadius="4px"></p-skeleton>
+                                    </div>
+                                    <div class="folder-tree-skeleton__mid flex flex-1 align-items-center min-w-0 gap-2">
+                                        <div class="folder-tree-skeleton__folder-slot">
+                                            <p-skeleton width="1rem" height="1rem" borderRadius="4px"></p-skeleton>
+                                        </div>
+                                        <div class="folder-tree-skeleton__label-slot flex-1 min-w-0">
+                                            <p-skeleton width="100%" height="0.95rem" borderRadius="4px"></p-skeleton>
+                                        </div>
+                                    </div>
+                                    <div class="folder-tree-skeleton__action-slot">
+                                        <p-skeleton width="1.5rem" height="1.75rem" borderRadius="6px"></p-skeleton>
+                                    </div>
                                 </div>
                             </div>
                         </div>

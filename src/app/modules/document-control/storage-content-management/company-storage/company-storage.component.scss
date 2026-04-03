@@ -1,408 +1,342 @@
-.company-storage-view {
-    .company-storage-top {
-        align-items: start;
-    }
+.company-storage-osfs {
+  border-radius: var(--p-border-radius);
 
-    .page-header {
-        margin-bottom: 2rem;
-        text-align: start;
-        width: 100%;
-    }
+  &__chrome {
+    background: var(--p-surface-0);
+  }
 
-    .page-header__text {
-        text-align: start;
-    }
+  &__title {
+    font-size: 1.375rem;
+    font-weight: 600;
+    color: var(--p-text-color);
+    margin: 0 0 0.35rem 0;
+    letter-spacing: -0.02em;
+  }
 
-    .page-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--p-text-color);
-        margin: 0 0 0.5rem 0;
-    }
-
-    .page-description {
-        font-size: 0.9375rem;
-        color: var(--p-text-muted-color);
-        margin: 0;
-        line-height: 1.5;
-    }
-
-    // Selector: one panel with two dropdowns
-    .storage-selector-panel {
-        background: var(--p-surface-50);
-        border: 1px solid var(--p-surface-200);
-        border-radius: var(--p-border-radius);
-        padding: 1.25rem 1.5rem;
-        margin-bottom: 1.25rem;
-    }
-
-    .storage-selector-fields {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.25rem;
-        align-items: end;
-    }
-
-    .company-storage-fs-dropdown-row {
-        width: 100%;
-    }
-
-    .company-storage-fs-dropdown-grow {
-        flex: 1 1 0%;
-        min-width: 0;
-
-        ::ng-deep .p-dropdown {
-            width: 100%;
-        }
-    }
-
-    .storage-field:last-child {
-        min-width: 0;
-    }
-
-    .company-storage-fs-option__name {
-        min-width: 0;
-        flex: 1 1 auto;
-    }
-
-    .company-storage-perm-details-btn {
-        width: 2.5rem;
-        height: 2.5rem;
-        padding: 0;
-    }
-    @media (max-width: 640px) {
-        .storage-selector-fields {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    .storage-field {
-        label {
-            display: block;
-            font-weight: 500;
-            font-size: 0.875rem;
-            color: var(--p-text-color);
-            margin-bottom: 0.375rem;
-        }
-    }
-
-    .storage-selector-panel-skeleton {
-        align-items: end;
-
-        &__field {
-            display: flex;
-            flex-direction: column;
-            align-items: stretch;
-            min-width: 0;
-            gap: 0;
-        }
-
-        &__control-row {
-            gap: 0.5rem;
-            width: 100%;
-        }
-    }
-
-    // Empty state when nothing selected
-    .storage-empty-state {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 3rem 1.5rem;
-        background: var(--p-surface-0);
-        border: 1px dashed var(--p-surface-300);
-        border-radius: var(--p-border-radius);
-        margin-bottom: 1.25rem;
-    }
-
-    .storage-empty-icon {
-        font-size: 2.5rem;
-        color: var(--p-surface-400);
-        margin-bottom: 0.75rem;
-    }
-
-    .storage-empty-text {
-        margin: 0;
-        font-size: 0.9375rem;
-        color: var(--p-text-muted-color);
-        text-align: center;
-        max-width: 280px;
-    }
-
-    // Skeleton matching folder-management layout (same structure and proportions)
-    .folder-management-skeleton {
-        padding: 1.25rem 1.5rem;
-        margin-bottom: 1.25rem;
-        width: 100%;
-    }
-
-    .skeleton-toolbar {
-        display: flex;
-        align-items: center;
-        margin-bottom: 1.25rem;
-    }
-
-    .skeleton-folder-layout {
-        display: flex;
-        gap: 1.25rem;
-        min-height: 500px;
-        align-items: stretch;
-    }
-    @media (max-width: 768px) {
-        .skeleton-folder-layout {
-            flex-direction: column;
-        }
-    }
-
-    .skeleton-tree-panel {
-        min-width: 280px;
-        max-width: 320px;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .skeleton-folders-card {
-        flex: 1;
-        border: 1px solid var(--p-surface-200);
-        border-radius: var(--p-border-radius);
-        overflow: hidden;
-        background: var(--p-surface-0);
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-        display: flex;
-        flex-direction: column;
-    }
-
-    .skeleton-folders-header {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 1rem 1.25rem;
-        border-bottom: 1px solid var(--p-surface-200);
-        background: var(--p-surface-50);
-    }
-
-    .skeleton-folders-icon {
-        width: 2.25rem;
-        height: 2.25rem;
-        border-radius: var(--p-border-radius);
-        background: #d4a017;
-        flex-shrink: 0;
-        opacity: 0.5;
-    }
-
-    .skeleton-folders-body {
-        padding: 1rem 1rem 0.875rem;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .skeleton-tree-filter {
-        margin-bottom: 0.75rem !important;
-    }
-
-    .skeleton-tree-rows {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    .skeleton-tree-row {
-        display: flex;
-        align-items: center;
-        gap: 0.625rem;
-        padding: 0.45rem 0.625rem;
-    }
-
-    .skeleton-tree-row-indent {
-        padding-left: 1.75rem;
-    }
-
-    .skeleton-contents-panel {
-        flex: 1;
-        min-width: 0;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .skeleton-contents-card {
-        flex: 1;
-        border: 1px solid var(--p-surface-200);
-        border-radius: var(--p-border-radius);
-        overflow: hidden;
-        background: var(--p-surface-0);
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-        display: flex;
-        flex-direction: column;
-    }
-
-    .skeleton-contents-header {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        padding: 1rem 1.25rem;
-        border-bottom: 1px solid var(--p-surface-200);
-        background: var(--p-surface-50);
-    }
-
-    .skeleton-contents-icon {
-        width: 2.25rem;
-        height: 2.25rem;
-        border-radius: var(--p-border-radius);
-        background: var(--p-primary-500);
-        flex-shrink: 0;
-        opacity: 0.5;
-    }
-
-    .skeleton-contents-caption {
-        padding: 1rem 1.25rem;
-        border-bottom: 1px solid var(--p-surface-200);
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-    }
-
-    .skeleton-table-wrap {
-        flex: 1;
-        overflow: auto;
-    }
-
-    .skeleton-table {
-        width: 100%;
-        border-collapse: collapse;
-        thead th {
-            padding: 0.75rem 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--p-surface-200);
-            background: var(--p-surface-50);
-            font-weight: 600;
-        }
-        tbody td {
-            padding: 0.875rem 1rem;
-            border-bottom: 1px solid var(--p-surface-200);
-        }
-        tbody tr:last-child td {
-            border-bottom: none;
-        }
-    }
-
-    .content-card {
-        background: var(--p-surface-0);
-        border: 1px solid var(--p-surface-200);
-        border-radius: var(--p-border-radius);
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .content-card-header {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.875rem 1rem;
-        background: var(--p-surface-50);
-        border-bottom: 1px solid var(--p-surface-200);
-        font-weight: 600;
-        color: var(--p-text-color);
-    }
-
-    .content-card-icon {
-        color: var(--p-primary-500);
-        font-size: 1.125rem;
-    }
-
-    .content-card-title {
-        font-size: 0.9375rem;
-    }
-
-    .content-card-body {
-        padding: 1rem;
-        min-height: 0;
-    }
-
-    .storage-layout {
-        display: flex;
-        gap: 1rem;
-        min-height: 420px;
-    }
-
-    .tree-card {
-        width: 350px;
-        flex-shrink: 0;
-
-        .tree-panel {
-            overflow: auto;
-            // max-height: 380px;
-        }
-
-        .tree-node-row {
-            display: flex;
-            align-items: center;
-            width: 100%;
-        }
-        .tree-node-label {
-            flex: 1;
-            min-width: 0;
-        }
-        .tree-node-actions {
-            display: inline-flex;
-            gap: 0.25rem;
-            margin-left: 0.5rem;
-        }
-    }
-
-    .files-card {
-        flex: 1;
-        min-width: 0;
-        max-width: 1000px;
-
-        .content-card-body.p-0 {
-            padding: 0;
-        }
-    }
-
-    .file-type-icon {
-        color: var(--p-text-muted-color);
-        font-size: 1.125rem;
-    }
-
-    .breadcrumb-wrap {
-        background: var(--p-surface-50);
-        padding: 0.5rem 0.75rem;
-        border-radius: var(--p-border-radius);
-        border: 1px solid var(--p-surface-200);
-    }
+  &__subtitle {
+    font-size: 0.875rem;
+    color: var(--p-text-muted-color);
+    margin: 0;
+    line-height: 1.45;
+    max-width: 40rem;
+  }
 }
 
-::ng-deep .company-storage-fs-dropdown-panel.p-dropdown-panel {
-    min-width: min(100vw - 2rem, 28rem);
+.osfs-library {
+  min-height: 280px;
+  padding: 1.25rem 1.5rem 1.75rem;
+  background: var(--p-surface-50);
+  background-image: linear-gradient(var(--p-surface-100) 1px, transparent 1px),
+    linear-gradient(90deg, var(--p-surface-100) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-position: -1px -1px;
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));
+    gap: 0.5rem 0.35rem;
+    justify-content: start;
+    align-items: start;
+  }
+
+  @media (min-width: 576px) {
+    &__grid {
+      grid-template-columns: repeat(auto-fill, minmax(8.25rem, 1fr));
+      gap: 0.65rem 0.5rem;
+    }
+  }
+
+  @media (min-width: 992px) {
+    padding: 1.5rem 1.75rem 2rem;
+
+    &__grid {
+      grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+      gap: 0.75rem 0.65rem;
+    }
+  }
 }
 
-::ng-deep .storage-selector-panel-skeleton .storage-selector-panel-skeleton__label-block {
-    margin-bottom: 0.375rem;
-    display: block;
-}
+.osfs-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 10.5rem;
+  margin: 0 auto;
+  padding: 0.65rem 0.4rem 0.85rem;
+  min-height: 12rem;
+  box-sizing: border-box;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.2s ease,
+    transform 0.15s ease;
 
-::ng-deep .company-storage-view .permissions-access-right-tag,
-::ng-deep .company-storage-fs-dropdown-panel .permissions-access-right-tag,
-::ng-deep .company-storage-permissions-dialog .permissions-access-right-tag {
-    display: inline-flex;
+  &:hover {
+    background: var(--p-surface-0);
+    border-color: var(--p-surface-200);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--p-primary-color);
+    outline-offset: 2px;
+    background: var(--p-surface-0);
+  }
+
+  &--skeleton {
+    cursor: default;
+    pointer-events: none;
+
+    &:hover {
+      transform: none;
+      background: transparent;
+      border-color: transparent;
+      box-shadow: none;
+    }
+  }
+
+  &__thumb {
+    display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 6.5rem;
-    box-sizing: border-box;
+    width: 100%;
+    padding: 0.25rem 0 0.35rem;
+  }
+
+  &__icon-wrap {
+    width: 5.25rem;
+    height: 4.5rem;
+    border-radius: 10px 10px 6px 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    position: relative;
+    flex-shrink: 0;
+    overflow: hidden;
+
+    &--skeleton {
+      background: transparent;
+      box-shadow: none;
+
+      &::after {
+        display: none;
+      }
+    }
+  }
+
+  &__folder-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center bottom;
+    display: block;
+    pointer-events: none;
+    user-select: none;
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.12));
+  }
+
+  &__title-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.125rem;
+    width: 100%;
+  }
+
+  &__caption {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0 0.15rem;
+    text-align: center;
+    flex: 1 1 auto;
+    min-height: 4.75rem;
+    justify-content: flex-start;
+
+    &--skeleton {
+      align-items: center;
+
+      ::ng-deep .p-skeleton {
+        flex-shrink: 0;
+      }
+    }
+  }
+
+  &__folder-img-skeleton {
+    width: 5.25rem;
+    height: 4.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    ::ng-deep p-skeleton {
+      display: block;
+    }
+
+    ::ng-deep .p-skeleton {
+      display: block;
+    }
+  }
+
+  &__name--skeleton {
+    width: 100%;
+    min-height: calc(0.8125rem * 1.35 * 2);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+
+    ::ng-deep p-skeleton {
+      display: block;
+      width: 100%;
+    }
+
+    ::ng-deep .p-skeleton {
+      display: block;
+      width: 100% !important;
+    }
+  }
+
+  &__permission-skeleton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: scale(0.92);
+    transform-origin: center top;
+
+    ::ng-deep p-skeleton {
+      display: block;
+    }
+
+    ::ng-deep .p-skeleton {
+      display: block;
+    }
+  }
+
+  &__sub--skeleton {
+    width: 100%;
+    min-height: calc(0.6875rem * 1.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    ::ng-deep p-skeleton {
+      display: block;
+    }
+
+    ::ng-deep .p-skeleton {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+
+  &__name {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--p-text-color);
+    line-height: 1.35;
+    width: 100%;
+    min-height: calc(0.8125rem * 1.35 * 2);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-word;
+    hyphens: auto;
+  }
+
+  &__sub {
+    font-size: 0.6875rem;
+    color: var(--p-text-muted-color);
+    line-height: 1.2;
+    min-height: calc(0.6875rem * 1.2);
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &--spacer {
+      color: transparent;
+      visibility: hidden;
+      pointer-events: none;
+    }
+  }
+
+  &__tag {
+    transform: scale(0.92);
+    transform-origin: center top;
+  }
 }
 
-::ng-deep .company-storage-view .company-storage-drive-dropdown.p-dropdown,
-::ng-deep .company-storage-view .company-storage-fs-dropdown.p-dropdown {
-    min-height: 2.5rem;
+:host ::ng-deep .osfs-tile__title-row .p-tag {
+  margin: 0;
 }
 
-::ng-deep .company-storage-view .company-storage-drive-dropdown .p-dropdown-label,
-::ng-deep .company-storage-view .company-storage-fs-dropdown .p-dropdown-label {
-    line-height: 2.5rem;
-    padding-top: 0;
-    padding-bottom: 0;
+.osfs-empty {
+  border: 1px dashed var(--p-surface-300);
+  border-radius: var(--p-border-radius);
+  background: var(--p-surface-0);
+  margin: 0.5rem 0;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.02);
+
+  &__illustration {
+    width: 5.5rem;
+    height: 5.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+  }
+
+  &__folder-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.1));
+  }
+
+  &__text {
+    font-size: 0.9375rem;
+    color: var(--p-text-muted-color);
+    max-width: 22rem;
+  }
 }
+
+:host-context(.p-dark) {
+  .osfs-library {
+    background: var(--p-surface-ground);
+    background-image: linear-gradient(var(--p-surface-700) 1px, transparent 1px),
+      linear-gradient(90deg, var(--p-surface-700) 1px, transparent 1px);
+  }
+
+  .osfs-tile:hover {
+    background: var(--p-surface-800);
+    border-color: var(--p-surface-600);
+  }
+
+  .osfs-tile__folder-img {
+    filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.35));
+  }
+
+  .osfs-empty__folder-img {
+    filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.35));
+  }
+}
+

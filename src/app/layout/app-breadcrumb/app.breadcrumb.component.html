@@ -5,11 +5,11 @@
             <ng-template ngFor let-item let-last="last" let-index="index" [ngForOf]="breadcrumbs$ | async">
                 <li><i class="pi pi-angle-right"></i></li>
                 <li>
-                    <a *ngIf="!isBreadcrumbDisabled(index)" [routerLink]="item.url"
+                    <a *ngIf="!isBreadcrumbDisabled(index, last)" [routerLink]="item.url"
                         (click)="onBreadcrumbClick($event, item.url || '')">
                         {{getTranslationItem(item.label)}}
                     </a>
-                    <span *ngIf="isBreadcrumbDisabled(index)" class="breadcrumb-disabled">
+                    <span *ngIf="isBreadcrumbDisabled(index, last)" class="breadcrumb-disabled">
                         {{getTranslationItem(item.label)}}
                     </span>
                 </li>

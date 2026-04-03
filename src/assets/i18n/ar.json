@@ -290,9 +290,17 @@
             "manageAccessAndExpiryDescription": "تعيين من يمكنه العرض أو التعديل وتاريخ انتهاء الرابط.",
             "sharedWithYou": "الملفات والمجلدات المشاركة معك"
         },
+        "osfs": {
+            "cardsSubtitle": "اختر نظام ملفات لفتح المجلدات والملفات.",
+            "empty": "لا تتوفر أنظمة ملفات لحسابك.",
+            "driveId": "معرّف القرص: {{id}}",
+            "openCard": "فتح نظام الملفات",
+            "backToFileSystems": "العودة إلى أنظمة الملفات",
+            "loading": "جاري تحميل أنظمة الملفات"
+        },
         "companyStorageView": {
             "title": "أنظمة ملفات التخزين عبر الإنترنت (OSFS)",
-            "description": "عرض الأقراص الافتراضية المملوكة للكيان، ثم اختر قرصاً ونظام ملفات لإدارة المجلدات والملفات والرفع أو التحميل.",
+            "description": "اختر نظام ملفات لإدارة المجلدات والملفات والرفع أو التحميل.",
             "selectDrive": "القرص الافتراضي (مملوك للكيان)",
             "selectFileSystem": "نظام الملفات في هذا القرص",
             "noFileSystemToSelect": "لا يوجد نظام ملفات للاختيار",
@@ -412,6 +420,7 @@
             "selectFileSystem": "يرجى اختيار نظام ملفات لإدارة المجلدات.",
             "searchPlaceholder": "البحث في المجلدات والملفات...",
             "searchFoldersPlaceholder": "البحث في المجلدات...",
+            "loadingFolders": "جاري تحميل شجرة المجلدات",
             "searchFilesPlaceholder": "البحث في الملفات...",
             "calculateFolderSize": "حساب حجم المجلد",
             "calculatingSize": "جاري الحساب…",
@@ -1091,6 +1100,7 @@
             "fileSystemESM": "إدارة تخزين الكيانات (ESM)",
             "fileSystemStorageContent": "التخزين وإدارة المحتوى",
             "fileSystemOSFS": "أنظمة ملفات التخزين عبر الإنترنت",
+            "fileSystemOsfsExplorer": "المجلدات والملفات",
             "fileSystemSFS": "أنظمة الملفات المشتركة",
             "fileSystemDCS": "نظام التحكم في المستندات",
             "fileSystemEDMS": "نظام إدارة المستندات الإلكترونية",

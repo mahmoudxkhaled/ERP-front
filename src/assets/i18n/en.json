@@ -290,9 +290,17 @@
             "manageAccessAndExpiryDescription": "Set who can view or edit and set link expiry.",
             "sharedWithYou": "Files and folders shared with you"
         },
+        "osfs": {
+            "cardsSubtitle": "Choose a file system to open folders and files.",
+            "empty": "No file systems are available for your account.",
+            "driveId": "Drive ID: {{id}}",
+            "openCard": "Open file system",
+            "backToFileSystems": "Back to file systems",
+            "loading": "Loading file systems"
+        },
         "companyStorageView": {
             "title": "Online Storage File Systems (OSFS)",
-            "description": "List virtual drives owned by the entity, then select a drive and a file system to manage folders and files and upload or download.",
+            "description": "Select a file system to manage folders and files and upload or download.",
             "selectDrive": "Virtual drive (owned by entity)",
             "selectFileSystem": "File system in this drive",
             "noFileSystemToSelect": "No file system to select",
@@ -412,6 +420,7 @@
             "selectFileSystem": "Please select a file system to manage folders.",
             "searchPlaceholder": "Search folders and files...",
             "searchFoldersPlaceholder": "Search folders...",
+            "loadingFolders": "Loading folder tree",
             "searchFilesPlaceholder": "Search files...",
             "calculateFolderSize": "Calculate folder size",
             "calculatingSize": "Calculating…",
@@ -1090,6 +1099,7 @@
             "fileSystemESM": "Entity Storage Management (ESM)",
             "fileSystemStorageContent": "Storage & Content Management",
             "fileSystemOSFS": "Online Storage File Systems",
+            "fileSystemOsfsExplorer": "Folders & files",
             "fileSystemSFS": "Shared File Systems",
             "fileSystemDCS": "Document Control System",
             "fileSystemEDMS": "Electronic Document Management System",

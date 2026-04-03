@@ -16,8 +16,8 @@
 }
 
 .tree-panel {
-  min-width: 280px;
-  max-width: 320px;
+  min-width: 300px;
+  max-width: 28rem;
   display: flex;
   flex-direction: column;
 
@@ -25,6 +25,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
+    min-width: 0;
   }
 }
 
@@ -87,22 +88,108 @@
   display: flex;
   flex-direction: column;
 
+  &__filter-wrap {
+    width: 100%;
+    margin-bottom: 0.5rem;
+    box-sizing: border-box;
+  }
+
   &__rows {
     display: flex;
     flex-direction: column;
     gap: 0.125rem;
+    min-width: 0;
   }
 
   &__row {
-    min-height: 2rem;
-    padding: 0.35rem 0.5rem;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: 2.7rem;
+
+    &--depth-0 {
+      padding: 0.35rem 0.5rem;
+    }
+
+    &--depth-1 {
+      padding: 0.35rem 0.5rem;
+      padding-inline-start: 1.625rem;
+    }
+
+    &--depth-2 {
+      padding: 0.35rem 0.5rem;
+      padding-inline-start: 2.75rem;
+    }
+  }
+
+  &__toggler-slot {
+    flex-shrink: 0;
+    width: 2rem;
+    margin-right: 0.35rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__mid {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  &__folder-slot {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__label-slot {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    flex: 1 1 0;
+    overflow: hidden;
+  }
+
+  &__action-slot {
+    flex-shrink: 0;
+    margin-left: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__filter-wrap,
+  &__toggler-slot,
+  &__folder-slot,
+  &__label-slot,
+  &__action-slot {
+    ::ng-deep p-skeleton {
+      display: block;
+    }
+
+    ::ng-deep .p-skeleton {
+      display: block;
+    }
+  }
+
+  &__label-slot ::ng-deep p-skeleton {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100%;
+    min-width: 0;
     box-sizing: border-box;
   }
-}
 
-::ng-deep .folder-tree-skeleton__filter.p-skeleton {
-  margin-bottom: 0.5rem;
-  display: block;
+  &__label-slot ::ng-deep .p-skeleton {
+    max-width: 100%;
+    width: 100% !important;
+    box-sizing: border-box;
+  }
 }
 
 // Move folder dialog: content and tree take full height of dialog

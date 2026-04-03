@@ -57,13 +57,13 @@ export class AppBreadcrumbComponent {
     }
 
     /**
-     * Check if breadcrumb item should be disabled (2nd and 3rd items)
-     * Index 0 = 1st breadcrumb (first after home) - ACTIVE
-     * Index 1 = 2nd breadcrumb (second after home) - DISABLED
-     * Index 2 = 3rd breadcrumb (third after home) - DISABLED
+     * Breadcrumb is plain text (not a link) when it is the current page (last segment)
+     * or when index matches legacy disabled slots (1 and 2).
      */
-    isBreadcrumbDisabled(index: number): boolean {
-        // Disable 2nd and 3rd breadcrumb items (index 1 and 2)
+    isBreadcrumbDisabled(index: number, isLast: boolean): boolean {
+        if (isLast) {
+            return true;
+        }
         return index === 1 || index === 2;
     }
 
