@@ -3,26 +3,13 @@ import {
   getAccessTypeKey,
 } from '../shared/file-system-access-helpers';
 
-/**
- * List_File_System_Permissions (1170) — `message` payload shape.
- *
- * - `access_Rights`: raw explicit permission rows on the selected file system (not per-account effective rows).
- * - `accounts_Access_Rights`: computed effective access right **per account** for this file system (key = Account ID string, value = AccessRight enum numeric).
- *
- * Effective access is the **maximum** of all applicable `access_Right` values; `access_Right_Type` does not define priority over numeric level.
- * Deny-as-None for direct account rows is a possible backend special case only if implemented server-side.
- */
+
 export interface ListFileSystemPermissionsMessage {
   access_Rights?: FileSystemAccessRightRow[];
   accounts_Access_Rights?: AccountsAccessRightsMap;
 }
 
-/**
- * One explicit permission record stored for this file system.
- *
- * `permission_ID` is the target entity id whose meaning depends on `access_Right_Type`
- * (Account ID, Group ID, Role ID, Entity ID, organization-scoped entity id, etc.).
- */
+
 export interface FileSystemAccessRightRow {
   fS_Access_ID?: number;
   file_System_ID?: number;
@@ -31,10 +18,7 @@ export interface FileSystemAccessRightRow {
   permission_ID: number;
 }
 
-/**
- * Map Account ID (string key) → effective `AccessRight` for that account on this file system.
- * This is **not** a raw assignment table; do not treat values as independent DB rows.
- */
+
 export type AccountsAccessRightsMap = Record<string, number>;
 
 export enum FileSystemAccessRightEnum {

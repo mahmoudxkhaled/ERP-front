@@ -78,9 +78,16 @@ Skeleton **must** be:
 
 ---
 
+### PrimeNG `p-table` — skeleton / placeholder rows
+
+- If the table shows **multiple skeleton body rows** while loading (including via placeholder objects in `[value]`), the **row count must match `[rows]`** on `p-table` so table height matches the first loaded page. Reuse the same numeric source as the paginator’s page size (single property in `.ts` or equivalent). See **`table-defaults`** for the full table pattern.
+
+---
+
 ## Summary (UI work)
 
 1. Include a proper skeleton state on any component you touch.
 2. Match exact layout (size + spacing + structure); no layout shift.
 3. Use existing loading flags only.
-4. **Strings / i18n / toasts:** see **`i18n-translations`**.
+4. **Tables:** skeleton / placeholder **body row count** = **`p-table` `[rows]`** (see **`table-defaults`**).
+5. **Strings / i18n / toasts:** see **`i18n-translations`**.

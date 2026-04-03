@@ -189,6 +189,15 @@ Skeleton **MUST**:
 
 ---
 
+### 13. PrimeNG tables (`p-table`)
+
+- When the loading state shows **several skeleton table body rows** (repeated `<tr>` skeletons or placeholder rows bound to `[value]`), the **number of those rows must equal `[rows]`** on the same `p-table` so the paginator’s default page size and the skeleton state have the **same height**.
+- **Preferred:** the component exposes one property used for **`[rows]`** and for building placeholders (e.g. `Array(tableRows).fill(...)` in a getter) so template and row count stay in sync without magic numbers.
+- **Template-only refactors** (no `.ts` changes): if `[rows]="10"` is already in the template, repeat the skeleton row markup **10** times **only if** that matches `[rows]`; if you cannot align without TS, note that **`apply-table-defaults`** / **`table-defaults`** allow a minimal `.ts` change to share one `rows` constant with the placeholder array length.
+- Full table rules: **`.cursor/rules/table-defaults.mdc`**.
+
+---
+
 ## FINAL GOAL
 
 Create a skeleton state that is:
@@ -196,6 +205,7 @@ Create a skeleton state that is:
 - Visually consistent with the final UI (size + spacing + alignment)
 - Preserves layout, padding, gaps, and alignment
 - Keeps **static** copy visible; skeletonizes **dynamic** data only (see **Static vs dynamic** above)
+- For **`p-table`**, uses the **same row count** as **`[rows]`** when showing multi-row skeletons (see **§13**)
 - Causes **zero layout shift (CLS)** when switching loading → loaded
 
 ## Golden rule

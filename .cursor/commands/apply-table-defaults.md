@@ -55,6 +55,7 @@ Bring **`p-table`** list screens in line with project **`table-defaults`** and t
 
 - Per-cell `*ngIf="loading; else …"` with **`<p-skeleton>`** in the **same `<td>`** as loaded content.
 - Mirror real content: tag pills, round icon buttons, `flex` + `gap-2` clusters — **no layout shift** when data loads (see **`ui-defaults`** / **`skeleton-page`** command).
+- **Placeholder / skeleton body rows:** the count must match **`[rows]`** on `p-table` (use the same property for `Array(n)` or `*ngFor` length as for the paginator default page size — e.g. `fileSystemsTableRows`, `virtualDrivesTableRows`).
 
 ### 6. Inline actions
 
@@ -78,7 +79,7 @@ Bring **`p-table`** list screens in line with project **`table-defaults`** and t
 - [ ] `p-table` shell matches reference + **`table-defaults.mdc`**.
 - [ ] Caption skeletons match control sizes and gaps; no shift vs loaded toolbar.
 - [ ] Fixed column widths; ellipsis + tooltip where text can overflow.
-- [ ] Per-cell skeletons match loaded layout (padding, flex, gaps).
+- [ ] Per-cell skeletons match loaded layout (padding, flex, gaps); **skeleton/placeholder row count = `[rows]`**.
 - [ ] Row clickable class, cursor, hover SCSS; details on row **click** unless owner specified hover.
 - [ ] `stopPropagation` on row-level buttons/menus.
 - [ ] Lazy + cursor pagination if server-driven list.

@@ -3,19 +3,24 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { firstValueFrom } from 'rxjs';
-import { FileSystemsService } from '../services/file-systems.service';
-import { VirtualDrivesService } from 'src/app/modules/system-administration/system-storage-management/services/virtual-drives.service';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
-import { getFileSystemErrorDetail } from '../shared/file-system-helpers';
 import { FileSystemPermissionsAdminService, FileSystemAccessPermissionRow } from '../services/file-system-permissions-admin.service';
 import { EntitiesService } from '../../entities/services/entities.service';
 import { EntityGroupsService } from '../../entity-groups/services/entity-groups.service';
 import { RolesService } from '../../roles/services/roles.service';
+import type { AccountsAccessRightsMap } from '../models/file-system-permissions-list-response.model';
 
 interface RelatedTargetOption {
   id: number;
   name: string;
+}
+
+interface EffectiveAccountRow {
+  accountId: number;
+  accessRight: number;
+  accountLabel: string;
+  tableSearchText: string;
 }
 
 @Component({
@@ -24,14 +29,14 @@ interface RelatedTargetOption {
   styleUrls: ['./file-systems-permissions.component.scss'],
 })
 export class FileSystemsPermissionsComponent implements OnInit {
-  loadingFileSystems = false;
   loadingPermissions = false;
   loadingPermissionTargets = false;
 
-  fileSystems: { id: number; name: string }[] = [];
   selectedFileSystemId: number | null = null;
+  fileSystemName = '';
 
   permissions: FileSystemAccessPermissionRow[] = [];
+  effectiveAccountRows: EffectiveAccountRow[] = [];
   selectedPermissionForRemove: FileSystemAccessPermissionRow | null = null;
 
   addDialogVisible = false;
@@ -47,16 +52,18 @@ export class FileSystemsPermissionsComponent implements OnInit {
   relatedTargetsTouched = false;
 
   accessTypeOptions: { label: string; value: number }[] = [];
-  /** Includes Owner / EntityAdmin for table column filter (rows may show derived types). */
+
+
   accessTypeFilterOptions: { label: string; value: number }[] = [];
   accessRightOptions: { label: string; value: number }[] = [];
   readonly permissionsTableRows = 10;
-  readonly permissionsRowsPerPageOptions = [5, 10, 25, 50];
+  readonly permissionsRowsPerPageOptions = [10, 25, 50, 100];
+  readonly effectiveAccessTableRows = 10;
+  readonly effectiveAccessRowsPerPageOptions = [10, 25, 50, 100];
   currentEntityId = 0;
   isRegional = false;
 
-  private pendingFileSystemIdFromQuery: number | null = null;
-  private selectFirstPending = false;
+  private appliedRouteFileSystemId: number | null = null;
 
   constructor(
     private router: Router,
@@ -65,8 +72,6 @@ export class FileSystemsPermissionsComponent implements OnInit {
     private translate: TranslationService,
     private messageService: MessageService,
     private localStorageService: LocalStorageService,
-    private fileSystemsService: FileSystemsService,
-    private virtualDrivesService: VirtualDrivesService,
     private permissionsAdminService: FileSystemPermissionsAdminService,
     private entitiesService: EntitiesService,
     private entityGroupsService: EntityGroupsService,
@@ -74,70 +79,32 @@ export class FileSystemsPermissionsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    if (!this.canOpenPage()) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: this.translate.getInstant('fileSystem.entityAdmin.permissionsAdmin.notAuthorizedTitle'),
-        detail: this.translate.getInstant('fileSystem.entityAdmin.permissionsAdmin.notAuthorizedMessage'),
-      });
-      this.router.navigate(['/entity-administration']);
-      return;
-    }
-
     this.currentEntityId = Number(this.localStorageService.getEntityId() || 0);
     this.isRegional = this.localStorageService.getAccountSettings()?.Language !== 'English';
-    this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
-      const selectFirstRaw = params.get('selectFirst');
-      this.selectFirstPending =
-        selectFirstRaw === '1' || selectFirstRaw === 'true';
-      const id = Number(params.get('fileSystemId') || 0);
-      this.pendingFileSystemIdFromQuery = id > 0 ? id : null;
-
-      if (this.loadingFileSystems || this.fileSystems.length === 0) {
-        return;
-      }
-
-      const explicitId = this.pendingFileSystemIdFromQuery;
-      if (explicitId != null && explicitId > 0) {
-        if (this.fileSystems.some((f) => f.id === explicitId)) {
-          if (this.selectedFileSystemId !== explicitId) {
-            this.selectedFileSystemId = explicitId;
-            this.selectFirstPending = false;
-            this.refreshPermissions();
-          }
-        } else {
-          this.messageService.add({
-            severity: 'warn',
-            summary: this.translate.getInstant('fileSystem.entityAdmin.permissionsAdmin.fileSystemNotFoundTitle'),
-            detail: this.translate.getInstant('fileSystem.entityAdmin.permissionsAdmin.fileSystemNotFoundMessage'),
-          });
-          this.selectFirstPending = false;
-        }
-        return;
-      }
-
-      if (this.selectFirstPending) {
-        const firstId = this.fileSystems[0].id;
-        if (this.selectedFileSystemId !== firstId) {
-          this.selectedFileSystemId = firstId;
-          this.selectFirstPending = false;
-          this.refreshPermissions();
-        } else {
-          this.selectFirstPending = false;
-        }
-      }
-    });
     this.buildStaticOptions();
-    this.loadFileSystems();
+    this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+      const id = Number(params.get('fileSystemId') || 0);
+      if (id <= 0) {
+        this.appliedRouteFileSystemId = null;
+        this.redirectMissingFileSystemQuery();
+        return;
+      }
+      const nameFromQuery = String(params.get('fileSystemName') ?? '').trim();
+      if (this.appliedRouteFileSystemId === id) {
+        this.fileSystemName = nameFromQuery || `#${id}`;
+        return;
+      }
+      this.appliedRouteFileSystemId = id;
+      this.selectedFileSystemId = id;
+      this.fileSystemName = nameFromQuery || `#${id}`;
+      this.permissions = [];
+      this.effectiveAccountRows = [];
+      this.refreshPermissions();
+    });
   }
 
-  private canOpenPage(): boolean {
-    const functions = this.localStorageService.getFunctionsDetails();
-    return !!(functions?.EntAdm || functions?.SysAdm);
-  }
 
   private buildStaticOptions(): void {
-    // Note: Owner and EntityAdmin are derived; we do not allow setting them manually.
     this.accessTypeOptions = [
       { label: this.translate.getInstant('fileSystem.permissions.accessType.account'), value: 0 },
       { label: this.translate.getInstant('fileSystem.permissions.accessType.group'), value: 1 },
@@ -162,123 +129,23 @@ export class FileSystemsPermissionsComponent implements OnInit {
     ];
   }
 
-  loadFileSystems(): void {
-    void this.loadFileSystemsAsync();
-  }
-
-  private async loadFileSystemsAsync(): Promise<void> {
-    this.loadingFileSystems = true;
-    this.fileSystems = [];
+  private redirectMissingFileSystemQuery(): void {
     this.selectedFileSystemId = null;
-
-    try {
-      const drivesResponse: any = await firstValueFrom(
-        this.virtualDrivesService.listDrives({
-          entityFilter: 1,
-          licenseId: 0,
-          activeOnly: true,
-        })
-      );
-
-      if (!drivesResponse?.success) {
-        this.showErrorToast(drivesResponse);
-        return;
-      }
-
-      const rawDrives = drivesResponse.message;
-      const drivesList = Array.isArray(rawDrives) ? rawDrives : (rawDrives?.Drives ?? rawDrives?.message ?? []);
-      const drives = (drivesList || []).map((item: any) => ({
-        id: Number(item?.Drive_ID ?? item?.drive_ID ?? 0),
-        name: String(item?.Name ?? item?.name ?? ''),
-      })).filter((x: any) => x.id > 0 && x.name.trim() !== '');
-
-      if (drives.length === 0) {
-        this.fileSystems = [];
-        return;
-      }
-
-      const byId = new Map<number, { id: number; name: string }>();
-      for (const drive of drives) {
-        try {
-          const response: any = await firstValueFrom(
-            this.fileSystemsService.listFileSystems({
-              entityFilter: 0,
-              driveId: drive.id,
-              activeOnly: true,
-            })
-          );
-          if (!response?.success) {
-            continue;
-          }
-          const raw = response?.message;
-          const list = Array.isArray(raw) ? raw : (raw?.File_Systems ?? raw?.file_Systems ?? []);
-          for (const item of list || []) {
-            const id = Number(item?.file_System_ID ?? item?.File_System_ID ?? 0);
-            const name = String(item?.name ?? item?.Name ?? '');
-            if (id > 0 && name.trim() !== '' && !byId.has(id)) {
-              byId.set(id, { id, name });
-            }
-          }
-        } catch {
-          continue;
-        }
-      }
-
-      this.fileSystems = Array.from(byId.values()).sort((a, b) => a.name.localeCompare(b.name));
-    } catch (err) {
-      this.showErrorToast(err);
-    } finally {
-      this.loadingFileSystems = false;
-      this.applyPendingFileSystemFromQueryAfterLoad();
-    }
-  }
-
-  private applyPendingFileSystemFromQueryAfterLoad(): void {
-    const explicitId = this.pendingFileSystemIdFromQuery;
-    if (explicitId != null && explicitId > 0) {
-      if (this.fileSystems.some((f) => f.id === explicitId)) {
-        this.selectedFileSystemId = explicitId;
-        this.selectFirstPending = false;
-        this.refreshPermissions();
-        return;
-      }
-      this.messageService.add({
-        severity: 'warn',
-        summary: this.translate.getInstant('fileSystem.entityAdmin.permissionsAdmin.fileSystemNotFoundTitle'),
-        detail: this.translate.getInstant('fileSystem.entityAdmin.permissionsAdmin.fileSystemNotFoundMessage'),
-      });
-      this.selectFirstPending = false;
-      return;
-    }
-
-    if (this.selectFirstPending) {
-      if (this.fileSystems.length > 0) {
-        this.selectedFileSystemId = this.fileSystems[0].id;
-        this.selectFirstPending = false;
-        this.refreshPermissions();
-      } else {
-        this.selectFirstPending = false;
-      }
-    }
+    this.fileSystemName = '';
+    this.messageService.add({
+      severity: 'warn',
+      summary: this.translate.getInstant('fileSystem.entityAdmin.permissionsAdmin.missingFileSystemQueryTitle'),
+      detail: this.translate.getInstant('fileSystem.entityAdmin.permissionsAdmin.missingFileSystemQueryMessage'),
+    });
+    void this.router.navigate(['/entity-administration/entity-storage-management']);
   }
 
   get permissionsTableSkeletonActive(): boolean {
-    if (this.loadingFileSystems) {
-      return true;
-    }
     return (
       this.selectedFileSystemId != null &&
       this.loadingPermissions &&
       this.permissions.length === 0
     );
-  }
-
-  onFileSystemChange(): void {
-    this.permissions = [];
-    if (!this.selectedFileSystemId) {
-      return;
-    }
-    this.refreshPermissions();
   }
 
   refreshPermissions(): void {
@@ -287,22 +154,24 @@ export class FileSystemsPermissionsComponent implements OnInit {
     }
     this.loadingPermissions = true;
     this.permissions = [];
+    this.effectiveAccountRows = [];
 
     this.permissionsAdminService.listFileSystemPermissions(this.selectedFileSystemId).subscribe({
       next: (response: any) => {
+        console.log('refreshPermissions response', response);
         this.loadingPermissions = false;
         if (!response?.success) {
-          this.showErrorToast(response);
+          this.handleBusinessError('listPermissions', response);
           return;
         }
         const mapped = this.permissionsAdminService.mapPermissionsResponse(response);
         this.permissions = mapped.permissions;
+        this.rebuildEffectiveAccountRows(mapped.accountsAccessRights);
         this.refreshPermissionTableSearchText();
-        void this.resolveRelatedTargetDisplays();
+        void Promise.all([this.resolveRelatedTargetDisplays(), this.resolveEffectiveAccountLabels()]);
       },
-      error: (err) => {
+      error: () => {
         this.loadingPermissions = false;
-        this.showErrorToast(err);
       },
     });
   }
@@ -364,19 +233,19 @@ export class FileSystemsPermissionsComponent implements OnInit {
       next: (response: any) => {
         this.loadingPermissions = false;
         if (!response?.success) {
-          this.showErrorToast(response);
+          this.handleBusinessError('addPermission', response);
           return;
         }
         this.hideAddDialog();
         this.messageService.add({
           severity: 'success',
-          summary: this.translate.getInstant('fileSystem.entityAdmin.permissionsAdmin.addSuccess'),
+          summary: this.translate.getInstant('common.success'),
+          detail: this.translate.getInstant('fileSystem.entityAdmin.permissionsAdmin.addSuccess'),
         });
         this.refreshPermissions();
       },
-      error: (err) => {
+      error: () => {
         this.loadingPermissions = false;
-        this.showErrorToast(err);
       },
     });
   }
@@ -401,19 +270,19 @@ export class FileSystemsPermissionsComponent implements OnInit {
       next: (response: any) => {
         this.loadingPermissions = false;
         if (!response?.success) {
-          this.showErrorToast(response);
+          this.handleBusinessError('removePermission', response);
           return;
         }
         this.hideRemoveConfirm();
         this.messageService.add({
           severity: 'success',
-          summary: this.translate.getInstant('fileSystem.entityAdmin.permissionsAdmin.removeSuccess'),
+          summary: this.translate.getInstant('common.success'),
+          detail: this.translate.getInstant('fileSystem.entityAdmin.permissionsAdmin.removeSuccess'),
         });
         this.refreshPermissions();
       },
-      error: (err) => {
+      error: () => {
         this.loadingPermissions = false;
-        this.showErrorToast(err);
       },
     });
   }
@@ -438,19 +307,19 @@ export class FileSystemsPermissionsComponent implements OnInit {
       next: (response: any) => {
         this.loadingPermissions = false;
         if (!response?.success) {
-          this.showErrorToast(response);
+          this.handleBusinessError('clearPermission', response);
           return;
         }
         this.hideClearAllConfirm();
         this.messageService.add({
           severity: 'success',
-          summary: this.translate.getInstant('fileSystem.entityAdmin.permissionsAdmin.clearAllSuccess'),
+          summary: this.translate.getInstant('common.success'),
+          detail: this.translate.getInstant('fileSystem.entityAdmin.permissionsAdmin.clearAllSuccess'),
         });
         this.refreshPermissions();
       },
-      error: (err) => {
+      error: () => {
         this.loadingPermissions = false;
-        this.showErrorToast(err);
       },
     });
   }
@@ -482,18 +351,16 @@ export class FileSystemsPermissionsComponent implements OnInit {
   }
 
   getAccessRightSeverity(accessRight: number): 'secondary' | 'info' | 'success' | 'warning' | 'danger' {
-    // Simple visual mapping
     if (accessRight <= 0) return 'secondary';
     if (accessRight === 1) return 'info';
     if (accessRight === 2) return 'success';
     if (accessRight === 3) return 'warning';
-    if (accessRight >= 4) return 'danger';
-    return 'secondary';
+    return 'danger';
   }
 
   get permissionsTableValue(): FileSystemAccessPermissionRow[] {
     if (this.permissionsTableSkeletonActive) {
-      return Array(5).fill(null).map(() => ({
+      return Array(this.permissionsTableRows).fill(null).map(() => ({
         accessType: 0,
         relatedIds: [],
         accessRight: 0,
@@ -503,6 +370,36 @@ export class FileSystemsPermissionsComponent implements OnInit {
       }));
     }
     return this.permissions;
+  }
+
+  get effectiveAccountsTableSkeletonActive(): boolean {
+    return (
+      this.selectedFileSystemId != null &&
+      this.loadingPermissions &&
+      this.effectiveAccountRows.length === 0
+    );
+  }
+
+  get effectiveAccountsTableValue(): EffectiveAccountRow[] {
+    if (this.effectiveAccountsTableSkeletonActive) {
+      return Array(this.effectiveAccessTableRows)
+        .fill(null)
+        .map(() => ({
+          accountId: 0,
+          accessRight: 0,
+          accountLabel: '',
+          tableSearchText: '',
+        }));
+    }
+    return this.effectiveAccountRows;
+  }
+
+  formatEffectiveAccountCell(row: EffectiveAccountRow): string {
+    const idPart = `#${row.accountId}`;
+    if (!row.accountLabel?.trim() || row.accountLabel === idPart) {
+      return idPart;
+    }
+    return row.accountLabel;
   }
 
   getRelatedTargetCellText(row: FileSystemAccessPermissionRow): string {
@@ -553,7 +450,7 @@ export class FileSystemsPermissionsComponent implements OnInit {
   }
 
   get selectedRelatedTargets(): RelatedTargetOption[] {
-    if (!this.selectedRelatedTargetIds?.length) {
+    if (this.selectedRelatedTargetIds.length === 0) {
       return [];
     }
     const selectedSet = new Set(this.selectedRelatedTargetIds);
@@ -615,7 +512,7 @@ export class FileSystemsPermissionsComponent implements OnInit {
       next: (response: any) => {
         this.loadingRelatedTargets = false;
         if (!response?.success) {
-          this.showErrorToast(response);
+          this.handleBusinessError('relatedAccounts', response);
           return;
         }
 
@@ -628,9 +525,8 @@ export class FileSystemsPermissionsComponent implements OnInit {
           return { id, name };
         }).filter((x: RelatedTargetOption) => x.id > 0);
       },
-      error: (err) => {
+      error: () => {
         this.loadingRelatedTargets = false;
-        this.showErrorToast(err);
       }
     });
   }
@@ -641,7 +537,7 @@ export class FileSystemsPermissionsComponent implements OnInit {
       next: (response: any) => {
         this.loadingRelatedTargets = false;
         if (!response?.success) {
-          this.showErrorToast(response);
+          this.handleBusinessError('relatedGroups', response);
           return;
         }
 
@@ -655,9 +551,8 @@ export class FileSystemsPermissionsComponent implements OnInit {
           return { id, name: name || `#${id}` };
         }).filter((x: RelatedTargetOption) => x.id > 0);
       },
-      error: (err) => {
+      error: () => {
         this.loadingRelatedTargets = false;
-        this.showErrorToast(err);
       }
     });
   }
@@ -668,7 +563,7 @@ export class FileSystemsPermissionsComponent implements OnInit {
       next: (response: any) => {
         this.loadingRelatedTargets = false;
         if (!response?.success) {
-          this.showErrorToast(response);
+          this.handleBusinessError('relatedRoles', response);
           return;
         }
 
@@ -682,10 +577,41 @@ export class FileSystemsPermissionsComponent implements OnInit {
           return { id, name: name || `#${id}` };
         }).filter((x: RelatedTargetOption) => x.id > 0);
       },
-      error: (err) => {
+      error: () => {
         this.loadingRelatedTargets = false;
-        this.showErrorToast(err);
       }
+    });
+  }
+
+  private rebuildEffectiveAccountRows(map: AccountsAccessRightsMap | null): void {
+    this.effectiveAccountRows = Object.entries(map ?? {})
+      .map(([k, v]) => {
+        const accountId = Number(k);
+        const accessRight = Number(v);
+        const accountLabel = `#${accountId}`;
+        return {
+          accountId,
+          accessRight,
+          accountLabel,
+          tableSearchText: `${accountId} ${accountLabel} ${this.getAccessRightLabel(accessRight)}`.trim(),
+        };
+      })
+      .sort((a, b) => a.accountId - b.accountId);
+  }
+
+  private async resolveEffectiveAccountLabels(): Promise<void> {
+    if (this.effectiveAccountRows.length === 0) {
+      return;
+    }
+    const ids = new Set(this.effectiveAccountRows.map((r) => r.accountId));
+    const emails = await this.loadAccountEmailMap(ids);
+    this.effectiveAccountRows = this.effectiveAccountRows.map((r) => {
+      const accountLabel = emails.get(r.accountId) ?? r.accountLabel;
+      return {
+        ...r,
+        accountLabel,
+        tableSearchText: `${r.accountId} ${accountLabel} ${this.getAccessRightLabel(r.accessRight)}`,
+      };
     });
   }
 
@@ -823,7 +749,7 @@ export class FileSystemsPermissionsComponent implements OnInit {
           this.entitiesService.getEntityAccountsList(
             this.currentEntityId.toString(),
             true,
-            true,
+            false,
             lastAccountId,
             pageSize,
             ''
@@ -832,14 +758,14 @@ export class FileSystemsPermissionsComponent implements OnInit {
         if (!res?.success) {
           break;
         }
-        const accountsData = res?.message?.Accounts || {};
+        const accountsData = res.message?.Accounts ?? {};
         const list = Array.isArray(accountsData) ? accountsData : Object.values(accountsData);
         if (list.length === 0) {
           break;
         }
         list.forEach((a: any) => {
-          const id = Number(a?.Account_ID);
-          const email = String(a?.Email || '').trim();
+          const id = Number(a.Account_ID);
+          const email = String(a.Email ?? '').trim();
           if (neededIds.has(id) && email) {
             map.set(id, email);
           }
@@ -916,7 +842,7 @@ export class FileSystemsPermissionsComponent implements OnInit {
       next: (response: any) => {
         this.loadingRelatedTargets = false;
         if (!response?.success) {
-          this.showErrorToast(response);
+          this.handleBusinessError('relatedEntities', response);
           return;
         }
 
@@ -934,20 +860,167 @@ export class FileSystemsPermissionsComponent implements OnInit {
         const filtered = rootsOnly ? mapped.filter((x: any) => x.parentEntityId <= 0) : mapped;
         this.relatedTargetOptions = filtered.map((x: any) => ({ id: x.id, name: x.name }));
       },
-      error: (err) => {
+      error: () => {
         this.loadingRelatedTargets = false;
-        this.showErrorToast(err);
       }
     });
   }
 
-  private showErrorToast(response: any): void {
-    const detail = getFileSystemErrorDetail(response, (k) => this.translate.getInstant(k));
-    this.messageService.add({
-      severity: 'error',
-      summary: this.translate.getInstant('fileSystem.entityAdmin.permissionsAdmin.errorTitle'),
-      detail: detail || this.translate.getInstant('fileSystem.entityAdmin.permissionsAdmin.genericError'),
-    });
+  // #region Business errors
+  private getPermissionsAdminBusinessErrorCode(response: any): string {
+    let code = (response?.errorCode ?? response?.message?.code ?? response?.code ?? '').toString();
+    if (!code && typeof response?.message === 'string' && /^(ERP|FWA)\d+$/.test(response.message)) {
+      code = response.message;
+    }
+    return code;
   }
+
+  private handleBusinessError(
+    context:
+      | 'listPermissions'
+      | 'addPermission'
+      | 'removePermission'
+      | 'clearPermission'
+      | 'relatedAccounts'
+      | 'relatedGroups'
+      | 'relatedRoles'
+      | 'relatedEntities',
+    response: any
+  ): void {
+    const code = this.getPermissionsAdminBusinessErrorCode(response);
+    let detail = '';
+
+    switch (context) {
+      case 'listPermissions':
+      case 'addPermission':
+      case 'removePermission':
+      case 'clearPermission':
+        detail = this.getPermissionsAdminFileSystemApiErrorMessage(code) || '';
+        break;
+      case 'relatedAccounts':
+      case 'relatedGroups':
+      case 'relatedRoles':
+      case 'relatedEntities':
+        detail = this.getRelatedTargetsLoadErrorMessage(code) || '';
+        break;
+      default:
+        detail = '';
+    }
+
+    if (detail) {
+      this.messageService.add({
+        severity: 'error',
+        summary: this.translate.getInstant('common.error'),
+        detail,
+      });
+    }
+  }
+
+  private getPermissionsAdminFileSystemApiErrorMessage(code: string): string | null {
+    switch (code) {
+      case 'ERP12000':
+        return this.translate.getInstant('fileSystem.admin.errorAccessDenied');
+      case 'ERP12001':
+        return this.translate.getInstant('fileSystem.admin.errorBlockedIpPermanent');
+      case 'ERP12002':
+        return this.translate.getInstant('fileSystem.admin.errorBlockedIpTemporary');
+      case 'ERP12005':
+        return this.translate.getInstant('fileSystem.admin.errorMissingStorageToken');
+      case 'ERP12006':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidStorageToken');
+      case 'ERP12007':
+        return this.translate.getInstant('fileSystem.admin.errorAccessDeniedAction');
+      case 'ERP12008':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidRequestRouting');
+      case 'ERP12009':
+        return this.translate.getInstant('fileSystem.admin.errorRequestUnderDevelopment');
+      case 'ERP12010':
+        return this.translate.getInstant('fileSystem.admin.errorResponseManagement');
+      case 'ERP12011':
+        return this.translate.getInstant('fileSystem.admin.errorApiCallExecution');
+      case 'ERP12012':
+        return this.translate.getInstant('fileSystem.admin.errorFileServerDatabase');
+      case 'ERP12240':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileId');
+      case 'ERP12248':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidEntityFilter');
+      case 'ERP12250':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFolderId');
+      case 'ERP12260':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemId');
+      case 'ERP12263':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileAllocationType');
+      case 'ERP12270':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemAccessToken');
+      case 'ERP12280':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileAllocation');
+      case 'ERP12290':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidDriveId');
+      case 'ERP12291':
+        return this.translate.getInstant('fileSystem.admin.errorDriveInactive');
+      case 'ERP12292':
+        return this.translate.getInstant('fileSystem.admin.errorAccessDeniedDriveOwner');
+      case 'ERP12293':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidAccessType');
+      case 'ERP12294':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidAccessRight');
+      case 'ERP12295':
+        return this.translate.getInstant('fileSystem.admin.errorNotEnoughFileSystemAccessRight');
+      case 'ERP12296':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidAccountId');
+      case 'ERP12297':
+        return this.translate.getInstant('fileSystem.admin.errorOwnerOrFullRequired');
+      case 'ERP12298':
+        return this.translate.getInstant('fileSystem.admin.errorActionNotAllowedOnReferenceAllocation');
+      case 'ERP12299':
+        return this.translate.getInstant('fileSystem.admin.errorActionNotAllowedOnCopyAllocation');
+      case 'ERP12251':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'ERP12252':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'ERP12255':
+        return this.translate.getInstant('fileSystem.admin.errorFileSystemInUse');
+      case 'ERP12267':
+        return this.translate.getInstant('fileSystem.folderManagement.errorInvalidRestoreSelection');
+      case 'FWA12251':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'FWA12252':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'FWA12255':
+        return this.translate.getInstant('fileSystem.admin.errorFileSystemInUse');
+      default:
+        return null;
+    }
+  }
+
+  private getRelatedTargetsLoadErrorMessage(code: string): string | null {
+    const fromFs = this.getPermissionsAdminFileSystemApiErrorMessage(code);
+    if (fromFs) {
+      return fromFs;
+    }
+    switch (code) {
+      case 'ERP11255':
+        return this.translate.getInstant('fileSystem.entityAdmin.permissionsAdmin.relatedTargetsErrors.erp11255');
+      case 'ERP11260':
+        return this.translate.getInstant('fileSystem.entityAdmin.permissionsAdmin.relatedTargetsErrors.erp11260');
+      case 'ERP11261':
+        return this.translate.getInstant('fileSystem.entityAdmin.permissionsAdmin.relatedTargetsErrors.erp11261');
+      case 'ERP11262':
+        return this.translate.getInstant('fileSystem.entityAdmin.permissionsAdmin.relatedTargetsErrors.erp11262');
+      case 'ERP11263':
+        return this.translate.getInstant('fileSystem.entityAdmin.permissionsAdmin.relatedTargetsErrors.erp11263');
+      case 'ERP11270':
+        return this.translate.getInstant('fileSystem.entityAdmin.permissionsAdmin.relatedTargetsErrors.erp11270');
+      case 'ERP11287':
+        return this.translate.getInstant('fileSystem.entityAdmin.permissionsAdmin.relatedTargetsErrors.erp11287');
+      case 'ERP11288':
+        return this.translate.getInstant('fileSystem.entityAdmin.permissionsAdmin.relatedTargetsErrors.erp11288');
+      case 'ERP11290':
+        return this.translate.getInstant('fileSystem.entityAdmin.permissionsAdmin.relatedTargetsErrors.erp11290');
+      default:
+        return null;
+    }
+  }
+  // #endregion
 }
 

@@ -35,6 +35,7 @@ export class FileSystemsService {
       filters.driveId.toString(),
       filters.activeOnly.toString(),
     ];
+    console.log('params list file systems', params);
     return this.apiService
       .callAPI(1121, this.getAccessToken(), params)
       .pipe(finalize(() => this.isLoadingSubject.next(false)));

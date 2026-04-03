@@ -129,6 +129,7 @@
             "permissions": "الصلاحيات",
             "entityName": "الكيان",
             "fileSystemName": "نظام الملفات",
+            "affectedAccountsColumn": "الحسابات المتأثرة",
             "fileSystemType": "نوع نظام الملفات",
             "fileSystemTypeShort": "النوع",
             "status": "الحالة",
@@ -179,12 +180,22 @@
             "noOwnedDrives": "لا توجد أقراص افتراضية مملوكة للكيان.",
             "permissionsAdmin": {
                 "title": "صلاحيات نظام الملفات",
-                "description": "إدارة صلاحيات الوصول على نظام ملفات محدد. يمكنك إضافة/إزالة صلاحيات أو مسح جميع الصلاحيات عند الحاجة.",
+                "description": "إدارة الوصول لنظام الملفات الذي فتحته من القائمة. أضف أو احذف القواعد، أو راجع الوصول الفعّال لكل حساب، أو امسح كل الصلاحيات.",
+                "fileSystemQueryParamLabel": "المعامل",
+                "missingFileSystemQueryTitle": "لم يُحدد نظام ملفات",
+                "missingFileSystemQueryMessage": "افتح هذه الصفحة من صف نظام ملفات (إدارة الصلاحيات) أو أضف ?fileSystemId= إلى الرابط.",
                 "backToEsm": "العودة إلى ESM",
                 "selectFileSystem": "اختيار نظام الملفات",
                 "selectFileSystemPlaceholder": "اختر نظام ملفات",
                 "refreshFileSystems": "تحديث أنظمة الملفات",
                 "permissionsTitle": "الصلاحيات",
+                "assignedPermissionsTitle": "قواعد التعيين",
+                "effectiveAccessTitle": "الوصول الفعّال حسب الحساب",
+                "effectiveAccessDescription": "مستوى الوصول المحسوب من الخادم لكل حساب (للقراءة فقط). عدّل قواعد التعيين أعلاه لتغيير من يحصل على الوصول.",
+                "effectiveAccessAccount": "الحساب",
+                "effectiveAccessPageReport": "عرض '{first}' إلى '{last}' من أصل '{totalRecords}' حساب",
+                "effectiveAccessSearchPlaceholder": "ابحث بمعرّف الحساب أو البريد أو مستوى الصلاحية...",
+                "noEffectiveAccounts": "لم يُرجع الخادم وصولاً فعّالاً لأي حساب لهذا النظام.",
                 "accessType": "نوع الوصول",
                 "relatedIds": "الجهة/الجهات المرتبطة",
                 "accessRight": "صلاحية الوصول",
@@ -223,7 +234,18 @@
                 "notAuthorizedTitle": "غير مصرح",
                 "notAuthorizedMessage": "ليس لديك صلاحية لفتح هذه الصفحة.",
                 "fileSystemNotFoundTitle": "نظام الملفات غير موجود",
-                "fileSystemNotFoundMessage": "هذا النظام غير مدرج في القائمة أو غير متاح. حدّث القائمة أو اختر نظامًا آخر."
+                "fileSystemNotFoundMessage": "هذا النظام غير مدرج في القائمة أو غير متاح. حدّث القائمة أو اختر نظامًا آخر.",
+                "relatedTargetsErrors": {
+                    "erp11255": "طلب القائمة يستخدم حجم صفحة غير صالح.",
+                    "erp11260": "معرّف الكيان غير صالح.",
+                    "erp11261": "لا يُسمح بهذا الإجراء للكيان المحدد ضمن التسلسل الهرمي.",
+                    "erp11262": "الكيان مفعّل بالفعل.",
+                    "erp11263": "الكيان معطّل بالفعل.",
+                    "erp11270": "ما زال للكيان بيانات مرتبطة ولا يمكن إزالته بهذه الطريقة.",
+                    "erp11287": "معرّف الكيان غير صالح لهذا الطلب.",
+                    "erp11288": "معرّف حساب واحد أو أكثر غير صالح.",
+                    "erp11290": "معرّف المجموعة أو الدور غير صالح."
+                }
             }
         },
         "permissions": {

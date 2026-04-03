@@ -8,7 +8,6 @@ import { VirtualDrivesService } from 'src/app/modules/system-administration/syst
 import { FileSystemsService } from '../services/file-systems.service';
 import { VirtualDrivesFilters } from 'src/app/modules/system-administration/system-storage-management/models/virtual-drive.model';
 import { FileSystemListItem, FileSystemOwnerContext } from '../models/file-system.model';
-import { formatBytes, getFileSystemErrorDetail } from '../shared/file-system-helpers';
 import { FileSystemPermissionsAdminService } from '../services/file-system-permissions-admin.service';
 
 
@@ -28,6 +27,7 @@ export class FileSystemsSectionComponent implements OnInit {
   loadingFileSystems = false;
 
   permissionCounts: Record<number, number> = {};
+  effectiveAccountCounts: Record<number, number> = {};
   loadingPermissionCounts = false;
   driveOptions: { id: number; name: string }[] = [];
 
@@ -87,7 +87,7 @@ export class FileSystemsSectionComponent implements OnInit {
 
   get fileSystemsTableValue(): FileSystemListItem[] {
     if (this.loadingFileSystems && this.fileSystems.length === 0) {
-      return Array(5).fill(null).map(() => ({
+      return Array(this.fileSystemsTableRows).fill(null).map(() => ({
         file_System_ID: 0,
         name: '',
         type: 0,
@@ -128,7 +128,7 @@ export class FileSystemsSectionComponent implements OnInit {
     this.virtualDrivesService.listDrives(filters).subscribe({
       next: (response: any) => {
         if (!response?.success) {
-          this.handleError('loadDrives', response);
+          this.handleBusinessError('loadDrives', response);
           this.listFileSystems();
           return;
         }
@@ -157,10 +157,9 @@ export class FileSystemsSectionComponent implements OnInit {
       activeOnly: this.activeOnlyFilter
     }).subscribe({
       next: (response: any) => {
-        console.log('response listFileSystems: ', response);
         this.loadingFileSystems = false;
         if (!response?.success) {
-          this.handleError('list', response);
+          this.handleBusinessError('list', response);
           return;
         }
         const list = response.message ?? [];
@@ -177,34 +176,58 @@ export class FileSystemsSectionComponent implements OnInit {
     return this.permissionCounts[row.file_System_ID] ?? 0;
   }
 
+  getEffectiveAccountsCount(row: FileSystemListItem): number {
+    return this.effectiveAccountCounts[row.file_System_ID] ?? 0;
+  }
+
   private loadPermissionCountsForList(): void {
     const activeIds = this.fileSystems
       .filter((fs) => this.isFileSystemActive(fs))
       .map((fs) => fs.file_System_ID);
     this.permissionCounts = {};
+    this.effectiveAccountCounts = {};
     if (activeIds.length === 0) {
       this.loadingPermissionCounts = false;
       return;
     }
     this.loadingPermissionCounts = true;
-    void this.fetchPermissionCountsForIds(activeIds).then((counts) => {
-      this.permissionCounts = counts;
+    void this.fetchPermissionCountsForIds(activeIds).then(({ ruleCounts, effectiveAccountCounts }) => {
+      this.permissionCounts = ruleCounts;
+      this.effectiveAccountCounts = effectiveAccountCounts;
       this.loadingPermissionCounts = false;
     });
   }
 
-  private async fetchPermissionCountsForIds(ids: number[]): Promise<Record<number, number>> {
-    const result: Record<number, number> = {};
+  private async fetchPermissionCountsForIds(ids: number[]): Promise<{
+    ruleCounts: Record<number, number>;
+    effectiveAccountCounts: Record<number, number>;
+  }> {
+    const ruleCounts: Record<number, number> = {};
+    const effectiveAccountCounts: Record<number, number> = {};
     await Promise.all(
       ids.map(async (id) => {
-        const response: any = await firstValueFrom(
-          this.fileSystemPermissionsAdminService.listFileSystemPermissions(id)
-        );
-        const mapped = this.fileSystemPermissionsAdminService.mapPermissionsResponse(response);
-        result[id] = mapped.permissions.length;
+        let rules = 0;
+        let accounts = 0;
+        try {
+          const response: any = await firstValueFrom(
+            this.fileSystemPermissionsAdminService.listFileSystemPermissions(id)
+          );
+          if (response?.success) {
+            const mapped = this.fileSystemPermissionsAdminService.mapPermissionsResponse(response);
+            rules = mapped.permissions.length;
+            const acc = mapped.accountsAccessRights;
+            accounts =
+              acc && typeof acc === 'object' && !Array.isArray(acc) ? Object.keys(acc).length : 0;
+          }
+        } catch {
+          rules = 0;
+          accounts = 0;
+        }
+        ruleCounts[id] = rules;
+        effectiveAccountCounts[id] = accounts;
       })
     );
-    return result;
+    return { ruleCounts, effectiveAccountCounts };
   }
   // #endregion
 
@@ -215,7 +238,7 @@ export class FileSystemsSectionComponent implements OnInit {
       next: (response: any) => {
         this.loadingTypes = false;
         if (!response?.success) {
-          this.handleError('loadTypes', response);
+          this.handleBusinessError('loadTypes', response);
           return;
         }
         const list = response.message ?? [];
@@ -252,16 +275,6 @@ export class FileSystemsSectionComponent implements OnInit {
     return row?.name ?? '—';
   }
 
-  getTypeName(row: FileSystemListItem): string {
-    const type = this.fileSystemTypes.find((t) => t.id === (row?.type ?? 0));
-    return type?.name ?? '—';
-  }
-
-  getTypeDescription(row: FileSystemListItem): string {
-    const type = this.fileSystemTypes.find((t) => t.id === (row?.type ?? 0));
-    return type?.description ?? '';
-  }
-
   getDriveName(row: FileSystemListItem): string {
     const drive = this.driveOptions.find((d) => d.id === (row?.drive_ID ?? 0));
     return drive?.name ?? '—';
@@ -284,19 +297,12 @@ export class FileSystemsSectionComponent implements OnInit {
     if (id <= 0 || !this.isFileSystemActive(row)) {
       return;
     }
+    const fileSystemName = String(row?.name ?? '').trim();
     void this.router.navigate(
       ['/entity-administration/entity-storage-management/file-systems/permissions'],
-      { queryParams: { fileSystemId: id } }
+      { queryParams: { fileSystemId: id, fileSystemName } }
     );
   }
-
-  goToFileSystemPermissionsAdminPage(): void {
-    void this.router.navigate(
-      ['/entity-administration/entity-storage-management/file-systems/permissions'],
-      { queryParams: { selectFirst: '1' } }
-    );
-  }
-
 
   buildFileSystemMenuItems(): void {
     const row = this.selectedFileSystemForMenu;
@@ -397,12 +403,12 @@ export class FileSystemsSectionComponent implements OnInit {
       next: (response: any) => {
         this.restoringDeletedFileSystem = false;
         if (!response?.success) {
-          this.handleError('restoreDeleted', response);
+          this.handleBusinessError('restoreDeleted', response);
           return;
         }
         this.messageService.add({
           severity: 'success',
-          summary: this.translate.getInstant('fileSystem.companyStorage.restore'),
+          summary: this.translate.getInstant('common.success'),
           detail: this.translate.getInstant('fileSystem.entityAdmin.restoreFileSystemSuccess')
         });
         this.hideRestoreDeletedConfirm();
@@ -420,12 +426,12 @@ export class FileSystemsSectionComponent implements OnInit {
       next: (response: any) => {
         this.restoringRecycleBin = false;
         if (!response?.success) {
-          this.handleError('restoreRecycleBin', response);
+          this.handleBusinessError('restoreRecycleBin', response);
           return;
         }
         this.messageService.add({
           severity: 'success',
-          summary: this.translate.getInstant('fileSystem.companyStorage.restore'),
+          summary: this.translate.getInstant('common.success'),
           detail: this.translate.getInstant('fileSystem.companyStorage.restoreSuccess')
         });
         this.hideRestoreRecycleBinConfirm();
@@ -443,12 +449,12 @@ export class FileSystemsSectionComponent implements OnInit {
       next: (response: any) => {
         this.clearingRecycleBin = false;
         if (!response?.success) {
-          this.handleError('clearRecycleBin', response);
+          this.handleBusinessError('clearRecycleBin', response);
           return;
         }
         this.messageService.add({
           severity: 'success',
-          summary: this.translate.getInstant('fileSystem.companyStorage.clearRecycleBin'),
+          summary: this.translate.getInstant('common.success'),
           detail: this.translate.getInstant('fileSystem.companyStorage.recycleBinCleared')
         });
         this.hideClearRecycleBinConfirm();
@@ -456,14 +462,6 @@ export class FileSystemsSectionComponent implements OnInit {
       },
       error: () => this.clearingRecycleBin = false
     });
-  }
-
-  handleError(operation: string, response: any): void {
-    const detail = getFileSystemErrorDetail(response, (key) => this.translate.getInstant(key));
-    if (detail) {
-      const summary = this.translate.getInstant('fileSystem.admin.errorSummary');
-      this.messageService.add({ severity: 'error', summary, detail });
-    }
   }
 
   showCreateDialog(): void {
@@ -516,10 +514,14 @@ export class FileSystemsSectionComponent implements OnInit {
       next: (response: any) => {
         this.creatingFileSystem = false;
         if (!response?.success) {
-          this.handleError('create', response);
+          this.handleBusinessError('create', response);
           return;
         }
-        this.messageService.add({ severity: 'success', summary: this.translate.getInstant('fileSystem.companyStorage.create'), detail: this.translate.getInstant('fileSystem.admin.createFileSystemSuccess') });
+        this.messageService.add({
+          severity: 'success',
+          summary: this.translate.getInstant('common.success'),
+          detail: this.translate.getInstant('fileSystem.admin.createFileSystemSuccess')
+        });
         this.hideCreateDialog();
         this.listFileSystems();
       },
@@ -556,10 +558,14 @@ export class FileSystemsSectionComponent implements OnInit {
       next: (response: any) => {
         this.savingFileSystem = false;
         if (!response?.success) {
-          this.handleError('update', response);
+          this.handleBusinessError('update', response);
           return;
         }
-        this.messageService.add({ severity: 'success', summary: this.translate.getInstant('fileSystem.companyStorage.save'), detail: this.translate.getInstant('fileSystem.admin.updateFileSystemSuccess') });
+        this.messageService.add({
+          severity: 'success',
+          summary: this.translate.getInstant('common.success'),
+          detail: this.translate.getInstant('fileSystem.admin.updateFileSystemSuccess')
+        });
         this.hideEditDialog();
         this.listFileSystems();
       },
@@ -576,7 +582,7 @@ export class FileSystemsSectionComponent implements OnInit {
       next: (response: any) => {
         this.detailsLoading = false;
         if (!response?.success) {
-          this.handleError('details', response);
+          this.handleBusinessError('details', response);
           return;
         }
         const d = response.message;
@@ -621,15 +627,806 @@ export class FileSystemsSectionComponent implements OnInit {
       next: (response: any) => {
         this.deletingFileSystem = false;
         if (!response?.success) {
-          this.handleError('delete', response);
+          this.handleBusinessError('delete', response);
           return;
         }
-        this.messageService.add({ severity: 'success', summary: this.translate.getInstant('fileSystem.companyStorage.delete'), detail: this.translate.getInstant('fileSystem.admin.updateFileSystemSuccess') });
+        this.messageService.add({
+          severity: 'success',
+          summary: this.translate.getInstant('common.success'),
+          detail: this.translate.getInstant('fileSystem.entityAdmin.deleteFileSystemSuccess')
+        });
         this.hideDeleteConfirm();
         this.listFileSystems();
       },
       error: () => this.deletingFileSystem = false
     });
+  }
+
+  private getFileSystemsBusinessErrorCode(response: any): string {
+    let code = (response?.errorCode ?? response?.message?.code ?? response?.code ?? '').toString();
+    if (!code && typeof response?.message === 'string' && /^(ERP|FWA)\d+$/.test(response.message)) {
+      code = response.message;
+    }
+    return code;
+  }
+
+  private handleBusinessError(
+    context:
+      | 'loadDrives'
+      | 'list'
+      | 'loadTypes'
+      | 'create'
+      | 'update'
+      | 'details'
+      | 'delete'
+      | 'restoreDeleted'
+      | 'restoreRecycleBin'
+      | 'clearRecycleBin',
+    response: any
+  ): void {
+    const code = this.getFileSystemsBusinessErrorCode(response);
+    let detail = '';
+
+    switch (context) {
+      case 'loadDrives':
+        detail = this.getLoadDrivesErrorMessage(code) || '';
+        break;
+      case 'list':
+        detail = this.getListFileSystemsErrorMessage(code) || '';
+        break;
+      case 'loadTypes':
+        detail = this.getLoadTypesErrorMessage(code) || '';
+        break;
+      case 'create':
+        detail = this.getCreateFileSystemErrorMessage(code) || '';
+        break;
+      case 'update':
+        detail = this.getUpdateFileSystemErrorMessage(code) || '';
+        break;
+      case 'details':
+        detail = this.getFileSystemDetailsErrorMessage(code) || '';
+        break;
+      case 'delete':
+        detail = this.getDeleteFileSystemErrorMessage(code) || '';
+        break;
+      case 'restoreDeleted':
+        detail = this.getRestoreDeletedFileSystemErrorMessage(code) || '';
+        break;
+      case 'restoreRecycleBin':
+        detail = this.getRestoreRecycleBinErrorMessage(code) || '';
+        break;
+      case 'clearRecycleBin':
+        detail = this.getClearRecycleBinErrorMessage(code) || '';
+        break;
+      default:
+        detail = '';
+    }
+
+    if (detail) {
+      this.messageService.add({
+        severity: 'error',
+        summary: this.translate.getInstant('common.error'),
+        detail
+      });
+    }
+
+    if (context === 'list') {
+      this.loadingFileSystems = false;
+    }
+  }
+
+  private getLoadDrivesErrorMessage(code: string): string | null {
+    switch (code) {
+      case 'ERP12000':
+        return this.translate.getInstant('fileSystem.admin.virtualDrivesListErrorAccessDenied');
+      case 'ERP12005':
+        return this.translate.getInstant('fileSystem.admin.virtualDrivesListErrorMissingToken');
+      case 'ERP12006':
+        return this.translate.getInstant('fileSystem.admin.virtualDrivesListErrorInvalidToken');
+      case 'ERP12012':
+        return this.translate.getInstant('fileSystem.admin.virtualDrivesListErrorDatabase');
+      case 'ERP12248':
+        return this.translate.getInstant('fileSystem.admin.virtualDrivesListErrorInvalidEntityFilter');
+      case 'ERP12290':
+        return this.translate.getInstant('fileSystem.admin.virtualDrivesListErrorInvalidDriveId');
+      case 'ERP12292':
+        return this.translate.getInstant('fileSystem.admin.virtualDrivesListErrorAccessDeniedOwner');
+      default:
+        return null;
+    }
+  }
+
+  private getListFileSystemsErrorMessage(code: string): string | null {
+    switch (code) {
+      case 'ERP12000':
+        return this.translate.getInstant('fileSystem.admin.errorAccessDenied');
+      case 'ERP12001':
+        return this.translate.getInstant('fileSystem.admin.errorBlockedIpPermanent');
+      case 'ERP12002':
+        return this.translate.getInstant('fileSystem.admin.errorBlockedIpTemporary');
+      case 'ERP12005':
+        return this.translate.getInstant('fileSystem.admin.errorMissingStorageToken');
+      case 'ERP12006':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidStorageToken');
+      case 'ERP12007':
+        return this.translate.getInstant('fileSystem.admin.errorAccessDeniedAction');
+      case 'ERP12008':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidRequestRouting');
+      case 'ERP12009':
+        return this.translate.getInstant('fileSystem.admin.errorRequestUnderDevelopment');
+      case 'ERP12010':
+        return this.translate.getInstant('fileSystem.admin.errorResponseManagement');
+      case 'ERP12011':
+        return this.translate.getInstant('fileSystem.admin.errorApiCallExecution');
+      case 'ERP12012':
+        return this.translate.getInstant('fileSystem.admin.errorFileServerDatabase');
+      case 'ERP12240':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileId');
+      case 'ERP12248':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidEntityFilter');
+      case 'ERP12250':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFolderId');
+      case 'ERP12260':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemId');
+      case 'ERP12263':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileAllocationType');
+      case 'ERP12270':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemAccessToken');
+      case 'ERP12280':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileAllocation');
+      case 'ERP12290':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidDriveId');
+      case 'ERP12291':
+        return this.translate.getInstant('fileSystem.admin.errorDriveInactive');
+      case 'ERP12292':
+        return this.translate.getInstant('fileSystem.admin.errorAccessDeniedDriveOwner');
+      case 'ERP12293':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidAccessType');
+      case 'ERP12294':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidAccessRight');
+      case 'ERP12295':
+        return this.translate.getInstant('fileSystem.admin.errorNotEnoughFileSystemAccessRight');
+      case 'ERP12296':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidAccountId');
+      case 'ERP12297':
+        return this.translate.getInstant('fileSystem.admin.errorOwnerOrFullRequired');
+      case 'ERP12298':
+        return this.translate.getInstant('fileSystem.admin.errorActionNotAllowedOnReferenceAllocation');
+      case 'ERP12299':
+        return this.translate.getInstant('fileSystem.admin.errorActionNotAllowedOnCopyAllocation');
+      case 'ERP12251':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'ERP12252':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'ERP12255':
+        return this.translate.getInstant('fileSystem.admin.errorFileSystemInUse');
+      case 'ERP12267':
+        return this.translate.getInstant('fileSystem.folderManagement.errorInvalidRestoreSelection');
+      case 'FWA12251':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'FWA12252':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'FWA12255':
+        return this.translate.getInstant('fileSystem.admin.errorFileSystemInUse');
+      default:
+        return null;
+    }
+  }
+
+  private getLoadTypesErrorMessage(code: string): string | null {
+    switch (code) {
+      case 'ERP12000':
+        return this.translate.getInstant('fileSystem.admin.errorAccessDenied');
+      case 'ERP12001':
+        return this.translate.getInstant('fileSystem.admin.errorBlockedIpPermanent');
+      case 'ERP12002':
+        return this.translate.getInstant('fileSystem.admin.errorBlockedIpTemporary');
+      case 'ERP12005':
+        return this.translate.getInstant('fileSystem.admin.errorMissingStorageToken');
+      case 'ERP12006':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidStorageToken');
+      case 'ERP12007':
+        return this.translate.getInstant('fileSystem.admin.errorAccessDeniedAction');
+      case 'ERP12008':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidRequestRouting');
+      case 'ERP12009':
+        return this.translate.getInstant('fileSystem.admin.errorRequestUnderDevelopment');
+      case 'ERP12010':
+        return this.translate.getInstant('fileSystem.admin.errorResponseManagement');
+      case 'ERP12011':
+        return this.translate.getInstant('fileSystem.admin.errorApiCallExecution');
+      case 'ERP12012':
+        return this.translate.getInstant('fileSystem.admin.errorFileServerDatabase');
+      case 'ERP12240':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileId');
+      case 'ERP12248':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidEntityFilter');
+      case 'ERP12250':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFolderId');
+      case 'ERP12260':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemId');
+      case 'ERP12263':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileAllocationType');
+      case 'ERP12270':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemAccessToken');
+      case 'ERP12280':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileAllocation');
+      case 'ERP12290':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidDriveId');
+      case 'ERP12291':
+        return this.translate.getInstant('fileSystem.admin.errorDriveInactive');
+      case 'ERP12292':
+        return this.translate.getInstant('fileSystem.admin.errorAccessDeniedDriveOwner');
+      case 'ERP12293':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidAccessType');
+      case 'ERP12294':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidAccessRight');
+      case 'ERP12295':
+        return this.translate.getInstant('fileSystem.admin.errorNotEnoughFileSystemAccessRight');
+      case 'ERP12296':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidAccountId');
+      case 'ERP12297':
+        return this.translate.getInstant('fileSystem.admin.errorOwnerOrFullRequired');
+      case 'ERP12298':
+        return this.translate.getInstant('fileSystem.admin.errorActionNotAllowedOnReferenceAllocation');
+      case 'ERP12299':
+        return this.translate.getInstant('fileSystem.admin.errorActionNotAllowedOnCopyAllocation');
+      case 'ERP12251':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'ERP12252':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'ERP12255':
+        return this.translate.getInstant('fileSystem.admin.errorFileSystemInUse');
+      case 'ERP12267':
+        return this.translate.getInstant('fileSystem.folderManagement.errorInvalidRestoreSelection');
+      case 'FWA12251':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'FWA12252':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'FWA12255':
+        return this.translate.getInstant('fileSystem.admin.errorFileSystemInUse');
+      default:
+        return null;
+    }
+  }
+
+  private getCreateFileSystemErrorMessage(code: string): string | null {
+    switch (code) {
+      case 'ERP12000':
+        return this.translate.getInstant('fileSystem.admin.errorAccessDenied');
+      case 'ERP12001':
+        return this.translate.getInstant('fileSystem.admin.errorBlockedIpPermanent');
+      case 'ERP12002':
+        return this.translate.getInstant('fileSystem.admin.errorBlockedIpTemporary');
+      case 'ERP12005':
+        return this.translate.getInstant('fileSystem.admin.errorMissingStorageToken');
+      case 'ERP12006':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidStorageToken');
+      case 'ERP12007':
+        return this.translate.getInstant('fileSystem.admin.errorAccessDeniedAction');
+      case 'ERP12008':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidRequestRouting');
+      case 'ERP12009':
+        return this.translate.getInstant('fileSystem.admin.errorRequestUnderDevelopment');
+      case 'ERP12010':
+        return this.translate.getInstant('fileSystem.admin.errorResponseManagement');
+      case 'ERP12011':
+        return this.translate.getInstant('fileSystem.admin.errorApiCallExecution');
+      case 'ERP12012':
+        return this.translate.getInstant('fileSystem.admin.errorFileServerDatabase');
+      case 'ERP12240':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileId');
+      case 'ERP12248':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidEntityFilter');
+      case 'ERP12250':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFolderId');
+      case 'ERP12260':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemId');
+      case 'ERP12263':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileAllocationType');
+      case 'ERP12270':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemAccessToken');
+      case 'ERP12280':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileAllocation');
+      case 'ERP12290':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidDriveId');
+      case 'ERP12291':
+        return this.translate.getInstant('fileSystem.admin.errorDriveInactive');
+      case 'ERP12292':
+        return this.translate.getInstant('fileSystem.admin.errorAccessDeniedDriveOwner');
+      case 'ERP12293':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidAccessType');
+      case 'ERP12294':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidAccessRight');
+      case 'ERP12295':
+        return this.translate.getInstant('fileSystem.admin.errorNotEnoughFileSystemAccessRight');
+      case 'ERP12296':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidAccountId');
+      case 'ERP12297':
+        return this.translate.getInstant('fileSystem.admin.errorOwnerOrFullRequired');
+      case 'ERP12298':
+        return this.translate.getInstant('fileSystem.admin.errorActionNotAllowedOnReferenceAllocation');
+      case 'ERP12299':
+        return this.translate.getInstant('fileSystem.admin.errorActionNotAllowedOnCopyAllocation');
+      case 'ERP12251':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'ERP12252':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'ERP12255':
+        return this.translate.getInstant('fileSystem.admin.errorFileSystemInUse');
+      case 'ERP12267':
+        return this.translate.getInstant('fileSystem.folderManagement.errorInvalidRestoreSelection');
+      case 'FWA12251':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'FWA12252':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'FWA12255':
+        return this.translate.getInstant('fileSystem.admin.errorFileSystemInUse');
+      default:
+        return null;
+    }
+  }
+
+  private getUpdateFileSystemErrorMessage(code: string): string | null {
+    switch (code) {
+      case 'ERP12000':
+        return this.translate.getInstant('fileSystem.admin.errorAccessDenied');
+      case 'ERP12001':
+        return this.translate.getInstant('fileSystem.admin.errorBlockedIpPermanent');
+      case 'ERP12002':
+        return this.translate.getInstant('fileSystem.admin.errorBlockedIpTemporary');
+      case 'ERP12005':
+        return this.translate.getInstant('fileSystem.admin.errorMissingStorageToken');
+      case 'ERP12006':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidStorageToken');
+      case 'ERP12007':
+        return this.translate.getInstant('fileSystem.admin.errorAccessDeniedAction');
+      case 'ERP12008':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidRequestRouting');
+      case 'ERP12009':
+        return this.translate.getInstant('fileSystem.admin.errorRequestUnderDevelopment');
+      case 'ERP12010':
+        return this.translate.getInstant('fileSystem.admin.errorResponseManagement');
+      case 'ERP12011':
+        return this.translate.getInstant('fileSystem.admin.errorApiCallExecution');
+      case 'ERP12012':
+        return this.translate.getInstant('fileSystem.admin.errorFileServerDatabase');
+      case 'ERP12240':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileId');
+      case 'ERP12248':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidEntityFilter');
+      case 'ERP12250':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFolderId');
+      case 'ERP12260':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemId');
+      case 'ERP12263':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileAllocationType');
+      case 'ERP12270':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemAccessToken');
+      case 'ERP12280':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileAllocation');
+      case 'ERP12290':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidDriveId');
+      case 'ERP12291':
+        return this.translate.getInstant('fileSystem.admin.errorDriveInactive');
+      case 'ERP12292':
+        return this.translate.getInstant('fileSystem.admin.errorAccessDeniedDriveOwner');
+      case 'ERP12293':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidAccessType');
+      case 'ERP12294':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidAccessRight');
+      case 'ERP12295':
+        return this.translate.getInstant('fileSystem.admin.errorNotEnoughFileSystemAccessRight');
+      case 'ERP12296':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidAccountId');
+      case 'ERP12297':
+        return this.translate.getInstant('fileSystem.admin.errorOwnerOrFullRequired');
+      case 'ERP12298':
+        return this.translate.getInstant('fileSystem.admin.errorActionNotAllowedOnReferenceAllocation');
+      case 'ERP12299':
+        return this.translate.getInstant('fileSystem.admin.errorActionNotAllowedOnCopyAllocation');
+      case 'ERP12251':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'ERP12252':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'ERP12255':
+        return this.translate.getInstant('fileSystem.admin.errorFileSystemInUse');
+      case 'ERP12267':
+        return this.translate.getInstant('fileSystem.folderManagement.errorInvalidRestoreSelection');
+      case 'FWA12251':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'FWA12252':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'FWA12255':
+        return this.translate.getInstant('fileSystem.admin.errorFileSystemInUse');
+      default:
+        return null;
+    }
+  }
+
+  private getFileSystemDetailsErrorMessage(code: string): string | null {
+    switch (code) {
+      case 'ERP12000':
+        return this.translate.getInstant('fileSystem.admin.errorAccessDenied');
+      case 'ERP12001':
+        return this.translate.getInstant('fileSystem.admin.errorBlockedIpPermanent');
+      case 'ERP12002':
+        return this.translate.getInstant('fileSystem.admin.errorBlockedIpTemporary');
+      case 'ERP12005':
+        return this.translate.getInstant('fileSystem.admin.errorMissingStorageToken');
+      case 'ERP12006':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidStorageToken');
+      case 'ERP12007':
+        return this.translate.getInstant('fileSystem.admin.errorAccessDeniedAction');
+      case 'ERP12008':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidRequestRouting');
+      case 'ERP12009':
+        return this.translate.getInstant('fileSystem.admin.errorRequestUnderDevelopment');
+      case 'ERP12010':
+        return this.translate.getInstant('fileSystem.admin.errorResponseManagement');
+      case 'ERP12011':
+        return this.translate.getInstant('fileSystem.admin.errorApiCallExecution');
+      case 'ERP12012':
+        return this.translate.getInstant('fileSystem.admin.errorFileServerDatabase');
+      case 'ERP12240':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileId');
+      case 'ERP12248':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidEntityFilter');
+      case 'ERP12250':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFolderId');
+      case 'ERP12260':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemId');
+      case 'ERP12263':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileAllocationType');
+      case 'ERP12270':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemAccessToken');
+      case 'ERP12280':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileAllocation');
+      case 'ERP12290':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidDriveId');
+      case 'ERP12291':
+        return this.translate.getInstant('fileSystem.admin.errorDriveInactive');
+      case 'ERP12292':
+        return this.translate.getInstant('fileSystem.admin.errorAccessDeniedDriveOwner');
+      case 'ERP12293':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidAccessType');
+      case 'ERP12294':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidAccessRight');
+      case 'ERP12295':
+        return this.translate.getInstant('fileSystem.admin.errorNotEnoughFileSystemAccessRight');
+      case 'ERP12296':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidAccountId');
+      case 'ERP12297':
+        return this.translate.getInstant('fileSystem.admin.errorOwnerOrFullRequired');
+      case 'ERP12298':
+        return this.translate.getInstant('fileSystem.admin.errorActionNotAllowedOnReferenceAllocation');
+      case 'ERP12299':
+        return this.translate.getInstant('fileSystem.admin.errorActionNotAllowedOnCopyAllocation');
+      case 'ERP12251':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'ERP12252':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'ERP12255':
+        return this.translate.getInstant('fileSystem.admin.errorFileSystemInUse');
+      case 'ERP12267':
+        return this.translate.getInstant('fileSystem.folderManagement.errorInvalidRestoreSelection');
+      case 'FWA12251':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'FWA12252':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'FWA12255':
+        return this.translate.getInstant('fileSystem.admin.errorFileSystemInUse');
+      default:
+        return null;
+    }
+  }
+
+  private getDeleteFileSystemErrorMessage(code: string): string | null {
+    switch (code) {
+      case 'ERP12000':
+        return this.translate.getInstant('fileSystem.admin.errorAccessDenied');
+      case 'ERP12001':
+        return this.translate.getInstant('fileSystem.admin.errorBlockedIpPermanent');
+      case 'ERP12002':
+        return this.translate.getInstant('fileSystem.admin.errorBlockedIpTemporary');
+      case 'ERP12005':
+        return this.translate.getInstant('fileSystem.admin.errorMissingStorageToken');
+      case 'ERP12006':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidStorageToken');
+      case 'ERP12007':
+        return this.translate.getInstant('fileSystem.admin.errorAccessDeniedAction');
+      case 'ERP12008':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidRequestRouting');
+      case 'ERP12009':
+        return this.translate.getInstant('fileSystem.admin.errorRequestUnderDevelopment');
+      case 'ERP12010':
+        return this.translate.getInstant('fileSystem.admin.errorResponseManagement');
+      case 'ERP12011':
+        return this.translate.getInstant('fileSystem.admin.errorApiCallExecution');
+      case 'ERP12012':
+        return this.translate.getInstant('fileSystem.admin.errorFileServerDatabase');
+      case 'ERP12240':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileId');
+      case 'ERP12248':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidEntityFilter');
+      case 'ERP12250':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFolderId');
+      case 'ERP12260':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemId');
+      case 'ERP12263':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileAllocationType');
+      case 'ERP12270':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemAccessToken');
+      case 'ERP12280':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileAllocation');
+      case 'ERP12290':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidDriveId');
+      case 'ERP12291':
+        return this.translate.getInstant('fileSystem.admin.errorDriveInactive');
+      case 'ERP12292':
+        return this.translate.getInstant('fileSystem.admin.errorAccessDeniedDriveOwner');
+      case 'ERP12293':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidAccessType');
+      case 'ERP12294':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidAccessRight');
+      case 'ERP12295':
+        return this.translate.getInstant('fileSystem.admin.errorNotEnoughFileSystemAccessRight');
+      case 'ERP12296':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidAccountId');
+      case 'ERP12297':
+        return this.translate.getInstant('fileSystem.admin.errorOwnerOrFullRequired');
+      case 'ERP12298':
+        return this.translate.getInstant('fileSystem.admin.errorActionNotAllowedOnReferenceAllocation');
+      case 'ERP12299':
+        return this.translate.getInstant('fileSystem.admin.errorActionNotAllowedOnCopyAllocation');
+      case 'ERP12251':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'ERP12252':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'ERP12255':
+        return this.translate.getInstant('fileSystem.admin.errorFileSystemInUse');
+      case 'ERP12267':
+        return this.translate.getInstant('fileSystem.folderManagement.errorInvalidRestoreSelection');
+      case 'FWA12251':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'FWA12252':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'FWA12255':
+        return this.translate.getInstant('fileSystem.admin.errorFileSystemInUse');
+      default:
+        return null;
+    }
+  }
+
+  private getRestoreDeletedFileSystemErrorMessage(code: string): string | null {
+    switch (code) {
+      case 'ERP12000':
+        return this.translate.getInstant('fileSystem.admin.errorAccessDenied');
+      case 'ERP12001':
+        return this.translate.getInstant('fileSystem.admin.errorBlockedIpPermanent');
+      case 'ERP12002':
+        return this.translate.getInstant('fileSystem.admin.errorBlockedIpTemporary');
+      case 'ERP12005':
+        return this.translate.getInstant('fileSystem.admin.errorMissingStorageToken');
+      case 'ERP12006':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidStorageToken');
+      case 'ERP12007':
+        return this.translate.getInstant('fileSystem.admin.errorAccessDeniedAction');
+      case 'ERP12008':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidRequestRouting');
+      case 'ERP12009':
+        return this.translate.getInstant('fileSystem.admin.errorRequestUnderDevelopment');
+      case 'ERP12010':
+        return this.translate.getInstant('fileSystem.admin.errorResponseManagement');
+      case 'ERP12011':
+        return this.translate.getInstant('fileSystem.admin.errorApiCallExecution');
+      case 'ERP12012':
+        return this.translate.getInstant('fileSystem.admin.errorFileServerDatabase');
+      case 'ERP12240':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileId');
+      case 'ERP12248':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidEntityFilter');
+      case 'ERP12250':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFolderId');
+      case 'ERP12260':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemId');
+      case 'ERP12263':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileAllocationType');
+      case 'ERP12270':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemAccessToken');
+      case 'ERP12280':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileAllocation');
+      case 'ERP12290':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidDriveId');
+      case 'ERP12291':
+        return this.translate.getInstant('fileSystem.admin.errorDriveInactive');
+      case 'ERP12292':
+        return this.translate.getInstant('fileSystem.admin.errorAccessDeniedDriveOwner');
+      case 'ERP12293':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidAccessType');
+      case 'ERP12294':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidAccessRight');
+      case 'ERP12295':
+        return this.translate.getInstant('fileSystem.admin.errorNotEnoughFileSystemAccessRight');
+      case 'ERP12296':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidAccountId');
+      case 'ERP12297':
+        return this.translate.getInstant('fileSystem.admin.errorOwnerOrFullRequired');
+      case 'ERP12298':
+        return this.translate.getInstant('fileSystem.admin.errorActionNotAllowedOnReferenceAllocation');
+      case 'ERP12299':
+        return this.translate.getInstant('fileSystem.admin.errorActionNotAllowedOnCopyAllocation');
+      case 'ERP12251':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'ERP12252':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'ERP12255':
+        return this.translate.getInstant('fileSystem.admin.errorFileSystemInUse');
+      case 'ERP12267':
+        return this.translate.getInstant('fileSystem.folderManagement.errorInvalidRestoreSelection');
+      case 'FWA12251':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'FWA12252':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'FWA12255':
+        return this.translate.getInstant('fileSystem.admin.errorFileSystemInUse');
+      default:
+        return null;
+    }
+  }
+
+  private getRestoreRecycleBinErrorMessage(code: string): string | null {
+    switch (code) {
+      case 'ERP12000':
+        return this.translate.getInstant('fileSystem.admin.errorAccessDenied');
+      case 'ERP12001':
+        return this.translate.getInstant('fileSystem.admin.errorBlockedIpPermanent');
+      case 'ERP12002':
+        return this.translate.getInstant('fileSystem.admin.errorBlockedIpTemporary');
+      case 'ERP12005':
+        return this.translate.getInstant('fileSystem.admin.errorMissingStorageToken');
+      case 'ERP12006':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidStorageToken');
+      case 'ERP12007':
+        return this.translate.getInstant('fileSystem.admin.errorAccessDeniedAction');
+      case 'ERP12008':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidRequestRouting');
+      case 'ERP12009':
+        return this.translate.getInstant('fileSystem.admin.errorRequestUnderDevelopment');
+      case 'ERP12010':
+        return this.translate.getInstant('fileSystem.admin.errorResponseManagement');
+      case 'ERP12011':
+        return this.translate.getInstant('fileSystem.admin.errorApiCallExecution');
+      case 'ERP12012':
+        return this.translate.getInstant('fileSystem.admin.errorFileServerDatabase');
+      case 'ERP12240':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileId');
+      case 'ERP12248':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidEntityFilter');
+      case 'ERP12250':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFolderId');
+      case 'ERP12260':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemId');
+      case 'ERP12263':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileAllocationType');
+      case 'ERP12270':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemAccessToken');
+      case 'ERP12280':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileAllocation');
+      case 'ERP12290':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidDriveId');
+      case 'ERP12291':
+        return this.translate.getInstant('fileSystem.admin.errorDriveInactive');
+      case 'ERP12292':
+        return this.translate.getInstant('fileSystem.admin.errorAccessDeniedDriveOwner');
+      case 'ERP12293':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidAccessType');
+      case 'ERP12294':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidAccessRight');
+      case 'ERP12295':
+        return this.translate.getInstant('fileSystem.admin.errorNotEnoughFileSystemAccessRight');
+      case 'ERP12296':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidAccountId');
+      case 'ERP12297':
+        return this.translate.getInstant('fileSystem.admin.errorOwnerOrFullRequired');
+      case 'ERP12298':
+        return this.translate.getInstant('fileSystem.admin.errorActionNotAllowedOnReferenceAllocation');
+      case 'ERP12299':
+        return this.translate.getInstant('fileSystem.admin.errorActionNotAllowedOnCopyAllocation');
+      case 'ERP12251':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'ERP12252':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'ERP12255':
+        return this.translate.getInstant('fileSystem.admin.errorFileSystemInUse');
+      case 'ERP12267':
+        return this.translate.getInstant('fileSystem.folderManagement.errorInvalidRestoreSelection');
+      case 'FWA12251':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'FWA12252':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'FWA12255':
+        return this.translate.getInstant('fileSystem.admin.errorFileSystemInUse');
+      default:
+        return null;
+    }
+  }
+
+  private getClearRecycleBinErrorMessage(code: string): string | null {
+    switch (code) {
+      case 'ERP12000':
+        return this.translate.getInstant('fileSystem.admin.errorAccessDenied');
+      case 'ERP12001':
+        return this.translate.getInstant('fileSystem.admin.errorBlockedIpPermanent');
+      case 'ERP12002':
+        return this.translate.getInstant('fileSystem.admin.errorBlockedIpTemporary');
+      case 'ERP12005':
+        return this.translate.getInstant('fileSystem.admin.errorMissingStorageToken');
+      case 'ERP12006':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidStorageToken');
+      case 'ERP12007':
+        return this.translate.getInstant('fileSystem.admin.errorAccessDeniedAction');
+      case 'ERP12008':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidRequestRouting');
+      case 'ERP12009':
+        return this.translate.getInstant('fileSystem.admin.errorRequestUnderDevelopment');
+      case 'ERP12010':
+        return this.translate.getInstant('fileSystem.admin.errorResponseManagement');
+      case 'ERP12011':
+        return this.translate.getInstant('fileSystem.admin.errorApiCallExecution');
+      case 'ERP12012':
+        return this.translate.getInstant('fileSystem.admin.errorFileServerDatabase');
+      case 'ERP12240':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileId');
+      case 'ERP12248':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidEntityFilter');
+      case 'ERP12250':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFolderId');
+      case 'ERP12260':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemId');
+      case 'ERP12263':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileAllocationType');
+      case 'ERP12270':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemAccessToken');
+      case 'ERP12280':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileAllocation');
+      case 'ERP12290':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidDriveId');
+      case 'ERP12291':
+        return this.translate.getInstant('fileSystem.admin.errorDriveInactive');
+      case 'ERP12292':
+        return this.translate.getInstant('fileSystem.admin.errorAccessDeniedDriveOwner');
+      case 'ERP12293':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidAccessType');
+      case 'ERP12294':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidAccessRight');
+      case 'ERP12295':
+        return this.translate.getInstant('fileSystem.admin.errorNotEnoughFileSystemAccessRight');
+      case 'ERP12296':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidAccountId');
+      case 'ERP12297':
+        return this.translate.getInstant('fileSystem.admin.errorOwnerOrFullRequired');
+      case 'ERP12298':
+        return this.translate.getInstant('fileSystem.admin.errorActionNotAllowedOnReferenceAllocation');
+      case 'ERP12299':
+        return this.translate.getInstant('fileSystem.admin.errorActionNotAllowedOnCopyAllocation');
+      case 'ERP12251':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'ERP12252':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'ERP12255':
+        return this.translate.getInstant('fileSystem.admin.errorFileSystemInUse');
+      case 'ERP12267':
+        return this.translate.getInstant('fileSystem.folderManagement.errorInvalidRestoreSelection');
+      case 'FWA12251':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'FWA12252':
+        return this.translate.getInstant('fileSystem.admin.errorInvalidFileSystemName');
+      case 'FWA12255':
+        return this.translate.getInstant('fileSystem.admin.errorFileSystemInUse');
+      default:
+        return null;
+    }
   }
 
 }

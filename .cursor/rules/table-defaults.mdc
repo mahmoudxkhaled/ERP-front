@@ -37,6 +37,7 @@ Use **`src/app/modules/entity-administration/entity-storage-management/file-syst
 
 ## Cells, skeletons, text overflow (reference + owner requirements)
 
+- **Skeleton row count:** When the table uses **placeholder rows** during initial load (fake rows whose cells contain `<p-skeleton>`, or an equivalent pattern), the **number of body rows** must equal **`p-table`’s `[rows]`** (the same default page size as the paginator). Do **not** use an arbitrary fixed count (e.g. 5) when `[rows]` is 10. Tie the count to the **same** property/value as `[rows]` (e.g. `Array(this.fileSystemsTableRows).fill(null)` in a getter, or an array whose `length` matches `rows`).
 - **Per cell:** `ng-container *ngIf="loading; else …"` with **`<p-skeleton>`** inside the **same `<td>`** as loaded content — same column width, same inner alignment wrappers (`flex`, `justify-content-center`, `gap-2` for icon + text clusters). Skeleton **height/width/borderRadius** should mirror the real control (tag, round icon button, text line).
 - **Long text:** Wrap text that can overflow in a container with **ellipsis** (`text-overflow: ellipsis; overflow: hidden; white-space: nowrap`; add `min-width: 0` inside flex where needed). Use **`[pTooltip]`** with the full value when truncated. The reference uses tooltip on type; apply the same idea to name/drive or other long fields when needed.
 - **Do not** change `td`/`th` padding or add wrappers that alter layout between skeleton and loaded states.
@@ -66,7 +67,7 @@ Use **`src/app/modules/entity-administration/entity-storage-management/file-syst
 1. Table shell matches reference (`p-datatable-sm`, scroll layout, paginator, page report template translated, global filter wired like reference).
 2. `rowsPerPageOptions` is `[10, 25, 50, 100]` for new work (unless owner says to match an existing file’s array).
 3. Caption skeletons mirror real controls (heights, widths, gaps, margins); no layout shift.
-4. Header/body column widths aligned; long text ellipsis + tooltip where needed; skeletons per cell match loaded layout.
+4. Header/body column widths aligned; long text ellipsis + tooltip where needed; skeletons per cell match loaded layout; **count of skeleton/placeholder body rows = `[rows]`** on `p-table`.
 5. Row class + hover SCSS + cursor binding; details handler on row as agreed (reference: click); `stopPropagation` on inline actions.
 6. All strings translated in both language files.
 7. Asked owner when in doubt.

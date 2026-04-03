@@ -7,8 +7,6 @@
         </div>
         <div
             class="file-systems-section__actions flex-shrink-0 align-self-start md:align-self-center flex flex-wrap align-items-center gap-2 justify-content-end">
-            <p-button [label]="'fileSystem.entityAdmin.permissionsAdmin.title' | translate" icon="pi pi-shield"
-                styleClass="p-button-outlined" (onClick)="goToFileSystemPermissionsAdminPage()"></p-button>
             <p-button [label]="'fileSystem.entityAdmin.createFileSystem' | translate" icon="pi pi-plus"
                 (onClick)="showCreateDialog()"></p-button>
         </div>
@@ -67,12 +65,12 @@
             <ng-template pTemplate="header">
                 <tr>
                     <th style="width: 14rem">{{ 'fileSystem.entityAdmin.fileSystemName' | translate }}</th>
-                    <th style="width: 6.5rem">{{ 'fileSystem.entityAdmin.fileSystemTypeShort' | translate }}</th>
                     <th style="width: 12rem">{{ 'fileSystem.admin.driveName' | translate }}</th>
                     <th class="text-center" style="width: 6.5rem">{{ 'fileSystem.admin.status' | translate }}</th>
                     <th class="text-center" style="width: 13rem">{{ 'fileSystem.admin.createdAt' | translate }}</th>
                     <th class="text-center" style="width: 10rem">{{ 'fileSystem.entityAdmin.managePermissions' |
                         translate }}</th>
+                    <th class="text-center" style="width: 7.5rem">{{ 'fileSystem.entityAdmin.affectedAccountsColumn' | translate }}</th>
                     <th style="width: 12rem">{{ 'fileSystem.companyStorage.actions' | translate }}</th>
                 </tr>
             </ng-template>
@@ -85,14 +83,6 @@
                         </ng-container>
                         <ng-template #normalName>
                             <span class="font-semibold">{{ getFileSystemName(row) }}</span>
-                        </ng-template>
-                    </td>
-                    <td style="width: 6.5rem">
-                        <ng-container *ngIf="loadingFileSystems; else normalType">
-                            <p-skeleton height="1.25rem" width="4.5rem"></p-skeleton>
-                        </ng-container>
-                        <ng-template #normalType>
-                            <span [pTooltip]="getTypeDescription(row)" tooltipPosition="top">{{ getTypeName(row) }}</span>
                         </ng-template>
                     </td>
                     <td style="width: 12rem">
@@ -149,6 +139,23 @@
                                     </ng-template>
                                 </ng-container>
                             </div>
+                        </ng-template>
+                    </td>
+                    <td class="text-center" style="width: 7.5rem">
+                        <ng-container *ngIf="loadingFileSystems; else normalAffectedAccounts">
+                            <div class="flex justify-content-center">
+                                <p-skeleton height="1.25rem" width="2.5rem" borderRadius="4px"></p-skeleton>
+                            </div>
+                        </ng-container>
+                        <ng-template #normalAffectedAccounts>
+                            <ng-container *ngIf="isFileSystemActive(row) && loadingPermissionCounts; else affectedCountReady">
+                                <div class="flex justify-content-center">
+                                    <p-skeleton height="1.25rem" width="2.5rem" borderRadius="4px"></p-skeleton>
+                                </div>
+                            </ng-container>
+                            <ng-template #affectedCountReady>
+                                <span class="text-600 text-sm font-semibold">{{ isFileSystemActive(row) ? getEffectiveAccountsCount(row) : '—' }}</span>
+                            </ng-template>
                         </ng-template>
                     </td>
                     <td class="text-start" style="width: 12rem">

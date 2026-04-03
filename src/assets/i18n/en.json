@@ -129,6 +129,7 @@
             "permissions": "Permissions",
             "entityName": "Entity",
             "fileSystemName": "File System",
+            "affectedAccountsColumn": "Affected accounts",
             "fileSystemType": "File System Type",
             "fileSystemTypeShort": "Type",
             "status": "Status",
@@ -179,12 +180,22 @@
             "noOwnedDrives": "No virtual drives owned by the entity.",
             "permissionsAdmin": {
                 "title": "File System Permissions",
-                "description": "Manage access permissions on a specific file system. Add or remove access entries and clear all permissions when needed.",
+                "description": "Manage access for the file system you opened from the list. Add or remove rules, review effective access by account, or clear all permissions.",
+                "fileSystemQueryParamLabel": "Query",
+                "missingFileSystemQueryTitle": "File system not specified",
+                "missingFileSystemQueryMessage": "Open this page from a file system row (Manage permissions) or add ?fileSystemId= to the URL.",
                 "backToEsm": "Back to ESM",
                 "selectFileSystem": "Select file system",
                 "selectFileSystemPlaceholder": "Select a file system",
                 "refreshFileSystems": "Refresh file systems",
                 "permissionsTitle": "Permissions",
+                "assignedPermissionsTitle": "Assigned rules",
+                "effectiveAccessTitle": "Effective access by account",
+                "effectiveAccessDescription": "Server-computed access level per account (read-only). Use assigned rules above to change who gets access.",
+                "effectiveAccessAccount": "Account",
+                "effectiveAccessPageReport": "Showing '{first}' to '{last}' of '{totalRecords}' accounts",
+                "effectiveAccessSearchPlaceholder": "Search by account ID, email, or access level...",
+                "noEffectiveAccounts": "No effective account access returned for this file system.",
                 "accessType": "Access type",
                 "relatedIds": "Related target(s)",
                 "accessRight": "Access right",
@@ -223,7 +234,18 @@
                 "notAuthorizedTitle": "Not authorized",
                 "notAuthorizedMessage": "You do not have permission to access this page.",
                 "fileSystemNotFoundTitle": "File system not found",
-                "fileSystemNotFoundMessage": "This file system is not in the list or is unavailable. Refresh the list or choose another file system."
+                "fileSystemNotFoundMessage": "This file system is not in the list or is unavailable. Refresh the list or choose another file system.",
+                "relatedTargetsErrors": {
+                    "erp11255": "The list request uses an invalid page size.",
+                    "erp11260": "Invalid entity ID.",
+                    "erp11261": "This action is not allowed for the selected entity in the hierarchy.",
+                    "erp11262": "The entity is already active.",
+                    "erp11263": "The entity is already deactivated.",
+                    "erp11270": "The entity still has linked data and cannot be removed this way.",
+                    "erp11287": "Invalid entity ID for this request.",
+                    "erp11288": "One or more account IDs are invalid.",
+                    "erp11290": "Invalid group or role ID."
+                }
             }
         },
         "permissions": {

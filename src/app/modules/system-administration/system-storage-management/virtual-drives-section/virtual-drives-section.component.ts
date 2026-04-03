@@ -146,7 +146,7 @@ export class VirtualDrivesSectionComponent implements OnInit {
 
     get virtualDrivesTableValue(): VirtualDriveRow[] {
         if (this.tableLoadingSpinner && this.virtualDrives.length === 0) {
-            return Array(5).fill(null).map(() => ({
+            return Array(this.virtualDrivesTableRows).fill(null).map(() => ({
                 id: 0,
                 name: '',
                 licenseId: 0,
