@@ -262,6 +262,8 @@
               <th style="width: 3rem;"></th>
               <th style="width: 8rem;">{{ 'fileSystem.entityAdmin.permissionsAdmin.targetId' | translate }}</th>
               <th>{{ 'fileSystem.entityAdmin.permissionsAdmin.targetName' | translate }}</th>
+              <th *ngIf="showRelatedTargetsEntityColumn" class="min-w-0" style="width: 14rem">{{
+                'fileSystem.entityAdmin.permissionsAdmin.targetsEntityColumn' | translate }}</th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-row>
@@ -273,12 +275,18 @@
               <td>
                 <span class="font-semibold">#{{ row.id }}</span>
               </td>
-              <td>{{ row.name }}</td>
+              <td>
+                <span class="permissions-cell-ellipsis block max-w-full">{{ row.name }}</span>
+              </td>
+              <td *ngIf="showRelatedTargetsEntityColumn" class="min-w-0" style="width: 14rem">
+                <span class="permissions-cell-ellipsis block max-w-full" [pTooltip]="row.entityLabel"
+                  tooltipPosition="top">{{ row.entityLabel }}</span>
+              </td>
             </tr>
           </ng-template>
           <ng-template pTemplate="emptymessage">
             <tr>
-              <td colspan="3" class="text-center p-3 text-500">
+              <td [attr.colspan]="showRelatedTargetsEntityColumn ? 4 : 3" class="text-center p-3 text-500">
                 {{ 'fileSystem.entityAdmin.permissionsAdmin.noRelatedTargetsFound' | translate }}
               </td>
             </tr>
@@ -289,7 +297,8 @@
       <div class="flex flex-wrap gap-2 mt-2" *ngIf="selectedRelatedTargets.length > 0">
         <span *ngFor="let selected of selectedRelatedTargets"
           class="px-2 py-1 border-1 surface-border border-round text-sm">
-          {{ selected.name }}
+          <span *ngIf="selected.entityLabel">{{ selected.name }} — {{ selected.entityLabel }}</span>
+          <span *ngIf="!selected.entityLabel">{{ selected.name }}</span>
         </span>
       </div>
       <small class="text-500 block mt-2">

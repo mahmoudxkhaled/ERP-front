@@ -213,6 +213,8 @@
                 "relatedTargetsPlaceholder": "Select one or more targets",
                 "relatedTargetsSearchPlaceholder": "Search by ID or name...",
                 "relatedTargetsHint": "Select readable targets by name. The system submits IDs only.",
+                "targetsEntityColumn": "Entity",
+                "targetsFallbackEntityLabel": "Entity #{{id}}",
                 "targetId": "ID",
                 "targetName": "Name",
                 "noRelatedTargetsFound": "No matching targets found.",

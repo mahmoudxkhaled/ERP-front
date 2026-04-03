@@ -1,6 +1,7 @@
 import { Component, DestroyRef, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslateService } from '@ngx-translate/core';
 import { MessageService } from 'primeng/api';
 import { firstValueFrom } from 'rxjs';
 import { TranslationService } from 'src/app/core/services/translation.service';
@@ -14,6 +15,13 @@ import type { AccountsAccessRightsMap } from '../models/file-system-permissions-
 interface RelatedTargetOption {
   id: number;
   name: string;
+  entityLabel: string;
+}
+
+interface AccessibleEntityRow {
+  entityId: number;
+  label: string;
+  parentEntityId: number;
 }
 
 interface EffectiveAccountRow {
@@ -64,12 +72,14 @@ export class FileSystemsPermissionsComponent implements OnInit {
   isRegional = false;
 
   private appliedRouteFileSystemId: number | null = null;
+  private accessibleEntitiesForTargetsCache: AccessibleEntityRow[] | null = null;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private destroyRef: DestroyRef,
     private translate: TranslationService,
+    private ngxTranslate: TranslateService,
     private messageService: MessageService,
     private localStorageService: LocalStorageService,
     private permissionsAdminService: FileSystemPermissionsAdminService,
@@ -180,6 +190,7 @@ export class FileSystemsPermissionsComponent implements OnInit {
     if (!this.selectedFileSystemId) {
       return;
     }
+    this.clearAccessibleEntitiesCache();
     this.addAccessType = null;
     this.addAccessRight = null;
     this.selectedRelatedTargetIds = [];
@@ -191,6 +202,7 @@ export class FileSystemsPermissionsComponent implements OnInit {
 
   hideAddDialog(): void {
     this.addDialogVisible = false;
+    this.clearAccessibleEntitiesCache();
   }
 
   onAddConfirm(): void {
@@ -429,6 +441,10 @@ export class FileSystemsPermissionsComponent implements OnInit {
     return this.addAccessType != null && this.addAccessType !== 5;
   }
 
+  get showRelatedTargetsEntityColumn(): boolean {
+    return this.addAccessType !== 3 && this.addAccessType !== 4;
+  }
+
   canSubmitAddPermission(): boolean {
     if (this.addAccessType == null || this.addAccessRight == null) {
       return false;
@@ -445,7 +461,9 @@ export class FileSystemsPermissionsComponent implements OnInit {
       return this.relatedTargetOptions;
     }
     return this.relatedTargetOptions.filter((item) =>
-      item.name.toLowerCase().includes(text) || String(item.id).includes(text)
+      item.name.toLowerCase().includes(text) ||
+      item.entityLabel.toLowerCase().includes(text) ||
+      String(item.id).includes(text)
     );
   }
 
@@ -474,9 +492,6 @@ export class FileSystemsPermissionsComponent implements OnInit {
     if (!this.requiresRelatedTargets()) {
       return;
     }
-    if (this.currentEntityId <= 0) {
-      return;
-    }
 
     if (this.addAccessType === 0) {
       this.loadAccountTargets();
@@ -499,33 +514,122 @@ export class FileSystemsPermissionsComponent implements OnInit {
     }
   }
 
+  private clearAccessibleEntitiesCache(): void {
+    this.accessibleEntitiesForTargetsCache = null;
+  }
+
+  private async getAccessibleEntitiesForTargets(): Promise<AccessibleEntityRow[]> {
+    if (this.accessibleEntitiesForTargetsCache) {
+      return this.accessibleEntitiesForTargetsCache;
+    }
+    const resolved = await this.fetchAllAccessibleEntities();
+    this.accessibleEntitiesForTargetsCache = resolved;
+    return resolved;
+  }
+
+  private async fetchAllAccessibleEntities(): Promise<AccessibleEntityRow[]> {
+    const seen = new Set<number>();
+    const out: AccessibleEntityRow[] = [];
+    let page = 1;
+    const pageSize = 100;
+    let totalCount = 0;
+    let safety = 0;
+    while (safety < 50) {
+      const res: any = await firstValueFrom(this.entitiesService.listEntities(-page, pageSize, ''));
+      if (!res?.success) {
+        break;
+      }
+      totalCount = Number(res.message?.Total_Count ?? 0);
+      const messageData = res.message?.Entities_List ?? res.message?.Entities ?? {};
+      const rawList = Array.isArray(messageData) ? messageData : Object.values(messageData);
+      if (rawList.length === 0) {
+        break;
+      }
+      for (const item of rawList) {
+        const id = Number(item?.Entity_ID || 0);
+        if (id <= 0 || seen.has(id)) {
+          continue;
+        }
+        seen.add(id);
+        const nameDefault = String(item?.Name || '').trim();
+        const nameRegional = String(item?.Name_Regional || '').trim();
+        const name = this.isRegional ? (nameRegional || nameDefault) : (nameDefault || nameRegional);
+        const code = String(item?.Code || '').trim();
+        const label = name && code ? `${name} (${code})` : (name || `#${id}`);
+        const parentEntityId = Number(item?.Parent_Entity_ID || 0);
+        out.push({ entityId: id, label, parentEntityId });
+      }
+      if (totalCount > 0 && out.length >= totalCount) {
+        break;
+      }
+      if (rawList.length < pageSize) {
+        break;
+      }
+      page++;
+      safety++;
+    }
+    if (out.length === 0 && this.currentEntityId > 0) {
+      const id = this.currentEntityId;
+      const parentEntityId = Number(this.localStorageService.getParentEntityId() || 0);
+      const label = this.ngxTranslate.instant('fileSystem.entityAdmin.permissionsAdmin.targetsFallbackEntityLabel', {
+        id,
+      });
+      return [{ entityId: id, label, parentEntityId }];
+    }
+    return out;
+  }
+
   private loadAccountTargets(): void {
     this.loadingRelatedTargets = true;
-    this.entitiesService.getEntityAccountsList(
-      this.currentEntityId.toString(),
-      true,
-      true,
-      0,
-      100,
-      ''
-    ).subscribe({
-      next: (response: any) => {
+    void this.getAccessibleEntitiesForTargets().then(async (entities) => {
+      if (entities.length === 0) {
         this.loadingRelatedTargets = false;
-        if (!response?.success) {
-          this.handleBusinessError('relatedAccounts', response);
-          return;
+        this.relatedTargetOptions = [];
+        return;
+      }
+      const merged = new Map<number, RelatedTargetOption>();
+      let lastErrorResponse: any = null;
+      let anySuccess = false;
+      try {
+        for (const { entityId, label } of entities) {
+          try {
+            const response: any = await firstValueFrom(
+              this.entitiesService.getEntityAccountsList(
+                entityId.toString(),
+                true,
+                true,
+                0,
+                100,
+                ''
+              )
+            );
+            if (!response?.success) {
+              lastErrorResponse = response;
+              continue;
+            }
+            anySuccess = true;
+            const accountsData = response?.message?.Accounts || {};
+            const list = Array.isArray(accountsData) ? accountsData : Object.values(accountsData);
+            for (const item of list) {
+              const id = Number(item?.Account_ID || 0);
+              if (id <= 0 || merged.has(id)) {
+                continue;
+              }
+              const email = String(item?.Email || '').trim();
+              const itemLabel = email || `#${id}`;
+              merged.set(id, { id, name: itemLabel, entityLabel: label });
+            }
+          } catch {
+            lastErrorResponse = {};
+          }
         }
-
-        const accountsData = response?.message?.Accounts || {};
-        const list = Array.isArray(accountsData) ? accountsData : Object.values(accountsData);
-        this.relatedTargetOptions = list.map((item: any) => {
-          const id = Number(item?.Account_ID || 0);
-          const email = String(item?.Email || '').trim();
-          const name = email || `#${id}`;
-          return { id, name };
-        }).filter((x: RelatedTargetOption) => x.id > 0);
-      },
-      error: () => {
+        if (!anySuccess && lastErrorResponse != null) {
+          this.handleBusinessError('relatedAccounts', lastErrorResponse);
+        }
+        this.relatedTargetOptions = [...merged.values()].sort((a, b) =>
+          a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' })
+        );
+      } finally {
         this.loadingRelatedTargets = false;
       }
     });
@@ -533,25 +637,48 @@ export class FileSystemsPermissionsComponent implements OnInit {
 
   private loadGroupTargets(): void {
     this.loadingRelatedTargets = true;
-    this.entityGroupsService.listEntityGroups(this.currentEntityId, true).subscribe({
-      next: (response: any) => {
+    void this.getAccessibleEntitiesForTargets().then(async (entities) => {
+      if (entities.length === 0) {
         this.loadingRelatedTargets = false;
-        if (!response?.success) {
-          this.handleBusinessError('relatedGroups', response);
-          return;
+        this.relatedTargetOptions = [];
+        return;
+      }
+      const merged = new Map<number, RelatedTargetOption>();
+      let lastErrorResponse: any = null;
+      let anySuccess = false;
+      try {
+        for (const { entityId, label } of entities) {
+          try {
+            const response: any = await firstValueFrom(this.entityGroupsService.listEntityGroups(entityId, true));
+            if (!response?.success) {
+              lastErrorResponse = response;
+              continue;
+            }
+            anySuccess = true;
+            const groupsData = response?.message?.Account_Groups || response?.message || [];
+            const list = Array.isArray(groupsData) ? groupsData : Object.values(groupsData);
+            for (const item of list) {
+              const id = Number(item?.groupID || item?.Group_ID || item?.ID || 0);
+              if (id <= 0 || merged.has(id)) {
+                continue;
+              }
+              const titleDefault = String(item?.title || item?.Title || '').trim();
+              const titleRegional = String(item?.title_Regional || item?.Title_Regional || '').trim();
+              const title = this.isRegional ? (titleRegional || titleDefault) : (titleDefault || titleRegional);
+              const itemLabel = title || `#${id}`;
+              merged.set(id, { id, name: itemLabel, entityLabel: label });
+            }
+          } catch {
+            lastErrorResponse = {};
+          }
         }
-
-        const groupsData = response?.message?.Account_Groups || response?.message || [];
-        const list = Array.isArray(groupsData) ? groupsData : Object.values(groupsData);
-        this.relatedTargetOptions = list.map((item: any) => {
-          const id = Number(item?.groupID || item?.Group_ID || item?.ID || 0);
-          const titleDefault = String(item?.title || item?.Title || '').trim();
-          const titleRegional = String(item?.title_Regional || item?.Title_Regional || '').trim();
-          const name = this.isRegional ? (titleRegional || titleDefault) : (titleDefault || titleRegional);
-          return { id, name: name || `#${id}` };
-        }).filter((x: RelatedTargetOption) => x.id > 0);
-      },
-      error: () => {
+        if (!anySuccess && lastErrorResponse != null) {
+          this.handleBusinessError('relatedGroups', lastErrorResponse);
+        }
+        this.relatedTargetOptions = [...merged.values()].sort((a, b) =>
+          a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' })
+        );
+      } finally {
         this.loadingRelatedTargets = false;
       }
     });
@@ -559,25 +686,48 @@ export class FileSystemsPermissionsComponent implements OnInit {
 
   private loadRoleTargets(): void {
     this.loadingRelatedTargets = true;
-    this.rolesService.listEntityRoles(this.currentEntityId, 0, 100).subscribe({
-      next: (response: any) => {
+    void this.getAccessibleEntitiesForTargets().then(async (entities) => {
+      if (entities.length === 0) {
         this.loadingRelatedTargets = false;
-        if (!response?.success) {
-          this.handleBusinessError('relatedRoles', response);
-          return;
+        this.relatedTargetOptions = [];
+        return;
+      }
+      const merged = new Map<number, RelatedTargetOption>();
+      let lastErrorResponse: any = null;
+      let anySuccess = false;
+      try {
+        for (const { entityId, label } of entities) {
+          try {
+            const response: any = await firstValueFrom(this.rolesService.listEntityRoles(entityId, 0, 100));
+            if (!response?.success) {
+              lastErrorResponse = response;
+              continue;
+            }
+            anySuccess = true;
+            const rolesData = response?.message?.Entity_Roles || {};
+            const list = Array.isArray(rolesData) ? rolesData : Object.values(rolesData);
+            for (const item of list) {
+              const id = Number(item?.Entity_Role_ID || item?.entity_Role_ID || 0);
+              if (id <= 0 || merged.has(id)) {
+                continue;
+              }
+              const titleDefault = String(item?.Title || '').trim();
+              const titleRegional = String(item?.Title_Regional || '').trim();
+              const title = this.isRegional ? (titleRegional || titleDefault) : (titleDefault || titleRegional);
+              const itemLabel = title || `#${id}`;
+              merged.set(id, { id, name: itemLabel, entityLabel: label });
+            }
+          } catch {
+            lastErrorResponse = {};
+          }
         }
-
-        const rolesData = response?.message?.Entity_Roles || {};
-        const list = Array.isArray(rolesData) ? rolesData : Object.values(rolesData);
-        this.relatedTargetOptions = list.map((item: any) => {
-          const id = Number(item?.Entity_Role_ID || item?.entity_Role_ID || 0);
-          const titleDefault = String(item?.Title || '').trim();
-          const titleRegional = String(item?.Title_Regional || '').trim();
-          const name = this.isRegional ? (titleRegional || titleDefault) : (titleDefault || titleRegional);
-          return { id, name: name || `#${id}` };
-        }).filter((x: RelatedTargetOption) => x.id > 0);
-      },
-      error: () => {
+        if (!anySuccess && lastErrorResponse != null) {
+          this.handleBusinessError('relatedRoles', lastErrorResponse);
+        }
+        this.relatedTargetOptions = [...merged.values()].sort((a, b) =>
+          a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' })
+        );
+      } finally {
         this.loadingRelatedTargets = false;
       }
     });
@@ -736,47 +886,56 @@ export class FileSystemsPermissionsComponent implements OnInit {
 
   private async loadAccountEmailMap(neededIds: Set<number>): Promise<Map<number, string>> {
     const map = new Map<number, string>();
-    if (neededIds.size === 0 || this.currentEntityId <= 0) {
+    if (neededIds.size === 0) {
       return map;
     }
-    let page = 1;
-    const pageSize = 100;
-    let safety = 0;
-    while (safety < 80 && [...neededIds].some((id) => !map.has(id))) {
-      const lastAccountId = -page;
-      try {
-        const res = await firstValueFrom(
-          this.entitiesService.getEntityAccountsList(
-            this.currentEntityId.toString(),
-            true,
-            false,
-            lastAccountId,
-            pageSize,
-            ''
-          )
-        );
-        if (!res?.success) {
-          break;
-        }
-        const accountsData = res.message?.Accounts ?? {};
-        const list = Array.isArray(accountsData) ? accountsData : Object.values(accountsData);
-        if (list.length === 0) {
-          break;
-        }
-        list.forEach((a: any) => {
-          const id = Number(a.Account_ID);
-          const email = String(a.Email ?? '').trim();
-          if (neededIds.has(id) && email) {
-            map.set(id, email);
-          }
-        });
-        page++;
-        safety++;
-        if (list.length < pageSize) {
-          break;
-        }
-      } catch {
+    const entities = await this.getAccessibleEntitiesForTargets();
+    if (entities.length === 0) {
+      return map;
+    }
+    for (const { entityId } of entities) {
+      if ([...neededIds].every((id) => map.has(id))) {
         break;
+      }
+      let page = 1;
+      const pageSize = 100;
+      let safety = 0;
+      while (safety < 80 && [...neededIds].some((id) => !map.has(id))) {
+        const lastAccountId = -page;
+        try {
+          const res = await firstValueFrom(
+            this.entitiesService.getEntityAccountsList(
+              entityId.toString(),
+              true,
+              false,
+              lastAccountId,
+              pageSize,
+              ''
+            )
+          );
+          if (!res?.success) {
+            break;
+          }
+          const accountsData = res.message?.Accounts ?? {};
+          const list = Array.isArray(accountsData) ? accountsData : Object.values(accountsData);
+          if (list.length === 0) {
+            break;
+          }
+          list.forEach((a: any) => {
+            const id = Number(a.Account_ID);
+            const email = String(a.Email ?? '').trim();
+            if (neededIds.has(id) && email) {
+              map.set(id, email);
+            }
+          });
+          page++;
+          safety++;
+          if (list.length < pageSize) {
+            break;
+          }
+        } catch {
+          break;
+        }
       }
     }
     return map;
@@ -838,32 +997,19 @@ export class FileSystemsPermissionsComponent implements OnInit {
 
   private loadEntityTargets(rootsOnly: boolean): void {
     this.loadingRelatedTargets = true;
-    this.entitiesService.listEntities(0, 100, '').subscribe({
-      next: (response: any) => {
+    void this.getAccessibleEntitiesForTargets()
+      .then((entities) => {
+        const filtered = rootsOnly ? entities.filter((e) => e.parentEntityId <= 0) : entities;
+        this.relatedTargetOptions = filtered
+          .map((e) => ({ id: e.entityId, name: e.label, entityLabel: '' }))
+          .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
+      })
+      .catch(() => {
+        this.relatedTargetOptions = [];
+      })
+      .finally(() => {
         this.loadingRelatedTargets = false;
-        if (!response?.success) {
-          this.handleBusinessError('relatedEntities', response);
-          return;
-        }
-
-        const entitiesData = response?.message?.Entities_List || response?.message?.Entities || {};
-        const list = Array.isArray(entitiesData) ? entitiesData : Object.values(entitiesData);
-        const mapped = list.map((item: any) => {
-          const id = Number(item?.Entity_ID || 0);
-          const parentEntityId = Number(item?.Parent_Entity_ID || 0);
-          const nameDefault = String(item?.Name || '').trim();
-          const nameRegional = String(item?.Name_Regional || '').trim();
-          const name = this.isRegional ? (nameRegional || nameDefault) : (nameDefault || nameRegional);
-          return { id, parentEntityId, name: name || `#${id}` };
-        }).filter((x: any) => x.id > 0);
-
-        const filtered = rootsOnly ? mapped.filter((x: any) => x.parentEntityId <= 0) : mapped;
-        this.relatedTargetOptions = filtered.map((x: any) => ({ id: x.id, name: x.name }));
-      },
-      error: () => {
-        this.loadingRelatedTargets = false;
-      }
-    });
+      });
   }
 
   // #region Business errors

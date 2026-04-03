@@ -213,6 +213,8 @@
                 "relatedTargetsPlaceholder": "اختر جهة واحدة أو أكثر",
                 "relatedTargetsSearchPlaceholder": "ابحث بالمعرّف أو الاسم...",
                 "relatedTargetsHint": "اختر الجهات بالاسم، وسيتم إرسال المعرّفات الرقمية فقط.",
+                "targetsEntityColumn": "الكيان",
+                "targetsFallbackEntityLabel": "كيان #{{id}}",
                 "targetId": "المعرّف",
                 "targetName": "الاسم",
                 "noRelatedTargetsFound": "لا توجد جهات مطابقة.",
