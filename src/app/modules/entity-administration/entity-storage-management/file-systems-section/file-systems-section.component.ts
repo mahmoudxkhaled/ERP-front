@@ -292,15 +292,19 @@ export class FileSystemsSectionComponent implements OnInit {
     return !isDeleted;
   }
 
-  openFileSystemPermissionsAdmin(row: FileSystemListItem): void {
+  openFileSystemPermissionsAdmin(row: FileSystemListItem, options?: { scrollToEffectiveAccess?: boolean }): void {
     const id = Number(row?.file_System_ID ?? 0);
     if (id <= 0 || !this.isFileSystemActive(row)) {
       return;
     }
     const fileSystemName = String(row?.name ?? '').trim();
+    const queryParams: Record<string, string | number> = { fileSystemId: id, fileSystemName };
+    if (options?.scrollToEffectiveAccess) {
+      queryParams['scrollTo'] = 'effective';
+    }
     void this.router.navigate(
       ['/entity-administration/entity-storage-management/file-systems/permissions'],
-      { queryParams: { fileSystemId: id, fileSystemName } }
+      { queryParams }
     );
   }
 

@@ -41,7 +41,7 @@ export class FileSystemsPermissionsComponent implements OnInit {
   loadingPermissionTargets = false;
 
   selectedFileSystemId: number | null = null;
-  fileSystemName = '';
+  fileSystemNameForTitle = '';
 
   permissions: FileSystemAccessPermissionRow[] = [];
   effectiveAccountRows: EffectiveAccountRow[] = [];
@@ -73,6 +73,7 @@ export class FileSystemsPermissionsComponent implements OnInit {
 
   private appliedRouteFileSystemId: number | null = null;
   private accessibleEntitiesForTargetsCache: AccessibleEntityRow[] | null = null;
+  private pendingScrollToEffectiveAccess = false;
 
   constructor(
     private router: Router,
@@ -94,25 +95,51 @@ export class FileSystemsPermissionsComponent implements OnInit {
     this.buildStaticOptions();
     this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       const id = Number(params.get('fileSystemId') || 0);
+      const scrollToEffective = params.get('scrollTo') === 'effective';
+      const nameFromQuery = String(params.get('fileSystemName') ?? '').trim();
+      const titleName = id > 0 ? nameFromQuery || `#${id}` : '';
       if (id <= 0) {
         this.appliedRouteFileSystemId = null;
+        this.fileSystemNameForTitle = '';
         this.redirectMissingFileSystemQuery();
         return;
       }
-      const nameFromQuery = String(params.get('fileSystemName') ?? '').trim();
+      this.fileSystemNameForTitle = titleName;
       if (this.appliedRouteFileSystemId === id) {
-        this.fileSystemName = nameFromQuery || `#${id}`;
+        if (scrollToEffective) {
+          this.finishScrollToEffectiveFromNavigation();
+        }
         return;
       }
       this.appliedRouteFileSystemId = id;
       this.selectedFileSystemId = id;
-      this.fileSystemName = nameFromQuery || `#${id}`;
       this.permissions = [];
       this.effectiveAccountRows = [];
+      this.pendingScrollToEffectiveAccess = scrollToEffective;
       this.refreshPermissions();
     });
   }
 
+  private finishScrollToEffectiveFromNavigation(): void {
+    this.clearScrollToQueryParam();
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.getElementById('effective-access-by-account')?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+      });
+    });
+  }
+
+  private clearScrollToQueryParam(): void {
+    const q = { ...this.route.snapshot.queryParams };
+    if (q['scrollTo'] !== 'effective') {
+      return;
+    }
+    delete q['scrollTo'];
+    void this.router.navigate([], { relativeTo: this.route, queryParams: q, replaceUrl: true });
+  }
 
   private buildStaticOptions(): void {
     this.accessTypeOptions = [
@@ -141,7 +168,6 @@ export class FileSystemsPermissionsComponent implements OnInit {
 
   private redirectMissingFileSystemQuery(): void {
     this.selectedFileSystemId = null;
-    this.fileSystemName = '';
     this.messageService.add({
       severity: 'warn',
       summary: this.translate.getInstant('fileSystem.entityAdmin.permissionsAdmin.missingFileSystemQueryTitle'),
@@ -168,9 +194,9 @@ export class FileSystemsPermissionsComponent implements OnInit {
 
     this.permissionsAdminService.listFileSystemPermissions(this.selectedFileSystemId).subscribe({
       next: (response: any) => {
-        console.log('refreshPermissions response', response);
         this.loadingPermissions = false;
         if (!response?.success) {
+          this.pendingScrollToEffectiveAccess = false;
           this.handleBusinessError('listPermissions', response);
           return;
         }
@@ -178,10 +204,16 @@ export class FileSystemsPermissionsComponent implements OnInit {
         this.permissions = mapped.permissions;
         this.rebuildEffectiveAccountRows(mapped.accountsAccessRights);
         this.refreshPermissionTableSearchText();
-        void Promise.all([this.resolveRelatedTargetDisplays(), this.resolveEffectiveAccountLabels()]);
+        void Promise.all([this.resolveRelatedTargetDisplays(), this.resolveEffectiveAccountLabels()]).then(() => {
+          if (this.pendingScrollToEffectiveAccess) {
+            this.pendingScrollToEffectiveAccess = false;
+            this.finishScrollToEffectiveFromNavigation();
+          }
+        });
       },
       error: () => {
         this.loadingPermissions = false;
+        this.pendingScrollToEffectiveAccess = false;
       },
     });
   }

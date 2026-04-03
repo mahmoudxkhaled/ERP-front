@@ -70,7 +70,7 @@
                     <th class="text-center" style="width: 13rem">{{ 'fileSystem.admin.createdAt' | translate }}</th>
                     <th class="text-center" style="width: 10rem">{{ 'fileSystem.entityAdmin.managePermissions' |
                         translate }}</th>
-                    <th class="text-center" style="width: 7.5rem">{{ 'fileSystem.entityAdmin.affectedAccountsColumn' | translate }}</th>
+                    <th class="text-center" style="width: 10rem">{{ 'fileSystem.entityAdmin.affectedAccountsColumn' | translate }}</th>
                     <th style="width: 12rem">{{ 'fileSystem.companyStorage.actions' | translate }}</th>
                 </tr>
             </ng-template>
@@ -141,20 +141,29 @@
                             </div>
                         </ng-template>
                     </td>
-                    <td class="text-center" style="width: 7.5rem">
+                    <td class="text-center" style="width: 10rem">
                         <ng-container *ngIf="loadingFileSystems; else normalAffectedAccounts">
-                            <div class="flex justify-content-center">
+                            <div class="flex align-items-center justify-content-center gap-2">
+                                <p-skeleton height="2rem" width="2rem" borderRadius="50%"></p-skeleton>
                                 <p-skeleton height="1.25rem" width="2.5rem" borderRadius="4px"></p-skeleton>
                             </div>
                         </ng-container>
                         <ng-template #normalAffectedAccounts>
                             <ng-container *ngIf="isFileSystemActive(row) && loadingPermissionCounts; else affectedCountReady">
-                                <div class="flex justify-content-center">
+                                <div class="flex align-items-center justify-content-center gap-2">
+                                    <p-skeleton height="2rem" width="2rem" borderRadius="50%"></p-skeleton>
                                     <p-skeleton height="1.25rem" width="2.5rem" borderRadius="4px"></p-skeleton>
                                 </div>
                             </ng-container>
                             <ng-template #affectedCountReady>
-                                <span class="text-600 text-sm font-semibold">{{ isFileSystemActive(row) ? getEffectiveAccountsCount(row) : '—' }}</span>
+                                <div class="flex align-items-center justify-content-center gap-2">
+                                    <button *ngIf="isFileSystemActive(row)" pButton pRipple type="button" icon="pi pi-users"
+                                        class="p-button-rounded p-button-text p-button-plain flex-shrink-0"
+                                        [pTooltip]="'fileSystem.entityAdmin.openEffectiveAccessTooltip' | translate"
+                                        (click)="$event.stopPropagation(); openFileSystemPermissionsAdmin(row, { scrollToEffectiveAccess: true })">
+                                    </button>
+                                    <span class="text-600 text-sm font-semibold">{{ isFileSystemActive(row) ? getEffectiveAccountsCount(row) : '—' }}</span>
+                                </div>
                             </ng-template>
                         </ng-template>
                     </td>

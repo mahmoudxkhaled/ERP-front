@@ -1,15 +1,15 @@
 <div class="permissions-admin-view card p-4">
   <div class="page-top flex flex-column sm:flex-row sm:align-items-start sm:justify-content-between gap-3">
     <div class="page-header flex-1 min-w-0">
-      <h1 class="page-title">{{ 'fileSystem.entityAdmin.permissionsAdmin.title' | translate }}</h1>
+      <h1 class="page-title">
+        <ng-container *ngIf="fileSystemNameForTitle; else permissionsTitleOnly">
+          {{ fileSystemNameForTitle }} – {{ 'fileSystem.entityAdmin.permissionsAdmin.title' | translate }}
+        </ng-container>
+        <ng-template #permissionsTitleOnly>
+          {{ 'fileSystem.entityAdmin.permissionsAdmin.title' | translate }}
+        </ng-template>
+      </h1>
       <p class="page-description">{{ 'fileSystem.entityAdmin.permissionsAdmin.description' | translate }}</p>
-      <div class="mt-3" *ngIf="selectedFileSystemId">
-        <p class="text-900 font-semibold m-0 mb-1">{{ fileSystemName }}</p>
-        <p class="text-500 text-sm m-0">
-          {{ 'fileSystem.entityAdmin.permissionsAdmin.fileSystemQueryParamLabel' | translate }}:
-          <span class="font-mono">fileSystemId={{ selectedFileSystemId }}</span>
-        </p>
-      </div>
     </div>
     <div class="permissions-admin-view__back flex-shrink-0 align-self-end sm:align-self-start">
       <p-button [label]="'fileSystem.entityAdmin.permissionsAdmin.backToEsm' | translate" icon="pi pi-arrow-left"
@@ -18,7 +18,6 @@
   </div>
 
   <div class="block-section" *ngIf="selectedFileSystemId">
-    <h2 class="block-title">{{ 'fileSystem.entityAdmin.permissionsAdmin.permissionsTitle' | translate }}</h2>
     <div class="block-card">
       <div class="mb-3 flex flex-wrap gap-2 align-items-center">
         <p-button [label]="'fileSystem.entityAdmin.permissionsAdmin.addPermission' | translate" icon="pi pi-plus"
@@ -35,9 +34,8 @@
         {{ 'fileSystem.entityAdmin.permissionsAdmin.assignedPermissionsTitle' | translate }}
       </h3>
 
-      <p-table #permissionsTable [value]="permissionsTableValue" [paginator]="true"
-        [rows]="permissionsTableRows" [rowsPerPageOptions]="permissionsRowsPerPageOptions"
-        [showCurrentPageReport]="true"
+      <p-table #permissionsTable [value]="permissionsTableValue" [paginator]="true" [rows]="permissionsTableRows"
+        [rowsPerPageOptions]="permissionsRowsPerPageOptions" [showCurrentPageReport]="true"
         [currentPageReportTemplate]="('fileSystem.entityAdmin.permissionsAdmin.permissionsPageReport' | translate)"
         [globalFilterFields]="['tableSearchText']" responsiveLayout="scroll"
         styleClass="p-datatable-sm permissions-admin-table">
@@ -99,8 +97,8 @@
               </ng-container>
               <ng-template #normalType>
                 <div class="flex min-w-0 w-full">
-                  <span class="permissions-cell-ellipsis font-medium"
-                    [pTooltip]="getAccessTypeLabel(row.accessType)" tooltipPosition="top">{{ getAccessTypeLabel(row.accessType) }}</span>
+                  <span class="permissions-cell-ellipsis font-medium" [pTooltip]="getAccessTypeLabel(row.accessType)"
+                    tooltipPosition="top">{{ getAccessTypeLabel(row.accessType) }}</span>
                 </div>
               </ng-template>
             </td>
@@ -115,8 +113,8 @@
                 </ng-container>
                 <ng-template #showRelatedLabel>
                   <div class="flex min-w-0 w-full">
-                    <span class="permissions-cell-ellipsis text-700"
-                      [pTooltip]="getRelatedTargetCellText(row)" tooltipPosition="top">{{ getRelatedTargetCellText(row) }}</span>
+                    <span class="permissions-cell-ellipsis text-700" [pTooltip]="getRelatedTargetCellText(row)"
+                      tooltipPosition="top">{{ getRelatedTargetCellText(row) }}</span>
                   </div>
                 </ng-template>
               </ng-template>
@@ -159,78 +157,81 @@
         </ng-template>
       </p-table>
 
-      <h3 class="text-lg font-semibold mb-2 mt-4">
-        {{ 'fileSystem.entityAdmin.permissionsAdmin.effectiveAccessTitle' | translate }}
-      </h3>
-      <p class="text-600 text-sm mb-3 m-0">
-        {{ 'fileSystem.entityAdmin.permissionsAdmin.effectiveAccessDescription' | translate }}
-      </p>
+      <div id="effective-access-by-account">
+        <h3 class="text-lg font-semibold mb-2 mt-4">
+          {{ 'fileSystem.entityAdmin.permissionsAdmin.effectiveAccessTitle' | translate }}
+        </h3>
+        <p class="text-600 text-sm mb-3 m-0">
+          {{ 'fileSystem.entityAdmin.permissionsAdmin.effectiveAccessDescription' | translate }}
+        </p>
 
-      <p-table #effectiveAccountsTable [value]="effectiveAccountsTableValue" [paginator]="true"
-        [rows]="effectiveAccessTableRows" [rowsPerPageOptions]="effectiveAccessRowsPerPageOptions"
-        [showCurrentPageReport]="true"
-        [currentPageReportTemplate]="('fileSystem.entityAdmin.permissionsAdmin.effectiveAccessPageReport' | translate)"
-        [globalFilterFields]="['tableSearchText']" responsiveLayout="scroll"
-        styleClass="p-datatable-sm permissions-admin-table">
-        <ng-template pTemplate="caption">
-          <div class="flex align-items-center justify-content-between gap-3 mb-2 flex-wrap">
-            <span class="p-input-icon-left flex-1 min-w-200px max-w-md">
-              <ng-container *ngIf="effectiveAccountsTableSkeletonActive; else effectiveAccessSearchInput">
-                <p-skeleton height="2.5rem" width="100%" borderRadius="6px"></p-skeleton>
-              </ng-container>
-              <ng-template #effectiveAccessSearchInput>
-                <i class="pi pi-search"></i>
-                <input pInputText type="text"
-                  (input)="effectiveAccountsTable.filterGlobal($any($event.target).value, 'contains')"
-                  [placeholder]="'fileSystem.entityAdmin.permissionsAdmin.effectiveAccessSearchPlaceholder' | translate"
-                  class="w-full" />
-              </ng-template>
-            </span>
-          </div>
-        </ng-template>
-        <ng-template pTemplate="header">
-          <tr>
-            <th style="width: 18rem" class="text-start">{{ 'fileSystem.entityAdmin.permissionsAdmin.effectiveAccessAccount' | translate
-              }}</th>
-            <th class="text-center" style="width: 11rem">{{
-              'fileSystem.entityAdmin.permissionsAdmin.accessRight' | translate }}</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-row>
-          <tr>
-            <td style="width: 18rem" class="text-start">
-              <ng-container *ngIf="effectiveAccountsTableSkeletonActive; else effectiveAccountCell">
-                <p-skeleton height="1.25rem" width="14rem" borderRadius="4px"></p-skeleton>
-              </ng-container>
-              <ng-template #effectiveAccountCell>
-                <div class="flex min-w-0 w-full">
-                  <span class="permissions-cell-ellipsis font-medium"
-                    [pTooltip]="formatEffectiveAccountCell(row)" tooltipPosition="top">{{ formatEffectiveAccountCell(row) }}</span>
-                </div>
-              </ng-template>
-            </td>
-            <td class="text-center permissions-access-right-cell" style="width: 11rem">
-              <ng-container *ngIf="effectiveAccountsTableSkeletonActive; else effectiveRightCell">
-                <div class="flex justify-content-center">
-                  <p-skeleton height="1.5rem" width="6.5rem" borderRadius="16px"></p-skeleton>
-                </div>
-              </ng-container>
-              <ng-template #effectiveRightCell>
-                <p-tag [value]="getAccessRightLabel(row.accessRight)"
-                  [severity]="getAccessRightSeverity(row.accessRight)"
-                  styleClass="permissions-access-right-tag"></p-tag>
-              </ng-template>
-            </td>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="emptymessage">
-          <tr>
-            <td colspan="2" class="text-center p-4 text-500">
-              {{ 'fileSystem.entityAdmin.permissionsAdmin.noEffectiveAccounts' | translate }}
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
+        <p-table #effectiveAccountsTable [value]="effectiveAccountsTableValue" [paginator]="true"
+          [rows]="effectiveAccessTableRows" [rowsPerPageOptions]="effectiveAccessRowsPerPageOptions"
+          [showCurrentPageReport]="true"
+          [currentPageReportTemplate]="('fileSystem.entityAdmin.permissionsAdmin.effectiveAccessPageReport' | translate)"
+          [globalFilterFields]="['tableSearchText']" responsiveLayout="scroll"
+          styleClass="p-datatable-sm permissions-admin-table">
+          <ng-template pTemplate="caption">
+            <div class="flex align-items-center justify-content-between gap-3 mb-2 flex-wrap">
+              <span class="p-input-icon-left flex-1 min-w-200px max-w-md">
+                <ng-container *ngIf="effectiveAccountsTableSkeletonActive; else effectiveAccessSearchInput">
+                  <p-skeleton height="2.5rem" width="100%" borderRadius="6px"></p-skeleton>
+                </ng-container>
+                <ng-template #effectiveAccessSearchInput>
+                  <i class="pi pi-search"></i>
+                  <input pInputText type="text"
+                    (input)="effectiveAccountsTable.filterGlobal($any($event.target).value, 'contains')"
+                    [placeholder]="'fileSystem.entityAdmin.permissionsAdmin.effectiveAccessSearchPlaceholder' | translate"
+                    class="w-full" />
+                </ng-template>
+              </span>
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width: 18rem" class="text-start">{{
+                'fileSystem.entityAdmin.permissionsAdmin.effectiveAccessAccount' | translate
+                }}</th>
+              <th class="text-center" style="width: 11rem">{{
+                'fileSystem.entityAdmin.permissionsAdmin.accessRight' | translate }}</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-row>
+            <tr>
+              <td style="width: 18rem" class="text-start">
+                <ng-container *ngIf="effectiveAccountsTableSkeletonActive; else effectiveAccountCell">
+                  <p-skeleton height="1.25rem" width="14rem" borderRadius="4px"></p-skeleton>
+                </ng-container>
+                <ng-template #effectiveAccountCell>
+                  <div class="flex min-w-0 w-full">
+                    <span class="permissions-cell-ellipsis font-medium" [pTooltip]="formatEffectiveAccountCell(row)"
+                      tooltipPosition="top">{{ formatEffectiveAccountCell(row) }}</span>
+                  </div>
+                </ng-template>
+              </td>
+              <td class="text-center permissions-access-right-cell" style="width: 11rem">
+                <ng-container *ngIf="effectiveAccountsTableSkeletonActive; else effectiveRightCell">
+                  <div class="flex justify-content-center">
+                    <p-skeleton height="1.5rem" width="6.5rem" borderRadius="16px"></p-skeleton>
+                  </div>
+                </ng-container>
+                <ng-template #effectiveRightCell>
+                  <p-tag [value]="getAccessRightLabel(row.accessRight)"
+                    [severity]="getAccessRightSeverity(row.accessRight)"
+                    styleClass="permissions-access-right-tag"></p-tag>
+                </ng-template>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="2" class="text-center p-4 text-500">
+                {{ 'fileSystem.entityAdmin.permissionsAdmin.noEffectiveAccounts' | translate }}
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
     </div>
   </div>
 </div>
@@ -243,10 +244,8 @@
     <div class="field mb-3">
       <label>{{ 'fileSystem.entityAdmin.permissionsAdmin.accessType' | translate }}</label>
       <p-dropdown appendTo="body" [options]="accessTypeOptions" [(ngModel)]="addAccessType" optionLabel="label"
-        optionValue="value" [style]="{ width: '100%' }" class="mt-2" (onChange)="onAccessTypeChange()"></p-dropdown>
-      <small class="text-500 block mt-2">
-        {{ 'fileSystem.entityAdmin.permissionsAdmin.accessTypeHint' | translate }}
-      </small>
+        optionValue="value" [style]="{ width: '100%' }" class="mt-2" (onChange)="onAccessTypeChange()"
+        [placeholder]="'fileSystem.entityAdmin.permissionsAdmin.selectAccessTypePlaceholder' | translate"></p-dropdown>
     </div>
 
     <div class="field mb-3" *ngIf="requiresRelatedTargets()">
@@ -255,8 +254,10 @@
         <input pInputText [(ngModel)]="relatedTargetsSearchText"
           [placeholder]="'fileSystem.entityAdmin.permissionsAdmin.relatedTargetsSearchPlaceholder' | translate"
           class="w-full mb-2" />
-        <p-table [value]="filteredRelatedTargetOptions" [loading]="loadingRelatedTargets" [paginator]="true" [rows]="5"
-          [rowsPerPageOptions]="[5, 10, 25]" responsiveLayout="scroll" styleClass="p-datatable-sm">
+        <p-table
+          [value]="loadingRelatedTargets && filteredRelatedTargetOptions.length === 0 ? [1, 2, 3, 4, 5] : filteredRelatedTargetOptions"
+          [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5, 10, 25]" responsiveLayout="scroll"
+          styleClass="p-datatable-sm">
           <ng-template pTemplate="header">
             <tr>
               <th style="width: 3rem;"></th>
@@ -267,22 +268,46 @@
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-row>
-            <tr [class.selected-row]="isRelatedTargetSelected(row.id)" (click)="toggleRelatedTargetSelection(row.id)"
-              style="cursor: pointer;">
-              <td>
-                <p-checkbox [binary]="true" [ngModel]="isRelatedTargetSelected(row.id)" [readonly]="true"></p-checkbox>
-              </td>
-              <td>
-                <span class="font-semibold">#{{ row.id }}</span>
-              </td>
-              <td>
-                <span class="permissions-cell-ellipsis block max-w-full">{{ row.name }}</span>
-              </td>
-              <td *ngIf="showRelatedTargetsEntityColumn" class="min-w-0" style="width: 14rem">
-                <span class="permissions-cell-ellipsis block max-w-full" [pTooltip]="row.entityLabel"
-                  tooltipPosition="top">{{ row.entityLabel }}</span>
-              </td>
-            </tr>
+            <ng-container
+              *ngIf="loadingRelatedTargets && filteredRelatedTargetOptions.length === 0; else relatedTargetsLoadedRow">
+              <tr style="cursor: default;">
+                <td style="width: 3rem;">
+                  <p-skeleton width="1.25rem" height="1.25rem" borderRadius="4px"></p-skeleton>
+                </td>
+                <td style="width: 8rem;">
+                  <p-skeleton height="1.25rem" width="4rem" borderRadius="4px"></p-skeleton>
+                </td>
+                <td>
+                  <span class="permissions-cell-ellipsis block max-w-full">
+                    <p-skeleton height="1.25rem" width="100%" borderRadius="4px"></p-skeleton>
+                  </span>
+                </td>
+                <td *ngIf="showRelatedTargetsEntityColumn" class="min-w-0" style="width: 14rem">
+                  <span class="permissions-cell-ellipsis block max-w-full">
+                    <p-skeleton height="1.25rem" width="100%" borderRadius="4px"></p-skeleton>
+                  </span>
+                </td>
+              </tr>
+            </ng-container>
+            <ng-template #relatedTargetsLoadedRow>
+              <tr [class.selected-row]="isRelatedTargetSelected(row.id)" (click)="toggleRelatedTargetSelection(row.id)"
+                [style.cursor]="loadingRelatedTargets ? 'default' : 'pointer'">
+                <td>
+                  <p-checkbox [binary]="true" [ngModel]="isRelatedTargetSelected(row.id)"
+                    [readonly]="true"></p-checkbox>
+                </td>
+                <td>
+                  <span class="font-semibold">#{{ row.id }}</span>
+                </td>
+                <td>
+                  <span class="permissions-cell-ellipsis block max-w-full">{{ row.name }}</span>
+                </td>
+                <td *ngIf="showRelatedTargetsEntityColumn" class="min-w-0" style="width: 14rem">
+                  <span class="permissions-cell-ellipsis block max-w-full" [pTooltip]="row.entityLabel"
+                    tooltipPosition="top">{{ row.entityLabel }}</span>
+                </td>
+              </tr>
+            </ng-template>
           </ng-template>
           <ng-template pTemplate="emptymessage">
             <tr>
@@ -301,24 +326,16 @@
           <span *ngIf="!selected.entityLabel">{{ selected.name }}</span>
         </span>
       </div>
-      <small class="text-500 block mt-2">
-        {{ 'fileSystem.entityAdmin.permissionsAdmin.relatedTargetsHint' | translate }}
-      </small>
       <small class="p-error block mt-2" *ngIf="relatedTargetsTouched && selectedRelatedTargetIds.length === 0">
         {{ 'fileSystem.entityAdmin.permissionsAdmin.relatedIdsRequired' | translate }}
       </small>
     </div>
 
-    <div class="field mb-3" *ngIf="!requiresRelatedTargets() && addAccessType === 5">
-      <small class="text-500 block">
-        {{ 'fileSystem.entityAdmin.permissionsAdmin.relatedTargetsNotRequiredForAll' | translate }}
-      </small>
-    </div>
-
     <div class="field">
       <label>{{ 'fileSystem.entityAdmin.permissionsAdmin.accessRight' | translate }}</label>
-      <p-dropdown [options]="accessRightOptions" [(ngModel)]="addAccessRight" optionLabel="label" optionValue="value"
-        [style]="{ width: '100%' }" class="mt-2"></p-dropdown>
+      <p-dropdown appendTo="body" [options]="accessRightOptions" [(ngModel)]="addAccessRight" optionLabel="label"
+        optionValue="value" [style]="{ width: '100%' }" class="mt-2"
+        [placeholder]="'fileSystem.entityAdmin.permissionsAdmin.selectAccessRightPlaceholder' | translate"></p-dropdown>
     </div>
   </div>
 
