@@ -1,10 +1,27 @@
-<div class="company-storage-osfs card p-0 overflow-hidden">
-  <div class="company-storage-osfs__chrome border-bottom-1 surface-border">
-    <div class="company-storage-osfs__top flex flex-column gap-3 p-4">
+<ng-container *ngIf="fileSystemId > 0; else osfsFileSystemPicker">
+  <div class="osfs-page-explorer card p-4">
+    <div class="osfs-page-explorer__toolbar flex align-items-center gap-2 mb-3 flex-wrap">
+      <button
+        pButton
+        pRipple
+        type="button"
+        icon="pi pi-arrow-left"
+        [label]="'fileSystem.osfs.backToFileSystems' | translate"
+        [routerLink]="['/document-control', 'storage-content-management', 'osfs']"
+        class="p-button-outlined">
+      </button>
+    </div>
+    <app-folder-management [fileSystemId]="fileSystemId"></app-folder-management>
+  </div>
+</ng-container>
+<ng-template #osfsFileSystemPicker>
+<div class="osfs-page card p-0 overflow-hidden">
+  <div class="osfs-page__chrome border-bottom-1 surface-border">
+    <div class="osfs-page__top flex flex-column gap-3 p-4">
       <div class="flex flex-column md:flex-row md:align-items-start md:justify-content-between gap-3">
-        <div class="company-storage-osfs__header flex-1 min-w-0">
-          <h1 class="company-storage-osfs__title">{{ 'fileSystem.companyStorageView.title' | translate }}</h1>
-          <p class="company-storage-osfs__subtitle">{{ 'fileSystem.osfs.cardsSubtitle' | translate }}</p>
+        <div class="osfs-page__header flex-1 min-w-0">
+          <h1 class="osfs-page__title">{{ 'fileSystem.osfs.viewTitle' | translate }}</h1>
+          <p class="osfs-page__subtitle">{{ 'fileSystem.osfs.cardsSubtitle' | translate }}</p>
         </div>
         <div class="flex-shrink-0 align-self-stretch md:align-self-start">
           <button
@@ -41,9 +58,6 @@
                 <p-skeleton width="4.25rem" height="1.35rem" borderRadius="6px"></p-skeleton>
               </div>
             </div>
-            <div class="osfs-tile__sub--skeleton" aria-hidden="true">
-              <p-skeleton width="78%" height="0.825rem" borderRadius="4px"></p-skeleton>
-            </div>
           </div>
         </div>
       </div>
@@ -79,13 +93,10 @@
                 styleClass="osfs-tile__tag">
               </p-tag>
             </div>
-            <span *ngIf="fs.driveId > 0" class="osfs-tile__sub">
-              {{ 'fileSystem.osfs.driveId' | translate: { id: fs.driveId } }}
-            </span>
-            <span *ngIf="fs.driveId <= 0" class="osfs-tile__sub osfs-tile__sub--spacer" aria-hidden="true"></span>
           </div>
         </div>
       </div>
     </ng-template>
   </div>
 </div>
+</ng-template>

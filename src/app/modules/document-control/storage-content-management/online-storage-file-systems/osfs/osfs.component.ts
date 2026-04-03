@@ -3,23 +3,31 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
-import { FsPermissionsService } from '../../storage/folder-management/services/fs-permissions.service';
+import { FsPermissionsService } from '../folder-management/services/fs-permissions.service';
 
 export interface OsfsFileSystemCard {
   id: number;
   name: string;
   accessRight: number;
-  driveId: number;
+}
+
+interface ListAccountFileSystemsMessageItem {
+  file_system_id: number;
+  file_system_name: string;
+  access_right: string | number;
+  access_right_type: string;
+  permission_id: number;
 }
 
 @Component({
-  selector: 'app-company-storage',
-  templateUrl: './company-storage.component.html',
-  styleUrls: ['./company-storage.component.scss'],
+  selector: 'app-osfs',
+  templateUrl: './osfs.component.html',
+  styleUrls: ['./osfs.component.scss'],
 })
-export class CompanyStorageComponent implements OnInit {
+export class OsfsComponent implements OnInit {
   fileSystems: OsfsFileSystemCard[] = [];
   loadingList = false;
+  fileSystemId = 0;
   readonly cardSkeletonIndices = Array.from({ length: 15 }, (_, i) => i);
 
   constructor(
@@ -29,10 +37,23 @@ export class CompanyStorageComponent implements OnInit {
     private fsPermissionsService: FsPermissionsService,
     private router: Router,
     private route: ActivatedRoute
-  ) {}
+  ) { }
 
   ngOnInit(): void {
-    this.loadAccountFileSystems();
+    this.route.paramMap.subscribe((pm) => {
+      const raw = pm.get('fileSystemId');
+      if (raw === null || raw === '') {
+        this.fileSystemId = 0;
+        this.loadAccountFileSystems();
+        return;
+      }
+      const id = Number(raw);
+      if (!Number.isFinite(id) || id <= 0) {
+        void this.router.navigate(['/document-control/storage-content-management/osfs']);
+        return;
+      }
+      this.fileSystemId = id;
+    });
   }
 
   loadAccountFileSystems(): void {
@@ -51,18 +72,13 @@ export class CompanyStorageComponent implements OnInit {
           this.fileSystems = [];
           return;
         }
-        const msg = response?.message;
-        const list = Array.isArray(msg) ? msg : msg && typeof msg === 'object' ? Object.values(msg as object) : [];
-        this.fileSystems = (list || [])
-          .map((item: any) => ({
-            id: Number(item?.file_system_id ?? item?.file_System_ID ?? item?.File_System_ID ?? 0),
-            name: String(item?.file_system_name ?? item?.name ?? item?.Name ?? ''),
-            accessRight: Number(
-              item?.access_right ?? item?.access_Right ?? item?.Access_Right ?? item?.effective_access_right ?? -1
-            ),
-            driveId: Number(item?.drive_ID ?? item?.Drive_ID ?? item?.driveId ?? 0),
-          }))
-          .filter((fs: OsfsFileSystemCard) => fs.id > 0 && fs.name.trim() !== '');
+        this.fileSystems = Object.values(
+          response.message as Record<string, ListAccountFileSystemsMessageItem>
+        ).map((item) => ({
+          id: item.file_system_id,
+          name: item.file_system_name,
+          accessRight: Number(item.access_right),
+        }));
       },
       error: () => {
         this.loadingList = false;
@@ -72,7 +88,7 @@ export class CompanyStorageComponent implements OnInit {
   }
 
   openFileSystem(row: OsfsFileSystemCard): void {
-    void this.router.navigate(['folder', row.id], { relativeTo: this.route.parent });
+    void this.router.navigate(['folder', row.id], { relativeTo: this.route });
   }
 
   fileSystemCardAccessRight(card: OsfsFileSystemCard | null | undefined): number {

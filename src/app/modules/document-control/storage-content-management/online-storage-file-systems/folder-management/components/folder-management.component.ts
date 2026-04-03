@@ -11,9 +11,7 @@ import { FileDownloadService } from 'src/app/core/file-system-lib/services/file-
 import { isFolderNameValid } from 'src/app/core/validators/folder-name.validator';
 import { AccessRight, FsPermissionsService } from '../services/fs-permissions.service';
 
-/**
- * Represents a folder tree node with additional metadata.
- */
+
 export interface FolderTreeNode extends TreeNode {
   data: {
     folderId: number;
@@ -22,26 +20,21 @@ export interface FolderTreeNode extends TreeNode {
   };
 }
 
-/**
- * Represents a row in the folder contents table (can be folder or file).
- */
+
 export interface FolderContentRow {
   id: number;
   name: string;
   type: 'folder' | 'file' | 'back';
   size?: string;
-  /** Created timestamp (ISO string from API). */
+
   created?: string;
-  /** Last modified timestamp (kept for dialogs/compatibility). */
+
   modified?: string;
   isFolder: boolean;
   isBackButton?: boolean;
 }
 
-/**
- * Folder management component for a selected File System.
- * Provides folder tree navigation, folder CRUD operations, and folder contents display.
- */
+
 @Component({
   selector: 'app-folder-management',
   templateUrl: './folder-management.component.html',

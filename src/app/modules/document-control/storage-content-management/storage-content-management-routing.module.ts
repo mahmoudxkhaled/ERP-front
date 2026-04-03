@@ -1,38 +1,26 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { StorageContentLayoutComponent } from './storage-content-layout/storage-content-layout.component';
 import { StorageContentLandingComponent } from './storage-content-landing/storage-content-landing.component';
-import { CompanyStorageComponent } from './company-storage/company-storage.component';
-import { CompanyStorageShellComponent } from './company-storage-shell/company-storage-shell.component';
-import { CompanyStorageFolderComponent } from './company-storage-folder/company-storage-folder.component';
-import { SharedFilesComponent } from './shared-files/shared-files.component';
-import { DcsComponent } from './dcs/dcs.component';
-import { EdmsComponent } from './edms/edms.component';
+import { OsfsComponent } from './online-storage-file-systems/osfs/osfs.component';
+import { SharedFilesComponent } from './shared-file-systems/shared-files/shared-files.component';
+import { DcsComponent } from './document-control-system/dcs/dcs.component';
+import { EdmsComponent } from './electronic-document-management-system/edms/edms.component';
 
 const routes: Routes = [
+    { path: '', component: StorageContentLandingComponent },
     {
-        path: '',
-        component: StorageContentLayoutComponent,
-        children: [
-            { path: '', component: StorageContentLandingComponent },
-            {
-                path: 'company-storage',
-                component: CompanyStorageShellComponent,
-                data: { breadcrumb: 'fileSystemOSFS' },
-                children: [
-                    {
-                        path: 'folder/:fileSystemId',
-                        component: CompanyStorageFolderComponent,
-                        data: { breadcrumb: 'fileSystemOsfsExplorer' },
-                    },
-                    { path: '', component: CompanyStorageComponent },
-                ],
-            },
-            { path: 'shared-files', component: SharedFilesComponent, data: { breadcrumb: 'fileSystemSFS' } },
-            { path: 'document-control-system', component: DcsComponent, data: { breadcrumb: 'fileSystemDCS' } },
-            { path: 'electronic-document-management-system', component: EdmsComponent, data: { breadcrumb: 'fileSystemEDMS' } }
-        ]
-    }
+        path: 'osfs/folder/:fileSystemId',
+        component: OsfsComponent,
+        data: { breadcrumb: 'fileSystemOsfsExplorer' },
+    },
+    {
+        path: 'osfs',
+        component: OsfsComponent,
+        data: { breadcrumb: 'fileSystemOSFS' },
+    },
+    { path: 'shared-files', component: SharedFilesComponent, data: { breadcrumb: 'fileSystemSFS' } },
+    { path: 'document-control-system', component: DcsComponent, data: { breadcrumb: 'fileSystemDCS' } },
+    { path: 'electronic-document-management-system', component: EdmsComponent, data: { breadcrumb: 'fileSystemEDMS' } },
 ];
 
 @NgModule({
