@@ -27,7 +27,7 @@ export interface FileSystemAccessPermissionRow {
   tableSearchText?: string;
 }
 
-export interface FileSystemPermissionsAdminResult {
+export interface FileSystemPermissionsResult {
   permissions: FileSystemAccessPermissionRow[];
   accountsAccessRights: AccountsAccessRightsMap | null;
   raw: ListFileSystemPermissionsMessage | Record<string, unknown>;
@@ -35,7 +35,7 @@ export interface FileSystemPermissionsAdminResult {
 
 
 @Injectable({ providedIn: 'root' })
-export class FileSystemPermissionsAdminService {
+export class FileSystemPermissionsService {
   isLoadingSubject = new BehaviorSubject<boolean>(false);
 
   constructor(
@@ -95,7 +95,7 @@ export class FileSystemPermissionsAdminService {
       .pipe(finalize(() => this.isLoadingSubject.next(false)));
   }
 
-  mapPermissionsResponse(response: any): FileSystemPermissionsAdminResult {
+  mapPermissionsResponse(response: any): FileSystemPermissionsResult {
     const message = response.message as ListFileSystemPermissionsMessage;
     const permissions: FileSystemAccessPermissionRow[] = message.access_Rights!.map((item) => {
       const permissionId = Number(item.permission_ID);
@@ -114,4 +114,3 @@ export class FileSystemPermissionsAdminService {
     };
   }
 }
-

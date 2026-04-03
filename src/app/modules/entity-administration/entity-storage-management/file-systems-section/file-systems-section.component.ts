@@ -8,7 +8,7 @@ import { VirtualDrivesService } from 'src/app/modules/system-administration/syst
 import { FileSystemsService } from '../services/file-systems.service';
 import { VirtualDrivesFilters } from 'src/app/modules/system-administration/system-storage-management/models/virtual-drive.model';
 import { FileSystemListItem, FileSystemOwnerContext } from '../models/file-system.model';
-import { FileSystemPermissionsAdminService } from '../services/file-system-permissions-admin.service';
+import { FileSystemPermissionsService } from '../services/file-system-permissions.service';
 
 
 @Component({
@@ -82,7 +82,7 @@ export class FileSystemsSectionComponent implements OnInit {
     private virtualDrivesService: VirtualDrivesService,
     private fileSystemsService: FileSystemsService,
     private router: Router,
-    private fileSystemPermissionsAdminService: FileSystemPermissionsAdminService
+    private fileSystemPermissionsService: FileSystemPermissionsService
   ) { }
 
   get fileSystemsTableValue(): FileSystemListItem[] {
@@ -210,10 +210,10 @@ export class FileSystemsSectionComponent implements OnInit {
         let accounts = 0;
         try {
           const response: any = await firstValueFrom(
-            this.fileSystemPermissionsAdminService.listFileSystemPermissions(id)
+            this.fileSystemPermissionsService.listFileSystemPermissions(id)
           );
           if (response?.success) {
-            const mapped = this.fileSystemPermissionsAdminService.mapPermissionsResponse(response);
+            const mapped = this.fileSystemPermissionsService.mapPermissionsResponse(response);
             rules = mapped.permissions.length;
             const acc = mapped.accountsAccessRights;
             accounts =

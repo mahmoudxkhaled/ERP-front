@@ -6,7 +6,7 @@ import { MessageService } from 'primeng/api';
 import { firstValueFrom } from 'rxjs';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
-import { FileSystemPermissionsAdminService, FileSystemAccessPermissionRow } from '../services/file-system-permissions-admin.service';
+import { FileSystemPermissionsService, FileSystemAccessPermissionRow } from '../services/file-system-permissions.service';
 import { EntitiesService } from '../../entities/services/entities.service';
 import { EntityGroupsService } from '../../entity-groups/services/entity-groups.service';
 import { RolesService } from '../../roles/services/roles.service';
@@ -83,7 +83,7 @@ export class FileSystemsPermissionsComponent implements OnInit {
     private ngxTranslate: TranslateService,
     private messageService: MessageService,
     private localStorageService: LocalStorageService,
-    private permissionsAdminService: FileSystemPermissionsAdminService,
+    private fileSystemPermissionsService: FileSystemPermissionsService,
     private entitiesService: EntitiesService,
     private entityGroupsService: EntityGroupsService,
     private rolesService: RolesService
@@ -192,7 +192,7 @@ export class FileSystemsPermissionsComponent implements OnInit {
     this.permissions = [];
     this.effectiveAccountRows = [];
 
-    this.permissionsAdminService.listFileSystemPermissions(this.selectedFileSystemId).subscribe({
+    this.fileSystemPermissionsService.listFileSystemPermissions(this.selectedFileSystemId).subscribe({
       next: (response: any) => {
         this.loadingPermissions = false;
         if (!response?.success) {
@@ -200,7 +200,7 @@ export class FileSystemsPermissionsComponent implements OnInit {
           this.handleBusinessError('listPermissions', response);
           return;
         }
-        const mapped = this.permissionsAdminService.mapPermissionsResponse(response);
+        const mapped = this.fileSystemPermissionsService.mapPermissionsResponse(response);
         this.permissions = mapped.permissions;
         this.rebuildEffectiveAccountRows(mapped.accountsAccessRights);
         this.refreshPermissionTableSearchText();
@@ -273,7 +273,7 @@ export class FileSystemsPermissionsComponent implements OnInit {
     }
 
     this.loadingPermissions = true;
-    this.permissionsAdminService.setFileSystemAccessPermission(this.selectedFileSystemId, accessType, relatedIds, accessRight).subscribe({
+    this.fileSystemPermissionsService.setFileSystemAccessPermission(this.selectedFileSystemId, accessType, relatedIds, accessRight).subscribe({
       next: (response: any) => {
         this.loadingPermissions = false;
         if (!response?.success) {
@@ -310,7 +310,7 @@ export class FileSystemsPermissionsComponent implements OnInit {
     }
     const row = this.selectedPermissionForRemove;
     this.loadingPermissions = true;
-    this.permissionsAdminService.removeFileSystemAccessPermission(this.selectedFileSystemId, row.accessType, row.relatedIds).subscribe({
+    this.fileSystemPermissionsService.removeFileSystemAccessPermission(this.selectedFileSystemId, row.accessType, row.relatedIds).subscribe({
       next: (response: any) => {
         this.loadingPermissions = false;
         if (!response?.success) {
@@ -347,7 +347,7 @@ export class FileSystemsPermissionsComponent implements OnInit {
       return;
     }
     this.loadingPermissions = true;
-    this.permissionsAdminService.clearFileSystemPermissions(this.selectedFileSystemId).subscribe({
+    this.fileSystemPermissionsService.clearFileSystemPermissions(this.selectedFileSystemId).subscribe({
       next: (response: any) => {
         this.loadingPermissions = false;
         if (!response?.success) {

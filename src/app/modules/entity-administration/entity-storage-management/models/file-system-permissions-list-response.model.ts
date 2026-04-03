@@ -1,7 +1,3 @@
-import {
-  getAccessRightKey,
-  getAccessTypeKey,
-} from '../shared/file-system-access-helpers';
 
 
 export interface ListFileSystemPermissionsMessage {
@@ -64,10 +60,4 @@ export function parseAccountsAccessRights(map: AccountsAccessRightsMap | null | 
   return out;
 }
 
-export function getFileSystemAccessRightTranslationKey(accessRight: number): string {
-  return getAccessRightKey(accessRight);
-}
 
-export function getFileSystemAccessRightTypeTranslationKey(accessRightType: number): string {
-  return getAccessTypeKey(accessRightType);
-}
