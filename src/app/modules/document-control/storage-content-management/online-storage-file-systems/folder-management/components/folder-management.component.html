@@ -252,7 +252,7 @@
                                                     [attr.aria-label]="'fileSystem.folderManagement.breadcrumbEllipsisAria' | translate"
                                                     [pTooltip]="'fileSystem.folderManagement.breadcrumbEllipsisTooltip' | translate"
                                                     tooltipPosition="top" tooltipEvent="hover"
-                                                    (click)="openBreadcrumbEllipsisMenu($event, piece)">
+                                                    (click)="openBreadcrumbEllipsisMenu($event, piece.hidden)">
                                                     …
                                                 </button>
                                                 <button *ngIf="piece.kind === 'segment' && !piece.isLast" type="button"

@@ -35,7 +35,7 @@ export interface FolderContentRow {
   isBackButton?: boolean;
 }
 
-export type FolderBreadcrumbNavPiece =
+type FolderBreadcrumbNavPiece =
   | { kind: 'segment'; folderId: number; label: string; isLast: boolean }
   | { kind: 'ellipsis'; hidden: Array<{ folderId: number; label: string }> };
 
@@ -481,11 +481,11 @@ export class FolderManagementComponent implements OnInit, OnChanges, OnDestroy {
     ];
   }
 
-  openBreadcrumbEllipsisMenu(event: MouseEvent, piece: FolderBreadcrumbNavPiece): void {
+  openBreadcrumbEllipsisMenu(
+    event: MouseEvent,
+    hidden: Array<{ folderId: number; label: string }>
+  ): void {
     event.stopPropagation();
-    if (piece.kind !== 'ellipsis') {
-      return;
-    }
     if (this.breadcrumbEllipsisOpen) {
       this.closeBreadcrumbEllipsisPanel();
       return;
@@ -496,13 +496,10 @@ export class FolderManagementComponent implements OnInit, OnChanges, OnDestroy {
     if (!anchor) {
       return;
     }
-    this.breadcrumbEllipsisHiddenFolders = piece.hidden.map((s) => ({
-      folderId: s.folderId,
-      label: s.label
-    }));
+    this.breadcrumbEllipsisHiddenFolders = [...hidden];
     const r = anchor.getBoundingClientRect();
     const gap = 4;
-    const panelMinWidth = 220;
+    const panelMinWidth = 240;
     let left = r.left;
     const maxLeft = window.innerWidth - panelMinWidth - 8;
     if (left > maxLeft) {
