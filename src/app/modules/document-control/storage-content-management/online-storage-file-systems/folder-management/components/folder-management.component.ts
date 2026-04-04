@@ -41,14 +41,14 @@ export interface FolderContentRow {
   styleUrls: ['./folder-management.component.scss']
 })
 export class FolderManagementComponent implements OnInit, OnChanges {
-  /** File System ID received from parent component. Must be > 0. */
+
   @Input() fileSystemId: number = 0;
 
   isLoading$: Observable<boolean>;
   treeLoading = false;
   tableLoadingSpinner = false;
 
-  /** Effective access right for current account on the selected file system. */
+
   effectiveAccessRight: AccessRight = 'None';
   permissionsLoading = false;
 
@@ -59,9 +59,9 @@ export class FolderManagementComponent implements OnInit, OnChanges {
 
   folderContents: FolderContentRow[] = [];
   showDeletedFolders = false;
-  /** Cache of calculated folder sizes (folderId -> formatted string). */
+
   folderSizeCache = new Map<number, string>();
-  /** Folder IDs currently being calculated (show spinner). */
+
   folderSizeLoading = new Set<number>();
 
   createFolderDialogVisible = false;
@@ -82,14 +82,14 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   newFolderName = '';
   newFolderParentId: number = 0;
   renameFolderName = '';
-  /** Validation error for create folder name (e.g. invalid characters). */
+
   createFolderNameError: string | null = null;
-  /** Validation error for rename folder name. */
+
   renameFolderNameError: string | null = null;
   selectedFolderForRename: FolderTreeNode | null = null;
   selectedFolderForMove: FolderTreeNode | null = null;
   selectedFolderForDelete: FolderTreeNode | null = null;
-  /** When 'root', move to top level (no parent). When 'folder', user must select a folder in the tree. */
+
   moveDestinationKind: 'root' | 'folder' = 'folder';
   moveDestinationNode: TreeNode | null = null;
   selectedFolderForRestore: FolderTreeNode | null = null;
@@ -98,15 +98,15 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   recycleBinLoading = false;
   deletedFolders: Folder[] = [];
   deletedFiles: any[] = [];
-  /** Search text for deleted folders table (front-end filter). */
+
   recycleBinFolderSearch = '';
-  /** Search text for deleted files table (front-end filter). */
+
   recycleBinFileSearch = '';
-  /** Selected folder rows (table selection). */
+
   selectedFoldersToRestore: Folder[] = [];
-  /** Selected file rows (table selection). */
+
   selectedFilesToRestore: any[] = [];
-  /** File IDs that could not be restored (duplicate name in target folder). User must uncheck before restoring again. */
+
   skippedFileIds = new Set<number>();
 
   folderMenuItems: MenuItem[] = [];
@@ -124,7 +124,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   selectedFileForDelete: FolderContentRow | null = null;
   fileDetails: any = null;
   fileDetailsLoading = false;
-  /** Error message when Get_File_Details API fails (e.g. CORS / server unavailable). */
+
   fileDetailsError: string | null = null;
   renameFileName = '';
   renameFileType = '';
@@ -292,9 +292,9 @@ export class FolderManagementComponent implements OnInit, OnChanges {
       }));
     }
     return list.map((item: any) => ({
-      folder_ID: Number(item?.folder_ID ?? item?.Folder_ID ?? 0),
-      parent_Folder_ID: Number(item?.parent_Folder_ID ?? item?.Parent_Folder_ID ?? 0),
-      folder_Name: String(item?.folder_Name ?? item?.Folder_Name ?? '')
+      folder_ID: Number(item?.folder_ID ?? 0),
+      parent_Folder_ID: Number(item?.parent_Folder_ID ?? 0),
+      folder_Name: String(item?.folder_Name ?? '')
     }));
   }
 
@@ -306,9 +306,9 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     const folderMap = new Map<number, TreeNode>();
 
     items.forEach((item) => {
-      const folderId = Number(item?.folder_ID ?? item?.Folder_ID ?? 0);
-      const folderName = String(item?.folder_Name ?? item?.Folder_Name ?? '');
-      const parentId = Number(item?.parent_Folder_ID ?? item?.Parent_Folder_ID ?? 0);
+      const folderId = Number(item?.folder_ID ?? 0);
+      const folderName = String(item?.folder_Name ?? '');
+      const parentId = Number(item?.parent_Folder_ID ?? 0);
 
       const node: FolderTreeNode = {
         label: folderName,
@@ -377,20 +377,20 @@ export class FolderManagementComponent implements OnInit, OnChanges {
 
         const folderRows: FolderContentRow[] = foldersList.map((folder: any) => ({
           id: Number(folder?.folder_id ?? folder?.folder_ID ?? folder?.Folder_ID ?? 0),
-          name: String(folder?.folder_name ?? folder?.folder_Name ?? folder?.Folder_Name ?? ''),
+          name: String(folder?.folder_name ?? folder?.folder_Name ?? ''),
           type: 'folder' as const,
           isFolder: true,
-          created: String(folder?.created_At ?? folder?.created_at ?? folder?.Created_At ?? ''),
-          modified: String(folder?.last_modified ?? folder?.last_modified_At ?? folder?.Last_Modified ?? '')
+          created: String(folder?.created_At ?? folder?.created_at ?? ''),
+          modified: String(folder?.last_modified ?? folder?.last_modified_At ?? '')
         }));
 
         const fileRows: FolderContentRow[] = filesList.map((file: any) => ({
           id: Number(file?.file_id ?? file?.file_ID ?? file?.File_ID ?? 0),
-          name: String(file?.file_name ?? file?.file_Name ?? file?.File_Name ?? ''),
+          name: String(file?.file_name ?? file?.file_Name ?? ''),
           type: 'file' as const,
           size: file?.size != null ? this.formatBytes(Number(file.size)) : '',
-          created: String(file?.created_At ?? file?.created_at ?? file?.Created_At ?? file?.created ?? ''),
-          modified: String(file?.last_modified ?? file?.modified_At ?? file?.Modified_At ?? ''),
+          created: String(file?.created_At ?? file?.created_at ?? file?.created ?? ''),
+          modified: String(file?.last_modified ?? file?.modified_At ?? ''),
           isFolder: false
         }));
 
@@ -424,13 +424,12 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     this.folderSizeLoading.add(row.id);
     this.folderService.getTotalFolderSize(row.id, this.fileSystemId).subscribe({
       next: (response: any) => {
-        console.log('response get total folder size', response);
         this.folderSizeLoading.delete(row.id);
-        if (response?.success && response?.message != null) {
-          const raw = response.message;
-          const totalSize = typeof raw === 'number' ? raw : Number(raw?.Total_Size ?? raw?.total_size ?? 0);
-          this.folderSizeCache.set(row.id, this.formatBytes(totalSize));
+        if (!response?.success) {
+          this.cdr.markForCheck();
+          return;
         }
+        this.folderSizeCache.set(row.id, this.formatBytes(response.message));
         this.cdr.markForCheck();
       },
       error: () => {
@@ -871,16 +870,11 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     this.fileDetailsDialogVisible = true;
 
     this.fileDetails = {
-      file_Name: file.name,
-      file_name: file.name,
       name: file.name,
-      file_Type: this.getContentRowType(file),
-      file_type: this.getContentRowType(file),
-      type: file.type,
-      size: file.size,
-      last_Modified: file.modified,
-      last_modified: file.modified,
-      modified: file.modified
+      fileType: this.getContentRowType(file),
+      size: file.size ?? '—',
+      modified: file.modified,
+      created: file.created,
     };
   }
 
@@ -1444,12 +1438,13 @@ export class FolderManagementComponent implements OnInit, OnChanges {
           return;
         }
         const raw = response.message ?? {};
-        const foldersList = raw.folders ?? raw.Folders ?? [];
-        const filesList = raw.files ?? raw.Files ?? [];
+        console.log('response load recycle bin contents', raw);
+        const foldersList = raw.Folders ?? [];
+        const filesList = raw.Files ?? [];
         this.deletedFolders = foldersList.map((f: any) => ({
-          folder_ID: Number(f?.folder_id ?? f?.folder_ID ?? f?.Folder_ID ?? 0),
-          folder_Name: String(f?.folder_name ?? f?.folder_Name ?? f?.Folder_Name ?? ''),
-          parent_Folder_ID: Number(f?.parent_folder_id ?? f?.parent_Folder_ID ?? f?.Parent_Folder_ID ?? 0),
+          folder_ID: Number(f?.folder_id ?? 0),
+          folder_Name: String(f?.folder_name ?? ''),
+          parent_Folder_ID: Number(f?.parent_folder_id ?? 0),
           file_System_ID: this.fileSystemId
         }));
 
@@ -1457,8 +1452,8 @@ export class FolderManagementComponent implements OnInit, OnChanges {
         if (result.folderStructure?.success && result.folderStructure?.message) {
           const structureItems = this.normalizeFolderStructureResponse(result.folderStructure.message);
           structureItems.forEach((item) => {
-            const id = item.folder_ID ?? (item as any).Folder_ID ?? 0;
-            const name = item.folder_Name ?? (item as any).Folder_Name ?? '';
+            const id = item.folder_ID ?? 0;
+            const name = item.folder_Name ?? '';
             if (id) folderIdToName[id] = name;
           });
         }
@@ -1467,13 +1462,13 @@ export class FolderManagementComponent implements OnInit, OnChanges {
         });
 
         this.deletedFiles = filesList.map((f: any) => {
-          const folderId = Number(f?.folder_id ?? f?.folder_ID ?? f?.Folder_ID ?? 0);
+          const folderId = Number(f?.folder_id ?? 0);
           const sizeBytes = Number(f?.size ?? f?.Size ?? 0);
           return {
-            file_id: Number(f?.file_id ?? f?.file_ID ?? f?.File_ID ?? 0),
+            file_id: Number(f?.file_id ?? 0),
             folder_id: folderId,
             folder_name: folderIdToName[folderId] ?? '',
-            file_name: String(f?.file_name ?? f?.file_Name ?? f?.File_Name ?? ''),
+            file_name: String(f?.file_name ?? ''),
             size: sizeBytes
           };
         });
@@ -1489,7 +1484,8 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   /** True if at least one folder or file is selected in the Recycle bin dialog. */
   /** Toggle folder selection when user clicks anywhere on the row (recycle bin folders table). */
   toggleRecycleBinFolderSelection(folder: Folder): void {
-    const key = folder.folder_ID ?? (folder as any).Folder_ID;
+    console.log('toggleRecycleBinFolderSelection', folder);
+    const key = folder.folder_ID;
     const idx = this.selectedFoldersToRestore.findIndex(
       (f) => (f.folder_ID ?? (f as any).Folder_ID) === key
     );
@@ -1503,9 +1499,10 @@ export class FolderManagementComponent implements OnInit, OnChanges {
 
   /** Toggle file selection when user clicks anywhere on the row (recycle bin files table). */
   toggleRecycleBinFileSelection(file: any): void {
-    const key = file.file_id ?? file.file_ID ?? file.File_ID;
+    console.log('toggleRecycleBinFileSelection', file);
+    const key = file.file_id;
     const idx = this.selectedFilesToRestore.findIndex(
-      (f) => (f.file_id ?? (f as any).file_ID ?? (f as any).File_ID) === key
+      (f) => (f.file_id) === key
     );
     if (idx === -1) {
       this.selectedFilesToRestore = [...this.selectedFilesToRestore, file];
@@ -1523,14 +1520,14 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   get canRestoreRecycleBin(): boolean {
     if (!this.hasRecycleBinSelection) return false;
     const hasSkippedSelected = this.selectedFilesToRestore.some((f) =>
-      this.skippedFileIds.has(Number(f?.file_id ?? f?.file_ID ?? f?.File_ID ?? 0))
+      this.skippedFileIds.has(Number(f?.file_id ?? 0))
     );
     return !hasSkippedSelected;
   }
 
   /** Check if a file is in the skipped list (could not be restored due to duplicate name). */
   isSkippedFile(file: any): boolean {
-    const id = Number(file?.file_id ?? file?.file_ID ?? file?.File_ID ?? 0);
+    const id = Number(file?.file_id ?? 0);
     return id > 0 && this.skippedFileIds.has(id);
   }
 
@@ -1539,7 +1536,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     const q = (this.recycleBinFolderSearch || '').trim().toLowerCase();
     if (!q) return this.deletedFolders;
     return this.deletedFolders.filter(
-      (f) => (f.folder_Name ?? (f as any).Folder_Name ?? '').toLowerCase().includes(q)
+      (f) => (f.folder_Name ?? '').toLowerCase().includes(q)
     );
   }
 
@@ -1548,8 +1545,8 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     const q = (this.recycleBinFileSearch || '').trim().toLowerCase();
     if (!q) return this.deletedFiles;
     return this.deletedFiles.filter((f) => {
-      const fileName = (f.file_name ?? f.file_Name ?? '').toLowerCase();
-      const folderName = (f.folder_name ?? f.folder_Name ?? '').toLowerCase();
+      const fileName = (f.file_name ?? '').toLowerCase();
+      const folderName = (f.folder_name ?? '').toLowerCase();
       return fileName.includes(q) || folderName.includes(q);
     });
   }
@@ -1568,13 +1565,13 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     }
 
     const folderIds = this.selectedFoldersToRestore.map(
-      (f) => f.folder_ID ?? (f as any).Folder_ID ?? 0
+      (f) => f.folder_ID ?? 0
     );
     const fileIds = this.selectedFilesToRestore.map(
-      (f) => f.file_id ?? (f as any).file_ID ?? (f as any).File_ID ?? 0
+      (f) => f.file_id ?? 0
     );
     const folderIdsForFiles = this.selectedFilesToRestore.map(
-      (f) => f.folder_id ?? (f as any).folder_ID ?? (f as any).Folder_ID ?? 0
+      (f) => f.folder_id ?? 0
     );
 
     const calls: Observable<any>[] = [];
@@ -1597,11 +1594,11 @@ export class FolderManagementComponent implements OnInit, OnChanges {
           const message = r?.message;
           if (Array.isArray(message) && message.length > 0) {
             const isSkippedFileList = message.some(
-              (item: any) => item?.file_id != null || item?.file_ID != null
+              (item: any) => item?.file_id != null
             );
             if (isSkippedFileList) {
               message.forEach((item: any) => {
-                const id = Number(item?.file_id ?? item?.file_ID ?? 0);
+                const id = Number(item?.file_id ?? 0);
                 if (id > 0) skippedFileIdsFromApi.push(id);
               });
               return;

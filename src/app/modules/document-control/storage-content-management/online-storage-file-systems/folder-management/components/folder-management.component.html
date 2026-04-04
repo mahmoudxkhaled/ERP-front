@@ -733,10 +733,8 @@
                 <i class="pi pi-file text-4xl text-primary"></i>
             </div>
             <div class="file-details-title-wrap">
-                <span class="file-details-name"
-                    [title]="fileDetails?.file_Name || fileDetails?.file_name || fileDetails?.name || selectedFileForDetails?.name">
-                    {{ fileDetails?.file_Name || fileDetails?.file_name || fileDetails?.name ||
-                    selectedFileForDetails?.name || '—' }}
+                <span class="file-details-name" [title]="fileDetails.name">
+                    {{ fileDetails.name || '—' }}
                 </span>
             </div>
         </div>
@@ -745,26 +743,21 @@
                 <i class="pi pi-tag file-details-row-icon"></i>
                 <div class="file-details-row-content">
                     <span class="file-details-row-label">{{ 'fileSystem.folderManagement.fileName' | translate }}</span>
-                    <span class="file-details-row-value">{{ fileDetails?.file_Name || fileDetails?.file_name ||
-                        fileDetails?.name || selectedFileForDetails?.name || '—' }}</span>
+                    <span class="file-details-row-value">{{ fileDetails.name || '—' }}</span>
                 </div>
             </div>
             <div class="file-details-row">
                 <i class="pi pi-file-edit file-details-row-icon"></i>
                 <div class="file-details-row-content">
                     <span class="file-details-row-label">{{ 'fileSystem.folderManagement.fileType' | translate }}</span>
-                    <span class="file-details-row-value">{{ fileDetails?.file_Type || fileDetails?.file_type ||
-                        fileDetails?.type || (selectedFileForDetails ? getContentRowType(selectedFileForDetails) : '—')
-                        || '—' }}</span>
+                    <span class="file-details-row-value">{{ fileDetails.fileType || '—' }}</span>
                 </div>
             </div>
             <div class="file-details-row">
                 <i class="pi pi-database file-details-row-icon"></i>
                 <div class="file-details-row-content">
                     <span class="file-details-row-label">{{ 'fileSystem.folderManagement.fileSize' | translate }}</span>
-                    <span class="file-details-row-value">{{ fileDetails?.file_Size ?
-                        formatFileSize(fileDetails.file_Size) : (fileDetails?.size || selectedFileForDetails?.size ||
-                        '—') }}</span>
+                    <span class="file-details-row-value">{{ fileDetails.size || '—' }}</span>
                 </div>
             </div>
             <div class="file-details-row">
@@ -772,18 +765,15 @@
                 <div class="file-details-row-content">
                     <span class="file-details-row-label">{{ 'fileSystem.folderManagement.lastModified' | translate
                         }}</span>
-                    <span class="file-details-row-value">{{ formatDateTime(fileDetails?.last_Modified ||
-                        fileDetails?.last_modified ||
-                        fileDetails?.modified || selectedFileForDetails?.modified) }}</span>
+                    <span class="file-details-row-value">{{ formatDateTime(fileDetails.modified) }}</span>
                 </div>
             </div>
-            <div class="file-details-row" *ngIf="fileDetails?.created_At || fileDetails?.created_at">
+            <div class="file-details-row" *ngIf="fileDetails.created">
                 <i class="pi pi-clock file-details-row-icon"></i>
                 <div class="file-details-row-content">
                     <span class="file-details-row-label">{{ 'fileSystem.folderManagement.createdAt' | translate
                         }}</span>
-                    <span class="file-details-row-value">{{ formatDateTime(fileDetails?.created_At ||
-                        fileDetails?.created_at) }}</span>
+                    <span class="file-details-row-value">{{ formatDateTime(fileDetails.created) }}</span>
                 </div>
             </div>
         </div>
