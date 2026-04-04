@@ -1,4 +1,5 @@
-import { Component, Input, OnInit, OnChanges, SimpleChanges, ViewChild, ElementRef, ChangeDetectorRef, Inject } from '@angular/core';
+import { DOCUMENT } from '@angular/common';
+import { Component, Input, OnInit, OnChanges, OnDestroy, SimpleChanges, ViewChild, ElementRef, ChangeDetectorRef, Inject, HostListener, Renderer2 } from '@angular/core';
 import { Observable, firstValueFrom, forkJoin, of } from 'rxjs';
 import { MenuItem, MessageService, TreeNode } from 'primeng/api';
 import { TranslationService } from 'src/app/core/services/translation.service';
@@ -34,13 +35,17 @@ export interface FolderContentRow {
   isBackButton?: boolean;
 }
 
+export type FolderBreadcrumbNavPiece =
+  | { kind: 'segment'; folderId: number; label: string; isLast: boolean }
+  | { kind: 'ellipsis'; hidden: Array<{ folderId: number; label: string }> };
+
 
 @Component({
   selector: 'app-folder-management',
   templateUrl: './folder-management.component.html',
   styleUrls: ['./folder-management.component.scss']
 })
-export class FolderManagementComponent implements OnInit, OnChanges {
+export class FolderManagementComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() fileSystemId: number = 0;
 
@@ -75,6 +80,8 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   uploadInProgress = false;
   uploadError: string | null = null;
   @ViewChild('fileInput', { static: false }) fileInputRef!: ElementRef<HTMLInputElement>;
+  @ViewChild('breadcrumbEllipsisTeleportHost') private breadcrumbEllipsisTeleportHostRef?: ElementRef<HTMLElement>;
+  @ViewChild('breadcrumbEllipsisPanel') private breadcrumbEllipsisPanelRef?: ElementRef<HTMLElement>;
   fileUploadStatus = new Map<string, 'pending' | 'uploading' | 'completed' | 'error'>();
   currentUploadingFileName: string | null = null;
   isDragOver = false;
@@ -112,6 +119,11 @@ export class FolderManagementComponent implements OnInit, OnChanges {
   folderMenuItems: MenuItem[] = [];
   selectedFolderForMenu: FolderTreeNode | null = null;
 
+  breadcrumbEllipsisOpen = false;
+  breadcrumbEllipsisPanelTop = 0;
+  breadcrumbEllipsisPanelLeft = 0;
+  breadcrumbEllipsisHiddenFolders: Array<{ folderId: number; label: string }> = [];
+
   fileMenuItems: MenuItem[] = [];
   selectedFileForMenu: FolderContentRow | null = null;
 
@@ -144,7 +156,9 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     private fileDownloadService: FileDownloadService,
     private localStorageService: LocalStorageService,
     private fsPermissionsService: FsPermissionsService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private renderer: Renderer2,
+    @Inject(DOCUMENT) private documentRef: Document
   ) {
     this.isLoading$ = this.folderService.isLoadingSubject.asObservable();
   }
@@ -156,6 +170,10 @@ export class FolderManagementComponent implements OnInit, OnChanges {
       this.loadFolderStructure();
       this.loadFolderContents(0);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.restoreBreadcrumbEllipsisPanelToHost();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -416,7 +434,7 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     return chain;
   }
 
-  get folderBreadcrumbSegments(): Array<{ folderId: number; label: string }> {
+  private buildFolderBreadcrumbSegmentsList(): Array<{ folderId: number; label: string }> {
     const segments: Array<{ folderId: number; label: string }> = [{ folderId: 0, label: '' }];
     if (this.currentFolderId === 0) {
       return segments;
@@ -437,6 +455,145 @@ export class FolderManagementComponent implements OnInit, OnChanges {
       });
     }
     return segments;
+  }
+
+  get folderBreadcrumbNavPieces(): FolderBreadcrumbNavPiece[] {
+    const segs = this.buildFolderBreadcrumbSegmentsList();
+    if (segs.length <= 3) {
+      return segs.map((s, i) => ({
+        kind: 'segment' as const,
+        folderId: s.folderId,
+        label: s.label,
+        isLast: i === segs.length - 1
+      }));
+    }
+    const tail = segs.slice(-2);
+    const hidden = segs.slice(1, -2);
+    return [
+      { kind: 'segment', folderId: segs[0].folderId, label: segs[0].label, isLast: false },
+      { kind: 'ellipsis', hidden },
+      ...tail.map((s, i) => ({
+        kind: 'segment' as const,
+        folderId: s.folderId,
+        label: s.label,
+        isLast: i === tail.length - 1
+      }))
+    ];
+  }
+
+  openBreadcrumbEllipsisMenu(event: MouseEvent, piece: FolderBreadcrumbNavPiece): void {
+    event.stopPropagation();
+    if (piece.kind !== 'ellipsis') {
+      return;
+    }
+    if (this.breadcrumbEllipsisOpen) {
+      this.closeBreadcrumbEllipsisPanel();
+      return;
+    }
+    const anchor =
+      (event.currentTarget as HTMLElement | null) ??
+      (event.target instanceof HTMLElement ? event.target.closest('button') : null);
+    if (!anchor) {
+      return;
+    }
+    this.breadcrumbEllipsisHiddenFolders = piece.hidden.map((s) => ({
+      folderId: s.folderId,
+      label: s.label
+    }));
+    const r = anchor.getBoundingClientRect();
+    const gap = 4;
+    const panelMinWidth = 220;
+    let left = r.left;
+    const maxLeft = window.innerWidth - panelMinWidth - 8;
+    if (left > maxLeft) {
+      left = Math.max(8, maxLeft);
+    }
+    if (left < 8) {
+      left = 8;
+    }
+    const rowApprox = 40;
+    const panelH = this.breadcrumbEllipsisHiddenFolders.length * rowApprox + 16;
+    let top = r.bottom + gap;
+    if (top + panelH > window.innerHeight) {
+      top = Math.max(8, r.top - panelH - gap);
+    }
+    this.breadcrumbEllipsisPanelTop = top;
+    this.breadcrumbEllipsisPanelLeft = left;
+    this.breadcrumbEllipsisOpen = true;
+    this.cdr.detectChanges();
+    queueMicrotask(() => this.moveBreadcrumbEllipsisPanelToBody());
+  }
+
+  private moveBreadcrumbEllipsisPanelToBody(): void {
+    const panel = this.breadcrumbEllipsisPanelRef?.nativeElement;
+    const body = this.documentRef?.body;
+    if (!panel || !body || panel.parentElement === body) {
+      return;
+    }
+    this.renderer.appendChild(body, panel);
+  }
+
+  private restoreBreadcrumbEllipsisPanelToHost(): void {
+    const panel = this.breadcrumbEllipsisPanelRef?.nativeElement;
+    const host = this.breadcrumbEllipsisTeleportHostRef?.nativeElement;
+    if (!panel || !host?.parentElement) {
+      return;
+    }
+    if (panel.parentElement !== this.documentRef.body) {
+      return;
+    }
+    const parent = host.parentElement;
+    const refNode = host.nextSibling;
+    if (refNode) {
+      this.renderer.insertBefore(parent, panel, refNode);
+    } else {
+      this.renderer.appendChild(parent, panel);
+    }
+  }
+
+  closeBreadcrumbEllipsisPanel(): void {
+    this.restoreBreadcrumbEllipsisPanelToHost();
+    this.breadcrumbEllipsisOpen = false;
+    this.breadcrumbEllipsisHiddenFolders = [];
+  }
+
+  onEllipsisFolderClick(folderId: number): void {
+    this.closeBreadcrumbEllipsisPanel();
+    this.navigateBreadcrumbTo(folderId);
+  }
+
+  ellipsisTailSegments(segs: Array<{ folderId: number; label: string }>): Array<{ folderId: number; label: string }> {
+    return segs.length <= 1 ? [] : segs.slice(1);
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClickBreadcrumbEllipsis(event: MouseEvent): void {
+    if (!this.breadcrumbEllipsisOpen) {
+      return;
+    }
+    const t = event.target as HTMLElement;
+    if (t.closest('.folder-breadcrumb__ellipsis-panel')) {
+      return;
+    }
+    if (t.closest('.folder-breadcrumb__ellipsis')) {
+      return;
+    }
+    this.closeBreadcrumbEllipsisPanel();
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapeCloseBreadcrumbEllipsis(): void {
+    if (this.breadcrumbEllipsisOpen) {
+      this.closeBreadcrumbEllipsisPanel();
+    }
+  }
+
+  @HostListener('window:scroll')
+  @HostListener('window:resize')
+  onWindowScrollResizeCloseEllipsis(): void {
+    if (this.breadcrumbEllipsisOpen) {
+      this.closeBreadcrumbEllipsisPanel();
+    }
   }
 
   navigateBreadcrumbTo(folderId: number): void {
