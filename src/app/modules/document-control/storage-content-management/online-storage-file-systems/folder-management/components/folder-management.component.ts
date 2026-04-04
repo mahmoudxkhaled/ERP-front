@@ -393,6 +393,64 @@ export class FolderManagementComponent implements OnInit, OnChanges {
     }
   }
 
+  private buildFolderPathChainFromTree(folderId: number): FolderTreeNode[] {
+    if (folderId === 0) {
+      return [];
+    }
+    const chain: FolderTreeNode[] = [];
+    let curId: number | null = folderId;
+    const visited = new Set<number>();
+    while (curId != null && curId !== 0) {
+      if (visited.has(curId)) {
+        break;
+      }
+      visited.add(curId);
+      const n = this.findFolderTreeNodeByIdRecursive(this.folderTreeNodes, curId);
+      if (!n) {
+        break;
+      }
+      chain.unshift(n as FolderTreeNode);
+      const pid = (n as FolderTreeNode).data?.parentFolderId ?? 0;
+      curId = pid === 0 ? null : pid;
+    }
+    return chain;
+  }
+
+  get folderBreadcrumbSegments(): Array<{ folderId: number; label: string }> {
+    const segments: Array<{ folderId: number; label: string }> = [{ folderId: 0, label: '' }];
+    if (this.currentFolderId === 0) {
+      return segments;
+    }
+    const chain = this.buildFolderPathChainFromTree(this.currentFolderId);
+    const unnamed = this.translate.getInstant('fileSystem.folderManagement.breadcrumbUnnamedFolder');
+    for (const n of chain) {
+      const label = String(n.label ?? n.data.folderName ?? '').trim();
+      segments.push({
+        folderId: n.data.folderId,
+        label: label || unnamed
+      });
+    }
+    if (chain.length === 0) {
+      segments.push({
+        folderId: this.currentFolderId,
+        label: unnamed
+      });
+    }
+    return segments;
+  }
+
+  navigateBreadcrumbTo(folderId: number): void {
+    if (folderId === this.currentFolderId) {
+      return;
+    }
+    const node = folderId === 0 ? null : this.findFolderTreeNodeByIdRecursive(this.folderTreeNodes, folderId);
+    this.selectedFolderNode = node;
+    if (node) {
+      this.expandTreePathToFolder(folderId);
+    }
+    this.loadFolderContents(folderId, true);
+  }
+
   // #endregion
 
   /**

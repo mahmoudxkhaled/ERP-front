@@ -235,6 +235,41 @@
                         [globalFilterFields]="['name']">
                         <ng-template pTemplate="caption">
                             <div class="contents-table-caption flex flex-column gap-2">
+                                <div class="folder-breadcrumb w-full min-w-0">
+                                    <ng-container *ngIf="tableLoadingSpinner; else folderBreadcrumbLoaded">
+                                        <p-skeleton width="100%" height="1.75rem" borderRadius="6px"></p-skeleton>
+                                    </ng-container>
+                                    <ng-template #folderBreadcrumbLoaded>
+                                        <nav class="folder-breadcrumb__nav flex align-items-center flex-wrap gap-1 min-w-0"
+                                            [attr.aria-label]="'fileSystem.folderManagement.breadcrumbAriaLabel' | translate">
+                                            <ng-container
+                                                *ngFor="let seg of folderBreadcrumbSegments; let i = index; let isLast = last">
+                                                <i *ngIf="i > 0"
+                                                    class="pi pi-angle-right folder-breadcrumb__sep flex-shrink-0"
+                                                    aria-hidden="true"></i>
+                                                <button *ngIf="!isLast" type="button"
+                                                    class="folder-breadcrumb__crumb folder-breadcrumb__crumb--link"
+                                                    [attr.aria-label]="seg.folderId === 0 ? ('fileSystem.folderManagement.breadcrumbRoot' | translate) : seg.label"
+                                                    [pTooltip]="seg.folderId === 0 ? ('fileSystem.folderManagement.breadcrumbRoot' | translate) : seg.label"
+                                                    tooltipPosition="top"
+                                                    (click)="navigateBreadcrumbTo(seg.folderId)">
+                                                    <i *ngIf="seg.folderId === 0" class="pi pi-home folder-breadcrumb__home-icon"
+                                                        aria-hidden="true"></i>
+                                                    <span *ngIf="seg.folderId !== 0" class="folder-breadcrumb__crumb-text">{{ seg.label }}</span>
+                                                </button>
+                                                <span *ngIf="isLast"
+                                                    class="folder-breadcrumb__crumb folder-breadcrumb__crumb--current"
+                                                    [attr.aria-label]="seg.folderId === 0 ? ('fileSystem.folderManagement.breadcrumbRoot' | translate) : null"
+                                                    [pTooltip]="seg.folderId === 0 ? ('fileSystem.folderManagement.breadcrumbRoot' | translate) : seg.label"
+                                                    tooltipPosition="top">
+                                                    <i *ngIf="seg.folderId === 0" class="pi pi-home folder-breadcrumb__home-icon"
+                                                        aria-hidden="true"></i>
+                                                    <span *ngIf="seg.folderId !== 0" class="folder-breadcrumb__crumb-text">{{ seg.label }}</span>
+                                                </span>
+                                            </ng-container>
+                                        </nav>
+                                    </ng-template>
+                                </div>
                                 <div class="flex align-items-center justify-content-between">
                                     <span class="p-input-icon-left flex-1 max-w-md">
                                         <i class="pi pi-search"></i>

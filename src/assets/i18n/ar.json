@@ -502,6 +502,9 @@
             "remaining": "المتبقي",
             "hide": "إخفاء",
             "back": "رجوع",
+            "breadcrumbRoot": "الرئيسية",
+            "breadcrumbAriaLabel": "مسار المجلد",
+            "breadcrumbUnnamedFolder": "مجلد",
             "uploadHere": "رفع هنا",
             "backToParent": "الانتقال إلى المجلد الأب",
             "fileDetailsFallbackMessage": "المعلومات الأساسية أدناه من عرض المحتويات الحالي."
