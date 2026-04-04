@@ -849,6 +849,27 @@ export class FolderManagementComponent implements OnInit, OnChanges, OnDestroy {
     this.createFolderNameError = null;
   }
 
+  private folderDisplayNameForId(folderId: number): string {
+    if (folderId === 0) {
+      return this.translate.getInstant('fileSystem.folderManagement.rootFolder');
+    }
+    const node = this.findFolderTreeNodeByIdRecursive(this.folderTreeNodes, folderId);
+    if (node) {
+      const n = node as FolderTreeNode;
+      const name = String(n.label ?? n.data?.folderName ?? '').trim();
+      return name || this.translate.getInstant('fileSystem.folderManagement.breadcrumbUnnamedFolder');
+    }
+    return this.translate.getInstant('fileSystem.folderManagement.currentFolder');
+  }
+
+  get createFolderParentDisplayLabel(): string {
+    return this.folderDisplayNameForId(this.newFolderParentId);
+  }
+
+  get uploadDialogDestinationDisplayLabel(): string {
+    return this.folderDisplayNameForId(this.currentFolderId);
+  }
+
   /**
    * Show upload files dialog.
    */
