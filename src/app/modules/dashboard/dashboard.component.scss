@@ -122,6 +122,10 @@
     }
 }
 
+:host ::ng-deep .module-logo-skeleton.p-skeleton {
+    flex-shrink: 0;
+}
+
 // Highlight animation keyframes
 @keyframes highlightPulse {
     0% {

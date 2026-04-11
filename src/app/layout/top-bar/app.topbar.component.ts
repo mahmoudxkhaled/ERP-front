@@ -278,7 +278,9 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
                 this.headerTitleLoading = true;
                 const sub = this.entitiesService.getEntityDetails(parentIdStr).subscribe({
                     next: (response: any) => {
-                        if (response?.success && response?.message) {
+                        if (!response?.success) {
+                            this.handleBusinessError('parentEntityDetails', response);
+                        } else if (response?.message) {
                             this.parentEntityCode = response.message.Code || '';
                         }
                         this.headerTitleLoading = false;
@@ -286,6 +288,7 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
                         this.resolveSubEntityHeaderLogo(parentIdStr);
                     },
                     error: () => {
+                        this.showTopBarHeaderNetworkError();
                         this.headerTitleLoading = false;
                         this.headerLogoLoading = false;
                         this.ref.detectChanges();
@@ -378,7 +381,9 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         }
         const sub = this.entitiesService.getEntityLogo(parentIdStr).subscribe({
             next: (logoRes: any) => {
-                if (logoRes?.success && logoRes?.message?.Image) {
+                if (!logoRes?.success) {
+                    this.handleBusinessError('parentEntityLogo', logoRes);
+                } else if (logoRes?.message?.Image) {
                     const fmt = logoRes.message.Image_Format || 'png';
                     this.parentEntityLogo = `data:image/${fmt.toLowerCase()};base64,${logoRes.message.Image}`;
                 }
@@ -387,6 +392,7 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
                 this.persistTopbarHeaderCacheIfReady();
             },
             error: () => {
+                this.showTopBarHeaderNetworkError();
                 this.headerLogoLoading = false;
                 this.ref.detectChanges();
                 this.persistTopbarHeaderCacheIfReady();
@@ -533,7 +539,7 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         ).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
-                    this.handleNotificationError('list', response);
+                    this.handleBusinessError('notificationsList', response);
                     return;
                 }
 
@@ -565,6 +571,7 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
                 this.ref.detectChanges();
             },
             error: () => {
+                this.showTopBarNotificationsLoadNetworkError();
                 this.loadingNotifications = false;
                 this.ref.detectChanges();
             }
@@ -586,12 +593,17 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         if (!notification.isRead) {
             const sub = this.notificationsService.markNotificationsRead(this.currentAccountId, [notification.id]).subscribe({
                 next: (response: any) => {
-                    if (response?.success) {
-                        notification.isRead = true;
-                        this.updateUnreadCount();
-                        this.ref.detectChanges();
-                        this.notificationRefreshService.requestInboxRefresh();
+                    if (!response?.success) {
+                        this.handleBusinessError('notificationsMarkRead', response);
+                        return;
                     }
+                    notification.isRead = true;
+                    this.updateUnreadCount();
+                    this.ref.detectChanges();
+                    this.notificationRefreshService.requestInboxRefresh();
+                },
+                error: () => {
+                    this.showTopBarNotificationsActionNetworkError();
                 }
             });
             this.subs.add(sub);
@@ -619,21 +631,26 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         const unreadIds = unreadNotifications.map(n => n.id);
         const sub = this.notificationsService.markNotificationsRead(this.currentAccountId, unreadIds).subscribe({
             next: (response: any) => {
-                if (response?.success) {
-                    this.notifications.forEach(n => {
-                        if (!n.isRead) {
-                            n.isRead = true;
-                        }
-                    });
-                    this.updateUnreadCount();
-                    this.ref.detectChanges();
-                    this.notificationRefreshService.requestInboxRefresh();
-                    this.messageService.add({
-                        severity: 'success',
-                        summary: 'Success',
-                        detail: 'All notifications marked as read.'
-                    });
+                if (!response?.success) {
+                    this.handleBusinessError('notificationsMarkRead', response);
+                    return;
                 }
+                this.notifications.forEach(n => {
+                    if (!n.isRead) {
+                        n.isRead = true;
+                    }
+                });
+                this.updateUnreadCount();
+                this.ref.detectChanges();
+                this.notificationRefreshService.requestInboxRefresh();
+                this.messageService.add({
+                    severity: 'success',
+                    summary: this.translate.getInstant('common.success'),
+                    detail: this.translate.getInstant('layout.top-bar.notifications.messages.allMarkedRead'),
+                });
+            },
+            error: () => {
+                this.showTopBarNotificationsActionNetworkError();
             }
         });
         this.subs.add(sub);
@@ -677,10 +694,99 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         }
     }
 
-    private handleNotificationError(context: string, response: any): void {
-        // Do not show toast for notification errors on home screen - fails silently
-        this.loadingNotifications = false;
-        this.ref.detectChanges();
+    private handleBusinessError(
+        context: 'notificationsList' | 'notificationsMarkRead' | 'parentEntityDetails' | 'parentEntityLogo',
+        response: any
+    ): void {
+        const code = String(response?.message || '');
+        let detail = '';
+
+        switch (context) {
+            case 'notificationsList':
+                detail = this.getTopBarNotificationsListErrorMessage(code) || '';
+                break;
+            case 'notificationsMarkRead':
+                detail = this.getTopBarNotificationsMarkReadErrorMessage(code) || '';
+                break;
+            case 'parentEntityDetails':
+            case 'parentEntityLogo':
+                detail = this.getParentEntityHeaderErrorMessage(code) || '';
+                break;
+            default:
+                detail = '';
+        }
+
+        if (detail) {
+            this.messageService.add({
+                severity: 'error',
+                summary: this.translate.getInstant('common.error'),
+                detail,
+            });
+        }
+
+        if (context === 'notificationsList') {
+            this.loadingNotifications = false;
+            this.ref.detectChanges();
+        }
+    }
+
+    private getTopBarNotificationsListErrorMessage(code: string): string | null {
+        switch (code) {
+            case 'ERP11470':
+                return this.translate.getInstant('layout.top-bar.notifications.errors.invalidAccountId');
+            case 'ERP11456':
+                return this.translate.getInstant('layout.top-bar.notifications.errors.invalidTypeIds');
+            case 'ERP11457':
+                return this.translate.getInstant('layout.top-bar.notifications.errors.invalidCategoryIds');
+            case 'ERP11458':
+                return this.translate.getInstant('layout.top-bar.notifications.errors.invalidFilterCount');
+            default:
+                return null;
+        }
+    }
+
+    private getTopBarNotificationsMarkReadErrorMessage(code: string): string | null {
+        switch (code) {
+            case 'ERP11470':
+                return this.translate.getInstant('layout.top-bar.notifications.errors.invalidAccountId');
+            case 'ERP11465':
+                return this.translate.getInstant('layout.top-bar.notifications.errors.invalidNotificationId');
+            default:
+                return null;
+        }
+    }
+
+    private getParentEntityHeaderErrorMessage(code: string): string | null {
+        switch (code) {
+            case 'ERP11260':
+                return this.translate.getInstant('entities.contact.errors.invalidEntityId');
+            default:
+                return null;
+        }
+    }
+
+    private showTopBarNotificationsLoadNetworkError(): void {
+        this.messageService.add({
+            severity: 'error',
+            summary: this.translate.getInstant('common.error'),
+            detail: this.translate.getInstant('layout.top-bar.notifications.errors.loadFailedNetwork'),
+        });
+    }
+
+    private showTopBarNotificationsActionNetworkError(): void {
+        this.messageService.add({
+            severity: 'error',
+            summary: this.translate.getInstant('common.error'),
+            detail: this.translate.getInstant('layout.top-bar.notifications.errors.actionFailedNetwork'),
+        });
+    }
+
+    private showTopBarHeaderNetworkError(): void {
+        this.messageService.add({
+            severity: 'error',
+            summary: this.translate.getInstant('common.error'),
+            detail: this.translate.getInstant('layout.top-bar.header.errors.network'),
+        });
     }
 
 }

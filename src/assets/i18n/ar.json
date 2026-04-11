@@ -63,6 +63,13 @@
         "financials": "المالية",
         "invoices": "الفواتير"
     },
+    "dashboardScreen": {
+        "logout": {
+            "errors": {
+                "network": "تعذّر تسجيل الخروج. تحقّق من الاتصال ثم أعد المحاولة."
+            }
+        }
+    },
     "fileSystem": {
         "pageTitle": "التحكم في المستندات ونظام الملفات",
         "pageSubtitle": "إدارة التخزين والمشاركة والصلاحيات في المنظمة.",
@@ -1209,7 +1216,26 @@
             "noNotificationsYet": "لا توجد إشعارات حتى الآن",
             "markAllAsRead": "تعيين الكل كمقروء",
             "viewAll": "عرض الكل",
-            "avatar": "صورة الملف الشخصي"
+            "avatar": "صورة الملف الشخصي",
+            "notifications": {
+                "errors": {
+                    "invalidAccountId": "معرّف الحساب غير صالح",
+                    "invalidTypeIds": "قيمة غير صالحة لواحد أو أكثر من Type_ID",
+                    "invalidCategoryIds": "قيمة غير صالحة لواحد أو أكثر من Category_ID",
+                    "invalidFilterCount": "يجب أن يكون Filter_Count بين 5 و 100",
+                    "invalidNotificationId": "معرّف الإشعار غير صالح",
+                    "loadFailedNetwork": "تعذّر تحميل الإشعارات. تحقّق من الاتصال ثم أعد المحاولة.",
+                    "actionFailedNetwork": "تعذّر تحديث الإشعارات. تحقّق من الاتصال ثم أعد المحاولة."
+                },
+                "messages": {
+                    "allMarkedRead": "تم تعيين جميع الإشعارات كمقروءة."
+                }
+            },
+            "header": {
+                "errors": {
+                    "network": "تعذّر تحميل بيانات ترويسة الكيان. تحقّق من الاتصال ثم أعد المحاولة."
+                }
+            }
         }
     },
 

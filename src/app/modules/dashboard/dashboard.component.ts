@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit, AfterViewInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { MessageService } from 'primeng/api';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { AuthService } from '../auth/services/auth.service';
@@ -21,12 +22,14 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     showLogoutDialog: boolean = false;
     dashboardCategories: IMenuFunction[] = [];
     highlightedModuleCode: string | null = null;
+    private readonly moduleLogoLoadingCodes = new Set<string>();
 
     constructor(
         private localStorageService: LocalStorageService,
         private router: Router,
         private route: ActivatedRoute,
         public translate: TranslationService,
+        private messageService: MessageService,
         private dialogService: DialogService,
         private authService: AuthService,
         private moduleNavigationService: ModuleNavigationService,
@@ -76,16 +79,25 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
 
     private loadModuleLogos(): void {
+        this.moduleLogoLoadingCodes.clear();
         this.dashboardCategories.forEach((func) => {
             func.modules.forEach((module) => {
+                this.moduleLogoLoadingCodes.add(module.code);
                 this.settingsConfigurationsService.getModuleLogoCached(module.moduleId).subscribe((url) => {
+                    this.moduleLogoLoadingCodes.delete(module.code);
                     if (url) {
                         module.icon = url;
-                        this.cdr.detectChanges();
+                    } else {
+                        delete module.icon;
                     }
+                    this.cdr.detectChanges();
                 });
             });
         });
+    }
+
+    isModuleLogoLoading(module: IMenuModule): boolean {
+        return this.moduleLogoLoadingCodes.has(module.code);
     }
 
     getDashboardCategories(): IMenuFunction[] {
@@ -171,10 +183,21 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
 
     onLogoutConfirm() {
-        this.authService.logout().subscribe((r) => {
-            if (r.success) {
-                this.router.navigate(['/auth']);
-            }
+        this.authService.logout().subscribe({
+            next: (r: any) => {
+                if (r?.success) {
+                    this.router.navigate(['/auth']);
+                    return;
+                }
+                this.handleBusinessError('logout', r);
+            },
+            error: () => {
+                this.messageService.add({
+                    severity: 'error',
+                    summary: this.translate.getInstant('common.error'),
+                    detail: this.translate.getInstant('dashboardScreen.logout.errors.network'),
+                });
+            },
         });
     }
 
@@ -253,5 +276,37 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     isModuleHighlighted(moduleCode: string): boolean {
         return this.highlightedModuleCode === moduleCode;
     }
+
+    // #region Business errors
+
+    private handleBusinessError(context: 'logout', response: any): void {
+        const code = String(response?.message || '');
+        let detail = '';
+
+        switch (context) {
+            case 'logout':
+                detail = this.getLogoutErrorMessage(code) || '';
+                break;
+            default:
+                detail = '';
+        }
+
+        if (detail) {
+            this.messageService.add({
+                severity: 'error',
+                summary: this.translate.getInstant('common.error'),
+                detail,
+            });
+        }
+    }
+
+    private getLogoutErrorMessage(code: string): string | null {
+        switch (code) {
+            default:
+                return null;
+        }
+    }
+
+    // #endregion
 
 }
