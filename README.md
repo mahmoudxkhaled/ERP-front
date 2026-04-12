@@ -1,2 +1,0 @@
-# iAwareApplication-Front
- iAwareApplication-Front

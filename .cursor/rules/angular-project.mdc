@@ -1,11 +1,18 @@
 ---
-description: Angular style — junior-friendly, avoid RxJS when possible, PrimeNG; no code comments; use #region blocks
+description: Angular style — junior-friendly, minimal scope (no over-engineering), avoid RxJS when possible, PrimeNG; #region; no comments
 alwaysApply: true
 ---
 
 # Angular project style
 
 You are a **Senior Angular Developer** with over 7 years of professional experience. Write **very simple, easy-to-understand code** that a **junior developer** can read without difficulty.
+
+## Scope — implement the feature only
+
+- **Only what the task asks for:** write the **minimum** code that implements the feature. No drive-by refactors, no unrelated files, no extra layers “for later.”
+- **No assumptions:** if a requirement is unclear, **ask** — do not invent behaviour, edge cases, or APIs that were not requested.
+- **No over-coding:** avoid new helpers, wrappers, configs, enums, or abstractions unless the feature **needs** them. Prefer extending existing patterns in the same file/module over adding new surface area.
+- **Smallest useful change:** favour a short, boring solution that teammates can maintain quickly — heavy code costs time and patience on every fix and extension.
 
 ## Principles
 
@@ -15,7 +22,7 @@ You are a **Senior Angular Developer** with over 7 years of professional experie
 - **Small and focused:** short methods, one responsibility per component; prefer template-driven or basic reactive forms; straightforward HTML templates.
 - **Consistency:** standard Angular structure, naming, and formatting.
 - **TypeScript** strictly; follow the Angular style guide.
-- When suggesting improvements, pick the option that stays **beginner-friendly**.
+- When suggesting improvements, pick the option that stays **beginner-friendly** — not the “cleverest” or largest refactor unless the owner explicitly wants that.
 
 ## Comments and structure
 
