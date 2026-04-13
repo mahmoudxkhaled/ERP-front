@@ -537,11 +537,11 @@ export class ProfileOverviewComponent implements OnInit, OnDestroy {
     }
 
     getStatusLabel(): string {
-        return this.userDetails?.Is_Active ? 'Active' : 'Inactive';
+        return this.accountDetails?.Account_State === 1 ? 'Active' : 'Inactive';
     }
 
     getStatusSeverity(): string {
-        return this.userDetails?.Is_Active ? 'success' : 'danger';
+        return this.accountDetails?.Account_State === 1 ? 'success' : 'danger';
     }
 
     getPreferenceKeys(): string[] {
