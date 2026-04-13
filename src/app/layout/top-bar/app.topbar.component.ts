@@ -4,7 +4,7 @@ import { ListboxChangeEvent } from 'primeng/listbox';
 import { OverlayPanel } from 'primeng/overlaypanel';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
-import { filter, skip, take } from 'rxjs/operators';
+import { skip } from 'rxjs/operators';
 import { IAccountDetails, IAccountSettings, IEntityDetails, IUserDetails } from 'src/app/core/models/account-status.model';
 import { EntityLogoService } from 'src/app/core/services/entity-logo.service';
 import { ImageService } from 'src/app/core/services/image.service';
@@ -112,8 +112,7 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         if (!this.isRootEntity && this.headerLogoLoading) {
             return this.topbarLogoCache || this.buildLiveHeaderLogo();
         }
-        const live = this.buildLiveHeaderLogo();
-        return live || this.topbarLogoCache;
+        return this.buildLiveHeaderLogo();
     }
 
     get headerDisplayTitle(): string {
@@ -271,11 +270,22 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
             const raw = this.entityDetails.Parent_Entity_ID;
             const parentIdStr = raw == null ? '' : String(raw).trim();
             const isSubEntity = parentIdStr !== '' && parentIdStr !== '0';
+            console.log('[TopBarLogo] entity scope check', {
+                entityId: this.entityDetails.Entity_ID,
+                parentId: parentIdStr,
+                isSubEntity
+            });
             if (!isSubEntity) {
+                console.log('[TopBarLogo] root entity path', {
+                    hasChildLogo: !!this.entityLogo
+                });
                 this.headerLogoLoading = false;
                 this.persistTopbarHeaderCacheIfReady();
             } else {
                 this.headerTitleLoading = true;
+                console.log('[TopBarLogo] loading parent entity details', {
+                    parentId: parentIdStr
+                });
                 const sub = this.entitiesService.getEntityDetails(parentIdStr).subscribe({
                     next: (response: any) => {
                         if (!response?.success) {
@@ -283,6 +293,12 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
                         } else if (response?.message) {
                             this.parentEntityCode = response.message.Code || '';
                         }
+                        console.log('[TopBarLogo] parent details response', {
+                            parentId: parentIdStr,
+                            success: !!response?.success,
+                            code: String(response?.message || ''),
+                            hasParentCode: !!this.parentEntityCode
+                        });
                         this.headerTitleLoading = false;
                         this.ref.detectChanges();
                         this.resolveSubEntityHeaderLogo(parentIdStr);
@@ -347,38 +363,32 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
     }
 
     private resolveSubEntityHeaderLogo(parentIdStr: string): void {
+        console.log('[TopBarLogo] resolve fallback start', {
+            parentId: parentIdStr,
+            hasChildLogo: !!this.entityLogo
+        });
         if (this.entityLogo) {
+            console.log('[TopBarLogo] selected source: child');
             this.headerLogoLoading = false;
             this.ref.detectChanges();
             this.persistTopbarHeaderCacheIfReady();
             return;
         }
-        if (!this.account?.Email) {
-            this.loadParentEntityLogoAfterSubLogoKnown(parentIdStr);
-            return;
-        }
-        if (this.entityLogoService.isCurrentEntityLogoResolved()) {
-            this.loadParentEntityLogoAfterSubLogoKnown(parentIdStr);
-            return;
-        }
-        const sub = this.entityLogoService.currentEntityLogoResolved$
-            .pipe(
-                filter((resolved) => resolved === true),
-                take(1)
-            )
-            .subscribe(() => {
-                this.loadParentEntityLogoAfterSubLogoKnown(parentIdStr);
-            });
-        this.subs.add(sub);
+        this.loadParentEntityLogoFallback(parentIdStr);
     }
 
-    private loadParentEntityLogoAfterSubLogoKnown(parentIdStr: string): void {
+    private loadParentEntityLogoFallback(parentIdStr: string): void {
         if (this.entityLogo) {
+            console.log('[TopBarLogo] child logo appeared before parent fetch, selected source: child');
             this.headerLogoLoading = false;
             this.ref.detectChanges();
             this.persistTopbarHeaderCacheIfReady();
             return;
         }
+        this.parentEntityLogo = '';
+        console.log('[TopBarLogo] loading parent logo fallback', {
+            parentId: parentIdStr
+        });
         const sub = this.entitiesService.getEntityLogo(parentIdStr).subscribe({
             next: (logoRes: any) => {
                 if (!logoRes?.success) {
@@ -387,12 +397,23 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
                     const fmt = logoRes.message.Image_Format || 'png';
                     this.parentEntityLogo = `data:image/${fmt.toLowerCase()};base64,${logoRes.message.Image}`;
                 }
+                console.log('[TopBarLogo] parent logo response', {
+                    parentId: parentIdStr,
+                    success: !!logoRes?.success,
+                    code: String(logoRes?.message || ''),
+                    hasParentLogo: !!this.parentEntityLogo
+                });
+                console.log('[TopBarLogo] selected source', this.entityLogo ? 'child' : (this.parentEntityLogo ? 'parent' : 'none'));
                 this.headerLogoLoading = false;
                 this.ref.detectChanges();
                 this.persistTopbarHeaderCacheIfReady();
             },
             error: () => {
                 this.showTopBarHeaderNetworkError();
+                this.parentEntityLogo = '';
+                console.log('[TopBarLogo] parent logo request failed, selected source: none', {
+                    parentId: parentIdStr
+                });
                 this.headerLogoLoading = false;
                 this.ref.detectChanges();
                 this.persistTopbarHeaderCacheIfReady();
@@ -710,7 +731,7 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
                 break;
             case 'parentEntityDetails':
             case 'parentEntityLogo':
-                detail = this.getParentEntityHeaderErrorMessage(code) || '';
+                detail = '';
                 break;
             default:
                 detail = '';

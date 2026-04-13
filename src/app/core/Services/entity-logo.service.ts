@@ -8,7 +8,7 @@ export class EntityLogoService {
     private logoSubject = new BehaviorSubject<string | null>(null);
     public logo$: Observable<string | null> = this.logoSubject.asObservable();
 
-    private currentEntityLogoResolvedSubject = new BehaviorSubject<boolean>(false);
+    private currentEntityLogoResolvedSubject = new BehaviorSubject<boolean>(true);
     public currentEntityLogoResolved$: Observable<boolean> = this.currentEntityLogoResolvedSubject.asObservable();
 
     constructor() { }

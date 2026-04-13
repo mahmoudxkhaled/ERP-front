@@ -139,6 +139,7 @@ export class ProfileOverviewComponent implements OnInit, OnDestroy {
         this.loadingDetails = true;
         const sub = this.profileApiService.getUserDetails(this.currentUserId).subscribe({
             next: (response: any) => {
+                console.log('loadUserDetails', response);
                 this.loadingDetails = false;
                 if (!response?.success) {
                     return;
