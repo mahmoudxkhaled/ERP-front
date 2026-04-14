@@ -58,12 +58,12 @@ export class FileDownloadService {
     )) as unknown as {
       success: boolean;
       message:
-        | string
-        | {
-            download_Token: string;
-            file_Name: string;
-            chunks_Count: number;
-          };
+      | string
+      | {
+        download_Token: string;
+        file_Name: string;
+        chunks_Count: number;
+      };
     };
 
     console.log('Download_Request response:', response);
