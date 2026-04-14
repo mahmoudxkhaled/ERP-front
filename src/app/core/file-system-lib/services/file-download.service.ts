@@ -109,12 +109,11 @@ export class FileDownloadService {
 
     for (let currentChunk = 1; currentChunk <= chunksCount; currentChunk++) {
       const formData = new FormData();
-      formData.append('download_token', downloadToken);
-      formData.append('chunk_id', currentChunk.toString());
+      formData.append('Chunk_ID', currentChunk.toString());
 
       const arrayBuffer = await firstValueFrom(
         this.http.post(
-          `${this.apiService.getBaseUrl()}/Download`,
+          `${this.apiService.getBaseUrl()}/Download?Download_Token=${encodeURIComponent(downloadToken)}`,
           formData,
           { responseType: 'arraybuffer' as 'json' }
         )
