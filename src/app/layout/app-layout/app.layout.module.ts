@@ -27,6 +27,7 @@ import { AppSidebarComponent } from '../app-sidebar/app.sidebar.component';
 import { AppConfigModule } from '../config/app.config.module';
 import { NoInternetOverlayComponent } from '../no-internet-overlay/no-internet-overlay.component';
 import { AppTopbarComponent } from '../top-bar/app.topbar.component';
+import { TransferProgressOverlayComponent } from '../transfer-progress-overlay/transfer-progress-overlay.component';
 import { AppLayoutComponent } from './app.layout.component';
 
 @NgModule({
@@ -40,7 +41,8 @@ import { AppLayoutComponent } from './app.layout.component';
         AppSidebarComponent,
         AppMenuitemComponent,
         AppFooterComponent,
-        NoInternetOverlayComponent
+        NoInternetOverlayComponent,
+        TransferProgressOverlayComponent
     ],
     imports: [
         BrowserModule,

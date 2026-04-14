@@ -9,6 +9,7 @@ import { FileService } from '../services/file.service';
 import { FolderStructureItem, Folder, FolderContents } from '../models/folder.model';
 import { FileUploadService } from 'src/app/core/file-system-lib/services/file-upload.service';
 import { FileDownloadService } from 'src/app/core/file-system-lib/services/file-download.service';
+import { TransferProgressService } from 'src/app/core/file-system-lib/services/transfer-progress.service';
 import { isFolderNameValid } from 'src/app/core/validators/folder-name.validator';
 import { AccessRight, FsPermissionsService } from '../services/fs-permissions.service';
 
@@ -154,6 +155,7 @@ export class FolderManagementComponent implements OnInit, OnChanges, OnDestroy {
     private fileService: FileService,
     private fileUploadService: FileUploadService,
     private fileDownloadService: FileDownloadService,
+    private transferProgressService: TransferProgressService,
     private localStorageService: LocalStorageService,
     private fsPermissionsService: FsPermissionsService,
     private cdr: ChangeDetectorRef,
@@ -881,12 +883,14 @@ export class FolderManagementComponent implements OnInit, OnChanges, OnDestroy {
     this.fileUploadStatus.clear();
     this.currentUploadingFileName = null;
     this.isDragOver = false;
+    this.syncUploadProgressOverlay();
   }
 
   hideUploadDialog(): void {
     this.uploadDialogVisible = false;
     if (this.uploadInProgress) {
       this.isDragOver = false;
+      this.syncUploadProgressOverlay();
       return;
     }
 
@@ -899,6 +903,7 @@ export class FolderManagementComponent implements OnInit, OnChanges, OnDestroy {
     if (this.fileInputRef?.nativeElement) {
       this.fileInputRef.nativeElement.value = '';
     }
+    this.syncUploadProgressOverlay();
   }
 
   /**
@@ -931,6 +936,7 @@ export class FolderManagementComponent implements OnInit, OnChanges, OnDestroy {
     if (this.fileInputRef?.nativeElement) {
       this.fileInputRef.nativeElement.value = '';
     }
+    this.syncUploadProgressOverlay();
   }
 
   /**
@@ -998,6 +1004,7 @@ export class FolderManagementComponent implements OnInit, OnChanges, OnDestroy {
         }
       });
     }
+    this.syncUploadProgressOverlay();
   }
 
   /**
@@ -1010,6 +1017,7 @@ export class FolderManagementComponent implements OnInit, OnChanges, OnDestroy {
 
     this.selectedFiles = this.selectedFiles.filter(file => file !== fileToRemove);
     this.fileUploadStatus.delete(fileToRemove.name);
+    this.syncUploadProgressOverlay();
   }
 
   /**
@@ -1087,6 +1095,7 @@ export class FolderManagementComponent implements OnInit, OnChanges, OnDestroy {
     this.downloadFileSizeBytes = 0;
     this.downloadRemainingBytes = 0;
     this.downloadProgressVisible = true;
+    this.syncDownloadProgressOverlay();
 
     try {
       const blob = await this.fileDownloadService.downloadFile(
@@ -1102,6 +1111,7 @@ export class FolderManagementComponent implements OnInit, OnChanges, OnDestroy {
             const downloadedBytes = (this.downloadFileSizeBytes * progress) / 100;
             this.downloadRemainingBytes = Math.max(0, this.downloadFileSizeBytes - downloadedBytes);
           }
+          this.syncDownloadProgressOverlay();
         }
       );
 
@@ -1115,6 +1125,7 @@ export class FolderManagementComponent implements OnInit, OnChanges, OnDestroy {
       window.URL.revokeObjectURL(url);
 
       this.downloadProgressVisible = false;
+      this.syncDownloadProgressOverlay();
       this.messageService.add({
         severity: 'success',
         summary: this.translate.getInstant('fileSystem.folderManagement.success'),
@@ -1122,6 +1133,7 @@ export class FolderManagementComponent implements OnInit, OnChanges, OnDestroy {
       });
     } catch (err: unknown) {
       this.downloadProgressVisible = false;
+      this.syncDownloadProgressOverlay();
       const response = this.normalizeUploadError(err);
       this.handleBusinessError('download', response);
     } finally {
@@ -1130,6 +1142,7 @@ export class FolderManagementComponent implements OnInit, OnChanges, OnDestroy {
       this.currentDownloadingFileName = null;
       this.downloadFileSizeBytes = 0;
       this.downloadRemainingBytes = 0;
+      this.syncDownloadProgressOverlay();
     }
   }
 
@@ -1138,6 +1151,7 @@ export class FolderManagementComponent implements OnInit, OnChanges, OnDestroy {
    */
   hideDownloadProgress(): void {
     this.downloadProgressVisible = false;
+    this.syncDownloadProgressOverlay();
   }
 
   /**
@@ -1324,6 +1338,7 @@ export class FolderManagementComponent implements OnInit, OnChanges, OnDestroy {
     this.uploadInProgress = true;
     this.uploadError = null;
     const totalFiles = this.selectedFiles.length;
+    this.syncUploadProgressOverlay();
 
     this.uploadDialogVisible = false;
     try {
@@ -1331,6 +1346,7 @@ export class FolderManagementComponent implements OnInit, OnChanges, OnDestroy {
         const file = this.selectedFiles[i];
         this.currentUploadingFileName = file.name;
         this.fileUploadStatus.set(file.name, 'uploading');
+        this.syncUploadProgressOverlay();
 
         await this.fileUploadService.uploadFile(
           file,
@@ -1342,11 +1358,13 @@ export class FolderManagementComponent implements OnInit, OnChanges, OnDestroy {
             const currentFileProgress = percent / 100;
             const overallProgress = ((completedFiles + currentFileProgress) / totalFiles) * 100;
             this.uploadProgressPercent = Math.round(overallProgress);
+            this.syncUploadProgressOverlay();
           }
         );
 
         this.fileUploadStatus.set(file.name, 'completed');
         this.currentUploadingFileName = null;
+        this.syncUploadProgressOverlay();
       }
 
       console.log('Upload completed successfully', {
@@ -1367,12 +1385,37 @@ export class FolderManagementComponent implements OnInit, OnChanges, OnDestroy {
       if (this.currentUploadingFileName) {
         this.fileUploadStatus.set(this.currentUploadingFileName, 'error');
         this.currentUploadingFileName = null;
+        this.syncUploadProgressOverlay();
       }
       const response = this.normalizeUploadError(err);
       this.uploadError = this.handleBusinessError('upload', response);
     } finally {
       this.uploadInProgress = false;
+      this.syncUploadProgressOverlay();
     }
+  }
+
+  private syncUploadProgressOverlay(): void {
+    const files = this.selectedFiles.map((file) => ({
+      name: file.name,
+      size: file.size,
+      status: this.getFileUploadStatus(file.name),
+    }));
+    this.transferProgressService.setUploadProgress({
+      visible: this.uploadInProgress,
+      percent: this.uploadProgressPercent,
+      files,
+    });
+  }
+
+  private syncDownloadProgressOverlay(): void {
+    this.transferProgressService.setDownloadProgress({
+      visible: this.downloadProgressVisible,
+      percent: this.downloadProgressPercent,
+      fileName: this.currentDownloadingFileName,
+      fileSizeBytes: this.downloadFileSizeBytes,
+      remainingBytes: this.downloadRemainingBytes,
+    });
   }
 
   /**
