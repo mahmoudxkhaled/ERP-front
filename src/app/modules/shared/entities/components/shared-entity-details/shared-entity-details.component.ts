@@ -5,7 +5,6 @@ import { FileUpload } from 'primeng/fileupload';
 import { Subscription } from 'rxjs';
 import { EntitiesService } from 'src/app/modules/entity-administration/entities/services/entities.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
-import { EntityLogoService } from 'src/app/core/services/entity-logo.service';
 import { EntityDetailsRefreshService } from 'src/app/core/services/entity-details-refresh.service';
 import { ImageService } from 'src/app/core/services/image.service';
 import { PermissionService } from 'src/app/core/services/permission.service';
@@ -44,7 +43,6 @@ export class SharedEntityDetailsComponent implements OnInit, OnDestroy {
         private entitiesService: EntitiesService,
         private messageService: MessageService,
         private localStorageService: LocalStorageService,
-        private entityLogoService: EntityLogoService,
         private entityDetailsRefreshService: EntityDetailsRefreshService,
         private imageService: ImageService,
         private permissionService: PermissionService
@@ -185,16 +183,6 @@ export class SharedEntityDetailsComponent implements OnInit, OnDestroy {
                         const imageFormat = logoData.Image_Format || 'png';
                         this.entityLogo = `data:image/${imageFormat.toLowerCase()};base64,${logoData.Image}`;
                         this.hasLogo = true;
-
-                        const base64String = logoData.Image;
-                        if (this.isCurrentAccountEntity()) {
-                            const entityDetails = this.localStorageService.getEntityDetails() as IEntityDetails;
-                            if (entityDetails) {
-                                entityDetails.Logo = base64String;
-                                this.localStorageService.setItem('Entity_Details', entityDetails);
-                            }
-                            this.entityLogoService.updateLogo(base64String);
-                        }
                     } else {
                         this.setPlaceholderLogo();
                     }
@@ -217,15 +205,6 @@ export class SharedEntityDetailsComponent implements OnInit, OnDestroy {
     private setPlaceholderLogo(): void {
         this.entityLogo = 'assets/media/upload-photo.jpg';
         this.hasLogo = false;
-        if (!this.isCurrentAccountEntity()) {
-            return;
-        }
-        const entityDetails = this.localStorageService.getEntityDetails() as IEntityDetails;
-        if (entityDetails) {
-            entityDetails.Logo = '';
-            this.localStorageService.setItem('Entity_Details', entityDetails);
-        }
-        this.entityLogoService.updateLogo(null);
     }
 
     getEntityName(): string {
@@ -372,7 +351,10 @@ export class SharedEntityDetailsComponent implements OnInit, OnDestroy {
                     detail: 'Logo uploaded successfully.',
                     life: 3000
                 });
-
+                if (this.shouldReloadAfterLogoChange()) {
+                    window.location.reload();
+                    return;
+                }
                 this.loadLogo();
             },
             error: () => {
@@ -413,7 +395,10 @@ export class SharedEntityDetailsComponent implements OnInit, OnDestroy {
                     detail: 'Logo removed successfully.',
                     life: 3000
                 });
-
+                if (this.shouldReloadAfterLogoChange()) {
+                    window.location.reload();
+                    return;
+                }
                 this.setPlaceholderLogo();
                 this.loadingLogo = false;
                 this.notifyTopBarIfCurrentEntity();
@@ -433,6 +418,23 @@ export class SharedEntityDetailsComponent implements OnInit, OnDestroy {
 
     getEntityIdAsNumber(): number {
         return Number(this.entityId) || 0;
+    }
+
+    private shouldReloadAfterLogoChange(): boolean {
+        const currentEntity = this.localStorageService.getEntityDetails() as IEntityDetails | null;
+        if (!currentEntity) {
+            return false;
+        }
+
+        const changedEntityId = String(this.entityId || '').trim();
+        const currentEntityId = String(currentEntity.Entity_ID ?? '').trim();
+        const currentParentId = String(currentEntity.Parent_Entity_ID ?? '').trim();
+
+        if (!changedEntityId) {
+            return false;
+        }
+
+        return changedEntityId === currentEntityId || changedEntityId === currentParentId;
     }
 
     private handleBusinessError(context: string, response: any): void | null {
