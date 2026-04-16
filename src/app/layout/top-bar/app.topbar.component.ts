@@ -18,6 +18,7 @@ import { LayoutService } from '../app-services/app.layout.service';
 import { NotificationsService } from 'src/app/modules/summary/services/notifications.service';
 import { AccountNotification, AccountNotificationBackend } from 'src/app/modules/summary/models/notifications.model';
 import { PermissionService } from 'src/app/core/services/permission.service';
+import { EntitiesService } from 'src/app/modules/entity-administration/entities/services/entities.service';
 
 @Component({
     selector: 'app-topbar',
@@ -84,7 +85,8 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         private messageService: MessageService,
         private permissionService: PermissionService,
         private notificationRefreshService: NotificationRefreshService,
-        private entityDetailsRefreshService: EntityDetailsRefreshService
+        private entityDetailsRefreshService: EntityDetailsRefreshService,
+        private entitiesService: EntitiesService
     ) {
     }
 
@@ -197,9 +199,6 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         this.userLanguageCode = langCode;
         this.userLanguageId = langCode;
 
-        this.parentEntityCode = '';
-        this.topbarTitleCache = '';
-
         this.entityLogo = this.imageService.toImageDataUrl(this.entityDetails?.Logo);
         const isRegional = this.accountSettings?.Language !== 'English';
         this.isRegional = isRegional;
@@ -215,9 +214,34 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
             } else {
                 this.entityName = this.entityDetails.Name || '';
             }
+            const rawParentId = this.entityDetails.Parent_Entity_ID;
+            const parentIdStr = rawParentId == null ? '' : String(rawParentId).trim();
+            const isSubEntity = parentIdStr !== '' && parentIdStr !== '0';
 
-            this.persistTopbarHeaderCacheIfReady();
+            if (isSubEntity) {
+                this.headerTitleLoading = true;
+                const sub = this.entitiesService.getEntityDetails(parentIdStr).subscribe({
+                    next: (response: any) => {
+                        if (response?.success && response?.message) {
+                            this.parentEntityCode = response.message.Code || '';
+                        }
+                        this.headerTitleLoading = false;
+                        this.persistTopbarHeaderCacheIfReady();
+                        this.ref.detectChanges();
+                    },
+                    error: () => {
+                        this.headerTitleLoading = false;
+                        this.persistTopbarHeaderCacheIfReady();
+                        this.ref.detectChanges();
+                    }
+                });
+                this.subs.add(sub);
+            } else {
+                this.parentEntityCode = '';
+                this.persistTopbarHeaderCacheIfReady();
+            }
         } else {
+            this.parentEntityCode = '';
             this.persistTopbarHeaderCacheIfReady();
         }
 

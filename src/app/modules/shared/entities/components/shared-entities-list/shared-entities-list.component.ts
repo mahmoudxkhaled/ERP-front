@@ -183,6 +183,7 @@ export class SharedEntitiesListComponent implements OnInit, OnDestroy {
             this.entityLogoLoading[entity.id] = true;
             const sub = this.entitiesService.getEntityLogo(entity.id, false).subscribe({
                 next: (logoRes: any) => {
+                    console.log('response loadLogosForCurrentPage', entity.id, logoRes);
                     if (logoRes?.success && logoRes?.message?.Image) {
                         const fmt = logoRes.message.Image_Format || 'png';
                         this.entityLogoUrls[entity.id] = `data:image/${String(fmt).toLowerCase()};base64,${logoRes.message.Image}`;

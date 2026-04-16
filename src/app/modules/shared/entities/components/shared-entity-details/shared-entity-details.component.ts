@@ -9,6 +9,7 @@ import { EntityDetailsRefreshService } from 'src/app/core/services/entity-detail
 import { ImageService } from 'src/app/core/services/image.service';
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { IAccountSettings, IEntityDetails } from 'src/app/core/models/account-status.model';
+import { AuthService } from 'src/app/modules/auth/services/auth.service';
 
 @Component({
     selector: 'app-shared-entity-details',
@@ -45,7 +46,8 @@ export class SharedEntityDetailsComponent implements OnInit, OnDestroy {
         private localStorageService: LocalStorageService,
         private entityDetailsRefreshService: EntityDetailsRefreshService,
         private imageService: ImageService,
-        private permissionService: PermissionService
+        private permissionService: PermissionService,
+        private authService: AuthService
     ) {
         this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
         this.isRegional = this.accountSettings?.Language !== 'English';
@@ -137,7 +139,7 @@ export class SharedEntityDetailsComponent implements OnInit, OnDestroy {
                 this.entityDetails = response?.message || {};
                 this.loadingDetails = false;
                 this.loading = false;
-                this.notifyTopBarIfCurrentEntity();
+                this.notifyTopBarIfCurrentOrParentEntity();
             }
         });
 
@@ -168,8 +170,8 @@ export class SharedEntityDetailsComponent implements OnInit, OnDestroy {
         return !!(ed && String(ed.Entity_ID) === this.entityId);
     }
 
-    private notifyTopBarIfCurrentEntity(): void {
-        if (this.isCurrentAccountEntity()) {
+    private notifyTopBarIfCurrentOrParentEntity(): void {
+        if (this.isCurrentOrParentAccountEntity()) {
             this.entityDetailsRefreshService.requestRefresh();
         }
     }
@@ -190,7 +192,7 @@ export class SharedEntityDetailsComponent implements OnInit, OnDestroy {
                     this.setPlaceholderLogo();
                 }
                 this.loadingLogo = false;
-                this.notifyTopBarIfCurrentEntity();
+                this.notifyTopBarIfCurrentOrParentEntity();
             },
             error: () => {
                 this.entityLogo = 'assets/media/upload-photo.jpg';
@@ -351,10 +353,7 @@ export class SharedEntityDetailsComponent implements OnInit, OnDestroy {
                     detail: 'Logo uploaded successfully.',
                     life: 3000
                 });
-                if (this.shouldReloadAfterLogoChange()) {
-                    window.location.reload();
-                    return;
-                }
+                this.refreshTopBarAfterLogoChange();
                 this.loadLogo();
             },
             error: () => {
@@ -395,13 +394,10 @@ export class SharedEntityDetailsComponent implements OnInit, OnDestroy {
                     detail: 'Logo removed successfully.',
                     life: 3000
                 });
-                if (this.shouldReloadAfterLogoChange()) {
-                    window.location.reload();
-                    return;
-                }
+                this.refreshTopBarAfterLogoChange();
                 this.setPlaceholderLogo();
                 this.loadingLogo = false;
-                this.notifyTopBarIfCurrentEntity();
+                this.notifyTopBarIfCurrentOrParentEntity();
             },
             error: () => {
                 this.loadingLogo = false;
@@ -420,21 +416,36 @@ export class SharedEntityDetailsComponent implements OnInit, OnDestroy {
         return Number(this.entityId) || 0;
     }
 
-    private shouldReloadAfterLogoChange(): boolean {
-        const currentEntity = this.localStorageService.getEntityDetails() as IEntityDetails | null;
-        if (!currentEntity) {
+    private refreshTopBarAfterLogoChange(): void {
+        if (!this.isCurrentOrParentAccountEntity()) {
+            this.entityDetailsRefreshService.requestRefresh();
+            return;
+        }
+        const email = this.localStorageService.getAccountDetails()?.Email || '';
+        if (!email) {
+            this.entityDetailsRefreshService.requestRefresh();
+            return;
+        }
+        const sub = this.authService.getLoginDataPackage(email).subscribe({
+            next: () => {
+                this.entityDetailsRefreshService.requestRefresh();
+            },
+            error: () => {
+                this.entityDetailsRefreshService.requestRefresh();
+            }
+        });
+        this.subscriptions.push(sub);
+    }
+
+    private isCurrentOrParentAccountEntity(): boolean {
+        const ed = this.localStorageService.getEntityDetails() as IEntityDetails | null;
+        if (!ed) {
             return false;
         }
-
         const changedEntityId = String(this.entityId || '').trim();
-        const currentEntityId = String(currentEntity.Entity_ID ?? '').trim();
-        const currentParentId = String(currentEntity.Parent_Entity_ID ?? '').trim();
-
-        if (!changedEntityId) {
-            return false;
-        }
-
-        return changedEntityId === currentEntityId || changedEntityId === currentParentId;
+        const currentEntityId = String(ed.Entity_ID ?? '').trim();
+        const parentEntityId = String(ed.Parent_Entity_ID ?? '').trim();
+        return changedEntityId === currentEntityId || changedEntityId === parentEntityId;
     }
 
     private handleBusinessError(context: string, response: any): void | null {
