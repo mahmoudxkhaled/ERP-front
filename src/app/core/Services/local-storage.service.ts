@@ -8,15 +8,52 @@ export class LocalStorageService {
 
   constructor() { }
 
-  getCurrentUserData(): any {
-    let userData: any = localStorage.getItem('userData');
-    if (userData !== null) {
-      const data = JSON.parse(userData);
-      return data
-    }
-    return null;
+  // #region Token
+  getToken(): string | null {
+    return localStorage.getItem('token');
   }
 
+  setToken(token: string): void {
+    localStorage.setItem('token', token);
+  }
+
+  clearToken(): void {
+    localStorage.removeItem('token');
+  }
+
+  getAccessToken(): string {
+    return this.getToken() || '';
+  }
+  // #endregion
+
+  // #region Language & Theme preferences (source of truth: Account_Settings)
+  getPreferredLanguageCode(): 'en' | 'ar' {
+    const lang = (this.getAccountSettings()?.Language || '').toString().trim().toLowerCase();
+    if (lang === 'ar' || lang === 'arabic' || lang === 'العربية') {
+      return 'ar';
+    }
+    return 'en';
+  }
+
+  setPreferredLanguageCode(code: 'en' | 'ar'): void {
+    const settings = this.getAccountSettings() || ({} as IAccountSettings);
+    settings.Language = code === 'ar' ? 'Arabic' : 'English';
+    this.setItem('Account_Settings', settings);
+  }
+
+  getPreferredTheme(): 'light' | 'dark' {
+    const theme = (this.getAccountSettings()?.Theme || '').toString().trim().toLowerCase();
+    return theme === 'dark' ? 'dark' : 'light';
+  }
+
+  setPreferredTheme(theme: 'light' | 'dark'): void {
+    const settings = this.getAccountSettings() || ({} as IAccountSettings);
+    settings.Theme = theme;
+    this.setItem('Account_Settings', settings);
+  }
+  // #endregion
+
+  // #region Generic storage
   setItem(key: string, data: any) {
     localStorage.setItem(key, JSON.stringify(data));
   }
@@ -26,38 +63,66 @@ export class LocalStorageService {
   }
 
   getItem(key: string) {
-    let data = localStorage.getItem(key);
+    const data = localStorage.getItem(key);
     if (data !== null && data !== 'undefined') {
       return JSON.parse(data);
     }
     return null;
   }
+  // #endregion
 
-  getAccessToken() {
-    const userData = this.getCurrentUserData();
-    return userData?.token;
-  }
-
+  // #region Domain getters
   getEntityId() {
-    const entityData = this.getEntityDetails();
-    return entityData?.Entity_ID ?? '';
+    return this.getEntityDetails()?.Entity_ID ?? '';
   }
 
   getParentEntityId() {
-    const entityData = this.getEntityDetails();
-    return entityData?.Parent_Entity_ID ?? '';
+    return this.getEntityDetails()?.Parent_Entity_ID ?? '';
   }
 
   get2FaStatus() {
-    const accountData = this.getAccountDetails();
-    return accountData?.Two_FA ?? false;
+    return this.getAccountDetails()?.Two_FA ?? false;
   }
 
   getGender() {
-    const userData = this.getUserDetails();
-    return userData?.Gender ?? false;
+    return this.getUserDetails()?.Gender ?? false;
   }
 
+  getUserDetails(): IUserDetails | null {
+    return this.getItem('User_Details');
+  }
+
+  getAccountDetails(): IAccountDetails | null {
+    return this.getItem('Account_Details');
+  }
+
+  getEntityDetails(): IEntityDetails | null {
+    return this.getItem('Entity_Details');
+  }
+
+  getFunctionsDetails(): IFunctionsDetails | null {
+    return this.getItem('Functions_Details');
+  }
+
+  getModulesDetails(): IModulesDetails | null {
+    return this.getItem('Modules_Details');
+  }
+
+  getAccountSettings(): IAccountSettings | null {
+    return this.getItem('Account_Settings');
+  }
+
+  mergeAccountSettings(partial: Partial<IAccountSettings>): void {
+    const current = this.getAccountSettings() || ({} as IAccountSettings);
+    this.setItem('Account_Settings', { ...current, ...partial });
+  }
+
+  getUserAccounts(): IUserAccountItem[] | null {
+    return this.getItem('User_Accounts');
+  }
+  // #endregion
+
+  // #region Login lifecycle
   setLoginDataPackage(accountData: IAccountStatusResponse): void {
     if (accountData.User_Details) {
       this.setItem('User_Details', accountData.User_Details);
@@ -85,6 +150,9 @@ export class LocalStorageService {
       if (existingSettings?.Language) {
         settingsToSave.Language = existingSettings.Language;
       }
+      if (existingSettings?.Theme) {
+        settingsToSave.Theme = existingSettings.Theme;
+      }
       this.setItem('Account_Settings', settingsToSave);
     }
 
@@ -93,8 +161,8 @@ export class LocalStorageService {
     }
   }
 
-
   clearLoginDataPackage(): void {
+    this.clearToken();
     this.removeItem('User_Details');
     this.removeItem('Account_Details');
     this.removeItem('Entity_Details');
@@ -103,33 +171,7 @@ export class LocalStorageService {
     this.removeItem('Account_Settings');
     this.removeItem('User_Accounts');
     this.removeItem('userData');
+    this.removeItem('isRtl');
   }
-
-  getUserDetails(): IUserDetails | null {
-    return this.getItem('User_Details');
-  }
-
-  getAccountDetails(): IAccountDetails | null {
-    return this.getItem('Account_Details');
-  }
-
-  getEntityDetails(): IEntityDetails | null {
-    return this.getItem('Entity_Details');
-  }
-
-  getFunctionsDetails(): IFunctionsDetails | null {
-    return this.getItem('Functions_Details');
-  }
-
-  getModulesDetails(): IModulesDetails | null {
-    return this.getItem('Modules_Details');
-  }
-
-  getAccountSettings(): IAccountSettings | null {
-    return this.getItem('Account_Settings');
-  }
-
-  getUserAccounts(): IUserAccountItem[] | null {
-    return this.getItem('User_Accounts');
-  }
+  // #endregion
 }

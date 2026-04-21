@@ -4,6 +4,7 @@
         "error": "خطأ",
         "loading": "جاري التحميل...",
         "cancel": "إلغاء",
+        "confirm": "تأكيد",
         "select": "اختيار",
         "save": "حفظ",
         "actions": "الإجراءات"
@@ -798,11 +799,119 @@
             "entitySettings": "إعدادات الكيان",
             "systemSettings": "إعدادات النظام"
         },
+        "account": {
+            "title": "إعدادات الحساب",
+            "language": "اللغة",
+            "theme": "السمة",
+            "themeLight": "فاتح",
+            "themeDark": "داكن",
+            "currency": "العملة",
+            "dateFormat": "تنسيق التاريخ",
+            "notifications": "الإشعارات",
+            "messages": {
+                "saveSuccess": "تم حفظ إعدادات الحساب بنجاح",
+                "resetSuccess": "تمت إعادة إعدادات الحساب إلى القيم الموروثة"
+            }
+        },
+        "entity": {
+            "title": "إعدادات الكيان",
+            "status": {
+                "overridden": "تم تجاوز القيمة على مستوى الكيان",
+                "inherited": "قيمة موروثة من المستويات الأقل أولوية"
+            },
+            "messages": {
+                "saveSuccess": "تم حفظ إعدادات الكيان بنجاح",
+                "resetSuccess": "تمت إعادة إعدادات الكيان إلى القيم الموروثة"
+            }
+        },
+        "system": {
+            "title": "إعدادات النظام",
+            "sessionValidity": "صلاحية الجلسة (بالدقائق)",
+            "resetPasswordTokenValidity": "صلاحية رمز إعادة تعيين كلمة المرور (بالدقائق)",
+            "messages": {
+                "saveSuccess": "تم حفظ إعدادات النظام بنجاح",
+                "resetSuccess": "تمت إزالة إعدادات النظام",
+                "loadError": "فشل تحميل إعدادات النظام.",
+                "removeSuccess": "تمت إزالة إعداد النظام."
+            }
+        },
+        "sharedPanel": {
+            "keys": {
+                "language": "اللغة",
+                "theme": "السمة",
+                "currency": "العملة",
+                "dateFormat": "تنسيق التاريخ",
+                "notifications": "الإشعارات",
+                "sessionValidity": "صلاحية الجلسة (بالدقائق)",
+                "resetPasswordTokenValidity": "صلاحية رمز إعادة تعيين كلمة المرور (بالدقائق)",
+                "unknownKey": "{{key}}"
+            },
+            "options": {
+                "language": {
+                    "en": "الإنجليزية",
+                    "ar": "العربية",
+                    "fr": "الفرنسية"
+                },
+                "theme": {
+                    "light": "فاتح",
+                    "dark": "داكن"
+                },
+                "currency": {
+                    "USD": "USD",
+                    "EGP": "EGP",
+                    "SAR": "SAR",
+                    "AED": "AED"
+                },
+                "dateFormat": {
+                    "ddmmyyyy": "يوم/شهر/سنة",
+                    "mmddyyyy": "شهر/يوم/سنة",
+                    "yyyymmdd": "سنة/شهر/يوم"
+                },
+                "notifications": {
+                    "yes": "نعم",
+                    "no": "لا"
+                }
+            },
+            "addExistingKey": "إضافة إعداد",
+            "addKeyPlaceholder": "اختر مفتاحًا",
+            "addKey": "إضافة",
+            "addNewKey": "إضافة مفتاح مخصص",
+            "customKeyLabel": "مفتاح الإعداد",
+            "removeKey": "إزالة الإعداد",
+            "removeKeyTooltip": "إزالة هذا الإعداد نهائيًا",
+            "removeKeyAria": "إزالة الإعداد",
+            "resetToDefaultTooltip": "العودة إلى القيمة الافتراضية الموروثة",
+            "resetToDefaultAria": "إعادة القيمة الافتراضية"
+        },
         "sections": {
             "general": "الإعدادات العامة",
             "notifications": "الإشعارات",
             "security": "الأمان",
-            "privacy": "الخصوصية"
+            "privacy": "الخصوصية",
+            "defaultAccount": {
+                "title": "إعدادات الحساب الافتراضية",
+                "saveSuccess": "تم حفظ إعدادات الحساب الافتراضية بنجاح",
+                "removeSuccess": "تمت إزالة إعداد الحساب الافتراضي بنجاح"
+            },
+            "accountCustom": {
+                "title": "إعدادات حسابي",
+                "saveSuccess": "تم حفظ إعدادات الحساب بنجاح",
+                "removeSuccess": "تمت إزالة إعداد الحساب المخصص"
+            },
+            "defaultEntity": {
+                "title": "إعدادات الكيان الافتراضية",
+                "saveSuccess": "تم حفظ إعدادات الكيان الافتراضية بنجاح",
+                "removeSuccess": "تمت إزالة إعداد الكيان الافتراضي بنجاح"
+            },
+            "entityCustom": {
+                "title": "إعدادات الكيان",
+                "saveSuccess": "تم حفظ إعدادات الكيان بنجاح",
+                "removeSuccess": "تمت إزالة إعداد الكيان المخصص"
+            },
+            "common": {
+                "removeConfirmTitle": "حذف الإعداد",
+                "removeConfirmMessage": "هل أنت متأكد من حذف الإعداد \"{{key}}\"؟"
+            }
         },
         "fields": {
             "language": "اللغة",
@@ -826,12 +935,22 @@
         "actions": {
             "save": "حفظ الإعدادات",
             "reset": "إعادة تعيين إلى الافتراضي",
-            "cancel": "إلغاء التغييرات"
+            "cancel": "إلغاء التغييرات",
+            "resetToDefault": "إعادة الضبط إلى الافتراضي"
         },
         "messages": {
             "saveSuccess": "تم حفظ الإعدادات بنجاح",
             "resetInfo": "تم إعادة تعيين الإعدادات إلى القيم الافتراضية",
-            "cancelInfo": "تم إرجاع الإعدادات إلى آخر حالة محفوظة"
+            "cancelInfo": "تم إرجاع الإعدادات إلى آخر حالة محفوظة",
+            "errors": {
+                "emptyKey": "لا يمكن أن يكون مفتاح الإعداد فارغًا.",
+                "emptyValue": "لا يمكن أن تكون قيمة الإعداد فارغة.",
+                "settingNotFound": "الإعداد غير موجود.",
+                "invalidAccountId": "معرّف الحساب غير صالح.",
+                "invalidEntityId": "معرّف الكيان غير صالح.",
+                "generic": "فشل تحديث الإعدادات. يرجى المحاولة مرة أخرى.",
+                "loadFailed": "فشل تحميل الإعدادات."
+            }
         },
         "entitySettings": {
             "title": "إعدادات الكيان",

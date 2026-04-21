@@ -161,10 +161,8 @@ export class AppLayoutComponent implements OnInit, OnDestroy {
                 numScroll: 1,
             },
         ];
-        // Get theme from local storage and apply it
-        const userData = this.localStorage.getCurrentUserData();
-        const theme = userData?.theme || 'light'; // Fallback to 'light' if no theme found
-        this.applyUserTheme(theme); // Apply the theme
+        const theme = this.localStorage.getPreferredTheme();
+        this.applyUserTheme(theme);
     }
 
     applyUserTheme(theme: string) {

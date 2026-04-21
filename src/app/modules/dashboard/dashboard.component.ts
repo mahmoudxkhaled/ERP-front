@@ -1,7 +1,9 @@
-import { ChangeDetectorRef, Component, OnInit, AfterViewInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, AfterViewInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MessageService } from 'primeng/api';
+import { Subscription } from 'rxjs';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { LanguageDirService } from 'src/app/core/services/language-dir.service';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { AuthService } from '../auth/services/auth.service';
 import { LogoutComponent } from '../auth/components/logout/logout.component';
@@ -15,7 +17,7 @@ import { ModuleNavigationService } from 'src/app/core/services/module-navigation
     templateUrl: './dashboard.component.html',
     styleUrls: ['./dashboard.component.scss']
 })
-export class DashboardComponent implements OnInit, AfterViewInit {
+export class DashboardComponent implements OnInit, AfterViewInit, OnDestroy {
     currentUser: any = null;
     userRole: string = '';
     userName: string = '';
@@ -23,9 +25,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     dashboardCategories: IMenuFunction[] = [];
     highlightedModuleCode: string | null = null;
     private readonly moduleLogoLoadingCodes = new Set<string>();
+    private langSub: Subscription;
 
     constructor(
         private localStorageService: LocalStorageService,
+        private languageDirService: LanguageDirService,
         private router: Router,
         private route: ActivatedRoute,
         public translate: TranslationService,
@@ -40,6 +44,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     ngOnInit(): void {
         this.loadUserData();
         this.loadDashboardCategories();
+
+        this.langSub = this.languageDirService.userLanguageCode$.subscribe(() => {
+            this.loadDashboardCategories();
+            this.cdr.detectChanges();
+        });
 
         this.route.queryParams.subscribe(params => {
             if (params['moduleUrl']) {
@@ -60,10 +69,9 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     }
 
     loadUserData(): void {
-        this.currentUser = this.localStorageService.getCurrentUserData();
-        if (this.currentUser && this.currentUser.data) {
-            this.userRole = this.currentUser.data.role || 'employee';
-            this.userName = `${this.currentUser.data.firstName} ${this.currentUser.data.lastName}`;
+        const userDetails = this.localStorageService.getUserDetails();
+        if (userDetails) {
+            this.userName = `${userDetails.First_Name || ''} ${userDetails.Last_Name || ''}`.trim();
         }
     }
 
@@ -309,4 +317,7 @@ export class DashboardComponent implements OnInit, AfterViewInit {
 
     // #endregion
 
+    ngOnDestroy(): void {
+        this.langSub?.unsubscribe();
+    }
 }

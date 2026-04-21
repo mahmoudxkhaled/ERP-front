@@ -43,8 +43,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        const userData = this.localStorageService.getItem('userData');
-        if (userData) {
+        if (this.localStorageService.getToken()) {
             this.router.navigate(['/']);
         }
 

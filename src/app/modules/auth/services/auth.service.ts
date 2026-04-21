@@ -1,10 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Injector } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, finalize, of, switchMap, tap } from 'rxjs';
 import { ApiService } from 'src/app/core/api/api.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { NotificationRefreshService } from 'src/app/core/services/notification-refresh.service';
 import { IAccountStatusResponse } from 'src/app/core/models/account-status.model';
+import { SettingsEngineService } from '../../summary/services/settings-engine.service';
 
 @Injectable({
     providedIn: 'root',
@@ -15,9 +16,14 @@ export class AuthService {
         private apiServices: ApiService,
         private localStorageService: LocalStorageService,
         private router: Router,
-        private notificationRefreshService: NotificationRefreshService
+        private notificationRefreshService: NotificationRefreshService,
+        private injector: Injector
     ) {
         this.isLoadingSubject = new BehaviorSubject<boolean>(false);
+    }
+
+    private getSettingsEngine(): SettingsEngineService {
+        return this.injector.get(SettingsEngineService);
     }
 
     private getAccessToken(): string {
@@ -38,6 +44,10 @@ export class AuthService {
                 if (response?.success) {
                     return this.getLoginDataPackage(email).pipe(
                         tap(() => {
+                            this.getSettingsEngine().loadAllLayers(true).subscribe({
+                                next: () => { },
+                                error: () => { },
+                            });
                             this.notificationRefreshService.requestRefresh();
                             this.router.navigate(['/']);
                         })
@@ -66,6 +76,10 @@ export class AuthService {
                 if (response?.success) {
                     return this.getLoginDataPackage(email).pipe(
                         tap(() => {
+                            this.getSettingsEngine().loadAllLayers(true).subscribe({
+                                next: () => { },
+                                error: () => { },
+                            });
                             this.notificationRefreshService.requestRefresh();
                             this.router.navigate(['/']);
                         })
@@ -141,11 +155,6 @@ export class AuthService {
     private setAuthFromResponseToLocalStorage(response: any) {
         const payload = response.message;
         const token = payload.Access_Token;
-        const userId = payload.User_ID;
-        const authData = {
-            token,
-            userId,
-        };
-        this.localStorageService.setItem('userData', authData);
+        this.localStorageService.setToken(token);
     }
 }

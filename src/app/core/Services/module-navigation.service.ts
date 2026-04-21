@@ -5,7 +5,6 @@ import {
     IModulesDetails,
     IModuleDetail,
     IFunctionDetail,
-    IAccountSettings,
     IMenuFunction,
     IMenuModule
 } from '../models/account-status.model';
@@ -23,15 +22,12 @@ export class ModuleNavigationService {
     getFunctionsWithModules(): IMenuFunction[] {
         const functionsDetails = this.localStorageService.getFunctionsDetails();
         const modulesDetails = this.localStorageService.getModulesDetails();
-        const accountSettings = this.localStorageService.getAccountSettings();
 
         if (!functionsDetails || !modulesDetails) {
             return [];
         }
 
-        let isRegional = accountSettings?.Language !== 'English';
-        const isRtl = this.localStorageService.getItem('isRtl') === true;
-        isRegional = isRtl ? true : isRegional;
+        const isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
 
         // Convert functions object to array and group modules
         const functionsArray: IMenuFunction[] = [];

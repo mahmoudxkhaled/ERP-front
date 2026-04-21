@@ -11,6 +11,7 @@ import { NotificationRefreshService } from './core/services/notification-refresh
 import { TranslationService } from './core/services/translation.service';
 import { LayoutService } from './layout/app-services/app.layout.service';
 import { AuthService } from './modules/auth/services/auth.service';
+import { SettingsEngineService } from './modules/summary/services/settings-engine.service';
 
 @Component({
     selector: 'app-root',
@@ -28,7 +29,8 @@ export class AppComponent implements OnInit, OnDestroy {
         private translate: TranslationService,
         private authService: AuthService,
         private notificationRefreshService: NotificationRefreshService,
-        private router: Router
+        private router: Router,
+        private settingsEngineService: SettingsEngineService
     ) {
         this.refreshLoginDataPackage();
 
@@ -85,6 +87,10 @@ export class AppComponent implements OnInit, OnDestroy {
 
         // Request notification refresh on page load so topbar can show new notifications / unread count
         if (this.localStorage.getAccessToken()) {
+            this.settingsEngineService.loadAllLayers().subscribe({
+                next: () => { },
+                error: () => { },
+            });
             this.notificationRefreshService.requestRefresh();
         }
 
@@ -114,7 +120,10 @@ export class AppComponent implements OnInit, OnDestroy {
                 // Call silently in background - no error handling needed
                 this.authService.getLoginDataPackage(email).subscribe({
                     next: () => {
-                        // Silently refresh data - no action needed
+                        this.settingsEngineService.loadAllLayers(true).subscribe({
+                            next: () => { },
+                            error: () => { },
+                        });
                     },
                     error: () => {
                         // Silently fail - no error handling needed

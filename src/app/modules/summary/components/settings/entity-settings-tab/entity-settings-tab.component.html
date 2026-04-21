@@ -1,0 +1,27 @@
+<ng-container *ngIf="!entitySettingsReady; else entitySettingsContent">
+    <div class="p-4">
+        <p-skeleton height="12rem" class="mb-4" borderRadius="6px"></p-skeleton>
+        <p-skeleton height="12rem" borderRadius="6px"></p-skeleton>
+    </div>
+</ng-container>
+<ng-template #entitySettingsContent>
+    <div class="p-4">
+        <app-settings-section
+            *ngIf="canManageDefault"
+            layer="defaultEntity"
+            titleKey="settings.sections.defaultEntity.title"
+            [showRemove]="true"
+            [preloadedData]="defaultEntityData"
+            (reloadParentTab)="reloadEntityTab()"
+        ></app-settings-section>
+
+        <app-settings-section
+            layer="entity"
+            titleKey="settings.sections.entityCustom.title"
+            [showRemove]="true"
+            [inheritedDefaults]="defaultEntityData"
+            [preloadedData]="entityCustomData"
+            (reloadParentTab)="reloadEntityTab()"
+        ></app-settings-section>
+    </div>
+</ng-template>

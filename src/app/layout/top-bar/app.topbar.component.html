@@ -160,7 +160,7 @@
                                     : 'pi pi-globe text-xl'
                             "></i>
                     </a>
-                    <div class="ng-hidden-temp hidden-temp" id="hidden-temp" *ngIf="isListboxVisible">
+                    <div #langListboxPanel class="ng-hidden-temp hidden-temp">
                         <p-listbox [options]="languages" optionLabel="name" optionValue="id"
                             [(ngModel)]="userLanguageId" (onChange)="changeUserLanguage($event)"></p-listbox>
                     </div>

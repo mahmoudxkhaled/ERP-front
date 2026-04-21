@@ -19,6 +19,8 @@ import { NotificationsService } from 'src/app/modules/summary/services/notificat
 import { AccountNotification, AccountNotificationBackend } from 'src/app/modules/summary/models/notifications.model';
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { EntitiesService } from 'src/app/modules/entity-administration/entities/services/entities.service';
+import { SettingsApiService } from 'src/app/modules/summary/services/settings-api.service';
+import { SettingsEngineService } from 'src/app/modules/summary/services/settings-engine.service';
 
 @Component({
     selector: 'app-topbar',
@@ -29,6 +31,7 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
     @ViewChild('menuButton') menuButton!: ElementRef;
     @ViewChild('mobileMenuButton') mobileMenuButton!: ElementRef;
     @ViewChild('notificationPanel') notificationPanel!: ElementRef;
+    @ViewChild('langListboxPanel') langListboxPanel!: ElementRef;
 
     activeItem!: number;
     searchQuery: string = '';
@@ -55,7 +58,6 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
     isRtl: boolean = false;
     themeLoading: boolean = false;
     langLoading: boolean = false;
-    isListboxVisible: boolean = true;
     entityLogo: string = '';
     user: IUserDetails;
     account: IAccountDetails;
@@ -71,7 +73,6 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
     constructor(
         public layoutService: LayoutService,
         public el: ElementRef,
-        private localStorageServ: LocalStorageService,
         private ref: ChangeDetectorRef,
         private localStorage: LocalStorageService,
         private rtlService: LanguageDirService,
@@ -86,7 +87,9 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         private permissionService: PermissionService,
         private notificationRefreshService: NotificationRefreshService,
         private entityDetailsRefreshService: EntityDetailsRefreshService,
-        private entitiesService: EntitiesService
+        private entitiesService: EntitiesService,
+        private settingsApiService: SettingsApiService,
+        private settingsEngineService: SettingsEngineService
     ) {
     }
 
@@ -184,6 +187,19 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
                 this.ref.detectChanges();
             })
         );
+        this.subs.add(
+            this.rtlService.userLanguageCode$.subscribe((lang) => {
+                this.userLanguageCode = lang || 'en';
+                this.userLanguageId = this.userLanguageCode;
+                this.ref.detectChanges();
+            })
+        );
+        this.subs.add(
+            this.layoutService.configUpdate$.subscribe((config) => {
+                this.userTheme = config?.colorScheme || 'light';
+                this.ref.detectChanges();
+            })
+        );
     }
 
     ngOnDestroy(): void {
@@ -195,12 +211,12 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         this.entityDetails = this.localStorage.getEntityDetails() as IEntityDetails;
         this.accountSettings = this.localStorage.getAccountSettings() as IAccountSettings;
 
-        const langCode = this.accountSettings?.Language === 'English' ? 'en' : 'ar';
+        const langCode = this.localStorage.getPreferredLanguageCode();
         this.userLanguageCode = langCode;
         this.userLanguageId = langCode;
 
         this.entityLogo = this.imageService.toImageDataUrl(this.entityDetails?.Logo);
-        const isRegional = this.accountSettings?.Language !== 'English';
+        const isRegional = langCode === 'ar';
         this.isRegional = isRegional;
 
         if (this.entityDetails) {
@@ -306,8 +322,7 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
     }
 
     fetchUserTheme() {
-        const data = this.localStorageServ.getCurrentUserData();
-        this.userTheme = data?.theme || this.layoutService.config().colorScheme || 'light';
+        this.userTheme = this.localStorage.getPreferredTheme() || this.layoutService.config().colorScheme || 'light';
     }
 
 
@@ -339,11 +354,7 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
 
         this.userTheme = this.userTheme === 'light' ? 'dark' : 'light';
         this.applyUserTheme(this.userTheme as 'light' | 'dark');
-
-
-        const data = this.localStorage.getCurrentUserData();
-        data.theme = this.userTheme;
-        this.localStorage.setItem('userData', data);
+        this.saveAccountPreferences(this.userLanguageCode || 'en', this.userTheme);
         this.ref.detectChanges();
         this.themeLoading = false; // Reset loading state after response
 
@@ -372,36 +383,65 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         if (!event.value || this.langLoading) {
             return;
         }
+        this.langLoading = true;
         this.userLanguageCode = event.value;
         this.userLanguageId = event.value;
-        this.isListboxVisible = false;
 
-        const selectedLanguage = this.languages.find((l: { code: string }) => l.code === event.value);
-        const newLanguageName = selectedLanguage?.name ?? event.value;
+        this.langListboxPanel?.nativeElement?.classList?.add('ng-hidden-temp');
 
-        const data = this.localStorage.getCurrentUserData();
-        if (data) {
-            data.languageId = this.userLanguageCode;
-            data.language = newLanguageName;
-            data.userLanguageCode = event.value;
-            this.localStorage.setItem('userData', data);
-        }
+        this.localStorage.setPreferredLanguageCode(event.value === 'ar' ? 'ar' : 'en');
+        this.rtlService.setUserLanguageCode(event.value);
+        this.rtlService.setRtl(event.value === 'ar');
+        this.translate.useLanguage(event.value);
 
-        const accountSettings = this.localStorage.getAccountSettings();
-        if (accountSettings) {
-            accountSettings.Language = event.value === 'en' ? 'English' : 'Arabic';
-            this.localStorage.setItem('Account_Settings', accountSettings);
-        }
-
-        const newRtl = event.value === 'ar';
-        localStorage.setItem('isRtl', JSON.stringify(newRtl));
-
-        window.location.reload();
+        this.loadUserDetails();
+        this.saveAccountPreferences(this.userLanguageCode, this.userTheme || 'light');
+        this.langLoading = false;
+        this.ref.detectChanges();
     }
 
-    toggleLanguageDropdown() {
-        this.isListboxVisible = !this.isListboxVisible; // Toggle visibility
+    private saveAccountPreferences(languageCode: string, theme: string): void {
+        const accountId = Number(this.account?.Account_ID || 0);
+        this.localStorage.setPreferredLanguageCode(languageCode === 'ar' ? 'ar' : 'en');
+        this.localStorage.setPreferredTheme(theme === 'dark' ? 'dark' : 'light');
+
+        if (!accountId) {
+            return;
+        }
+        const previousLayer = this.settingsEngineService.getLayer('account');
+        const payload: Record<string, string> = {
+            ...previousLayer,
+            language: languageCode,
+            theme: theme,
+        };
+
+        this.settingsApiService.setAccountSettings(accountId, payload).subscribe({
+            next: (response: any) => {
+                if (!response?.success) {
+                    this.messageService.add({
+                        severity: 'error',
+                        summary: this.translate.getInstant('common.error'),
+                        detail: this.translate.getInstant('settings.messages.errors.generic'),
+                    });
+                    return;
+                }
+                this.settingsEngineService.refreshRuntimeFromServer().subscribe({
+                    error: () => {},
+                });
+            },
+            error: () => {
+            },
+        });
     }
+
+    private normalizeLanguageCode(rawLanguage: string | undefined): string {
+        const normalized = (rawLanguage || '').toString().trim().toLowerCase();
+        if (normalized === 'ar' || normalized === 'arabic' || normalized === 'العربية') {
+            return 'ar';
+        }
+        return 'en';
+    }
+
 
     // ==================== Notification Methods ====================
 

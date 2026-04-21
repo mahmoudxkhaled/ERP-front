@@ -4,6 +4,7 @@
         "error": "Error",
         "loading": "Loading...",
         "cancel": "Cancel",
+        "confirm": "Confirm",
         "select": "Select",
         "save": "Save",
         "actions": "Actions"
@@ -797,11 +798,119 @@
             "entitySettings": "Entity Settings",
             "systemSettings": "System Settings"
         },
+        "account": {
+            "title": "Account Settings",
+            "language": "Language",
+            "theme": "Theme",
+            "themeLight": "Light",
+            "themeDark": "Dark",
+            "currency": "Currency",
+            "dateFormat": "Date Format",
+            "notifications": "Notifications",
+            "messages": {
+                "saveSuccess": "Account settings saved successfully",
+                "resetSuccess": "Account settings restored to inherited defaults"
+            }
+        },
+        "entity": {
+            "title": "Entity Settings",
+            "status": {
+                "overridden": "Overridden at entity level",
+                "inherited": "Inherited from lower priority layers"
+            },
+            "messages": {
+                "saveSuccess": "Entity settings saved successfully",
+                "resetSuccess": "Entity settings restored to inherited defaults"
+            }
+        },
+        "system": {
+            "title": "System Settings",
+            "sessionValidity": "Session Validity (minutes)",
+            "resetPasswordTokenValidity": "Reset Password Token Validity (minutes)",
+            "messages": {
+                "saveSuccess": "System settings saved successfully",
+                "resetSuccess": "System settings were removed",
+                "loadError": "Failed to load system settings.",
+                "removeSuccess": "System setting removed."
+            }
+        },
+        "sharedPanel": {
+            "keys": {
+                "language": "Language",
+                "theme": "Theme",
+                "currency": "Currency",
+                "dateFormat": "Date format",
+                "notifications": "Notifications",
+                "sessionValidity": "Session validity (minutes)",
+                "resetPasswordTokenValidity": "Reset password token validity (minutes)",
+                "unknownKey": "{{key}}"
+            },
+            "options": {
+                "language": {
+                    "en": "English",
+                    "ar": "Arabic",
+                    "fr": "French"
+                },
+                "theme": {
+                    "light": "Light",
+                    "dark": "Dark"
+                },
+                "currency": {
+                    "USD": "USD",
+                    "EGP": "EGP",
+                    "SAR": "SAR",
+                    "AED": "AED"
+                },
+                "dateFormat": {
+                    "ddmmyyyy": "DD/MM/YYYY",
+                    "mmddyyyy": "MM/DD/YYYY",
+                    "yyyymmdd": "YYYY/MM/DD"
+                },
+                "notifications": {
+                    "yes": "Yes",
+                    "no": "No"
+                }
+            },
+            "addExistingKey": "Add setting",
+            "addKeyPlaceholder": "Choose a key",
+            "addKey": "Add",
+            "addNewKey": "Add custom key",
+            "customKeyLabel": "Setting key",
+            "removeKey": "Remove setting",
+            "removeKeyTooltip": "Remove this setting permanently",
+            "removeKeyAria": "Remove setting",
+            "resetToDefaultTooltip": "Revert to inherited default value",
+            "resetToDefaultAria": "Revert to default"
+        },
         "sections": {
             "general": "General Settings",
             "notifications": "Notifications",
             "security": "Security",
-            "privacy": "Privacy"
+            "privacy": "Privacy",
+            "defaultAccount": {
+                "title": "Default account settings",
+                "saveSuccess": "Default account settings saved successfully",
+                "removeSuccess": "Default account setting removed successfully"
+            },
+            "accountCustom": {
+                "title": "My account settings",
+                "saveSuccess": "Account settings saved successfully",
+                "removeSuccess": "Account override removed"
+            },
+            "defaultEntity": {
+                "title": "Default entity settings",
+                "saveSuccess": "Default entity settings saved successfully",
+                "removeSuccess": "Default entity setting removed successfully"
+            },
+            "entityCustom": {
+                "title": "Entity settings",
+                "saveSuccess": "Entity settings saved successfully",
+                "removeSuccess": "Entity override removed"
+            },
+            "common": {
+                "removeConfirmTitle": "Remove setting",
+                "removeConfirmMessage": "Are you sure you want to remove the setting \"{{key}}\"?"
+            }
         },
         "fields": {
             "language": "Language",
@@ -825,12 +934,22 @@
         "actions": {
             "save": "Save Settings",
             "reset": "Reset to Defaults",
-            "cancel": "Cancel Changes"
+            "cancel": "Cancel Changes",
+            "resetToDefault": "Reset to Default"
         },
         "messages": {
             "saveSuccess": "Settings saved successfully",
             "resetInfo": "Settings have been reset to default values",
-            "cancelInfo": "Settings have been reverted to last saved state"
+            "cancelInfo": "Settings have been reverted to last saved state",
+            "errors": {
+                "emptyKey": "Setting key cannot be empty.",
+                "emptyValue": "Setting value cannot be empty.",
+                "settingNotFound": "Setting was not found.",
+                "invalidAccountId": "Invalid account identifier.",
+                "invalidEntityId": "Invalid entity identifier.",
+                "generic": "Failed to update settings. Please try again.",
+                "loadFailed": "Failed to load settings."
+            }
         },
         "entitySettings": {
             "title": "Entity Settings",
