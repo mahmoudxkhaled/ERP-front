@@ -4,11 +4,12 @@
     <div class="wave"></div>
     <div class="login-container">
         <app-auth-brand></app-auth-brand>
-        <div class="mb-6"></div>
-        <div *ngIf="hasError" class="backend-error-message">
-
+        <div class="mb-4"></div>
+        <div *ngIf="loginBannerKey" class="login-banner-notice" [class.login-banner-notice--error]="loginBannerIsError">
             <span>
-                <i class="pi pi-exclamation-circle" style="margin-right: 10px;"></i> {{ errorMessage }}
+                <i class="pi" [ngClass]="loginBannerIsError ? 'pi-exclamation-circle' : 'pi-info-circle'"
+                    style="margin-right: 10px"></i>
+                {{ loginBannerKey | translate: (loginBannerParams || {}) }}
             </span>
         </div>
         <form [formGroup]="loginCreditials" (ngSubmit)="submit()">

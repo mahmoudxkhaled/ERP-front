@@ -79,7 +79,6 @@ import { ERPInfoComponent } from '../components/erp-info/erp-info.component';
 import { ERPVariablesComponent } from '../components/erp-variables/erp-variables.component';
 import { TableLoadingSpinnerComponent } from '../components/table-loading-spinner/table-loading-spinner/table-loading-spinner.component';
 import { ComingSoonComponent } from 'src/app/core/components/coming-soon/coming-soon.component';
-import { SessionExpiredDialogComponent } from 'src/app/core/components/session-expired-dialog/session-expired-dialog.component';
 import { LogoutComponent } from 'src/app/modules/auth/components/logout/logout.component';
 
 // Components to declare in this module
@@ -89,7 +88,6 @@ const components = [
     ERPInfoComponent,
     ERPVariablesComponent,
     LogoutComponent,
-    SessionExpiredDialogComponent,
     TableLoadingSpinnerComponent,
 ];
 

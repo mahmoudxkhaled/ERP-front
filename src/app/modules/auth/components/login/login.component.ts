@@ -1,8 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
-import { LayoutService } from 'src/app/layout/app-services/app.layout.service';
 import { AuthService } from '../../services/auth.service';
 import { LanguageDirService } from 'src/app/core/services/language-dir.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
@@ -12,8 +11,9 @@ import { LocalStorageService } from 'src/app/core/services/local-storage.service
     styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit, OnDestroy {
-    hasError: boolean = false;
-    errorMessage: string = '';
+    loginBannerKey: string | null = null;
+    loginBannerParams: { [key: string]: string } | undefined;
+    loginBannerIsError = false;
     loginCreditials!: FormGroup;
     unsubscribe: Subscription[] = [];
     isLoading$: Observable<boolean>;
@@ -36,6 +36,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     constructor(
         private authService: AuthService,
         private router: Router,
+        private route: ActivatedRoute,
         private rtlService: LanguageDirService,
         private localStorageService: LocalStorageService
     ) {
@@ -45,6 +46,12 @@ export class LoginComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         if (this.localStorageService.getToken()) {
             this.router.navigate(['/']);
+        }
+
+        const sessionExpired = this.route.snapshot.queryParamMap.get('sessionExpired');
+        if (sessionExpired === '1' || sessionExpired === 'true') {
+            this.setLoginBanner('auth.login.sessionExpired', undefined, false);
+            this.router.navigate(['/auth'], { replaceUrl: true });
         }
 
         this.initForm();
@@ -63,19 +70,16 @@ export class LoginComponent implements OnInit, OnDestroy {
         if (this.authService.isLoadingSubject.value) return;
 
         if (this.loginCreditials.invalid) {
-            this.hasError = true;
-            this.errorMessage = 'Please enter a valid email and password.';
+            this.setLoginBanner('auth.login.validationInvalid');
             return;
         }
 
-        this.hasError = false;
-        this.errorMessage = '';
+        this.clearLoginBanner();
         const email = this.email?.value as string;
         const password = this.password?.value as string;
 
         const loginSubscription = this.authService.login(email, password).subscribe({
             next: (response: any) => {
-                console.log(response);
                 if (!response?.success) {
                     this.handleBusinessError(response, email);
                     return;
@@ -88,32 +92,48 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
     private handleBusinessError(error: any, email: string) {
-        this.hasError = true;
         const code = (error.message).toString();
         switch (code) {
 
             case 'ERP11100':
+                this.clearLoginBanner();
                 this.router.navigate(['/auth/account-status'], { queryParams: { status: 'Inactive' } });
                 return;
             case 'ERP11101':
+                this.clearLoginBanner();
                 this.router.navigate(['/auth/email-verified'], { queryParams: { email: email } });
                 return;
             case 'ERP11102':
+                this.clearLoginBanner();
                 this.router.navigate(['/auth/account-status'], { queryParams: { status: 'Locked' } });
                 return;
             case 'ERP11103':
+                this.clearLoginBanner();
                 this.router.navigate(['/auth/verify-2fa', email]);
                 return;
             case 'ERP11104':
-                this.errorMessage = 'Invalid login credentials. Please check your email or password.';
+                this.setLoginBanner('auth.login.invalidCredentials');
                 return;
             default:
-                this.errorMessage = code || 'Unexpected error occurred.';
+                this.setLoginBanner('auth.login.signInFailedWithCode', { code: code || '—' });
                 return;
         }
     }
 
+    private setLoginBanner(key: string, params?: { [key: string]: string }, isError = true): void {
+        this.loginBannerKey = key;
+        this.loginBannerParams = params;
+        this.loginBannerIsError = isError;
+    }
+
+    private clearLoginBanner(): void {
+        this.loginBannerKey = null;
+        this.loginBannerParams = undefined;
+        this.loginBannerIsError = false;
+    }
+
     handleSuccessfulLogin() {
+        this.clearLoginBanner();
         const userLang = this.rtlService.getLanguageFromStorage();
         this.rtlService.setUserLanguageCode(userLang);
         this.rtlService.setRtl(userLang === 'ar');

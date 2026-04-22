@@ -236,17 +236,24 @@
     padding-top: 3px;
 }
 
-.backend-error-message {
-    color: red;
+.login-banner-notice {
+    color: #004080;
     padding: 10px;
     border-radius: 8px;
+    border: 1px solid #0059b3;
+    background-color: #e8f4fc;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 15px;
+    margin-bottom: 32px;
     font-size: 0.9rem;
-    font-weight: bold;
-    font-size: medium;
+    font-weight: 600;
+}
+
+.login-banner-notice--error {
+    color: #842029;
+    border-color: #f1aeb5;
+    background-color: #f8d7da;
 }
 
 ::ng-deep .p-dialog-content {

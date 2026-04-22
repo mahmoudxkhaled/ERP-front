@@ -133,7 +133,7 @@ export class MyFeatureService {
 |---|---|
 | `routing-header.interceptor.ts` | Adds `Routing` header to all `/SystemAPIs/` calls |
 | `loading.interceptor.ts` | Toggles global loading spinner |
-| `error-handling.interceptor.ts` | Catches session-expired codes (ERP11040–42), shows error toasts |
+| `error-handling.interceptor.ts` | Session-related ERP codes → clear storage + redirect `/auth?sessionExpired=1`; other generic ERP11xxx errors → translated toasts |
 
 ---
 

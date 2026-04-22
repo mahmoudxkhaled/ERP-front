@@ -316,14 +316,13 @@ src/app/core/
 │   ├── coming-soon/            # Coming soon page
 │   ├── landing/                # Landing page
 │   ├── notfound/               # 404 page
-│   └── session-expired-dialog/ # Session expiration dialog
 ├── directives/                 # Shared directives
 │   └── has-role.directive.ts  # Role-based directive
 ├── enums/                      # Shared enumerations
 ├── Guards/                     # Route guards
 │   └── auth.guard.ts          # Authentication guard
 ├── Interceptors/               # HTTP interceptors
-│   ├── error-handling.interceptor.ts  # Error handling
+│   ├── error-handling.interceptor.ts  # Errors; session expiry → clear storage + /auth?sessionExpired=1
 │   └── loading.interceptor.ts         # Loading indicator
 ├── models/                     # Shared data models
 │   ├── account-status.model.ts # Account status interfaces
