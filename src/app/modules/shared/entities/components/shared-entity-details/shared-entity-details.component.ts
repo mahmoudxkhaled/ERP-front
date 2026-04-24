@@ -39,6 +39,7 @@ export class SharedEntityDetailsComponent implements OnInit, OnDestroy {
 
     private subscriptions: Subscription[] = [];
     private getEntityLogoSub?: Subscription;
+    private currentEntityId: string = '';
 
     constructor(
         private route: ActivatedRoute,
@@ -65,21 +66,43 @@ export class SharedEntityDetailsComponent implements OnInit, OnDestroy {
             this.permissionService.can('Remove_Entity_Logo');
         this.canEditEntityDetails = this.permissionService.can('Update_Entity_Details');
 
-        this.entityId = this.route.snapshot.paramMap.get('id') || '';
-        if (!this.entityId) {
-            this.messageService.add({
-                severity: 'error',
-                summary: 'Error',
-                detail: 'Invalid entity ID.'
-            });
-            this.router.navigate(['list'], { relativeTo: this.route.parent ?? this.route });
-            return;
-        }
-
-        this.preloadEntityDetailsFromAccountStorageIfSameEntity();
         this.applyTabIndexFromQuery(this.route.snapshot.queryParamMap);
         this.bindTabFromQueryParam();
-        this.loadAllData();
+        this.bindEntityIdFromRoute();
+    }
+
+    private bindEntityIdFromRoute(): void {
+        const sub = this.route.paramMap.subscribe((params) => {
+            const nextId = String(params.get('id') || '').trim();
+            if (!nextId) {
+                this.messageService.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: 'Invalid entity ID.'
+                });
+                this.router.navigate(['list'], { relativeTo: this.route.parent ?? this.route });
+                return;
+            }
+            if (nextId === this.currentEntityId) {
+                return;
+            }
+            this.currentEntityId = nextId;
+            this.entityId = nextId;
+            this.resetViewStateForEntityChange();
+            this.preloadEntityDetailsFromAccountStorageIfSameEntity();
+            this.loadAllData();
+        });
+        this.subscriptions.push(sub);
+    }
+
+    private resetViewStateForEntityChange(): void {
+        this.getEntityLogoSub?.unsubscribe();
+        this.entityDetails = null;
+        this.loading = true;
+        this.loadingDetails = true;
+        this.loadingLogo = false;
+        this.logoAwaitingApi = true;
+        this.setPlaceholderLogo();
     }
 
     private parseTabIndex(raw: string | null): number | null {
@@ -160,14 +183,6 @@ export class SharedEntityDetailsComponent implements OnInit, OnDestroy {
         this.entityDetails = { ...stored };
         this.loading = false;
         this.loadingDetails = false;
-        const logoRaw = stored.Logo;
-        if (logoRaw && String(logoRaw).trim() !== '') {
-            this.entityLogo = this.imageService.toImageDataUrl(logoRaw);
-            this.hasLogo = true;
-        } else {
-            this.entityLogo = 'assets/media/upload-photo.jpg';
-            this.hasLogo = false;
-        }
     }
 
     private isCurrentAccountEntity(): boolean {
@@ -183,9 +198,7 @@ export class SharedEntityDetailsComponent implements OnInit, OnDestroy {
 
     loadLogo(): void {
         this.getEntityLogoSub?.unsubscribe();
-        if (!this.hasLogo) {
-            this.logoAwaitingApi = true;
-        }
+        this.logoAwaitingApi = true;
         const entityIdForRequest = this.entityId;
         const sub = this.entitiesService.getEntityLogo(this.entityId).subscribe({
             next: (response: any) => {
