@@ -23,6 +23,7 @@ export class SharedEntityDetailsComponent implements OnInit, OnDestroy {
     loading: boolean = false;
     loadingDetails: boolean = false;
     loadingLogo: boolean = false;
+    logoAwaitingApi: boolean = false;
     activeTabIndex: number = 0;
 
     entityDetails: any = null;
@@ -37,6 +38,7 @@ export class SharedEntityDetailsComponent implements OnInit, OnDestroy {
     canEditEntityDetails = false;
 
     private subscriptions: Subscription[] = [];
+    private getEntityLogoSub?: Subscription;
 
     constructor(
         private route: ActivatedRoute,
@@ -119,6 +121,7 @@ export class SharedEntityDetailsComponent implements OnInit, OnDestroy {
     }
 
     ngOnDestroy(): void {
+        this.getEntityLogoSub?.unsubscribe();
         this.subscriptions.forEach((sub) => sub.unsubscribe());
     }
 
@@ -128,12 +131,14 @@ export class SharedEntityDetailsComponent implements OnInit, OnDestroy {
             this.loading = true;
             this.loadingDetails = true;
         }
-        this.loadingLogo = true;
 
         const sub = this.entitiesService.getEntityDetails(this.entityId).subscribe({
             next: (response: any) => {
                 if (!response?.success) {
                     this.handleBusinessError('details', response);
+                    this.loading = false;
+                    this.loadingDetails = false;
+                    this.logoAwaitingApi = false;
                     return;
                 }
                 this.entityDetails = response?.message || {};
@@ -177,8 +182,16 @@ export class SharedEntityDetailsComponent implements OnInit, OnDestroy {
     }
 
     loadLogo(): void {
+        this.getEntityLogoSub?.unsubscribe();
+        if (!this.hasLogo) {
+            this.logoAwaitingApi = true;
+        }
+        const entityIdForRequest = this.entityId;
         const sub = this.entitiesService.getEntityLogo(this.entityId).subscribe({
             next: (response: any) => {
+                if (entityIdForRequest !== this.entityId) {
+                    return;
+                }
                 if (response?.success && response?.message) {
                     const logoData = response.message;
                     if (logoData?.Image && logoData.Image.trim() !== '') {
@@ -192,15 +205,21 @@ export class SharedEntityDetailsComponent implements OnInit, OnDestroy {
                     this.setPlaceholderLogo();
                 }
                 this.loadingLogo = false;
+                this.logoAwaitingApi = false;
                 this.notifyTopBarIfCurrentOrParentEntity();
             },
             error: () => {
+                if (entityIdForRequest !== this.entityId) {
+                    return;
+                }
                 this.entityLogo = 'assets/media/upload-photo.jpg';
                 this.hasLogo = false;
                 this.loadingLogo = false;
+                this.logoAwaitingApi = false;
             }
         });
 
+        this.getEntityLogoSub = sub;
         this.subscriptions.push(sub);
     }
 
@@ -367,7 +386,7 @@ export class SharedEntityDetailsComponent implements OnInit, OnDestroy {
     }
 
     onLogoAreaClick(): void {
-        if (!this.canManageEntityLogo || this.loadingLogo) {
+        if (!this.canManageEntityLogo || this.loadingLogo || this.logoAwaitingApi) {
             return;
         }
         this.logoUploader?.choose();

@@ -54,6 +54,10 @@
       height: 100%;
       object-fit: contain;
     }
+
+    img.identity-logo__img--fill {
+      object-fit: cover;
+    }
   }
 
   .logo-overlay {

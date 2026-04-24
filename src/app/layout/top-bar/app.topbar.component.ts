@@ -21,6 +21,7 @@ import { PermissionService } from 'src/app/core/services/permission.service';
 import { EntitiesService } from 'src/app/modules/entity-administration/entities/services/entities.service';
 import { SettingsApiService } from 'src/app/modules/summary/services/settings-api.service';
 import { SettingsEngineService } from 'src/app/modules/summary/services/settings-engine.service';
+import { TopbarHeaderCacheService } from 'src/app/core/services/topbar-header-cache.service';
 
 @Component({
     selector: 'app-topbar',
@@ -89,7 +90,8 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         private entityDetailsRefreshService: EntityDetailsRefreshService,
         private entitiesService: EntitiesService,
         private settingsApiService: SettingsApiService,
-        private settingsEngineService: SettingsEngineService
+        private settingsEngineService: SettingsEngineService,
+        private topbarHeaderCacheService: TopbarHeaderCacheService
     ) {
     }
 
@@ -136,6 +138,7 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         }
         const title = this.buildLiveHeaderTitle();
         this.topbarTitleCache = title;
+        this.topbarHeaderCacheService.write(id, this.userLanguageCode, title, this.entityLogo || '');
     }
 
     ngOnInit(): void {
@@ -215,7 +218,18 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         this.userLanguageCode = langCode;
         this.userLanguageId = langCode;
 
-        this.entityLogo = this.imageService.toImageDataUrl(this.entityDetails?.Logo);
+        const cached = this.topbarHeaderCacheService.read(this.entityDetails?.Entity_ID, this.userLanguageCode);
+        if (cached) {
+            this.topbarTitleCache = cached.title || '';
+            this.entityLogo = cached.logoDataUrl || '';
+        } else {
+            this.topbarTitleCache = this.topbarTitleCache || '';
+            this.entityLogo = '';
+        }
+
+        if (!this.entityLogo) {
+            this.entityLogo = this.imageService.toImageDataUrl(this.entityDetails?.Logo);
+        }
         const isRegional = langCode === 'ar';
         this.isRegional = isRegional;
 
