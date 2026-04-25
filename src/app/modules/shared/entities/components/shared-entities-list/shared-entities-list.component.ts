@@ -6,8 +6,8 @@ import { Observable, Subscription } from 'rxjs';
 import { EntitiesService } from 'src/app/modules/entity-administration/entities/services/entities.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { TranslationService } from 'src/app/core/services/translation.service';
-import { Entity, EntityBackend, EntitiesListResponse } from 'src/app/modules/entity-administration/entities/models/entities.model';
-import { IAccountSettings } from 'src/app/core/models/account-status.model';
+import { LanguageDirService } from 'src/app/core/services/language-dir.service';
+import { Entity, EntityBackend } from 'src/app/modules/entity-administration/entities/models/entities.model';
 import { Roles } from 'src/app/core/models/system-roles';
 import { PermissionService } from 'src/app/core/services/permission.service';
 
@@ -23,6 +23,7 @@ export class SharedEntitiesListComponent implements OnInit, OnDestroy {
     isLoading$: Observable<boolean>;
     tableLoadingSpinner = false;
     private subscriptions: Subscription[] = [];
+    private rawEntities: EntityBackend[] = [];
     entityLogoUrls: Record<string, string> = {};
     entityLogoLoading: Record<string, boolean> = {};
 
@@ -36,7 +37,6 @@ export class SharedEntitiesListComponent implements OnInit, OnDestroy {
     activationControls: Record<string, FormControl<boolean>> = {};
     menuItems: MenuItem[] = [];
     currentEntity?: Entity;
-    accountSettings: IAccountSettings;
     activationEntityDialog: boolean = false;
     currentEntityForActivation?: Entity;
     deleteEntityDialog: boolean = false;
@@ -56,6 +56,7 @@ export class SharedEntitiesListComponent implements OnInit, OnDestroy {
         private localStorageService: LocalStorageService,
         private permissionService: PermissionService,
         private translate: TranslationService,
+        private languageDirService: LanguageDirService,
         private route: ActivatedRoute
     ) {
         this.isLoading$ = this.entitiesService.isLoadingSubject.asObservable();
@@ -65,6 +66,12 @@ export class SharedEntitiesListComponent implements OnInit, OnDestroy {
         this.configureMenuItems();
         this.requestedSystemRole =
             this.route.snapshot.data['requestedSystemRole'] ?? this.permissionService.getCurrentRoleId();
+        this.subscriptions.push(
+            this.languageDirService.userLanguageCode$.subscribe(() => {
+                this.mapRawEntities();
+                this.configureMenuItems();
+            })
+        );
     }
 
     ngOnDestroy(): void {
@@ -79,11 +86,10 @@ export class SharedEntitiesListComponent implements OnInit, OnDestroy {
         }
 
         if (!forceReload && this.lastCompletedRequestSignature === requestSignature) {
+            this.mapRawEntities();
             return;
         }
 
-        this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
-        const isRegional = this.accountSettings?.Language !== 'English';
         this.activeRequestSignature = requestSignature;
         this.tableLoadingSpinner = true;
 
@@ -114,15 +120,8 @@ export class SharedEntitiesListComponent implements OnInit, OnDestroy {
                         entitiesData[key] = item;
                     }
                 });
-                this.entities = Object.values(entitiesData).map((item: any) => ({
-                    id: String(item?.Entity_ID || ''),
-                    code: item?.Code || '',
-                    name: isRegional ? item?.Name_Regional || '' : item?.Name || '',
-                    description: isRegional ? item?.Description_Regional || '' : item?.Description || '',
-                    parentEntityId: item?.Parent_Entity_ID ? String(item?.Parent_Entity_ID) : '',
-                    active: Boolean(item?.Is_Active),
-                    isPersonal: Boolean(item?.Is_Personal)
-                }));
+                this.rawEntities = Object.values(entitiesData) as EntityBackend[];
+                this.mapRawEntities();
                 this.buildActivationControls();
                 this.loadLogosForCurrentPage();
             },
@@ -342,6 +341,19 @@ export class SharedEntitiesListComponent implements OnInit, OnDestroy {
         this.entities.forEach((entity) => {
             this.activationControls[entity.id] = new FormControl<boolean>(entity.active, { nonNullable: true });
         });
+    }
+
+    private mapRawEntities(): void {
+        const isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+        this.entities = this.rawEntities.map((item: EntityBackend) => ({
+            id: String(item?.Entity_ID || ''),
+            code: item?.Code || '',
+            name: isRegional ? (item?.Name_Regional || item?.Name || '') : (item?.Name || ''),
+            description: isRegional ? (item?.Description_Regional || item?.Description || '') : (item?.Description || ''),
+            parentEntityId: item?.Parent_Entity_ID ? String(item?.Parent_Entity_ID) : '',
+            active: Boolean(item?.Is_Active),
+            isPersonal: Boolean(item?.Is_Personal)
+        }));
     }
 
     private configureMenuItems(): void {

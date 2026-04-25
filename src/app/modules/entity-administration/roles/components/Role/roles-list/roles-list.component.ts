@@ -4,9 +4,10 @@ import { MenuItem, MessageService } from 'primeng/api';
 import { Observable, Subscription } from 'rxjs';
 import { RolesService } from '../../../services/roles.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { LanguageDirService } from 'src/app/core/services/language-dir.service';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { EntityRole, EntityRoleBackend } from '../../../models/roles.model';
-import { IAccountSettings, IEntityDetails } from 'src/app/core/models/account-status.model';
+import { IEntityDetails } from 'src/app/core/models/account-status.model';
 import { EntitiesService } from 'src/app/modules/entity-administration/entities/services/entities.service';
 
 type RoleActionContext = 'list' | 'delete';
@@ -33,10 +34,11 @@ export class RolesListComponent implements OnInit, OnDestroy, OnChanges {
     }
     menuItems: MenuItem[] = [];
     currentRole?: EntityRole;
-    accountSettings: IAccountSettings;
     deleteRoleDialog: boolean = false;
     currentRoleForDelete?: EntityRole;
     private _entityId: number = 0;
+    private rawRoles: EntityRoleBackend[] = [];
+    private rawEntityForDialog: any = null;
 
     // Getter to access entityId from template
     get entityIdForTemplate(): number {
@@ -61,6 +63,7 @@ export class RolesListComponent implements OnInit, OnDestroy, OnChanges {
         private router: Router,
         private messageService: MessageService,
         private localStorageService: LocalStorageService,
+        private languageDirService: LanguageDirService,
         private entitiesService: EntitiesService,
         private translate: TranslationService
     ) {
@@ -75,6 +78,12 @@ export class RolesListComponent implements OnInit, OnDestroy, OnChanges {
             this._entityId = Number(this.localStorageService.getEntityId()) || 0;
         }
         this.configureMenuItems();
+        this.subscriptions.push(
+            this.languageDirService.userLanguageCode$.subscribe(() => {
+                this.mapRawRoles();
+                this.mapEntityNameForDialog();
+            })
+        );
         this.loadEntityNameForDialog();
         this.loadRoles();
     }
@@ -107,8 +116,6 @@ export class RolesListComponent implements OnInit, OnDestroy, OnChanges {
             return;
         }
 
-        this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
-        const isRegional = this.accountSettings?.Language !== 'English';
         this.tableLoadingSpinner = true;
 
         // API uses negative page numbers: -1 = page 1, -2 = page 2, etc.
@@ -135,18 +142,8 @@ export class RolesListComponent implements OnInit, OnDestroy, OnChanges {
                 });
                 console.log('rolesData', rolesData);
 
-                this.roles = Object.values(rolesData).map((item: any) => {
-                    return {
-                        id: String(item?.Entity_Role_ID || ''),
-                        entityId: String(item?.Entity_ID || ''),
-                        title: isRegional ? (item?.Title_Regional || item?.Title || '') : (item?.Title || ''),
-                        description: isRegional ? (item?.Description_Regional || item?.Description || '') : (item?.Description || ''),
-                        titleRegional: item?.Title_Regional || '',
-                        descriptionRegional: item?.Description_Regional || '',
-                        functions: item?.Functions || [],
-                        modules: item?.Modules || []
-                    };
-                });
+                this.rawRoles = Object.values(rolesData) as EntityRoleBackend[];
+                this.mapRawRoles();
             },
             complete: () => this.resetLoadingFlags()
         });
@@ -186,13 +183,10 @@ export class RolesListComponent implements OnInit, OnDestroy, OnChanges {
             this.entityNameForDialog = '';
             return;
         }
-        this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
-        const isRegional = this.accountSettings?.Language !== 'English';
         const stored = this.localStorageService.getEntityDetails() as IEntityDetails | null;
         if (stored && String(stored.Entity_ID) === String(this._entityId)) {
-            this.entityNameForDialog = isRegional
-                ? (stored.Name_Regional || stored.Name || '')
-                : (stored.Name || '');
+            this.rawEntityForDialog = stored;
+            this.mapEntityNameForDialog();
             return;
         }
         const sub = this.entitiesService.getEntityDetails(String(this._entityId)).subscribe({
@@ -202,9 +196,8 @@ export class RolesListComponent implements OnInit, OnDestroy, OnChanges {
                     return;
                 }
                 const m = response.message;
-                this.entityNameForDialog = isRegional
-                    ? (m.Name_Regional || m.Name || '')
-                    : (m.Name || '');
+                this.rawEntityForDialog = m;
+                this.mapEntityNameForDialog();
             },
             error: () => {
                 this.entityNameForDialog = '';
@@ -360,5 +353,30 @@ export class RolesListComponent implements OnInit, OnDestroy, OnChanges {
 
     private resetLoadingFlags(): void {
         this.tableLoadingSpinner = false;
+    }
+
+    private mapRawRoles(): void {
+        const isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+        this.roles = this.rawRoles.map((item) => ({
+            id: String(item?.Entity_Role_ID || ''),
+            entityId: String(item?.Entity_ID || ''),
+            title: isRegional ? (item?.Title_Regional || item?.Title || '') : (item?.Title || ''),
+            description: isRegional ? (item?.Description_Regional || item?.Description || '') : (item?.Description || ''),
+            titleRegional: item?.Title_Regional || '',
+            descriptionRegional: item?.Description_Regional || '',
+            functions: item?.Functions || [],
+            modules: item?.Modules || []
+        }));
+    }
+
+    private mapEntityNameForDialog(): void {
+        if (!this.rawEntityForDialog) {
+            return;
+        }
+
+        const isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+        this.entityNameForDialog = isRegional
+            ? (this.rawEntityForDialog.Name_Regional || this.rawEntityForDialog.Name || '')
+            : (this.rawEntityForDialog.Name || '');
     }
 }

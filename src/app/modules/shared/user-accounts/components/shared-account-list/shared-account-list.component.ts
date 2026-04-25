@@ -3,11 +3,11 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { LanguageDirService } from 'src/app/core/services/language-dir.service';
 import { TranslationService } from 'src/app/core/services/translation.service';
-import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { textFieldValidator, getTextFieldError, nameFieldValidator, getNameFieldError } from 'src/app/core/validators/text-field.validator';
-import { EntityAccount, Entity } from 'src/app/modules/entity-administration/entities/models/entities.model';
+import { EntityAccount, Entity, EntityBackend } from 'src/app/modules/entity-administration/entities/models/entities.model';
 import { EntitiesService } from 'src/app/modules/entity-administration/entities/services/entities.service';
 import { RolesService } from 'src/app/modules/entity-administration/roles/services/roles.service';
 
@@ -40,7 +40,6 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
   rows: number = 10;
   totalRecords: number = 0;
 
-  accountSettings: IAccountSettings;
   isRegional: boolean = false;
 
   // Entity roles map for lookup
@@ -52,6 +51,12 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
   accountEntityNamesMap: Map<number, string> = new Map();
   loadedAccountEntityNameIds: Set<number> = new Set();
   private lastAccountsSourceForMap: any[] = [];
+  private rawContextEntity: any = null;
+  private rawEntityRoles: any[] = [];
+  private rawSystemRolesByEntityId: Map<number, any[]> = new Map();
+  private rawAccountEntitiesById: Map<number, any> = new Map();
+  private rawEntitiesForSelection: EntityBackend[] = [];
+  private rawRolesForSelection: any[] = [];
 
   // Confirmation dialogs state
   deleteAccountDialog: boolean = false;
@@ -145,10 +150,10 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
     private permissionService: PermissionService,
     private fb: FormBuilder,
     private rolesService: RolesService,
+    private languageDirService: LanguageDirService,
     private translationService: TranslationService
   ) {
-    this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
-    this.isRegional = this.accountSettings?.Language !== 'English';
+    this.isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
   }
 
   ngOnInit(): void {
@@ -156,6 +161,18 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
     this.initForm();
     this.applyCreateFormValidators();
     this.initAccountManagementForms();
+    this.subscriptions.push(
+      this.languageDirService.userLanguageCode$.subscribe(() => {
+        this.isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+        this.mapContextEntityName();
+        this.mapRawEntityRoles();
+        this.mapRawSystemRoles();
+        this.mapRawAccountEntityNames();
+        this.mapRawEntitiesForSelection();
+        this.mapRawRolesForSelection();
+        this.mapAccountsData(this.lastAccountsSourceForMap);
+      })
+    );
 
     if (this.entityId) {
       this.loadAccounts();
@@ -208,10 +225,8 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
           this.handleBusinessError('entity', response);
           return;
         }
-        const entity = response?.message || {};
-        this.entityName = this.isRegional
-          ? (entity?.Name_Regional || entity?.Name || '')
-          : (entity?.Name || '');
+        this.rawContextEntity = response?.message || {};
+        this.mapContextEntityName();
         const ctxId = parseInt(this.entityId, 10);
         if (!isNaN(ctxId) && ctxId > 0 && this.entityName) {
           this.accountEntityNamesMap.set(ctxId, this.entityName);
@@ -244,18 +259,8 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
       next: (response: any) => {
         if (response?.success) {
           const rolesData = response?.message?.Entity_Roles || {};
-          this.entityRolesMap.clear();
-
-          // Create lookup map: Entity_Role_ID -> Role Name
-          Object.values(rolesData).forEach((item: any) => {
-            const roleId = item?.Entity_Role_ID || 0;
-            const roleName = this.isRegional
-              ? (item?.Title_Regional || item?.Title || '')
-              : (item?.Title || '');
-            if (roleId > 0) {
-              this.entityRolesMap.set(roleId, roleName);
-            }
-          });
+          this.rawEntityRoles = Object.values(rolesData);
+          this.mapRawEntityRoles();
         }
       },
       error: () => {
@@ -384,11 +389,8 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
             this.mapAccountsData(this.lastAccountsSourceForMap);
             return;
           }
-          const entity = response?.message || {};
-          const name = this.isRegional
-            ? (entity?.Name_Regional || entity?.Name || '')
-            : (entity?.Name || '');
-          this.accountEntityNamesMap.set(id, name || '');
+          this.rawAccountEntitiesById.set(id, response?.message || {});
+          this.mapRawAccountEntityNames();
           this.mapAccountsData(this.lastAccountsSourceForMap);
         },
         error: () => {
@@ -433,18 +435,8 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
           }
 
           const rolesData = response?.message?.Entity_Roles || {};
-          Object.values(rolesData).forEach((item: any) => {
-            const roleId = Number(item?.Entity_Role_ID || 0);
-            if (roleId <= 0) {
-              return;
-            }
-
-            const roleName = this.isRegional
-              ? (item?.Title_Regional || item?.Title || '')
-              : (item?.Title || '');
-            const roleKey = `${entityId}_${roleId}`;
-            this.systemEntityRolesMap.set(roleKey, roleName || String(roleId));
-          });
+          this.rawSystemRolesByEntityId.set(entityId, Object.values(rolesData));
+          this.mapRawSystemRoles();
 
           // Refresh current page so role names appear after async role lookups complete.
           this.mapAccountsData(accountsArray);
@@ -672,15 +664,8 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
         this.entityTableTotalRecords = Number(response.message.Total_Count || 0);
         const entitiesData = response.message.Entities_List || response.message.Entities || {};
 
-        this.entitiesForSelection = Object.values(entitiesData).map((item: any) => ({
-          id: String(item?.Entity_ID || ''),
-          code: item?.Code || '',
-          name: this.isRegional ? (item?.Name_Regional || item?.Name || '') : (item?.Name || ''),
-          description: this.isRegional ? (item?.Description_Regional || item?.Description || '') : (item?.Description || ''),
-          parentEntityId: item?.Parent_Entity_ID ? String(item?.Parent_Entity_ID) : '',
-          active: Boolean(item?.Is_Active),
-          isPersonal: Boolean(item?.Is_Personal)
-        }));
+        this.rawEntitiesForSelection = Object.values(entitiesData) as EntityBackend[];
+        this.mapRawEntitiesForSelection();
         this.loadingEntitiesTable = false;
       },
       error: () => this.loadingEntitiesTable = false
@@ -765,12 +750,8 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
 
         this.roleTableTotalRecords = Number(response?.message?.Total_Count || 0);
         const rolesData = response?.message?.Entity_Roles || {};
-        this.rolesForSelection = Object.values(rolesData)
-          .map((item: any) => ({
-            id: Number(item?.Entity_Role_ID || 0),
-            title: this.isRegional ? (item?.Title_Regional || item?.Title || '') : (item?.Title || '')
-          }))
-          .filter((item: { id: number; title: string }) => item.id > 0);
+        this.rawRolesForSelection = Object.values(rolesData);
+        this.mapRawRolesForSelection();
 
         this.loadingRolesTable = false;
       },
@@ -1082,6 +1063,93 @@ export class SharedAccountListComponent implements OnInit, OnDestroy, OnChanges 
 
   getEntityName(): string {
     return this.entityName;
+  }
+
+  private mapContextEntityName(): void {
+    if (!this.rawContextEntity) {
+      return;
+    }
+
+    this.entityName = this.isRegional
+      ? (this.rawContextEntity?.Name_Regional || this.rawContextEntity?.Name || '')
+      : (this.rawContextEntity?.Name || '');
+
+    const ctxId = parseInt(this.entityId, 10);
+    if (!isNaN(ctxId) && ctxId > 0 && this.entityName) {
+      this.accountEntityNamesMap.set(ctxId, this.entityName);
+    }
+  }
+
+  private mapRawEntityRoles(): void {
+    this.entityRolesMap.clear();
+    this.rawEntityRoles.forEach((item: any) => {
+      const roleId = item?.Entity_Role_ID || 0;
+      const roleName = this.isRegional
+        ? (item?.Title_Regional || item?.Title || '')
+        : (item?.Title || '');
+      if (roleId > 0) {
+        this.entityRolesMap.set(roleId, roleName);
+      }
+    });
+  }
+
+  private mapRawSystemRoles(): void {
+    this.systemEntityRolesMap.clear();
+    this.rawSystemRolesByEntityId.forEach((roles, entityId) => {
+      roles.forEach((item: any) => {
+        const roleId = Number(item?.Entity_Role_ID || 0);
+        if (roleId <= 0) {
+          return;
+        }
+
+        const roleName = this.isRegional
+          ? (item?.Title_Regional || item?.Title || '')
+          : (item?.Title || '');
+        this.systemEntityRolesMap.set(`${entityId}_${roleId}`, roleName || String(roleId));
+      });
+    });
+  }
+
+  private mapRawAccountEntityNames(): void {
+    this.rawAccountEntitiesById.forEach((entity, id) => {
+      const name = this.isRegional
+        ? (entity?.Name_Regional || entity?.Name || '')
+        : (entity?.Name || '');
+      this.accountEntityNamesMap.set(id, name || '');
+    });
+  }
+
+  private mapRawEntitiesForSelection(): void {
+    this.entitiesForSelection = this.rawEntitiesForSelection.map((item) => ({
+      id: String(item?.Entity_ID || ''),
+      code: item?.Code || '',
+      name: this.isRegional ? (item?.Name_Regional || item?.Name || '') : (item?.Name || ''),
+      description: this.isRegional ? (item?.Description_Regional || item?.Description || '') : (item?.Description || ''),
+      parentEntityId: item?.Parent_Entity_ID ? String(item?.Parent_Entity_ID) : '',
+      active: Boolean(item?.Is_Active),
+      isPersonal: Boolean(item?.Is_Personal)
+    }));
+
+    if (this.selectedCreateEntity) {
+      this.selectedCreateEntity =
+        this.entitiesForSelection.find((entity) => entity.id === this.selectedCreateEntity?.id) ||
+        this.selectedCreateEntity;
+    }
+  }
+
+  private mapRawRolesForSelection(): void {
+    this.rolesForSelection = this.rawRolesForSelection
+      .map((item: any) => ({
+        id: Number(item?.Entity_Role_ID || 0),
+        title: this.isRegional ? (item?.Title_Regional || item?.Title || '') : (item?.Title || '')
+      }))
+      .filter((item: { id: number; title: string }) => item.id > 0);
+
+    if (this.selectedCreateRole) {
+      this.selectedCreateRole =
+        this.rolesForSelection.find((role) => role.id === this.selectedCreateRole?.id) ||
+        this.selectedCreateRole;
+    }
   }
 
   private handleBusinessError(context: string, response: any): void {

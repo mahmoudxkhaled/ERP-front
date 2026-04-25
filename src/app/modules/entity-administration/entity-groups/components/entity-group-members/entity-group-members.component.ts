@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 import { EntityGroupsService } from '../../services/entity-groups.service';
 import { EntitiesService } from 'src/app/modules/entity-administration/entities/services/entities.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
-import { IAccountSettings } from 'src/app/core/models/account-status.model';
+import { LanguageDirService } from 'src/app/core/services/language-dir.service';
 import { GroupMember, Group } from 'src/app/modules/summary/models/groups.model';
 import { EntityAccount } from 'src/app/modules/entity-administration/entities/models/entities.model';
 
@@ -60,23 +60,29 @@ export class EntityGroupMembersComponent implements OnInit, OnDestroy {
         return this.accountsForSelection;
     }
 
-    accountSettings: IAccountSettings;
     isRegional: boolean = false;
     group: Group | null = null;
 
     private subscriptions: Subscription[] = [];
+    private rawGroup: any = null;
 
     constructor(
         private entityGroupsService: EntityGroupsService,
         private entitiesService: EntitiesService,
         private messageService: MessageService,
-        private localStorageService: LocalStorageService
+        private localStorageService: LocalStorageService,
+        private languageDirService: LanguageDirService
     ) {
-        this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
-        this.isRegional = this.accountSettings?.Language !== 'English';
+        this.isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
     }
 
     ngOnInit(): void {
+        this.subscriptions.push(
+            this.languageDirService.userLanguageCode$.subscribe(() => {
+                this.isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+                this.mapRawGroup();
+            })
+        );
         // Initialize selectedEntityId from @Input() if provided
         if (this.entityId && this.entityId > 0) {
             this.selectedEntityId = this.entityId.toString();
@@ -100,15 +106,8 @@ export class EntityGroupMembersComponent implements OnInit, OnDestroy {
         const sub = this.entityGroupsService.getEntityGroup(this.groupId).subscribe({
             next: (response: any) => {
                 if (response?.success) {
-                    const groupData = response?.message ?? {};
-                    this.group = {
-                        id: String(groupData?.Group_ID || groupData?.groupID || this.groupId),
-                        title: this.isRegional ? (groupData?.Title_Regional || groupData?.title_Regional || groupData?.Title || groupData?.title || '') : (groupData?.Title || groupData?.title || ''),
-                        description: this.isRegional ? (groupData?.Description_Regional || groupData?.description_Regional || groupData?.Description || groupData?.description || '') : (groupData?.Description || groupData?.description || ''),
-                        entityId: groupData?.Entity_ID || groupData?.entityID || 0,
-                        active: Boolean(groupData?.Is_Active !== undefined ? groupData.Is_Active : (groupData?.is_Active !== undefined ? groupData.is_Active : true)),
-                        createAccountId: groupData?.Create_Account_ID || groupData?.createAccountID || 0
-                    };
+                    this.rawGroup = response?.message ?? {};
+                    this.mapRawGroup();
                 }
             }
         });
@@ -118,6 +117,27 @@ export class EntityGroupMembersComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.subscriptions.forEach((sub) => sub.unsubscribe());
+    }
+
+    private mapRawGroup(): void {
+        if (!this.rawGroup) {
+            return;
+        }
+
+        this.group = {
+            id: String(this.rawGroup?.Group_ID || this.rawGroup?.groupID || this.groupId),
+            title: this.isRegional
+                ? (this.rawGroup?.Title_Regional || this.rawGroup?.title_Regional || this.rawGroup?.Title || this.rawGroup?.title || '')
+                : (this.rawGroup?.Title || this.rawGroup?.title || ''),
+            description: this.isRegional
+                ? (this.rawGroup?.Description_Regional || this.rawGroup?.description_Regional || this.rawGroup?.Description || this.rawGroup?.description || '')
+                : (this.rawGroup?.Description || this.rawGroup?.description || ''),
+            titleRegional: this.rawGroup?.Title_Regional || this.rawGroup?.title_Regional || '',
+            descriptionRegional: this.rawGroup?.Description_Regional || this.rawGroup?.description_Regional || '',
+            entityId: this.rawGroup?.Entity_ID || this.rawGroup?.entityID || 0,
+            active: Boolean(this.rawGroup?.Is_Active !== undefined ? this.rawGroup.Is_Active : (this.rawGroup?.is_Active !== undefined ? this.rawGroup.is_Active : true)),
+            createAccountId: this.rawGroup?.Create_Account_ID || this.rawGroup?.createAccountID || 0
+        };
     }
 
     loadMembers(): void {

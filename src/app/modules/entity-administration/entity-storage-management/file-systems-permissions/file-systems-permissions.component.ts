@@ -6,6 +6,7 @@ import { MessageService } from 'primeng/api';
 import { firstValueFrom } from 'rxjs';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { LanguageDirService } from 'src/app/core/services/language-dir.service';
 import { FileSystemPermissionsService, FileSystemAccessPermissionRow } from '../services/file-system-permissions.service';
 import { EntitiesService } from '../../entities/services/entities.service';
 import { EntityGroupsService } from '../../entity-groups/services/entity-groups.service';
@@ -83,6 +84,7 @@ export class FileSystemsPermissionsComponent implements OnInit {
     private ngxTranslate: TranslateService,
     private messageService: MessageService,
     private localStorageService: LocalStorageService,
+    private languageDirService: LanguageDirService,
     private fileSystemPermissionsService: FileSystemPermissionsService,
     private entitiesService: EntitiesService,
     private entityGroupsService: EntityGroupsService,
@@ -91,8 +93,16 @@ export class FileSystemsPermissionsComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentEntityId = Number(this.localStorageService.getEntityId() || 0);
-    this.isRegional = this.localStorageService.getAccountSettings()?.Language !== 'English';
+    this.isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
     this.buildStaticOptions();
+    this.languageDirService.userLanguageCode$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+      this.clearAccessibleEntitiesCache();
+      if (this.addDialogVisible && this.addAccessType !== null) {
+        this.loadRelatedTargets();
+      }
+      this.refreshPermissions();
+    });
     this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       const id = Number(params.get('fileSystemId') || 0);
       const scrollToEffective = params.get('scrollTo') === 'effective';

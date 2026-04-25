@@ -5,7 +5,7 @@ import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import { EntitiesService } from 'src/app/modules/entity-administration/entities/services/entities.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
-import { IAccountSettings } from 'src/app/core/models/account-status.model';
+import { LanguageDirService } from 'src/app/core/services/language-dir.service';
 
 interface EntityContact {
     address: string;
@@ -38,13 +38,18 @@ export class SharedEntityContactComponent implements OnInit, OnDestroy {
         private entitiesService: EntitiesService,
         private messageService: MessageService,
         private localStorageService: LocalStorageService,
+        private languageDirService: LanguageDirService,
         private translate: TranslateService
     ) {
-        const accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
-        this.isRegional = accountSettings?.Language !== 'English';
+        this.isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
     }
 
     ngOnInit(): void {
+        this.subscriptions.push(
+            this.languageDirService.userLanguageCode$.subscribe(() => {
+                this.isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+            })
+        );
         if (this.entityId) {
             this.loadContacts();
         }

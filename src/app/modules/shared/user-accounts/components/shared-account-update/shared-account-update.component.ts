@@ -3,8 +3,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { LanguageDirService } from 'src/app/core/services/language-dir.service';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
-import { Entity } from 'src/app/modules/entity-administration/entities/models/entities.model';
+import { Entity, EntityBackend } from 'src/app/modules/entity-administration/entities/models/entities.model';
 import { EntitiesService } from 'src/app/modules/entity-administration/entities/services/entities.service';
 import { RolesService } from 'src/app/modules/entity-administration/roles/services/roles.service';
 
@@ -51,20 +52,31 @@ export class SharedAccountUpdateComponent implements OnInit, OnChanges, OnDestro
   isRegional: boolean = false;
 
   private subscriptions: Subscription[] = [];
+  private rawEntitiesForSelection: EntityBackend[] = [];
+  private rawSelectedEntityForUpdate: EntityBackend | null = null;
+  private rawEntityRoles: any[] = [];
 
   constructor(
     private fb: FormBuilder,
     private entitiesService: EntitiesService,
     private localStorageService: LocalStorageService,
+    private languageDirService: LanguageDirService,
     private rolesService: RolesService
   ) {
     this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
-    this.isRegional = this.accountSettings?.Language !== 'English';
+    this.isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
     this.initForm();
   }
 
   ngOnInit(): void {
-    // Form is already initialized in constructor
+    this.subscriptions.push(
+      this.languageDirService.userLanguageCode$.subscribe(() => {
+        this.isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+        this.mapRawEntitiesForSelection();
+        this.mapSelectedEntityForUpdate();
+        this.mapRawEntityRoles();
+      })
+    );
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -99,6 +111,9 @@ export class SharedAccountUpdateComponent implements OnInit, OnChanges, OnDestro
     this.selectedEntityForUpdate = undefined;
     this.entityTableTextFilter = '';
     this.entityTableFirst = 0;
+    this.rawEntitiesForSelection = [];
+    this.rawSelectedEntityForUpdate = null;
+    this.rawEntityRoles = [];
     this.entitiesForSelection = [];
     this.entityRoleOptions = [];
   }
@@ -191,17 +206,8 @@ export class SharedAccountUpdateComponent implements OnInit, OnChanges, OnDestro
           }
         });
 
-        this.entitiesForSelection = Object.values(entitiesData).map((item: any) => {
-          return {
-            id: String(item?.Entity_ID || ''),
-            code: item?.Code || '',
-            name: this.isRegional ? (item?.Name_Regional || item?.Name || '') : (item?.Name || ''),
-            description: this.isRegional ? (item?.Description_Regional || item?.Description || '') : (item?.Description || ''),
-            parentEntityId: item?.Parent_Entity_ID ? String(item?.Parent_Entity_ID) : '',
-            active: Boolean(item?.Is_Active),
-            isPersonal: Boolean(item?.Is_Personal)
-          };
-        });
+        this.rawEntitiesForSelection = Object.values(entitiesData) as EntityBackend[];
+        this.mapRawEntitiesForSelection();
 
         this.loadingEntitiesTable = false;
       },
@@ -229,6 +235,8 @@ export class SharedAccountUpdateComponent implements OnInit, OnChanges, OnDestro
 
   selectEntityForUpdate(entity: Entity): void {
     this.selectedEntityForUpdate = entity;
+    this.rawSelectedEntityForUpdate =
+      this.rawEntitiesForSelection.find((item) => String(item?.Entity_ID || '') === entity.id) || null;
     this.updateEntityForm.patchValue({
       entityId: Number(entity.id),
       entityRoleId: 0 // Clear role selection when entity changes
@@ -259,10 +267,8 @@ export class SharedAccountUpdateComponent implements OnInit, OnChanges, OnDestro
       next: (response: any) => {
         if (response?.success) {
           const rolesData = response?.message?.Entity_Roles || {};
-          this.entityRoleOptions = Object.values(rolesData).map((item: any) => ({
-            label: this.isRegional ? (item?.Title_Regional || item?.Title || '') : (item?.Title || ''),
-            value: item?.Entity_Role_ID || 0
-          }));
+          this.rawEntityRoles = Object.values(rolesData);
+          this.mapRawEntityRoles();
         } else {
           this.entityRoleOptions = [];
         }
@@ -328,15 +334,8 @@ export class SharedAccountUpdateComponent implements OnInit, OnChanges, OnDestro
           return;
         }
         const item = res?.message || {};
-        this.selectedEntityForUpdate = {
-          id: String(item?.Entity_ID || entityId),
-          code: item?.Code || '',
-          name: this.isRegional ? (item?.Name_Regional || item?.Name || '') : (item?.Name || ''),
-          description: this.isRegional ? (item?.Description_Regional || item?.Description || '') : (item?.Description || ''),
-          parentEntityId: item?.Parent_Entity_ID ? String(item?.Parent_Entity_ID) : '',
-          active: Boolean(item?.Is_Active),
-          isPersonal: Boolean(item?.Is_Personal)
-        };
+        this.rawSelectedEntityForUpdate = item;
+        this.mapSelectedEntityForUpdate(entityId);
       }
     });
 
@@ -365,5 +364,42 @@ export class SharedAccountUpdateComponent implements OnInit, OnChanges, OnDestro
 
   onCancelClick(): void {
     this.onCancel.emit();
+  }
+
+  private mapRawEntitiesForSelection(): void {
+    const isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+    this.entitiesForSelection = this.rawEntitiesForSelection.map((item) => this.mapEntity(item, isRegional));
+    if (this.rawSelectedEntityForUpdate) {
+      this.mapSelectedEntityForUpdate();
+    }
+  }
+
+  private mapSelectedEntityForUpdate(fallbackId: number = 0): void {
+    if (!this.rawSelectedEntityForUpdate) {
+      return;
+    }
+
+    const isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+    this.selectedEntityForUpdate = this.mapEntity(this.rawSelectedEntityForUpdate, isRegional, fallbackId);
+  }
+
+  private mapEntity(item: EntityBackend, isRegional: boolean, fallbackId: number = 0): Entity {
+    return {
+      id: String(item?.Entity_ID || fallbackId || ''),
+      code: item?.Code || '',
+      name: isRegional ? (item?.Name_Regional || item?.Name || '') : (item?.Name || ''),
+      description: isRegional ? (item?.Description_Regional || item?.Description || '') : (item?.Description || ''),
+      parentEntityId: item?.Parent_Entity_ID ? String(item?.Parent_Entity_ID) : '',
+      active: Boolean(item?.Is_Active),
+      isPersonal: Boolean(item?.Is_Personal)
+    };
+  }
+
+  private mapRawEntityRoles(): void {
+    const isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+    this.entityRoleOptions = this.rawEntityRoles.map((item: any) => ({
+      label: isRegional ? (item?.Title_Regional || item?.Title || '') : (item?.Title || ''),
+      value: item?.Entity_Role_ID || 0
+    }));
   }
 }

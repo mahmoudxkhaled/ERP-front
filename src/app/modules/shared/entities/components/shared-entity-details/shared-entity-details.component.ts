@@ -5,6 +5,7 @@ import { FileUpload } from 'primeng/fileupload';
 import { Subscription } from 'rxjs';
 import { EntitiesService } from 'src/app/modules/entity-administration/entities/services/entities.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { LanguageDirService } from 'src/app/core/services/language-dir.service';
 import { EntityDetailsRefreshService } from 'src/app/core/services/entity-details-refresh.service';
 import { ImageService } from 'src/app/core/services/image.service';
 import { PermissionService } from 'src/app/core/services/permission.service';
@@ -50,10 +51,11 @@ export class SharedEntityDetailsComponent implements OnInit, OnDestroy {
         private entityDetailsRefreshService: EntityDetailsRefreshService,
         private imageService: ImageService,
         private permissionService: PermissionService,
+        private languageDirService: LanguageDirService,
         private authService: AuthService
     ) {
         this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
-        this.isRegional = this.accountSettings?.Language !== 'English';
+        this.isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
     }
 
     ngOnInit(): void {
@@ -68,6 +70,11 @@ export class SharedEntityDetailsComponent implements OnInit, OnDestroy {
 
         this.applyTabIndexFromQuery(this.route.snapshot.queryParamMap);
         this.bindTabFromQueryParam();
+        this.subscriptions.push(
+            this.languageDirService.userLanguageCode$.subscribe(() => {
+                this.isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+            })
+        );
         this.bindEntityIdFromRoute();
     }
 

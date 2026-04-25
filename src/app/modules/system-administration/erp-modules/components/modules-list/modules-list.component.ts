@@ -4,10 +4,10 @@ import { Router } from '@angular/router';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Observable, Subscription, forkJoin } from 'rxjs';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { LanguageDirService } from 'src/app/core/services/language-dir.service';
 import { TranslationService } from 'src/app/core/services/translation.service';
-import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { SettingsConfigurationsService } from 'src/app/modules/system-administration/settings-configurations.service';
-import { Function, Module } from '../../../erp-functions/models/settings-configurations.model';
+import { Function, FunctionBackend, Module, ModuleBackend } from '../../../erp-functions/models/settings-configurations.model';
 
 
 type ModuleActionContext = 'list' | 'activate' | 'deactivate' | 'reorder';
@@ -25,9 +25,10 @@ export class ModulesListComponent implements OnInit, OnDestroy {
     isLoading$: Observable<boolean>;
     tableLoadingSpinner = false;
     private subscriptions: Subscription[] = [];
+    private rawFunctions: FunctionBackend[] = [];
+    private rawModules: ModuleBackend[] = [];
     menuItems: MenuItem[] = [];
     currentModule?: Module;
-    accountSettings: IAccountSettings;
     activateModuleDialog: boolean = false;
     currentModuleForActivation?: Module;
     logoDialogVisible: boolean = false;
@@ -61,6 +62,7 @@ export class ModulesListComponent implements OnInit, OnDestroy {
         private router: Router,
         private messageService: MessageService,
         private localStorageService: LocalStorageService,
+        private languageDirService: LanguageDirService,
         private translate: TranslationService,
         private cdr: ChangeDetectorRef
     ) {
@@ -68,8 +70,14 @@ export class ModulesListComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
         this.configureMenuItems();
+        this.subscriptions.push(
+            this.languageDirService.userLanguageCode$.subscribe(() => {
+                this.mapRawFunctions();
+                this.mapRawModules();
+                this.applySearchFilter();
+            })
+        );
         // Show skeleton immediately while we load (functions then modules)
         this.tableLoadingSpinner = true;
         this.loadFunctions();
@@ -80,11 +88,11 @@ export class ModulesListComponent implements OnInit, OnDestroy {
     }
 
     loadFunctions(): void {
-        const isRegional = this.accountSettings?.Language !== 'English';
         const sub = this.settingsConfigurationsService.getFunctionsList().subscribe({
             next: (response: any) => {
                 if (response?.success) {
-                    this.functions = this.settingsConfigurationsService.parseFunctionsList(response, isRegional);
+                    this.rawFunctions = this.getRawFunctions(response);
+                    this.mapRawFunctions();
                 }
             },
             complete: () => {
@@ -96,7 +104,6 @@ export class ModulesListComponent implements OnInit, OnDestroy {
     }
 
     loadModules(forceReload: boolean = false, silent: boolean = false): void {
-        const isRegional = this.accountSettings?.Language !== 'English';
         if (!silent) {
             this.tableLoadingSpinner = true;
         }
@@ -108,7 +115,8 @@ export class ModulesListComponent implements OnInit, OnDestroy {
                     return;
                 }
 
-                this.modules = this.settingsConfigurationsService.parseModulesList(response, isRegional);
+                this.rawModules = this.getRawModules(response);
+                this.mapRawModules();
                 this.applySearchFilter();
                 this.buildActivationControls();
                 this.loadLogosForList();
@@ -141,6 +149,43 @@ export class ModulesListComponent implements OnInit, OnDestroy {
             });
             this.subscriptions.push(sub);
         });
+    }
+
+    private getRawFunctions(response: any): FunctionBackend[] {
+        const functionsData = response?.message?.Functions_List || response?.message || {};
+        return (Object.values(functionsData) as FunctionBackend[]).filter((item) => item?.Function_ID !== undefined);
+    }
+
+    private getRawModules(response: any): ModuleBackend[] {
+        const modulesData = response?.message?.Modules_List || response?.message || {};
+        return (Object.values(modulesData) as ModuleBackend[]).filter((item) => item?.Module_ID !== undefined);
+    }
+
+    private mapRawFunctions(): void {
+        const isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+        this.functions = this.rawFunctions.map((item) => ({
+            id: item.Function_ID,
+            code: item.Code || '',
+            name: isRegional ? (item.Name_Regional || item.Name || '') : (item.Name || ''),
+            nameRegional: item.Name_Regional || '',
+            defaultOrder: item.Default_Order,
+            url: item.URL,
+            isActive: item.Is_Active ?? true
+        }));
+    }
+
+    private mapRawModules(): void {
+        const isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+        this.modules = this.rawModules.map((item) => ({
+            id: item.Module_ID,
+            functionId: item.Function_ID,
+            code: item.Code || '',
+            name: isRegional ? (item.Name_Regional || item.Name || '') : (item.Name || ''),
+            nameRegional: item.Name_Regional || '',
+            defaultOrder: item.Default_Order,
+            url: item.URL,
+            isActive: item.Is_Active ?? true
+        }));
     }
 
     buildActivationControls(): void {
@@ -487,7 +532,7 @@ export class ModulesListComponent implements OnInit, OnDestroy {
                     return;
                 }
 
-                const isRegional = this.accountSettings?.Language !== 'English';
+                const isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
                 const nameA = isRegional ? (msgA.Name_Regional || msgA.Name || '') : (msgA.Name || '');
                 const nameB = isRegional ? (msgB.Name_Regional || msgB.Name || '') : (msgB.Name || '');
 

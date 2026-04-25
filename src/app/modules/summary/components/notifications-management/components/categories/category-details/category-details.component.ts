@@ -2,8 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { LanguageDirService } from 'src/app/core/services/language-dir.service';
 import { PermissionService } from 'src/app/core/services/permission.service';
-import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { NotificationCategory } from 'src/app/modules/summary/models/notifications.model';
 import { NotificationsService } from 'src/app/modules/summary/services/notifications.service';
 
@@ -16,9 +16,8 @@ export class CategoryDetailsComponent implements OnInit, OnDestroy {
     categoryId: number = 0;
     category: NotificationCategory | null = null;
     loading: boolean = false;
-    accountSettings: IAccountSettings;
-    isRegional: boolean = false;
     isSystemCategory: boolean = true;
+    private rawCategory: any = null;
 
     private subscriptions: Subscription[] = [];
 
@@ -26,15 +25,14 @@ export class CategoryDetailsComponent implements OnInit, OnDestroy {
         private notificationsService: NotificationsService,
         private messageService: MessageService,
         private localStorageService: LocalStorageService,
+        private languageDirService: LanguageDirService,
         private permissionService: PermissionService
-    ) {
-        this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
-        this.isRegional = this.accountSettings?.Language !== 'English';
-    }
+    ) { }
 
     ngOnInit(): void {
-        // This component can be used as a dialog or standalone
-        // For now, it's mainly used within tabs, so no route params needed
+        this.subscriptions.push(
+            this.languageDirService.userLanguageCode$.subscribe(() => this.mapCategory())
+        );
     }
 
     ngOnDestroy(): void {
@@ -48,7 +46,9 @@ export class CategoryDetailsComponent implements OnInit, OnDestroy {
         const sub = this.notificationsService.getNotificationCategory(this.categoryId).subscribe({
             next: (response: any) => {
                 if (response?.success) {
-                    this.mapCategory(response.message, true);
+                    this.rawCategory = response.message;
+                    this.isSystemCategory = true;
+                    this.mapCategory();
                     this.loading = false;
                 } else {
                     // Try Entity category
@@ -66,7 +66,9 @@ export class CategoryDetailsComponent implements OnInit, OnDestroy {
         const sub = this.notificationsService.getEntityNotificationCategory(this.categoryId).subscribe({
             next: (response: any) => {
                 if (response?.success) {
-                    this.mapCategory(response.message, false);
+                    this.rawCategory = response.message;
+                    this.isSystemCategory = false;
+                    this.mapCategory();
                 } else {
                     this.messageService.add({
                         severity: 'error',
@@ -88,19 +90,26 @@ export class CategoryDetailsComponent implements OnInit, OnDestroy {
         this.subscriptions.push(sub);
     }
 
-    mapCategory(categoryData: any, isSystem: boolean): void {
-        this.isSystemCategory = isSystem;
+    mapCategory(): void {
+        const categoryData = this.rawCategory;
+        const isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+        if (!categoryData) {
+            return;
+        }
+
         this.category = {
             id: categoryData?.Category_ID || this.categoryId,
             typeId: categoryData?.Type_ID || 0,
-            title: this.isRegional ? (categoryData?.Title_Regional || categoryData?.Title || '') : (categoryData?.Title || ''),
-            description: this.isRegional ? (categoryData?.Description_Regional || categoryData?.Description || '') : (categoryData?.Description || ''),
+            title: isRegional ? (categoryData?.Title_Regional || categoryData?.Title || '') : (categoryData?.Title || ''),
+            description: isRegional
+                ? (categoryData?.Description_Regional || categoryData?.Description || '')
+                : (categoryData?.Description || ''),
             titleRegional: categoryData?.Title_Regional,
             descriptionRegional: categoryData?.Description_Regional,
             sendEmail: Boolean(categoryData?.Send_Email),
             canBeUnsubscribed: Boolean(categoryData?.Can_Be_Unsubscribed),
             entityId: categoryData?.Entity_ID,
-            isSystemCategory: isSystem
+            isSystemCategory: this.isSystemCategory
         };
     }
 }

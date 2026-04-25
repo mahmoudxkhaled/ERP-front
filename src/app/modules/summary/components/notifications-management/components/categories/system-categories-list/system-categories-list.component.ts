@@ -2,9 +2,9 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/co
 import { MenuItem, MessageService } from 'primeng/api';
 import { Observable, Subscription } from 'rxjs';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { LanguageDirService } from 'src/app/core/services/language-dir.service';
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { TranslationService } from 'src/app/core/services/translation.service';
-import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { NotificationCategory, NotificationCategoryBackend } from 'src/app/modules/summary/models/notifications.model';
 import { NotificationsService } from 'src/app/modules/summary/services/notifications.service';
 
@@ -22,11 +22,9 @@ export class SystemCategoriesListComponent implements OnInit, OnDestroy {
     isLoading$: Observable<boolean>;
     tableLoadingSpinner = false;
     private subscriptions: Subscription[] = [];
+    private rawCategories: NotificationCategoryBackend[] = [];
     menuItems: MenuItem[] = [];
     currentCategory?: NotificationCategory;
-    accountSettings: IAccountSettings;
-    isRegional: boolean = false;
-
     // Dialog for form
     formDialogVisible: boolean = false;
     formCategoryId?: number;
@@ -64,16 +62,21 @@ export class SystemCategoriesListComponent implements OnInit, OnDestroy {
         private notificationsService: NotificationsService,
         private messageService: MessageService,
         private localStorageService: LocalStorageService,
+        private languageDirService: LanguageDirService,
         private permissionService: PermissionService,
         private translate: TranslationService
     ) {
         this.isLoading$ = this.notificationsService.isLoadingSubject.asObservable();
-        this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
-        this.isRegional = this.accountSettings?.Language !== 'English';
     }
 
     ngOnInit(): void {
         this.configureMenuItems();
+        this.subscriptions.push(
+            this.languageDirService.userLanguageCode$.subscribe(() => {
+                this.mapRawCategories();
+                this.applySearchFilter();
+            })
+        );
         this.loadCategories();
     }
 
@@ -127,30 +130,8 @@ export class SystemCategoriesListComponent implements OnInit, OnDestroy {
                 const responseData = response?.message || response;
                 this.totalCount = responseData?.Total_Count || 0;
                 const categoriesData = responseData?.Categories || [];
-                const systemCategories = Array.isArray(categoriesData) ? categoriesData.map((item: any) => {
-                    const categoryBackend = item as NotificationCategoryBackend;
-                    // System categories don't have Entity_ID
-                    const entityId: any = categoryBackend?.Entity_ID;
-                    const hasEntityId = entityId !== null &&
-                        entityId !== undefined &&
-                        entityId !== '' &&
-                        (typeof entityId === 'string' ? String(entityId).trim() !== '' : Number(entityId) !== 0);
-
-                    return {
-                        id: categoryBackend?.Category_ID || 0,
-                        typeId: categoryBackend?.Type_ID || 0,
-                        title: this.isRegional ? (categoryBackend?.Title_Regional || categoryBackend?.Title || '') : (categoryBackend?.Title || ''),
-                        description: this.isRegional ? (categoryBackend?.Description_Regional || categoryBackend?.Description || '') : (categoryBackend?.Description || ''),
-                        titleRegional: categoryBackend?.Title_Regional,
-                        descriptionRegional: categoryBackend?.Description_Regional,
-                        sendEmail: Boolean(categoryBackend?.Send_Email),
-                        canBeUnsubscribed: Boolean(categoryBackend?.Can_Be_Unsubscribed),
-                        entityId: hasEntityId ? (typeof entityId === 'number' ? entityId : Number(entityId)) : undefined,
-                        isSystemCategory: true // Always true for System Categories
-                    };
-                }) : [];
-
-                this.categories = systemCategories;
+                this.rawCategories = Array.isArray(categoriesData) ? categoriesData as NotificationCategoryBackend[] : [];
+                this.mapRawCategories();
                 this.applySearchFilter();
             },
             error: () => {
@@ -257,7 +238,8 @@ export class SystemCategoriesListComponent implements OnInit, OnDestroy {
                     return;
                 }
 
-                this.categories = this.categories.filter(c => c.id !== category.id);
+                this.rawCategories = this.rawCategories.filter(c => c.Category_ID !== category.id);
+                this.mapRawCategories();
                 this.applySearchFilter();
                 this.messageService.add({
                     severity: 'success',
@@ -280,6 +262,7 @@ export class SystemCategoriesListComponent implements OnInit, OnDestroy {
     onFormSaved(): void {
         this.onFormDialogClose();
         this.lastCategoryId = 0; // Reset pagination
+        this.rawCategories = [];
         this.categories = []; // Clear list to reload
         this.filteredCategories = []; // Clear filtered list
         this.loadCategories();
@@ -338,5 +321,31 @@ export class SystemCategoriesListComponent implements OnInit, OnDestroy {
 
     private resetLoadingFlags(): void {
         this.tableLoadingSpinner = false;
+    }
+
+    private mapRawCategories(): void {
+        const isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+        this.categories = this.rawCategories.map((categoryBackend) => {
+            const entityId: any = categoryBackend?.Entity_ID;
+            const hasEntityId = entityId !== null &&
+                entityId !== undefined &&
+                entityId !== '' &&
+                (typeof entityId === 'string' ? String(entityId).trim() !== '' : Number(entityId) !== 0);
+
+            return {
+                id: categoryBackend?.Category_ID || 0,
+                typeId: categoryBackend?.Type_ID || 0,
+                title: isRegional ? (categoryBackend?.Title_Regional || categoryBackend?.Title || '') : (categoryBackend?.Title || ''),
+                description: isRegional
+                    ? (categoryBackend?.Description_Regional || categoryBackend?.Description || '')
+                    : (categoryBackend?.Description || ''),
+                titleRegional: categoryBackend?.Title_Regional,
+                descriptionRegional: categoryBackend?.Description_Regional,
+                sendEmail: Boolean(categoryBackend?.Send_Email),
+                canBeUnsubscribed: Boolean(categoryBackend?.Can_Be_Unsubscribed),
+                entityId: hasEntityId ? (typeof entityId === 'number' ? entityId : Number(entityId)) : undefined,
+                isSystemCategory: true
+            };
+        });
     }
 }

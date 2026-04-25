@@ -6,9 +6,10 @@ import { Observable, Subscription, of, EMPTY } from 'rxjs';
 import { concatMap, catchError, tap } from 'rxjs/operators';
 import { GroupsService } from '../../../services/groups.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { LanguageDirService } from 'src/app/core/services/language-dir.service';
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { Group, GroupBackend } from '../../../models/groups.model';
-import { IAccountSettings, IAccountDetails } from 'src/app/core/models/account-status.model';
+import { IAccountDetails } from 'src/app/core/models/account-status.model';
 
 type GroupActionContext = 'list' | 'activate' | 'deactivate' | 'delete';
 
@@ -24,6 +25,7 @@ export class GroupsListComponent implements OnInit, OnDestroy {
     isLoading$: Observable<boolean>;
     tableLoadingSpinner = false;
     private subscriptions: Subscription[] = [];
+    private rawGroups: GroupBackend[] = [];
     activationControls: Record<string, FormControl<boolean>> = {};
     menuItems: MenuItem[] = [];
     currentGroup?: Group;
@@ -56,6 +58,7 @@ export class GroupsListComponent implements OnInit, OnDestroy {
         private router: Router,
         private messageService: MessageService,
         private localStorageService: LocalStorageService,
+        private languageDirService: LanguageDirService,
         private permissionService: PermissionService
     ) {
         this.isLoading$ = this.groupsService.isLoadingSubject.asObservable();
@@ -64,6 +67,12 @@ export class GroupsListComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
+        this.subscriptions.push(
+            this.languageDirService.userLanguageCode$.subscribe(() => {
+                this.mapRawGroups();
+                this.applySearchFilter();
+            })
+        );
         this.loadGroups();
     }
 
@@ -72,8 +81,6 @@ export class GroupsListComponent implements OnInit, OnDestroy {
     }
 
     loadGroups(): void {
-        const accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
-        const isRegional = accountSettings?.Language !== 'English';
         this.tableLoadingSpinner = true;
 
         const accountId = this.groupsService.getCurrentAccountId();
@@ -96,18 +103,8 @@ export class GroupsListComponent implements OnInit, OnDestroy {
 
                 console.log('response', response);
                 const groupsData = response?.message || [];
-                this.groups = Array.isArray(groupsData) ? groupsData.map((item: any) => {
-                    const groupBackend = item as GroupBackend;
-                    return {
-                        id: String(groupBackend?.groupID || ''),
-                        title: isRegional ? (groupBackend?.title_Regional || groupBackend?.title || '') : (groupBackend?.title || ''),
-                        description: isRegional ? (groupBackend?.description_Regional || groupBackend?.description || '') : (groupBackend?.description || ''),
-                        entityId: groupBackend?.entityID || 0,
-                        active: Boolean(groupBackend?.isActive !== undefined ? groupBackend.isActive : true),
-                        createAccountId: groupBackend?.createAccountID || 0
-                    };
-                }) : [];
-
+                this.rawGroups = Array.isArray(groupsData) ? groupsData as GroupBackend[] : [];
+                this.mapRawGroups();
                 this.applySearchFilter();
                 this.buildActivationControls();
             },
@@ -314,6 +311,22 @@ export class GroupsListComponent implements OnInit, OnDestroy {
         this.groups.forEach((group) => {
             this.activationControls[group.id] = new FormControl<boolean>(group.active, { nonNullable: true });
         });
+    }
+
+    private mapRawGroups(): void {
+        const isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+        this.groups = this.rawGroups.map((groupBackend) => ({
+            id: String(groupBackend?.groupID || ''),
+            title: isRegional ? (groupBackend?.title_Regional || groupBackend?.title || '') : (groupBackend?.title || ''),
+            description: isRegional
+                ? (groupBackend?.description_Regional || groupBackend?.description || '')
+                : (groupBackend?.description || ''),
+            titleRegional: groupBackend?.title_Regional || '',
+            descriptionRegional: groupBackend?.description_Regional || '',
+            entityId: groupBackend?.entityID || 0,
+            active: Boolean(groupBackend?.isActive !== undefined ? groupBackend.isActive : true),
+            createAccountId: groupBackend?.createAccountID || 0
+        }));
     }
 
 

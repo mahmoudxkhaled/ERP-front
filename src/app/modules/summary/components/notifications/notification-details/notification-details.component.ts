@@ -3,8 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { LanguageDirService } from 'src/app/core/services/language-dir.service';
 import { PermissionService } from 'src/app/core/services/permission.service';
-import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { NotificationsService } from '../../../services/notifications.service';
 import { Notification } from '../../../models/notifications.model';
 
@@ -17,9 +17,8 @@ export class NotificationDetailsComponent implements OnInit, OnDestroy {
     notificationId: number = 0;
     notification: Notification | null = null;
     loading: boolean = false;
-    accountSettings: IAccountSettings;
-    isRegional: boolean = false;
     isSystemNotification: boolean = true;
+    private rawNotification: any = null;
 
     private subscriptions: Subscription[] = [];
 
@@ -29,13 +28,14 @@ export class NotificationDetailsComponent implements OnInit, OnDestroy {
         private notificationsService: NotificationsService,
         private messageService: MessageService,
         private localStorageService: LocalStorageService,
+        private languageDirService: LanguageDirService,
         private permissionService: PermissionService
-    ) {
-        this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
-        this.isRegional = this.accountSettings?.Language !== 'English';
-    }
+    ) { }
 
     ngOnInit(): void {
+        this.subscriptions.push(
+            this.languageDirService.userLanguageCode$.subscribe(() => this.mapNotification())
+        );
         this.route.params.subscribe(params => {
             this.notificationId = Number(params['id']);
             if (this.notificationId) {
@@ -54,7 +54,9 @@ export class NotificationDetailsComponent implements OnInit, OnDestroy {
         const sub = this.notificationsService.getNotification(this.notificationId).subscribe({
             next: (response: any) => {
                 if (response?.success) {
-                    this.mapNotification(response.message, true);
+                    this.rawNotification = response.message;
+                    this.isSystemNotification = true;
+                    this.mapNotification();
                     this.loading = false;
                 } else {
                     // Try Entity notification
@@ -72,7 +74,9 @@ export class NotificationDetailsComponent implements OnInit, OnDestroy {
         const sub = this.notificationsService.getEntityNotification(this.notificationId).subscribe({
             next: (response: any) => {
                 if (response?.success) {
-                    this.mapNotification(response.message, false);
+                    this.rawNotification = response.message;
+                    this.isSystemNotification = false;
+                    this.mapNotification();
                 } else {
                     this.messageService.add({
                         severity: 'error',
@@ -96,22 +100,29 @@ export class NotificationDetailsComponent implements OnInit, OnDestroy {
         this.subscriptions.push(sub);
     }
 
-    mapNotification(notificationData: any, isSystem: boolean): void {
-        this.isSystemNotification = isSystem;
+    mapNotification(): void {
+        const notificationData = this.rawNotification;
+        const isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+        if (!notificationData) {
+            return;
+        }
+
         this.notification = {
             id: notificationData?.Notification_ID || this.notificationId,
             moduleId: notificationData?.Module_ID || 0,
             typeId: notificationData?.Type_ID || 0,
             categoryId: notificationData?.Category_ID || 0,
             entityId: notificationData?.Entity_ID,
-            title: this.isRegional ? (notificationData?.Title_Regional || notificationData?.Title || '') : (notificationData?.Title || ''),
-            message: this.isRegional ? (notificationData?.Message_Regional || notificationData?.Message || '') : (notificationData?.Message || ''),
+            title: isRegional ? (notificationData?.Title_Regional || notificationData?.Title || '') : (notificationData?.Title || ''),
+            message: isRegional
+                ? (notificationData?.Message_Regional || notificationData?.Message || '')
+                : (notificationData?.Message || ''),
             titleRegional: notificationData?.Title_Regional,
             messageRegional: notificationData?.Message_Regional,
             referenceType: notificationData?.Reference_Type || null,
             referenceId: notificationData?.Reference_ID || null,
             createdAt: notificationData?.Created_At,
-            isSystemNotification: isSystem
+            isSystemNotification: this.isSystemNotification
         };
     }
 

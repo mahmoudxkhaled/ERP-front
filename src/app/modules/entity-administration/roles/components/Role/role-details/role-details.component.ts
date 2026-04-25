@@ -4,11 +4,11 @@ import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import { RolesService } from '../../../services/roles.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
-import { IAccountSettings } from 'src/app/core/models/account-status.model';
+import { LanguageDirService } from 'src/app/core/services/language-dir.service';
 import { EntityRole } from '../../../models/roles.model';
 import { EntitiesService } from 'src/app/modules/entity-administration/entities/services/entities.service';
 import { SettingsConfigurationsService } from 'src/app/modules/system-administration/erp-functions/services/settings-configurations.service';
-import { Function, Module } from 'src/app/modules/system-administration/erp-functions/models/settings-configurations.model';
+import { Function, FunctionBackend, Module, ModuleBackend } from 'src/app/modules/system-administration/erp-functions/models/settings-configurations.model';
 
 @Component({
     selector: 'app-role-details',
@@ -39,10 +39,11 @@ export class RoleDetailsComponent implements OnInit, OnDestroy {
         return this.accountsList;
     }
 
-    accountSettings: IAccountSettings;
-    isRegional: boolean = false;
-
     private subscriptions: Subscription[] = [];
+    private rawRole: any = null;
+    private rawEntity: any = null;
+    private rawFunctionsList: FunctionBackend[] = [];
+    private rawModulesList: ModuleBackend[] = [];
 
     constructor(
         private route: ActivatedRoute,
@@ -51,11 +52,9 @@ export class RoleDetailsComponent implements OnInit, OnDestroy {
         private entitiesService: EntitiesService,
         private settingsConfigurationsService: SettingsConfigurationsService,
         private messageService: MessageService,
-        private localStorageService: LocalStorageService
-    ) {
-        this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
-        this.isRegional = this.accountSettings?.Language !== 'English';
-    }
+        private localStorageService: LocalStorageService,
+        private languageDirService: LanguageDirService
+    ) { }
 
     ngOnInit(): void {
         this.roleId = this.route.snapshot.paramMap.get('id') || '';
@@ -78,6 +77,14 @@ export class RoleDetailsComponent implements OnInit, OnDestroy {
             }
         }
 
+        this.subscriptions.push(
+            this.languageDirService.userLanguageCode$.subscribe(() => {
+                this.mapRawRole();
+                this.mapEntityName();
+                this.mapRawFunctionsList();
+                this.mapRawModulesList();
+            })
+        );
         this.loadAllData();
     }
 
@@ -98,20 +105,11 @@ export class RoleDetailsComponent implements OnInit, OnDestroy {
 
 
 
-                const role = response?.message || {};
-                this.roleDetails = {
-                    id: String(role?.Entity_Role_ID || ''),
-                    entityId: String(role?.Entity_ID || ''),
-                    title: this.isRegional ? (role?.Title_Regional || role?.Title || '') : (role?.Title || ''),
-                    description: this.isRegional ? (role?.Description_Regional || role?.Description || '') : (role?.Description || ''),
-                    titleRegional: role?.Title_Regional || '',
-                    descriptionRegional: role?.Description_Regional || '',
-                    functions: [],
-                    modules: []
-                };
+                this.rawRole = response?.message || {};
+                this.mapRawRole();
 
                 // Load entity name
-                if (this.roleDetails.entityId) {
+                if (this.roleDetails?.entityId) {
                     this.loadEntityName(this.roleDetails.entityId);
                 }
 
@@ -180,12 +178,10 @@ export class RoleDetailsComponent implements OnInit, OnDestroy {
         const sub = this.settingsConfigurationsService.getFunctionsList().subscribe({
             next: (response: any) => {
                 if (response?.success) {
-                    const allFunctions = this.settingsConfigurationsService.parseFunctionsList(
-                        response,
-                        this.isRegional
-                    );
-                    // Filter to only include functions that are assigned to this role
-                    this.functionsList = allFunctions.filter((f: Function) => functionIds.includes(f.id)) as Function[];
+                    const functionsData = response?.message?.Functions_List || response?.message || {};
+                    this.rawFunctionsList = (Object.values(functionsData) as FunctionBackend[])
+                        .filter((item) => item?.Function_ID !== undefined && functionIds.includes(item.Function_ID));
+                    this.mapRawFunctionsList();
                 }
             }
         });
@@ -239,12 +235,10 @@ export class RoleDetailsComponent implements OnInit, OnDestroy {
         const sub = this.settingsConfigurationsService.getModulesList().subscribe({
             next: (response: any) => {
                 if (response?.success) {
-                    const allModules = this.settingsConfigurationsService.parseModulesList(
-                        response,
-                        this.isRegional
-                    );
-                    // Filter to only include modules that are assigned to this role
-                    this.modulesList = allModules.filter((m: Module) => moduleIds.includes(m.id)) as Module[];
+                    const modulesData = response?.message?.Modules_List || response?.message || {};
+                    this.rawModulesList = (Object.values(modulesData) as ModuleBackend[])
+                        .filter((item) => item?.Module_ID !== undefined && moduleIds.includes(item.Module_ID));
+                    this.mapRawModulesList();
                 }
             }
         });
@@ -255,8 +249,8 @@ export class RoleDetailsComponent implements OnInit, OnDestroy {
         const sub = this.entitiesService.getEntityDetails(entityId).subscribe({
             next: (response: any) => {
                 if (response?.success) {
-                    const entity = response?.message || {};
-                    this.entityName = this.isRegional ? (entity?.Name_Regional || entity?.Name || '') : (entity?.Name || '');
+                    this.rawEntity = response?.message || {};
+                    this.mapEntityName();
                 }
             }
         });
@@ -341,6 +335,64 @@ export class RoleDetailsComponent implements OnInit, OnDestroy {
     handleAccountsUpdated(): void {
         // Reload accounts list after assignment/unassignment
         this.loadAssignedAccounts();
+    }
+
+    private mapRawRole(): void {
+        if (!this.rawRole) {
+            return;
+        }
+
+        const isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+        this.roleDetails = {
+            id: String(this.rawRole?.Entity_Role_ID || ''),
+            entityId: String(this.rawRole?.Entity_ID || ''),
+            title: isRegional ? (this.rawRole?.Title_Regional || this.rawRole?.Title || '') : (this.rawRole?.Title || ''),
+            description: isRegional
+                ? (this.rawRole?.Description_Regional || this.rawRole?.Description || '')
+                : (this.rawRole?.Description || ''),
+            titleRegional: this.rawRole?.Title_Regional || '',
+            descriptionRegional: this.rawRole?.Description_Regional || '',
+            functions: this.functions,
+            modules: this.modules
+        };
+    }
+
+    private mapEntityName(): void {
+        if (!this.rawEntity) {
+            return;
+        }
+
+        const isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+        this.entityName = isRegional
+            ? (this.rawEntity?.Name_Regional || this.rawEntity?.Name || '')
+            : (this.rawEntity?.Name || '');
+    }
+
+    private mapRawFunctionsList(): void {
+        const isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+        this.functionsList = this.rawFunctionsList.map((item) => ({
+            id: item.Function_ID,
+            code: item.Code || '',
+            name: isRegional ? (item.Name_Regional || item.Name || '') : (item.Name || ''),
+            nameRegional: item.Name_Regional || '',
+            defaultOrder: item.Default_Order,
+            url: item.URL,
+            isActive: item.Is_Active ?? true
+        }));
+    }
+
+    private mapRawModulesList(): void {
+        const isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+        this.modulesList = this.rawModulesList.map((item) => ({
+            id: item.Module_ID,
+            functionId: item.Function_ID,
+            code: item.Code || '',
+            name: isRegional ? (item.Name_Regional || item.Name || '') : (item.Name || ''),
+            nameRegional: item.Name_Regional || '',
+            defaultOrder: item.Default_Order,
+            url: item.URL,
+            isActive: item.Is_Active ?? true
+        }));
     }
 
     private handleBusinessError(response: any): void | null {

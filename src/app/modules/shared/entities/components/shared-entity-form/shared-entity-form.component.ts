@@ -6,11 +6,12 @@ import { Subscription, throwError } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { EntitiesService } from 'src/app/modules/entity-administration/entities/services/entities.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { LanguageDirService } from 'src/app/core/services/language-dir.service';
 import { EntityDetailsRefreshService } from 'src/app/core/services/entity-details-refresh.service';
-import { IAccountSettings, IEntityDetails } from 'src/app/core/models/account-status.model';
+import { IEntityDetails } from 'src/app/core/models/account-status.model';
 import { Roles } from 'src/app/core/models/system-roles';
 import { textFieldValidator, getTextFieldError, nameFieldValidator, getNameFieldError } from 'src/app/core/validators/text-field.validator';
-import { Entity } from 'src/app/modules/entity-administration/entities/models/entities.model';
+import { Entity, EntityBackend } from 'src/app/modules/entity-administration/entities/models/entities.model';
 
 type EntityFormContext = 'create' | 'update' | 'details';
 
@@ -40,10 +41,10 @@ export class SharedEntityFormComponent implements OnInit, OnDestroy {
     entityTableTotalRecords: number = 0;
     entityTableTextFilter: string = '';
     loadingEntitiesTable: boolean = false;
-    accountSettings: IAccountSettings;
     isRegional: boolean = false;
 
     private subscriptions: Subscription[] = [];
+    private rawEntitiesForSelection: EntityBackend[] = [];
 
     constructor(
         private fb: FormBuilder,
@@ -52,12 +53,12 @@ export class SharedEntityFormComponent implements OnInit, OnDestroy {
         private route: ActivatedRoute,
         private messageService: MessageService,
         private localStorageService: LocalStorageService,
+        private languageDirService: LanguageDirService,
         private entityDetailsRefreshService: EntityDetailsRefreshService
     ) { }
 
     ngOnInit(): void {
-        this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
-        this.isRegional = this.accountSettings?.Language !== 'English';
+        this.isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
 
         this.entityId = this.route.snapshot.paramMap.get('id') || '';
         this.isEdit = !!this.entityId;
@@ -69,6 +70,12 @@ export class SharedEntityFormComponent implements OnInit, OnDestroy {
 
         this.initForm();
         this.initializeRoleBasedLogic();
+        this.subscriptions.push(
+            this.languageDirService.userLanguageCode$.subscribe(() => {
+                this.isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+                this.mapRawEntitiesForSelection();
+            })
+        );
 
         if (this.isEdit) {
             this.loadEntity();
@@ -164,27 +171,8 @@ export class SharedEntityFormComponent implements OnInit, OnDestroy {
                     }
                 });
 
-                let allEntities = Object.values(entitiesData).map((item: any) => {
-                    return {
-                        id: String(item?.Entity_ID || ''),
-                        code: item?.Code || '',
-                        name: this.isRegional ? (item?.Name_Regional || item?.Name || '') : (item?.Name || ''),
-                        description: this.isRegional ? (item?.Description_Regional || item?.Description || '') : (item?.Description || ''),
-                        parentEntityId: item?.Parent_Entity_ID ? String(item?.Parent_Entity_ID) : '',
-                        active: Boolean(item?.Is_Active),
-                        isPersonal: Boolean(item?.Is_Personal)
-                    };
-                });
-
-                if (this.systemRole === Roles.EntityAdministrator) {
-                    allEntities = allEntities.filter(() => true);
-                }
-
-                if (this.isEdit && this.entityId) {
-                    allEntities = allEntities.filter((entity: Entity) => entity.id !== this.entityId);
-                }
-
-                this.entitiesForSelection = allEntities;
+                this.rawEntitiesForSelection = Object.values(entitiesData) as EntityBackend[];
+                this.mapRawEntitiesForSelection();
                 this.loadingEntitiesTable = false;
             },
             error: () => {
@@ -316,8 +304,7 @@ export class SharedEntityFormComponent implements OnInit, OnDestroy {
             return;
         }
 
-        const accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
-        const isRegional = accountSettings?.Language !== 'English';
+        const isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
 
         this.loading = true;
         const { code, name, description, parentEntityId, isPersonal, email, firstName, lastName } = this.form.value;
@@ -469,6 +456,34 @@ export class SharedEntityFormComponent implements OnInit, OnDestroy {
         }
         this.loading = false;
         return null;
+    }
+
+    private mapRawEntitiesForSelection(): void {
+        const isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+        let allEntities = this.rawEntitiesForSelection.map((item) => ({
+            id: String(item?.Entity_ID || ''),
+            code: item?.Code || '',
+            name: isRegional ? (item?.Name_Regional || item?.Name || '') : (item?.Name || ''),
+            description: isRegional ? (item?.Description_Regional || item?.Description || '') : (item?.Description || ''),
+            parentEntityId: item?.Parent_Entity_ID ? String(item?.Parent_Entity_ID) : '',
+            active: Boolean(item?.Is_Active),
+            isPersonal: Boolean(item?.Is_Personal)
+        }));
+
+        if (this.systemRole === Roles.EntityAdministrator) {
+            allEntities = allEntities.filter(() => true);
+        }
+
+        if (this.isEdit && this.entityId) {
+            allEntities = allEntities.filter((entity: Entity) => entity.id !== this.entityId);
+        }
+
+        this.entitiesForSelection = allEntities;
+        if (this.selectedParentEntity) {
+            this.selectedParentEntity =
+                this.entitiesForSelection.find((entity) => entity.id === this.selectedParentEntity?.id) ||
+                this.selectedParentEntity;
+        }
     }
 
     private getCreationErrorMessage(code: string): string | null {

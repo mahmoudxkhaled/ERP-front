@@ -4,8 +4,9 @@ import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import { GroupsService } from '../../../services/groups.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { LanguageDirService } from 'src/app/core/services/language-dir.service';
 import { PermissionService } from 'src/app/core/services/permission.service';
-import { IAccountSettings, IAccountDetails } from 'src/app/core/models/account-status.model';
+import { IAccountDetails } from 'src/app/core/models/account-status.model';
 import { Group } from '../../../models/groups.model';
 
 @Component({
@@ -20,8 +21,6 @@ export class GroupDetailsComponent implements OnInit, OnDestroy {
     groupDetails: any = null;
     group: Group | null = null;
 
-    accountSettings: IAccountSettings;
-    isRegional: boolean = false;
     currentAccountId: number = 0;
 
     private subscriptions: Subscription[] = [];
@@ -32,10 +31,9 @@ export class GroupDetailsComponent implements OnInit, OnDestroy {
         private groupsService: GroupsService,
         private messageService: MessageService,
         private localStorageService: LocalStorageService,
+        private languageDirService: LanguageDirService,
         private permissionService: PermissionService
     ) {
-        this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
-        this.isRegional = this.accountSettings?.Language !== 'English';
         const accountDetails = this.localStorageService.getAccountDetails() as IAccountDetails;
         this.currentAccountId = accountDetails?.Account_ID || 0;
     }
@@ -52,6 +50,9 @@ export class GroupDetailsComponent implements OnInit, OnDestroy {
             return;
         }
 
+        this.subscriptions.push(
+            this.languageDirService.userLanguageCode$.subscribe(() => this.mapRawGroup())
+        );
         this.loadAllData();
     }
 
@@ -69,17 +70,7 @@ export class GroupDetailsComponent implements OnInit, OnDestroy {
                     return;
                 }
                 this.groupDetails = response?.message || {};
-
-                // Map to Group model - only need basic info for members component
-                this.group = {
-                    id: String(this.groupDetails?.Group_ID || this.groupDetails?.groupID || this.groupId),
-                    title: this.isRegional ? (this.groupDetails?.Title_Regional || this.groupDetails?.title_Regional || this.groupDetails?.Title || this.groupDetails?.title || '') : (this.groupDetails?.Title || this.groupDetails?.title || ''),
-                    description: this.isRegional ? (this.groupDetails?.Description_Regional || this.groupDetails?.description_Regional || this.groupDetails?.Description || this.groupDetails?.description || '') : (this.groupDetails?.Description || this.groupDetails?.description || ''),
-                    entityId: this.groupDetails?.Entity_ID || this.groupDetails?.entityID || 0,
-                    active: Boolean(this.groupDetails?.Is_Active !== undefined ? this.groupDetails.Is_Active : (this.groupDetails?.is_Active !== undefined ? this.groupDetails.is_Active : true)),
-                    createAccountId: this.groupDetails?.Create_Account_ID || this.groupDetails?.createAccountID || 0
-                };
-
+                this.mapRawGroup();
                 this.loading = false;
             }
         });
@@ -97,6 +88,28 @@ export class GroupDetailsComponent implements OnInit, OnDestroy {
 
     getGroupIdAsNumber(): number {
         return Number(this.groupId) || 0;
+    }
+
+    private mapRawGroup(): void {
+        if (!this.groupDetails) {
+            return;
+        }
+
+        const isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+        this.group = {
+            id: String(this.groupDetails?.Group_ID || this.groupDetails?.groupID || this.groupId),
+            title: isRegional
+                ? (this.groupDetails?.Title_Regional || this.groupDetails?.title_Regional || this.groupDetails?.Title || this.groupDetails?.title || '')
+                : (this.groupDetails?.Title || this.groupDetails?.title || ''),
+            description: isRegional
+                ? (this.groupDetails?.Description_Regional || this.groupDetails?.description_Regional || this.groupDetails?.Description || this.groupDetails?.description || '')
+                : (this.groupDetails?.Description || this.groupDetails?.description || ''),
+            titleRegional: this.groupDetails?.Title_Regional || this.groupDetails?.title_Regional || '',
+            descriptionRegional: this.groupDetails?.Description_Regional || this.groupDetails?.description_Regional || '',
+            entityId: this.groupDetails?.Entity_ID || this.groupDetails?.entityID || 0,
+            active: Boolean(this.groupDetails?.Is_Active !== undefined ? this.groupDetails.Is_Active : (this.groupDetails?.is_Active !== undefined ? this.groupDetails.is_Active : true)),
+            createAccountId: this.groupDetails?.Create_Account_ID || this.groupDetails?.createAccountID || 0
+        };
     }
 
     private handleBusinessError(context: string, response: any): void | null {

@@ -4,10 +4,11 @@ import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import { NotificationsService } from '../../../services/notifications.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { LanguageDirService } from 'src/app/core/services/language-dir.service';
 import { NotificationRefreshService } from 'src/app/core/services/notification-refresh.service';
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { AccountNotification, AccountNotificationBackend } from '../../../models/notifications.model';
-import { IAccountSettings, IAccountDetails } from 'src/app/core/models/account-status.model';
+import { IAccountDetails } from 'src/app/core/models/account-status.model';
 
 type NotificationActionContext = 'list' | 'markRead' | 'markUnread' | 'delete' | 'subscribe' | 'unsubscribe';
 
@@ -29,8 +30,8 @@ export class NotificationsInboxComponent implements OnInit, OnDestroy {
         return this.notifications;
     }
     currentAccountId: number = 0;
-    accountSettings: IAccountSettings;
     isRegional: boolean = false;
+    private rawNotifications: AccountNotificationBackend[] = [];
 
     // Filters
     selectedTypeIds: number[] = [];
@@ -52,16 +53,22 @@ export class NotificationsInboxComponent implements OnInit, OnDestroy {
         private router: Router,
         private messageService: MessageService,
         private localStorageService: LocalStorageService,
+        private languageDirService: LanguageDirService,
         private permissionService: PermissionService,
         private notificationRefreshService: NotificationRefreshService
     ) {
         const accountDetails = this.localStorageService.getAccountDetails() as IAccountDetails;
         this.currentAccountId = accountDetails?.Account_ID || 0;
-        this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
-        this.isRegional = this.accountSettings?.Language !== 'English';
+        this.isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
     }
 
     ngOnInit(): void {
+        this.subscriptions.push(
+            this.languageDirService.userLanguageCode$.subscribe(() => {
+                this.isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+                this.mapRawNotifications();
+            })
+        );
         this.loadNotificationTypes();
         this.loadNotificationCategories();
         this.loadNotifications();
@@ -169,25 +176,10 @@ export class NotificationsInboxComponent implements OnInit, OnDestroy {
                 this.totalCount = responseData?.Total_Count || 0;
                 const notificationsData = responseData?.Notifications || responseData?.message || [];
 
-                this.notifications = Array.isArray(notificationsData) ? notificationsData.map((item: any) => {
-                    const notificationBackend = item as any;
-                    return {
-                        id: notificationBackend?.Notification_ID || 0,
-                        moduleId: notificationBackend?.Module_ID || 0,
-                        typeId: notificationBackend?.Type_ID || 0,
-                        categoryId: notificationBackend?.Category_ID || 0,
-                        entityId: notificationBackend?.Entity_ID || null,
-                        title: this.isRegional ? (notificationBackend?.Title_Regional || notificationBackend?.Title || '') : (notificationBackend?.Title || ''),
-                        message: this.isRegional ? (notificationBackend?.Message_Regional || notificationBackend?.Message || '') : (notificationBackend?.Message || ''),
-                        titleRegional: notificationBackend?.Title_Regional,
-                        messageRegional: notificationBackend?.Message_Regional,
-                        referenceType: notificationBackend?.Reference_Type || null,
-                        referenceId: notificationBackend?.Reference_ID || null,
-                        isRead: !Boolean(notificationBackend?.Is_Unread), // Is_Unread: false means read
-                        readAt: notificationBackend?.Read_At || null,
-                        createdAt: notificationBackend?.Received_At || notificationBackend?.Created_At || null
-                    };
-                }) : [];
+                this.rawNotifications = Array.isArray(notificationsData)
+                    ? notificationsData as AccountNotificationBackend[]
+                    : [];
+                this.mapRawNotifications();
 
                 // Update lastNotificationId for pagination
                 if (this.notifications.length > 0) {
@@ -274,7 +266,8 @@ export class NotificationsInboxComponent implements OnInit, OnDestroy {
                     return;
                 }
 
-                this.notifications = this.notifications.filter(n => n.id !== notification.id);
+                this.rawNotifications = this.rawNotifications.filter(n => n.Notification_ID !== notification.id);
+                this.mapRawNotifications();
                 this.notificationRefreshService.requestTopBarRefresh();
                 this.messageService.add({
                     severity: 'success',
@@ -377,6 +370,27 @@ export class NotificationsInboxComponent implements OnInit, OnDestroy {
 
     private resetLoadingFlags(): void {
         this.tableLoadingSpinner = false;
+    }
+
+    private mapRawNotifications(): void {
+        this.notifications = this.rawNotifications.map((notificationBackend: AccountNotificationBackend) => ({
+            id: notificationBackend?.Notification_ID || 0,
+            moduleId: notificationBackend?.Module_ID || 0,
+            typeId: notificationBackend?.Type_ID || 0,
+            categoryId: notificationBackend?.Category_ID || 0,
+            entityId: notificationBackend?.Entity_ID || undefined,
+            title: this.isRegional ? (notificationBackend?.Title_Regional || notificationBackend?.Title || '') : (notificationBackend?.Title || ''),
+            message: this.isRegional
+                ? (notificationBackend?.Message_Regional || notificationBackend?.Message || '')
+                : (notificationBackend?.Message || ''),
+            titleRegional: notificationBackend?.Title_Regional,
+            messageRegional: notificationBackend?.Message_Regional,
+            referenceType: notificationBackend?.Reference_Type || null,
+            referenceId: notificationBackend?.Reference_ID || null,
+            isRead: !Boolean((notificationBackend as any)?.Is_Unread),
+            readAt: notificationBackend?.Read_At || null,
+            createdAt: (notificationBackend as any)?.Received_At || notificationBackend?.Created_At || null
+        }));
     }
 
     getUnreadCount(): number {

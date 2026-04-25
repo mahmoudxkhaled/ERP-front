@@ -3,8 +3,8 @@ import { FormControl } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { Subscription } from 'rxjs';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { LanguageDirService } from 'src/app/core/services/language-dir.service';
 import { PermissionService } from 'src/app/core/services/permission.service';
-import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { EntityAccount } from 'src/app/modules/entity-administration/entities/models/entities.model';
 import { EntitiesService } from 'src/app/modules/entity-administration/entities/services/entities.service';
 import { RolesService } from 'src/app/modules/entity-administration/roles/services/roles.service';
@@ -40,22 +40,30 @@ export class SharedAccountDetailsComponent implements OnInit, OnDestroy, OnChang
   loadingAccountDetails: boolean = false;
   savingAccountDetails: boolean = false;
   isRegional: boolean = false;
-  accountSettings?: IAccountSettings;
 
   private subscriptions: Subscription[] = [];
+  private rawEntity: any = null;
+  private rawRoles: any[] = [];
 
   constructor(
     private entitiesService: EntitiesService,
     private rolesService: RolesService,
     private messageService: MessageService,
     private localStorageService: LocalStorageService,
+    private languageDirService: LanguageDirService,
     private permissionService: PermissionService
   ) {
-    this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
-    this.isRegional = this.accountSettings?.Language !== 'English';
+    this.isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
   }
 
   ngOnInit(): void {
+    this.subscriptions.push(
+      this.languageDirService.userLanguageCode$.subscribe(() => {
+        this.isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+        this.mapDescriptionForCurrentLanguage();
+        this.mapEntityAndRoleLabels();
+      })
+    );
     if (this.visible && this.account) {
       this.loadAccountDetails(this.account.email);
     }
@@ -143,12 +151,7 @@ export class SharedAccountDetailsComponent implements OnInit, OnDestroy, OnChang
         this.description = accountData.Description || '';
         this.descriptionRegional = accountData.Description_Regional || '';
 
-        const descriptionToShow = this.isRegional
-          ? (this.descriptionRegional || this.description)
-          : (this.description || this.descriptionRegional);
-
-        this.descriptionFormControl.setValue(descriptionToShow, { emitEvent: false });
-        this.originalDescription = descriptionToShow;
+        this.mapDescriptionForCurrentLanguage(true);
         this.resolveEntityAndRoleDisplay();
       },
       error: () => {
@@ -173,10 +176,8 @@ export class SharedAccountDetailsComponent implements OnInit, OnDestroy, OnChang
     const sub = this.entitiesService.getEntityDetails(String(eid)).subscribe({
       next: (res: any) => {
         if (res?.success) {
-          const entity = res?.message || {};
-          this.entityNameLabel = this.isRegional
-            ? (entity?.Name_Regional || entity?.Name || '')
-            : (entity?.Name || '');
+          this.rawEntity = res?.message || {};
+          this.mapEntityAndRoleLabels();
         }
 
         if (rid > 0) {
@@ -184,15 +185,8 @@ export class SharedAccountDetailsComponent implements OnInit, OnDestroy, OnChang
             next: (roleRes: any) => {
               if (roleRes?.success) {
                 const rolesData = roleRes?.message?.Entity_Roles || {};
-                for (const item of Object.values(rolesData) as any[]) {
-                  const roleId = Number(item?.Entity_Role_ID || 0);
-                  if (roleId === rid) {
-                    this.entityRoleNameLabel = this.isRegional
-                      ? (item?.Title_Regional || item?.Title || '')
-                      : (item?.Title || '');
-                    break;
-                  }
-                }
+                this.rawRoles = Object.values(rolesData) as any[];
+                this.mapEntityAndRoleLabels();
               }
               this.loadingAccountDetails = false;
             },
@@ -272,6 +266,34 @@ export class SharedAccountDetailsComponent implements OnInit, OnDestroy, OnChang
 
   onDialogHide(): void {
     this.closeDialog();
+  }
+
+  private mapDescriptionForCurrentLanguage(force: boolean = false): void {
+    if (!force && this.isDescriptionModified) {
+      return;
+    }
+
+    const descriptionToShow = this.isRegional
+      ? (this.descriptionRegional || this.description)
+      : (this.description || this.descriptionRegional);
+
+    this.descriptionFormControl.setValue(descriptionToShow, { emitEvent: false });
+    this.originalDescription = descriptionToShow;
+  }
+
+  private mapEntityAndRoleLabels(): void {
+    if (this.rawEntity) {
+      this.entityNameLabel = this.isRegional
+        ? (this.rawEntity?.Name_Regional || this.rawEntity?.Name || '')
+        : (this.rawEntity?.Name || '');
+    }
+
+    const role = this.rawRoles.find((item) => Number(item?.Entity_Role_ID || 0) === this.entityRoleId);
+    if (role) {
+      this.entityRoleNameLabel = this.isRegional
+        ? (role?.Title_Regional || role?.Title || '')
+        : (role?.Title || '');
+    }
   }
 
   private handleGetAccountDetailsError(response: any): void {

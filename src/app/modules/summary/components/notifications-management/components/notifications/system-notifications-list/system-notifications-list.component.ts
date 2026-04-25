@@ -3,10 +3,10 @@ import { Router } from '@angular/router';
 import { MenuItem, MessageService } from 'primeng/api';
 import { Observable, Subscription } from 'rxjs';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { LanguageDirService } from 'src/app/core/services/language-dir.service';
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { TranslationService } from 'src/app/core/services/translation.service';
-import { IAccountSettings } from 'src/app/core/models/account-status.model';
-import { Notification, NotificationBackend } from 'src/app/modules/summary/models/notifications.model';
+import { Notification, NotificationBackend, NotificationCategoryBackend } from 'src/app/modules/summary/models/notifications.model';
 import { NotificationsService } from 'src/app/modules/summary/services/notifications.service';
 
 type NotificationActionContext = 'list' | 'delete';
@@ -23,6 +23,8 @@ export class SystemNotificationsListComponent implements OnInit, OnDestroy {
     isLoading$: Observable<boolean>;
     tableLoadingSpinner = false;
     private subscriptions: Subscription[] = [];
+    private rawNotifications: NotificationBackend[] = [];
+    private rawNotificationCategories: NotificationCategoryBackend[] = [];
 
     /** When loading and notifications is empty, return placeholder rows so the table can show skeleton cells. */
     get tableValue(): Notification[] {
@@ -33,9 +35,6 @@ export class SystemNotificationsListComponent implements OnInit, OnDestroy {
     }
     menuItems: MenuItem[] = [];
     currentNotification?: Notification;
-    accountSettings: IAccountSettings;
-    isRegional: boolean = false;
-
     // Dialog for form (Edit: notification-form)
     formDialogVisible: boolean = false;
     formNotificationId?: number;
@@ -74,16 +73,21 @@ export class SystemNotificationsListComponent implements OnInit, OnDestroy {
         private notificationsService: NotificationsService,
         private messageService: MessageService,
         private localStorageService: LocalStorageService,
+        private languageDirService: LanguageDirService,
         private permissionService: PermissionService,
         private translate: TranslationService
     ) {
         this.isLoading$ = this.notificationsService.isLoadingSubject.asObservable();
-        this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
-        this.isRegional = this.accountSettings?.Language !== 'English';
     }
 
     ngOnInit(): void {
         this.configureMenuItems();
+        this.subscriptions.push(
+            this.languageDirService.userLanguageCode$.subscribe(() => {
+                this.mapRawNotificationCategories();
+                this.mapRawNotifications();
+            })
+        );
         this.loadNotificationTypes();
         this.loadNotificationCategories();
         this.loadNotifications();
@@ -126,12 +130,10 @@ export class SystemNotificationsListComponent implements OnInit, OnDestroy {
                     if (response?.success) {
                         const responseData = response?.message || response;
                         const categories = responseData?.Categories || responseData?.Notification_Categories || [];
-                        const systemCategories = Array.isArray(categories) ? categories.map((item: any) => ({
-                            Category_ID: item?.Category_ID || 0,
-                            Title: this.isRegional ? (item?.Title_Regional || item?.Title || '') : (item?.Title || ''),
-                            Type_ID: item?.Type_ID || 0
-                        })) : [];
-                        this.notificationCategories = systemCategories;
+                        this.rawNotificationCategories = Array.isArray(categories)
+                            ? categories as NotificationCategoryBackend[]
+                            : [];
+                        this.mapRawNotificationCategories();
                     }
                 }
             });
@@ -201,26 +203,10 @@ export class SystemNotificationsListComponent implements OnInit, OnDestroy {
                 this.totalCount = responseData?.Total_Count || 0;
                 const notificationsData = responseData?.Notifications || responseData?.message || [];
 
-                const systemNotifications = Array.isArray(notificationsData) ? notificationsData.map((item: any) => {
-                    const notificationBackend = item as NotificationBackend;
-                    return {
-                        id: notificationBackend?.Notification_ID || 0,
-                        moduleId: notificationBackend?.Module_ID || 0,
-                        typeId: notificationBackend?.Type_ID || 0,
-                        categoryId: notificationBackend?.Category_ID || 0,
-                        entityId: undefined,
-                        title: this.isRegional ? (notificationBackend?.Title_Regional || notificationBackend?.Title || '') : (notificationBackend?.Title || ''),
-                        message: this.isRegional ? (notificationBackend?.Message_Regional || notificationBackend?.Message || '') : (notificationBackend?.Message || ''),
-                        titleRegional: notificationBackend?.Title_Regional,
-                        messageRegional: notificationBackend?.Message_Regional,
-                        referenceType: notificationBackend?.Reference_Type || null,
-                        referenceId: notificationBackend?.Reference_ID || null,
-                        createdAt: notificationBackend?.Created_At,
-                        isSystemNotification: true // Always true for System Notifications
-                    };
-                }) : [];
-
-                this.notifications = systemNotifications;
+                this.rawNotifications = Array.isArray(notificationsData)
+                    ? notificationsData as NotificationBackend[]
+                    : [];
+                this.mapRawNotifications();
             },
             error: () => {
                 this.resetLoadingFlags();
@@ -277,7 +263,8 @@ export class SystemNotificationsListComponent implements OnInit, OnDestroy {
                     return;
                 }
 
-                this.notifications = this.notifications.filter(n => n.id !== notification.id);
+                this.rawNotifications = this.rawNotifications.filter(n => n.Notification_ID !== notification.id);
+                this.mapRawNotifications();
                 this.messageService.add({
                     severity: 'success',
                     summary: 'Success',
@@ -293,6 +280,7 @@ export class SystemNotificationsListComponent implements OnInit, OnDestroy {
 
     onFilterChange(): void {
         this.lastNotificationId = 0;
+        this.rawNotifications = [];
         this.notifications = [];
         this.loadNotifications();
     }
@@ -305,6 +293,7 @@ export class SystemNotificationsListComponent implements OnInit, OnDestroy {
     onFormSaved(): void {
         this.onFormDialogClose();
         this.lastNotificationId = 0;
+        this.rawNotifications = [];
         this.notifications = [];
         this.loadNotifications();
     }
@@ -423,5 +412,35 @@ export class SystemNotificationsListComponent implements OnInit, OnDestroy {
 
     private resetLoadingFlags(): void {
         this.tableLoadingSpinner = false;
+    }
+
+    private mapRawNotificationCategories(): void {
+        const isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+        this.notificationCategories = this.rawNotificationCategories.map((item) => ({
+            Category_ID: item?.Category_ID || 0,
+            Title: isRegional ? (item?.Title_Regional || item?.Title || '') : (item?.Title || ''),
+            Type_ID: item?.Type_ID || 0
+        }));
+    }
+
+    private mapRawNotifications(): void {
+        const isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+        this.notifications = this.rawNotifications.map((notificationBackend) => ({
+            id: notificationBackend?.Notification_ID || 0,
+            moduleId: notificationBackend?.Module_ID || 0,
+            typeId: notificationBackend?.Type_ID || 0,
+            categoryId: notificationBackend?.Category_ID || 0,
+            entityId: undefined,
+            title: isRegional ? (notificationBackend?.Title_Regional || notificationBackend?.Title || '') : (notificationBackend?.Title || ''),
+            message: isRegional
+                ? (notificationBackend?.Message_Regional || notificationBackend?.Message || '')
+                : (notificationBackend?.Message || ''),
+            titleRegional: notificationBackend?.Title_Regional,
+            messageRegional: notificationBackend?.Message_Regional,
+            referenceType: notificationBackend?.Reference_Type || null,
+            referenceId: notificationBackend?.Reference_ID || null,
+            createdAt: notificationBackend?.Created_At,
+            isSystemNotification: true
+        }));
     }
 }

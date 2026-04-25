@@ -6,9 +6,9 @@ import { OverlayPanel } from 'primeng/overlaypanel';
 import { Observable, Subscription, forkJoin } from 'rxjs';
 import { SettingsConfigurationsService } from '../../services/settings-configurations.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { LanguageDirService } from 'src/app/core/services/language-dir.service';
 import { TranslationService } from 'src/app/core/services/translation.service';
-import { Function, Module } from '../../models/settings-configurations.model';
-import { IAccountSettings } from 'src/app/core/models/account-status.model';
+import { Function, FunctionBackend, Module, ModuleBackend } from '../../models/settings-configurations.model';
 
 type FunctionActionContext = 'list' | 'activate' | 'deactivate' | 'reorder';
 
@@ -27,9 +27,10 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
     isLoading$: Observable<boolean>;
     tableLoadingSpinner = false;
     private subscriptions: Subscription[] = [];
+    private rawFunctions: FunctionBackend[] = [];
+    private rawModulesForPanel: ModuleBackend[] = [];
     menuItems: MenuItem[] = [];
     currentFunction?: Function;
-    accountSettings: IAccountSettings;
     activateFunctionDialog: boolean = false;
     currentFunctionForActivation?: Function;
     logoDialogVisible: boolean = false;
@@ -63,6 +64,7 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
         private router: Router,
         private messageService: MessageService,
         private localStorageService: LocalStorageService,
+        private languageDirService: LanguageDirService,
         private translate: TranslationService,
         private cdr: ChangeDetectorRef
     ) {
@@ -70,8 +72,14 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit(): void {
-        this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
         this.configureMenuItems();
+        this.subscriptions.push(
+            this.languageDirService.userLanguageCode$.subscribe(() => {
+                this.mapRawFunctions();
+                this.mapRawModulesForPanel(this.currentFunctionForDetails || this.currentFunction);
+                this.applySearchFilter();
+            })
+        );
         this.loadFunctions();
     }
 
@@ -84,7 +92,6 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
             return;
         }
 
-        const isRegional = this.accountSettings?.Language !== 'English';
         if (!silent) {
             this.tableLoadingSpinner = true;
         }
@@ -96,7 +103,8 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
                     return;
                 }
 
-                this.functions = this.settingsConfigurationsService.parseFunctionsList(response, isRegional);
+                this.rawFunctions = this.getRawFunctions(response);
+                this.mapRawFunctions();
                 this.applySearchFilter();
                 this.buildActivationControls();
                 this.loadLogosForList();
@@ -243,12 +251,11 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
     openModulesPanel(functionItem: Function, event: Event): void {
         this.modulesPanelLoading = true;
         this.modulesForPanel = [];
-        const isRegional = this.accountSettings?.Language !== 'English';
         const sub = this.settingsConfigurationsService.getModulesList({ silent: true }).subscribe({
             next: (response: any) => {
                 if (response?.success) {
-                    const all = this.settingsConfigurationsService.parseModulesList(response, isRegional);
-                    this.modulesForPanel = all.filter((m) => m.functionId === functionItem.id);
+                    this.rawModulesForPanel = this.getRawModules(response);
+                    this.mapRawModulesForPanel(functionItem);
                 }
                 this.modulesPanelLoading = false;
                 this.cdr.detectChanges();
@@ -290,6 +297,45 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
             });
             this.subscriptions.push(sub);
         });
+    }
+
+    private getRawFunctions(response: any): FunctionBackend[] {
+        const functionsData = response?.message?.Functions_List || response?.message || {};
+        return (Object.values(functionsData) as FunctionBackend[]).filter((item) => item?.Function_ID !== undefined);
+    }
+
+    private getRawModules(response: any): ModuleBackend[] {
+        const modulesData = response?.message?.Modules_List || response?.message || {};
+        return (Object.values(modulesData) as ModuleBackend[]).filter((item) => item?.Module_ID !== undefined);
+    }
+
+    private mapRawFunctions(): void {
+        const isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+        this.functions = this.rawFunctions.map((item) => ({
+            id: item.Function_ID,
+            code: item.Code || '',
+            name: isRegional ? (item.Name_Regional || item.Name || '') : (item.Name || ''),
+            nameRegional: item.Name_Regional || '',
+            defaultOrder: item.Default_Order,
+            url: item.URL,
+            isActive: item.Is_Active ?? true
+        }));
+    }
+
+    private mapRawModulesForPanel(functionItem?: Function): void {
+        const isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+        this.modulesForPanel = this.rawModulesForPanel
+            .filter((item) => !functionItem || item.Function_ID === functionItem.id)
+            .map((item) => ({
+                id: item.Module_ID,
+                functionId: item.Function_ID,
+                code: item.Code || '',
+                name: isRegional ? (item.Name_Regional || item.Name || '') : (item.Name || ''),
+                nameRegional: item.Name_Regional || '',
+                defaultOrder: item.Default_Order,
+                url: item.URL,
+                isActive: item.Is_Active ?? true
+            }));
     }
 
     onLogoUpdated(): void {
@@ -488,7 +534,7 @@ export class FunctionsListComponent implements OnInit, OnDestroy {
                     return;
                 }
 
-                const isRegional = this.accountSettings?.Language !== 'English';
+                const isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
                 const nameA = isRegional ? (msgA.Name_Regional || msgA.Name || '') : (msgA.Name || '');
                 const nameB = isRegional ? (msgB.Name_Regional || msgB.Name || '') : (msgB.Name || '');
 

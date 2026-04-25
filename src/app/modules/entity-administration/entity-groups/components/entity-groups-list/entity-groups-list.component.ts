@@ -6,9 +6,9 @@ import { Observable, Subscription, of } from 'rxjs';
 import { concatMap, catchError, tap } from 'rxjs/operators';
 import { EntityGroupsService } from '../../services/entity-groups.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { LanguageDirService } from 'src/app/core/services/language-dir.service';
 import { PermissionService } from 'src/app/core/services/permission.service';
 import { Group, GroupBackend } from 'src/app/modules/summary/models/groups.model';
-import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { Roles } from 'src/app/core/models/system-roles';
 
 type GroupActionContext = 'list' | 'activate' | 'deactivate' | 'delete';
@@ -28,10 +28,10 @@ export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
     isLoading$: Observable<boolean>;
     tableLoadingSpinner = false;
     private subscriptions: Subscription[] = [];
+    private rawGroups: GroupBackend[] = [];
     activationControls: Record<string, FormControl<boolean>> = {};
     menuItems: MenuItem[] = [];
     currentGroup?: Group;
-    accountSettings: IAccountSettings;
     activationGroupDialog: boolean = false;
     currentGroupForActivation?: Group;
     deleteGroupDialog: boolean = false;
@@ -62,12 +62,20 @@ export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
         private router: Router,
         private messageService: MessageService,
         private localStorageService: LocalStorageService,
+        private languageDirService: LanguageDirService,
         private permissionService: PermissionService
     ) {
         this.isLoading$ = this.entityGroupsService.isLoadingSubject.asObservable();
     }
 
     ngOnInit(): void {
+        this.subscriptions.push(
+            this.languageDirService.userLanguageCode$.subscribe(() => {
+                this.mapRawGroups();
+                this.applySearchFilter();
+            })
+        );
+
         if (this.entityId && this.entityId > 0) {
             this.currentEntityId = this.entityId;
         } else {
@@ -102,8 +110,6 @@ export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     loadGroups(): void {
-        this.accountSettings = this.localStorageService.getAccountSettings() as IAccountSettings;
-        const isRegional = this.accountSettings?.Language !== 'English';
         this.tableLoadingSpinner = true;
 
         if (this.entityId && this.entityId > 0) {
@@ -129,20 +135,8 @@ export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
 
                 const groupsData = response?.message?.Account_Groups || response?.message || [];
 
-                this.groups = Array.isArray(groupsData) ? groupsData.map((item: any) => {
-                    const groupBackend = item as GroupBackend;
-                    return {
-                        id: String(groupBackend?.groupID || ''),
-                        title: isRegional ? (groupBackend?.title_Regional || groupBackend?.title || '') : (groupBackend?.title || ''),
-                        description: isRegional ? (groupBackend?.description_Regional || groupBackend?.description || '') : (groupBackend?.description || ''),
-                        titleRegional: groupBackend?.title_Regional || '',
-                        descriptionRegional: groupBackend?.description_Regional || '',
-                        entityId: groupBackend?.entityID || 0,
-                        active: Boolean(groupBackend?.isActive !== undefined ? groupBackend.isActive : true),
-                        createAccountId: groupBackend?.createAccountID || 0
-                    };
-                }) : [];
-
+                this.rawGroups = Array.isArray(groupsData) ? groupsData as GroupBackend[] : [];
+                this.mapRawGroups();
                 this.applySearchFilter();
                 this.buildActivationControls();
             },
@@ -367,6 +361,22 @@ export class EntityGroupsListComponent implements OnInit, OnDestroy, OnChanges {
         this.groups.forEach((group) => {
             this.activationControls[group.id] = new FormControl<boolean>(group.active, { nonNullable: true });
         });
+    }
+
+    private mapRawGroups(): void {
+        const isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+        this.groups = this.rawGroups.map((groupBackend) => ({
+            id: String(groupBackend?.groupID || ''),
+            title: isRegional ? (groupBackend?.title_Regional || groupBackend?.title || '') : (groupBackend?.title || ''),
+            description: isRegional
+                ? (groupBackend?.description_Regional || groupBackend?.description || '')
+                : (groupBackend?.description || ''),
+            titleRegional: groupBackend?.title_Regional || '',
+            descriptionRegional: groupBackend?.description_Regional || '',
+            entityId: groupBackend?.entityID || 0,
+            active: Boolean(groupBackend?.isActive !== undefined ? groupBackend.isActive : true),
+            createAccountId: groupBackend?.createAccountID || 0
+        }));
     }
 
     private configureMenuItems(): void {

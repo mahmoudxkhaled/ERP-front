@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { MenuItem, MessageService } from 'primeng/api';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { LanguageDirService } from 'src/app/core/services/language-dir.service';
 import { LayoutService } from 'src/app/layout/app-services/app.layout.service';
 import { ProfilePictureService } from 'src/app/core/services/profile-picture.service';
 import { IUserDetails, IAccountDetails, IEntityDetails, IAccountSettings, IUserAccountItem } from 'src/app/core/models/account-status.model';
@@ -50,6 +51,8 @@ export class ProfileOverviewComponent implements OnInit, OnDestroy {
     private isCropDragging: boolean = false;
     private lastCropMouseX: number = 0;
     private lastCropMouseY: number = 0;
+    private rawContactData: any = null;
+    private rawAccountRole: any = null;
 
     @ViewChild('profilePictureUploader') profilePictureUploader?: FileUpload;
     @ViewChild('profilePictureUploader2') profilePictureUploader2?: FileUpload;
@@ -75,6 +78,7 @@ export class ProfileOverviewComponent implements OnInit, OnDestroy {
         private profilePictureService: ProfilePictureService,
         private rolesService: RolesService,
         private router: Router,
+        private languageDirService: LanguageDirService,
         private layoutService: LayoutService
     ) {
         this.isLoading$ = this.profileApiService.isLoadingSubject.asObservable();
@@ -82,6 +86,13 @@ export class ProfileOverviewComponent implements OnInit, OnDestroy {
 
     ngOnInit(): void {
         this.loadUserData();
+        this.subscriptions.push(
+            this.languageDirService.userLanguageCode$.subscribe(() => {
+                this.isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
+                this.mapRawContactInfo();
+                this.mapRawAccountRole();
+            })
+        );
         this.gender = this.localStorageService.getGender() || false;
 
         // Get current user ID and load data from API
@@ -114,7 +125,7 @@ export class ProfileOverviewComponent implements OnInit, OnDestroy {
         const accounts = this.localStorageService.getUserAccounts();
         this.userAccounts = accounts || [];
 
-        this.isRegional = this.accountSettings?.Language !== 'English';
+        this.isRegional = this.localStorageService.getPreferredLanguageCode() === 'ar';
     }
 
     getEntityNameForAccount(entityId: number): string {
@@ -177,18 +188,8 @@ export class ProfileOverviewComponent implements OnInit, OnDestroy {
                 }
                 console.log('loadContactInfo', response);
 
-                const contactData = response?.message || {};
-                const address = this.isRegional ? (contactData?.Address_Regional || contactData?.Address || '') : (contactData?.Address || '');
-                const phoneNumbers = contactData?.Phone_Numbers || [];
-
-                this.userContactInfo = {
-                    address: address,
-                    phoneNumbers: phoneNumbers,
-                    linkedinPage: contactData?.Linkedin_Page || '',
-                    facebookPage: contactData?.Facebook_Page || '',
-                    instagramPage: contactData?.Instagram_Page || '',
-                    twitterPage: contactData?.Twitter_Page || ''
-                };
+                this.rawContactData = response?.message || {};
+                this.mapRawContactInfo();
             },
             error: () => {
                 this.loadingContactInfo = false;
@@ -593,10 +594,8 @@ export class ProfileOverviewComponent implements OnInit, OnDestroy {
         const sub = this.rolesService.getEntityRoleDetails(account.Entity_Role_ID).subscribe({
             next: (response: any) => {
                 this.loadingAccountDetails = false;
-                const role = response?.message || {};
-                this.accountDetailsRoleName = this.isRegional
-                    ? (role.Title_Regional || role.Title || '')
-                    : (role.Title || '');
+                this.rawAccountRole = response?.message || {};
+                this.mapRawAccountRole();
             },
             error: () => {
                 this.loadingAccountDetails = false;
@@ -609,6 +608,34 @@ export class ProfileOverviewComponent implements OnInit, OnDestroy {
         this.accountDetailsDialogVisible = false;
         this.accountForDetails = null;
         this.accountDetailsRoleName = '';
+        this.rawAccountRole = null;
+    }
+
+    private mapRawContactInfo(): void {
+        if (!this.rawContactData) {
+            return;
+        }
+
+        this.userContactInfo = {
+            address: this.isRegional
+                ? (this.rawContactData?.Address_Regional || this.rawContactData?.Address || '')
+                : (this.rawContactData?.Address || ''),
+            phoneNumbers: this.rawContactData?.Phone_Numbers || [],
+            linkedinPage: this.rawContactData?.Linkedin_Page || '',
+            facebookPage: this.rawContactData?.Facebook_Page || '',
+            instagramPage: this.rawContactData?.Instagram_Page || '',
+            twitterPage: this.rawContactData?.Twitter_Page || ''
+        };
+    }
+
+    private mapRawAccountRole(): void {
+        if (!this.rawAccountRole) {
+            return;
+        }
+
+        this.accountDetailsRoleName = this.isRegional
+            ? (this.rawAccountRole.Title_Regional || this.rawAccountRole.Title || '')
+            : (this.rawAccountRole.Title || '');
     }
 
     cancelEditAccountTitle(): void {
