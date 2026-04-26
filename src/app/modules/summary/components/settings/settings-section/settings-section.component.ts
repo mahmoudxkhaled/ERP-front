@@ -314,6 +314,24 @@ export class SettingsSectionComponent implements OnInit, OnChanges {
                     this.handleBusinessError('save', response);
                     return;
                 }
+                if (this.layer === 'defaultAccount' || this.layer === 'defaultEntity') {
+                    if (this.syncToEngine) {
+                        this.settingsEngineService.refreshRuntimeFromServer().subscribe({
+                            next: () => {
+                                this.reloadParentTab.emit();
+                                this.showSuccessToast(this.getSuccessKey('save'));
+                            },
+                            error: () => {
+                                this.reloadParentTab.emit();
+                                this.showSuccessToast(this.getSuccessKey('save'));
+                            },
+                        });
+                    } else {
+                        this.reloadParentTab.emit();
+                        this.showSuccessToast(this.getSuccessKey('save'));
+                    }
+                    return;
+                }
                 if (this.syncToEngine) {
                     this.settingsEngineService.refreshRuntimeFromServer().subscribe({
                         next: () => {
