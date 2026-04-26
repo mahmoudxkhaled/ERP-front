@@ -1,12 +1,8 @@
 <p-toast></p-toast>
 
-<p-tabView [(activeIndex)]="activeTabIndex">
+<p-tabView [(activeIndex)]="activeTabIndex" (onChange)="onTabChange($event)">
     <p-tabPanel [header]="translate.getInstant('settings.tabs.accountSettings')">
         <app-account-settings-tab></app-account-settings-tab>
-    </p-tabPanel>
-
-    <p-tabPanel [header]="translate.getInstant('settings.tabs.layoutTheme')">
-        <app-config></app-config>
     </p-tabPanel>
 
     <p-tabPanel *ngIf="canShowEntityTab" [header]="translate.getInstant('settings.tabs.entitySettings')">

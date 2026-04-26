@@ -478,6 +478,10 @@ export class ProfileOverviewComponent implements OnInit, OnDestroy {
         this.router.navigate(['/summary/profile/edit']);
     }
 
+    navigateToPreferences(): void {
+        this.router.navigate(['/summary/profile/preferences']);
+    }
+
     getUserDisplayName(): string {
         if (!this.userDetails) return '';
         const parts = [

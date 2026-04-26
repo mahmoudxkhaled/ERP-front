@@ -6,6 +6,7 @@ import { ActionsComponent } from './components/actions/actions.component';
 import { NotificationsComponent } from './components/notifications/notifications.component';
 import { ProfileOverviewComponent } from './components/profile/profile-overview/profile-overview.component';
 import { ProfileEditComponent } from './components/profile/profile-edit/profile-edit.component';
+import { ProfilePreferencesComponent } from './components/profile/profile-preferences/profile-preferences.component';
 import { SettingsComponent } from './components/settings/settings.component';
 
 const routes: Routes = [
@@ -23,6 +24,7 @@ const routes: Routes = [
     },
     { path: 'profile', component: ProfileOverviewComponent, data: { breadcrumb: 'profile' } },
     { path: 'profile/edit', component: ProfileEditComponent, data: { breadcrumb: 'editProfile' } },
+    { path: 'profile/preferences', component: ProfilePreferencesComponent, data: { breadcrumb: 'editPreferences' } },
     { path: 'settings', component: SettingsComponent, data: { breadcrumb: 'settings' } },
     {
         path: 'groups',

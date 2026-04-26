@@ -8,6 +8,7 @@ import { ActionsComponent } from './components/actions/actions.component';
 import { NotificationsComponent } from './components/notifications/notifications.component';
 import { ProfileOverviewComponent } from './components/profile/profile-overview/profile-overview.component';
 import { ProfileEditComponent } from './components/profile/profile-edit/profile-edit.component';
+import { ProfilePreferencesComponent } from './components/profile/profile-preferences/profile-preferences.component';
 import { SettingsComponent } from './components/settings/settings.component';
 import { AccountSettingsTabComponent } from './components/settings/account-settings-tab/account-settings-tab.component';
 import { EntitySettingsTabComponent } from './components/settings/entity-settings-tab/entity-settings-tab.component';
@@ -21,6 +22,7 @@ import { SettingsSectionComponent } from './components/settings/settings-section
         NotificationsComponent,
         ProfileOverviewComponent,
         ProfileEditComponent,
+        ProfilePreferencesComponent,
         SettingsComponent,
         AccountSettingsTabComponent,
         EntitySettingsTabComponent,

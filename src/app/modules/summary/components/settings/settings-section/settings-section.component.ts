@@ -27,6 +27,8 @@ export class SettingsSectionComponent implements OnInit, OnChanges {
     @Input() titleKey!: string;
     @Input() showRemove = false;
     @Input() allowCustomKey = true;
+    @Input() ownerId = 0;
+    @Input() syncToEngine = true;
     @Input() fixedKeys?: string[];
     @Input() preloadedData: Record<string, string> | null = null;
     @Input() inheritedDefaults: Record<string, string> | null = null;
@@ -89,11 +91,7 @@ export class SettingsSectionComponent implements OnInit, OnChanges {
     }
 
     ngOnInit(): void {
-        if (this.layer === 'account') {
-            this.ownerEntityOrAccountId = Number(this.localStorageService.getAccountDetails()?.Account_ID || 0);
-        } else if (this.layer === 'entity') {
-            this.ownerEntityOrAccountId = Number(this.localStorageService.getEntityDetails()?.Entity_ID || 0);
-        }
+        this.syncOwnerId();
         if (this.fixedKeys) {
             this.activeKeys = [...this.fixedKeys];
         }
@@ -107,6 +105,9 @@ export class SettingsSectionComponent implements OnInit, OnChanges {
     }
 
     ngOnChanges(changes: SimpleChanges): void {
+        if (changes['ownerId']) {
+            this.syncOwnerId();
+        }
         if (this.usesMergedCustomView()) {
             if (
                 (changes['preloadedData'] || changes['inheritedDefaults']) &&
@@ -120,6 +121,23 @@ export class SettingsSectionComponent implements OnInit, OnChanges {
         if (changes['preloadedData'] && this.preloadedData != null) {
             this.applyLoadedDictionary(this.preloadedData);
         }
+    }
+
+    private syncOwnerId(): void {
+        const override = Number(this.ownerId || 0);
+        if (override > 0) {
+            this.ownerEntityOrAccountId = override;
+            return;
+        }
+        if (this.layer === 'account') {
+            this.ownerEntityOrAccountId = Number(this.localStorageService.getAccountDetails()?.Account_ID || 0);
+            return;
+        }
+        if (this.layer === 'entity') {
+            this.ownerEntityOrAccountId = Number(this.localStorageService.getEntityDetails()?.Entity_ID || 0);
+            return;
+        }
+        this.ownerEntityOrAccountId = 0;
     }
 
     onValuesChange(next: Record<string, string>): void {
@@ -199,18 +217,24 @@ export class SettingsSectionComponent implements OnInit, OnChanges {
 
                     const shouldSet = Object.keys(payload).length > 0 || this.keysAddedLocally.size > 0;
                     if (!shouldSet) {
-                        this.settingsEngineService.refreshRuntimeFromServer().subscribe({
-                            next: () => {
-                                this.saving = false;
-                                this.reloadParentTab.emit();
-                                this.showSuccessToast(this.getSuccessKey('save'));
-                            },
-                            error: () => {
-                                this.saving = false;
-                                this.reloadParentTab.emit();
-                                this.showSuccessToast(this.getSuccessKey('save'));
-                            },
-                        });
+                        if (this.syncToEngine) {
+                            this.settingsEngineService.refreshRuntimeFromServer().subscribe({
+                                next: () => {
+                                    this.saving = false;
+                                    this.reloadParentTab.emit();
+                                    this.showSuccessToast(this.getSuccessKey('save'));
+                                },
+                                error: () => {
+                                    this.saving = false;
+                                    this.reloadParentTab.emit();
+                                    this.showSuccessToast(this.getSuccessKey('save'));
+                                },
+                            });
+                        } else {
+                            this.saving = false;
+                            this.reloadParentTab.emit();
+                            this.showSuccessToast(this.getSuccessKey('save'));
+                        }
                         return;
                     }
 
@@ -221,16 +245,21 @@ export class SettingsSectionComponent implements OnInit, OnChanges {
                                 this.handleBusinessError('save', response);
                                 return;
                             }
-                            this.settingsEngineService.refreshRuntimeFromServer().subscribe({
-                                next: () => {
-                                    this.reloadParentTab.emit();
-                                    this.showSuccessToast(this.getSuccessKey('save'));
-                                },
-                                error: () => {
-                                    this.reloadParentTab.emit();
-                                    this.showSuccessToast(this.getSuccessKey('save'));
-                                },
-                            });
+                            if (this.syncToEngine) {
+                                this.settingsEngineService.refreshRuntimeFromServer().subscribe({
+                                    next: () => {
+                                        this.reloadParentTab.emit();
+                                        this.showSuccessToast(this.getSuccessKey('save'));
+                                    },
+                                    error: () => {
+                                        this.reloadParentTab.emit();
+                                        this.showSuccessToast(this.getSuccessKey('save'));
+                                    },
+                                });
+                            } else {
+                                this.reloadParentTab.emit();
+                                this.showSuccessToast(this.getSuccessKey('save'));
+                            }
                         },
                         error: () => {
                             this.saving = false;
@@ -285,22 +314,27 @@ export class SettingsSectionComponent implements OnInit, OnChanges {
                     this.handleBusinessError('save', response);
                     return;
                 }
-                this.settingsEngineService.refreshRuntimeFromServer().subscribe({
-                    next: () => {
-                        this.persisted = { ...this.settingsEngineService.getLayer(this.layer) };
-                        if (!this.fixedKeys) {
-                            this.activeKeys = Object.keys(this.persisted).sort((a, b) => a.localeCompare(b));
-                            this.values = this.mergeValuesForKeys(this.activeKeys, this.persisted);
-                            this.refreshAvailableOptions();
-                        } else {
-                            this.values = mergeDictionaryWithDefaultsForKeys(this.activeKeys, this.persisted);
-                        }
-                        this.showSuccessToast(this.getSuccessKey('save'));
-                    },
-                    error: () => {
-                        this.showSuccessToast(this.getSuccessKey('save'));
-                    },
-                });
+                if (this.syncToEngine) {
+                    this.settingsEngineService.refreshRuntimeFromServer().subscribe({
+                        next: () => {
+                            this.persisted = { ...this.settingsEngineService.getLayer(this.layer) };
+                            if (!this.fixedKeys) {
+                                this.activeKeys = Object.keys(this.persisted).sort((a, b) => a.localeCompare(b));
+                                this.values = this.mergeValuesForKeys(this.activeKeys, this.persisted);
+                                this.refreshAvailableOptions();
+                            } else {
+                                this.values = mergeDictionaryWithDefaultsForKeys(this.activeKeys, this.persisted);
+                            }
+                            this.showSuccessToast(this.getSuccessKey('save'));
+                        },
+                        error: () => {
+                            this.showSuccessToast(this.getSuccessKey('save'));
+                        },
+                    });
+                } else {
+                    this.reloadParentTab.emit();
+                    this.showSuccessToast(this.getSuccessKey('save'));
+                }
             },
             error: () => {
                 this.saving = false;
@@ -391,18 +425,23 @@ export class SettingsSectionComponent implements OnInit, OnChanges {
                     return;
                 }
                 if (this.fixedKeys) {
-                    this.settingsEngineService.refreshRuntimeFromServer().subscribe({
-                        next: () => {
-                            const dict = this.settingsEngineService.getLayer(this.layer);
-                            this.persisted = { ...dict };
-                            this.values = mergeDictionaryWithDefaultsForKeys(this.activeKeys, dict);
-                            this.refreshAvailableOptions();
-                            this.showSuccessToast(this.getSuccessKey('remove'));
-                        },
-                        error: () => {
-                            this.load();
-                        },
-                    });
+                    if (this.syncToEngine) {
+                        this.settingsEngineService.refreshRuntimeFromServer().subscribe({
+                            next: () => {
+                                const dict = this.settingsEngineService.getLayer(this.layer);
+                                this.persisted = { ...dict };
+                                this.values = mergeDictionaryWithDefaultsForKeys(this.activeKeys, dict);
+                                this.refreshAvailableOptions();
+                                this.showSuccessToast(this.getSuccessKey('remove'));
+                            },
+                            error: () => {
+                                this.load();
+                            },
+                        });
+                    } else {
+                        this.reloadParentTab.emit();
+                        this.showSuccessToast(this.getSuccessKey('remove'));
+                    }
                     return;
                 }
                 this.activeKeys = this.activeKeys.filter((k) => k !== key);
@@ -410,16 +449,21 @@ export class SettingsSectionComponent implements OnInit, OnChanges {
                 delete nextValues[key];
                 this.values = nextValues;
                 this.persisted = { ...this.values };
-                this.settingsEngineService.removeLayerKeys(this.layer, [key]);
                 this.refreshAvailableOptions();
-                this.settingsEngineService.refreshRuntimeFromServer().subscribe({
-                    next: () => {
-                        this.showSuccessToast(this.getSuccessKey('remove'));
-                    },
-                    error: () => {
-                        this.showSuccessToast(this.getSuccessKey('remove'));
-                    },
-                });
+                if (this.syncToEngine) {
+                    this.settingsEngineService.removeLayerKeys(this.layer, [key]);
+                    this.settingsEngineService.refreshRuntimeFromServer().subscribe({
+                        next: () => {
+                            this.showSuccessToast(this.getSuccessKey('remove'));
+                        },
+                        error: () => {
+                            this.showSuccessToast(this.getSuccessKey('remove'));
+                        },
+                    });
+                } else {
+                    this.reloadParentTab.emit();
+                    this.showSuccessToast(this.getSuccessKey('remove'));
+                }
             },
             error: () => {
             },
@@ -655,11 +699,15 @@ export class SettingsSectionComponent implements OnInit, OnChanges {
         this.persisted = { ...dict };
         if (this.fixedKeys) {
             this.values = mergeDictionaryWithDefaultsForKeys(this.activeKeys, dict);
-            this.settingsEngineService.replaceLayer(this.layer, this.values);
+            if (this.syncToEngine) {
+                this.settingsEngineService.replaceLayer(this.layer, this.values);
+            }
         } else {
             this.activeKeys = Object.keys(dict).sort((a, b) => a.localeCompare(b));
             this.values = this.mergeValuesForKeys(this.activeKeys, dict);
-            this.settingsEngineService.replaceLayer(this.layer, dict);
+            if (this.syncToEngine) {
+                this.settingsEngineService.replaceLayer(this.layer, dict);
+            }
             this.refreshAvailableOptions();
         }
     }
@@ -688,7 +736,9 @@ export class SettingsSectionComponent implements OnInit, OnChanges {
         });
         this.values = this.mergeValuesForKeys(union, mergedDict);
         this.rebuildPersistedForMerged();
-        this.settingsEngineService.replaceLayer(this.layer, { ...custom });
+        if (this.syncToEngine) {
+            this.settingsEngineService.replaceLayer(this.layer, { ...custom });
+        }
         this.updateRowActions();
         this.refreshAvailableOptions();
     }

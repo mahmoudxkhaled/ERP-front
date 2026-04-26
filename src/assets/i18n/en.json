@@ -1179,6 +1179,11 @@
             "accountTitleUpdated": "Account title updated successfully.",
             "socialMedia": "Social Media"
         }
+        ,
+        "preferences": {
+            "title": "Preferences",
+            "description": "Customize your layout and theme settings."
+        }
     },
     "layout": {
         "app-breadcrumb": {
@@ -1196,6 +1201,7 @@
             "pages": "Pages Management",
             "profile": "Profile",
             "editProfile": "Edit Profile",
+            "editPreferences": "Edit Preferences",
             "users": "User Management",
             "roles": "Role Management",
             "pages-management": "Page Management",
