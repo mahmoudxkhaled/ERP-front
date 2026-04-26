@@ -6,6 +6,7 @@ import { LocalStorageService } from 'src/app/core/services/local-storage.service
 import { NotificationRefreshService } from 'src/app/core/services/notification-refresh.service';
 import { IAccountStatusResponse } from 'src/app/core/models/account-status.model';
 import { SettingsEngineService } from '../../summary/services/settings-engine.service';
+import { ProfileApiService } from 'src/app/modules/summary/services/profile-api.service';
 
 @Injectable({
     providedIn: 'root',
@@ -17,7 +18,8 @@ export class AuthService {
         private localStorageService: LocalStorageService,
         private router: Router,
         private notificationRefreshService: NotificationRefreshService,
-        private injector: Injector
+        private injector: Injector,
+        private profileApiService: ProfileApiService
     ) {
         this.isLoadingSubject = new BehaviorSubject<boolean>(false);
     }
@@ -48,6 +50,7 @@ export class AuthService {
                                 next: () => { },
                                 error: () => { },
                             });
+                            this.loadUserPreferencesOnLogin();
                             this.notificationRefreshService.requestRefresh();
                             this.router.navigate(['/']);
                         })
@@ -80,6 +83,7 @@ export class AuthService {
                                 next: () => { },
                                 error: () => { },
                             });
+                            this.loadUserPreferencesOnLogin();
                             this.notificationRefreshService.requestRefresh();
                             this.router.navigate(['/']);
                         })
@@ -156,5 +160,29 @@ export class AuthService {
         const payload = response.message;
         const token = payload.Access_Token;
         this.localStorageService.setToken(token);
+    }
+
+    private loadUserPreferencesOnLogin(): void {
+        const userId = Number(this.localStorageService.getUserDetails()?.User_ID || 0);
+        if (!userId) {
+            return;
+        }
+        this.profileApiService.getUserPreferences(userId).subscribe({
+            next: (response: any) => {
+                if (!response?.success) {
+                    return;
+                }
+                const raw = response?.message?.User_Preferences ?? response?.message?.user_Preferences ?? {};
+                const dict: Record<string, string> = {};
+                if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
+                    Object.keys(raw).forEach((k) => {
+                        const v = (raw as any)[k];
+                        dict[k] = v == null ? '' : String(v);
+                    });
+                }
+                this.localStorageService.setItem('User_Preferences', dict);
+            },
+            error: () => { },
+        });
     }
 }

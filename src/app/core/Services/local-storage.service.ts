@@ -120,6 +120,10 @@ export class LocalStorageService {
   getUserAccounts(): IUserAccountItem[] | null {
     return this.getItem('User_Accounts');
   }
+
+  getUserPreferences(): Record<string, string> | null {
+    return this.getItem('User_Preferences');
+  }
   // #endregion
 
   // #region Login lifecycle
@@ -170,6 +174,7 @@ export class LocalStorageService {
     this.removeItem('Modules_Details');
     this.removeItem('Account_Settings');
     this.removeItem('User_Accounts');
+    this.removeItem('User_Preferences');
     this.removeItem('userData');
     this.removeItem('isRtl');
   }

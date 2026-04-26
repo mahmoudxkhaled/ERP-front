@@ -1178,8 +1178,7 @@
             "regionalFieldHint": "You are editing the regional (language-specific) title.",
             "accountTitleUpdated": "Account title updated successfully.",
             "socialMedia": "Social Media"
-        }
-        ,
+        },
         "preferences": {
             "title": "Preferences",
             "description": "Customize your layout and theme settings."
