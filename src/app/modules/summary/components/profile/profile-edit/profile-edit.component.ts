@@ -7,7 +7,7 @@ import { LocalStorageService } from 'src/app/core/services/local-storage.service
 import { UserNameService } from 'src/app/core/services/user-name.service';
 import { IUserDetails, IAccountDetails, IEntityDetails, IAccountSettings } from 'src/app/core/models/account-status.model';
 import { ProfileApiService } from '../../../services/profile-api.service';
-import { ProfileContactInfo, ProfilePreferences } from '../../../models/profile.model';
+import { ProfileContactInfo } from '../../../models/profile.model';
 import { Observable, Subscription } from 'rxjs';
 import { nameFieldValidator, getNameFieldError, textFieldValidator, getTextFieldError } from 'src/app/core/validators/text-field.validator';
 
@@ -23,7 +23,6 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
 
     profileForm!: FormGroup;
     contactInfoForm!: FormGroup;
-    preferencesForm!: FormGroup;
 
     gender: boolean = false;
 
@@ -36,13 +35,10 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
     // API integration properties
     currentUserId: number | null = null;
     userContactInfo: ProfileContactInfo | null = null;
-    userPreferences: ProfilePreferences = {};
     isLoading$: Observable<boolean>;
     loadingContactInfo: boolean = false;
-    loadingPreferences: boolean = false;
     saving: boolean = false;
     savingContactInfo: boolean = false;
-    savingPreferences: boolean = false;
 
     genderOptions = [
         { label: 'Male', value: true },
@@ -67,7 +63,6 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
         this.loadUserData();
         this.initFormModels();
         this.initContactInfoForm();
-        this.initPreferencesForm();
         this.gender = this.localStorageService.getGender() || false;
 
         // Get current user ID and load data from API
@@ -75,7 +70,6 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
         if (this.currentUserId) {
             this.loadUserDetailsFromAPI();
             this.loadContactInfo();
-            this.loadPreferences();
         }
     }
 
@@ -188,10 +182,6 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
             instagramPage: ['',],
             twitterPage: ['',]
         });
-    }
-
-    initPreferencesForm(): void {
-        this.preferencesForm = this.fb.group({});
     }
 
     get phoneNumbersFormArray(): FormArray {
@@ -379,38 +369,6 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
         this.subscriptions.push(sub);
     }
 
-    loadPreferences(): void {
-        if (!this.currentUserId) {
-            return;
-        }
-
-        this.loadingPreferences = true;
-        const sub = this.profileApiService.getUserPreferences(this.currentUserId).subscribe({
-            next: (response: any) => {
-                this.loadingPreferences = false;
-                if (!response?.success) {
-                    return;
-                }
-
-                console.log(response?.message);
-
-                this.userPreferences = response?.message?.User_Preferences || {};
-
-                // Build dynamic form for preferences
-                const formControls: any = {};
-                Object.keys(this.userPreferences).forEach(key => {
-                    formControls[key] = [this.userPreferences[key], [Validators.required]];
-                });
-                this.preferencesForm = this.fb.group(formControls);
-            },
-            error: () => {
-                this.loadingPreferences = false;
-            }
-        });
-
-        this.subscriptions.push(sub);
-    }
-
     saveContactInfo(): void {
         if (!this.currentUserId) {
             return;
@@ -461,68 +419,6 @@ export class ProfileEditComponent implements OnInit, OnDestroy {
         });
 
         this.subscriptions.push(sub);
-    }
-
-    savePreferences(): void {
-        if (!this.currentUserId) {
-            return;
-        }
-
-        if (this.preferencesForm.invalid || this.savingPreferences) {
-            return;
-        }
-
-        this.savingPreferences = true;
-        const preferences: Record<string, string> = {};
-        Object.keys(this.preferencesForm.controls).forEach(key => {
-            preferences[key] = this.preferencesForm.get(key)?.value || '';
-        });
-
-        const sub = this.profileApiService.setUserPreferences(this.currentUserId, preferences).subscribe({
-            next: (response: any) => {
-                this.savingPreferences = false;
-                if (!response?.success) {
-                    this.messageService.add({
-                        severity: 'error',
-                        summary: 'Error',
-                        detail: 'Failed to update preferences.'
-                    });
-                    return;
-                }
-
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Success',
-                    detail: 'Preferences updated successfully.'
-                });
-
-                this.loadPreferences();
-            },
-            error: () => {
-                this.savingPreferences = false;
-            }
-        });
-
-        this.subscriptions.push(sub);
-    }
-
-    addPreference(): void {
-        const key = prompt('Enter preference key:');
-        if (key && key.trim()) {
-            this.preferencesForm.addControl(key.trim(), this.fb.control('', [Validators.required]));
-            this.userPreferences[key.trim()] = '';
-        }
-    }
-
-    removePreference(key: string): void {
-        if (confirm(`Remove preference "${key}"?`)) {
-            this.preferencesForm.removeControl(key);
-            delete this.userPreferences[key];
-        }
-    }
-
-    getPreferenceKeys(): string[] {
-        return Object.keys(this.preferencesForm.controls);
     }
 
     getPhoneNumberError(index: number): string {

@@ -28,27 +28,13 @@
         (removeKey)="requestRemove($event)" (resetKey)="onResetKey($event)"></app-shared-settings-panel>
 
     <div class="flex justify-content-end align-items-center gap-2 mt-3">
-        <p-button
-            *ngIf="hasUnsavedChanges"
-            type="button"
-            icon="pi pi-arrow-right"
-            severity="success"
-            [text]="true"
-            [rounded]="true"
-            [pTooltip]="'settings.sections.common.saveHintTooltip' | translate"
-            tooltipPosition="top"
-            [attr.aria-label]="'settings.sections.common.saveHintAria' | translate"
-            [disabled]="saving || loading"
-            (onClick)="save()"
-        ></p-button>
-        <p-button
-            [label]="'shared.actions.save' | translate"
-            icon="pi pi-save"
-            [severity]="hasUnsavedChanges ? 'success' : 'primary'"
-            [loading]="saving"
-            [disabled]="!hasUnsavedChanges || saving || loading"
-            (onClick)="save()"
-        ></p-button>
+        <p-button *ngIf="hasUnsavedChanges" type="button" icon="pi pi-arrow-right" severity="success" [text]="true"
+            [rounded]="true" [pTooltip]="'settings.sections.common.saveHintTooltip' | translate" tooltipPosition="top"
+            [attr.aria-label]="'settings.sections.common.saveHintAria' | translate" [disabled]="saving || loading"
+            (onClick)="save()"></p-button>
+        <p-button [label]="'shared.actions.save' | translate" icon="pi pi-save"
+            [severity]="hasUnsavedChanges ? 'success' : 'primary'" [loading]="saving"
+            [disabled]="!hasUnsavedChanges || saving || loading" (onClick)="save()"></p-button>
     </div>
 </p-panel>
 
@@ -84,7 +70,7 @@
     <ng-template pTemplate="header">
         <h3 class="m-0">{{ defaultSaveConfirmTitleKey | translate }}</h3>
     </ng-template>
-    <p class="m-0 white-space-pre-line text-sm">{{ defaultSaveConfirmMessageKey | translate }}</p>
+    <p class="m-0 white-space-pre-line  ">{{ defaultSaveConfirmMessageKey | translate }}</p>
     <ng-template pTemplate="footer">
         <p-button [label]="'common.cancel' | translate" severity="secondary" (onClick)="cancelDefaultSave()"
             [disabled]="saving"></p-button>

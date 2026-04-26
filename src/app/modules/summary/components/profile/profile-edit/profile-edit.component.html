@@ -275,58 +275,6 @@
                 </p-panel>
             </div>
 
-            <!-- User Preferences Panel -->
-            <div class="col-12 mt-4">
-                <p-panel [header]="'profile.edit.userPreferences' | translate" class="h-full"
-                    [style]="{'opacity': '0.6', 'pointer-events': 'none'}">
-                    <div *ngIf="loadingPreferences" class="flex justify-content-center align-items-center p-4">
-                        <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
-                    </div>
-                    <form [formGroup]="preferencesForm" (ngSubmit)="savePreferences()"
-                        *ngIf="!loadingPreferences && preferencesForm">
-                        <div class="grid">
-                            <div class="col-12">
-                                <div class="flex justify-content-between align-items-center mb-3">
-                                    <p class="m-0 text-600">{{ 'profile.edit.managePreferences' | translate }}</p>
-                                    <p-button [label]="'profile.edit.addPreference' | translate" icon="pi pi-plus"
-                                        size="small" (onClick)="addPreference()" type="button"
-                                        [disabled]="true"></p-button>
-                                </div>
-                            </div>
-
-                            <div class="col-12" *ngIf="getPreferenceKeys().length === 0">
-                                <p class="text-center text-600 p-4">{{ 'profile.edit.noPreferencesSet' | translate }}
-                                </p>
-                            </div>
-
-                            <div class="col-12 md:col-6" *ngFor="let key of getPreferenceKeys()">
-                                <div class="field">
-                                    <div class="flex align-items-center gap-2 mb-2">
-                                        <label class="block text-sm font-medium flex-1">{{ key }}</label>
-                                        <button pButton pRipple type="button" icon="pi pi-times"
-                                            class="p-button-rounded p-button-danger p-button-text p-button-sm"
-                                            (click)="removePreference(key)" [disabled]="true">
-                                        </button>
-                                    </div>
-                                    <input type="text" pInputText [formControlName]="key"
-                                        [placeholder]="'profile.edit.enterValue' | translate" class="w-full"
-                                        [disabled]="true">
-                                </div>
-                            </div>
-
-                            <div class="col-12" *ngIf="getPreferenceKeys().length > 0">
-                                <div class="flex justify-content-start gap-3 my-4">
-                                    <p-button [label]="'profile.edit.savePreferences' | translate" icon="pi pi-save"
-                                        severity="success" (onClick)="savePreferences()" [disabled]="true">
-                                    </p-button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </p-panel>
-            </div>
-
-
         </div>
     </form>
 
