@@ -839,9 +839,6 @@
             "theme": "السمة",
             "themeLight": "فاتح",
             "themeDark": "داكن",
-            "currency": "العملة",
-            "dateFormat": "تنسيق التاريخ",
-            "notifications": "الإشعارات",
             "messages": {
                 "saveSuccess": "تم حفظ إعدادات الحساب بنجاح",
                 "resetSuccess": "تمت إعادة إعدادات الحساب إلى القيم الموروثة"
@@ -873,9 +870,6 @@
             "keys": {
                 "language": "اللغة",
                 "theme": "السمة",
-                "currency": "العملة",
-                "dateFormat": "تنسيق التاريخ",
-                "notifications": "الإشعارات",
                 "sessionValidity": "صلاحية الجلسة (بالدقائق)",
                 "resetPasswordTokenValidity": "صلاحية رمز إعادة تعيين كلمة المرور (بالدقائق)",
                 "unknownKey": "{{key}}"
@@ -889,21 +883,6 @@
                 "theme": {
                     "light": "فاتح",
                     "dark": "داكن"
-                },
-                "currency": {
-                    "USD": "USD",
-                    "EGP": "EGP",
-                    "SAR": "SAR",
-                    "AED": "AED"
-                },
-                "dateFormat": {
-                    "ddmmyyyy": "يوم/شهر/سنة",
-                    "mmddyyyy": "شهر/يوم/سنة",
-                    "yyyymmdd": "سنة/شهر/يوم"
-                },
-                "notifications": {
-                    "yes": "نعم",
-                    "no": "لا"
                 }
             },
             "addExistingKey": "إضافة إعداد",
@@ -915,7 +894,9 @@
             "removeKeyTooltip": "إزالة هذا الإعداد نهائيًا",
             "removeKeyAria": "إزالة الإعداد",
             "resetToDefaultTooltip": "العودة إلى القيمة الافتراضية الموروثة",
-            "resetToDefaultAria": "إعادة القيمة الافتراضية"
+            "resetToDefaultAria": "إعادة القيمة الافتراضية",
+            "resetToCodeDefaultTooltip": "إعادة التعيين إلى القيمة الافتراضية للتطبيق",
+            "resetToCodeDefaultAria": "إعادة التعيين إلى القيمة الافتراضية للتطبيق"
         },
         "sections": {
             "general": "الإعدادات العامة",
@@ -924,6 +905,8 @@
             "privacy": "الخصوصية",
             "defaultAccount": {
                 "title": "إعدادات الحساب الافتراضية",
+                "saveConfirmTitle": "حفظ إعدادات الحساب الافتراضية؟",
+                "saveConfirmMessage": "يُحفظ الافتراضي للحسابات التي لا تملك قيمًا خاصة بها. الحسابات ذات التجاوزات تبقى كما هي.",
                 "saveSuccess": "تم حفظ إعدادات الحساب الافتراضية بنجاح",
                 "removeSuccess": "تمت إزالة إعداد الحساب الافتراضي بنجاح"
             },
@@ -934,6 +917,8 @@
             },
             "defaultEntity": {
                 "title": "إعدادات الكيان الافتراضية",
+                "saveConfirmTitle": "حفظ إعدادات الكيان الافتراضية؟",
+                "saveConfirmMessage": "يُحفظ الافتراضي للكيانات التي لا تملك قيمًا خاصة بها. الكيانات ذات التجاوزات تبقى كما هي.",
                 "saveSuccess": "تم حفظ إعدادات الكيان الافتراضية بنجاح",
                 "removeSuccess": "تمت إزالة إعداد الكيان الافتراضي بنجاح"
             },
@@ -943,6 +928,8 @@
                 "removeSuccess": "تمت إزالة إعداد الكيان المخصص"
             },
             "common": {
+                "saveHintTooltip": "لديك تغييرات غير محفوظة. انقر هنا للحفظ.",
+                "saveHintAria": "حفظ التغييرات",
                 "removeConfirmTitle": "حذف الإعداد",
                 "removeConfirmMessage": "هل أنت متأكد من حذف الإعداد \"{{key}}\"؟"
             }

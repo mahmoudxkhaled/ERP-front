@@ -9,7 +9,7 @@ export interface SettingsLayersState {
     lastUpdatedAt: number;
 }
 
-export const SETTINGS_CACHE_KEY = 'erp_settings_layers_cache_v1';
+export const SETTINGS_CACHE_KEY = 'erp_settings_layers_cache_v2';
 
 export {
     ACCOUNT_SETTINGS_KEYS,
@@ -17,12 +17,7 @@ export {
     getSystemLayerKeys,
 } from './known-settings.schema';
 
-export type AccountSettingKey =
-    | 'language'
-    | 'theme'
-    | 'currency'
-    | 'date_format'
-    | 'notifications';
+export type AccountSettingKey = 'language' | 'theme';
 
 export type SystemSettingKey = AccountSettingKey | 'session_validity' | 'reset_password_token_validity';
 

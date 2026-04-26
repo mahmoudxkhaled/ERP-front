@@ -18,7 +18,9 @@
         <app-settings-section
             layer="entity"
             titleKey="settings.sections.entityCustom.title"
+            [headerContext]="entityDisplayName"
             [showRemove]="true"
+            [allowCustomKey]="false"
             [inheritedDefaults]="defaultEntityData"
             [preloadedData]="entityCustomData"
             (reloadParentTab)="reloadEntityTab()"

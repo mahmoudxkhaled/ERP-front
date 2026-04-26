@@ -34,9 +34,9 @@
                         severity="secondary"
                         [text]="true"
                         [rounded]="true"
-                        [pTooltip]="'settings.sharedPanel.resetToDefaultTooltip' | translate"
+                        [pTooltip]="getResetTooltipKey(key) | translate"
                         tooltipPosition="top"
-                        [attr.aria-label]="'settings.sharedPanel.resetToDefaultAria' | translate"
+                        [attr.aria-label]="getResetAriaKey(key) | translate"
                         (onClick)="onResetClick(key)"
                     ></p-button>
                     <p-button

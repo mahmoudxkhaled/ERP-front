@@ -18,6 +18,7 @@ export class SharedSettingsPanelComponent implements OnChanges {
     @Input() showRemove = false;
     @Input() removeKeyWhitelist: string[] | null = null;
     @Input() refreshableKeys: string[] | null = null;
+    @Input() resetToSchemaDefault = false;
     @Input() loading = false;
 
     @Output() valuesChange = new EventEmitter<Record<string, string>>();
@@ -35,7 +36,14 @@ export class SharedSettingsPanelComponent implements OnChanges {
         if (changes['activeKeys']) {
             this.sortedActiveKeys = [...(this.activeKeys || [])].sort((a, b) => a.localeCompare(b));
         }
-        if (changes['activeKeys'] || changes['values'] || changes['refreshableKeys'] || changes['removeKeyWhitelist'] || changes['showRemove']) {
+        if (
+            changes['activeKeys'] ||
+            changes['values'] ||
+            changes['refreshableKeys'] ||
+            changes['removeKeyWhitelist'] ||
+            changes['showRemove'] ||
+            changes['resetToSchemaDefault']
+        ) {
             this.cdr.markForCheck();
         }
     }
@@ -78,7 +86,33 @@ export class SharedSettingsPanelComponent implements OnChanges {
     }
 
     showRefreshButton(key: string): boolean {
-        return !!this.refreshableKeys?.includes(key);
+        if (this.refreshableKeys?.includes(key)) {
+            return true;
+        }
+        if (!this.resetToSchemaDefault) {
+            return false;
+        }
+        const entry = this.getSchemaEntry(key);
+        if (!entry) {
+            return false;
+        }
+        const current = String(this.values?.[key] ?? '');
+        const def = String(entry.defaultValue ?? '');
+        return current !== def;
+    }
+
+    getResetTooltipKey(key: string): string {
+        if (this.refreshableKeys?.includes(key)) {
+            return 'settings.sharedPanel.resetToDefaultTooltip';
+        }
+        return 'settings.sharedPanel.resetToCodeDefaultTooltip';
+    }
+
+    getResetAriaKey(key: string): string {
+        if (this.refreshableKeys?.includes(key)) {
+            return 'settings.sharedPanel.resetToDefaultAria';
+        }
+        return 'settings.sharedPanel.resetToCodeDefaultAria';
     }
 
     skeletonPlaceholders(): number[] {

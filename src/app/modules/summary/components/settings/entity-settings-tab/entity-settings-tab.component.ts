@@ -15,6 +15,7 @@ export class EntitySettingsTabComponent implements OnInit {
     entityCustomData: Record<string, string> | null = null;
     entitySettingsReady = false;
     loading = false;
+    entityDisplayName = '';
 
     constructor(
         private permissionService: PermissionService,
@@ -23,7 +24,11 @@ export class EntitySettingsTabComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        this.canManageDefault = this.permissionService.hasAnyRole([Roles.Developer, Roles.SystemAdministrator]);
+        this.canManageDefault = this.permissionService.hasAnyRole([
+            Roles.Developer,
+            Roles.SystemAdministrator,
+        ]);
+        this.refreshEntityDisplayName();
         this.loadEntityTab();
     }
 
@@ -32,6 +37,7 @@ export class EntitySettingsTabComponent implements OnInit {
     }
 
     private loadEntityTab(): void {
+        this.refreshEntityDisplayName();
         const entityId = Number(this.localStorageService.getEntityDetails()?.Entity_ID || 0);
         if (!entityId) {
             this.defaultEntityData = {};
@@ -46,8 +52,8 @@ export class EntitySettingsTabComponent implements OnInit {
                 this.loading = false;
                 if (response?.success && response?.message) {
                     const msg = response.message;
-                    this.defaultEntityData = { ...(msg.default_Entity_Settings ?? {}) };
-                    this.entityCustomData = { ...(msg.entity_Settings ?? {}) };
+                    this.defaultEntityData = { ...(msg.Default_Entity_Settings ?? msg.default_Entity_Settings ?? {}) };
+                    this.entityCustomData = { ...(msg.Entity_Settings ?? msg.entity_Settings ?? {}) };
                 } else {
                     this.defaultEntityData = {};
                     this.entityCustomData = {};
@@ -61,5 +67,20 @@ export class EntitySettingsTabComponent implements OnInit {
                 this.entitySettingsReady = true;
             },
         });
+    }
+
+    private refreshEntityDisplayName(): void {
+        const d = this.localStorageService.getEntityDetails();
+        if (!d) {
+            this.entityDisplayName = '';
+            return;
+        }
+        const lang = this.localStorageService.getPreferredLanguageCode();
+        if (lang === 'ar') {
+            const regional = (d.Name_Regional || '').trim();
+            this.entityDisplayName = regional || (d.Name || '').trim() || '';
+            return;
+        }
+        this.entityDisplayName = (d.Name || '').trim() || '';
     }
 }

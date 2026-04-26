@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, forkJoin, map, of, tap } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, forkJoin, map, of } from 'rxjs';
 import { IAccountSettings } from 'src/app/core/models/account-status.model';
 import { LanguageDirService } from 'src/app/core/services/language-dir.service';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
@@ -28,8 +28,7 @@ export class SettingsEngineService {
         if (!forceReload) {
             const cachedState = this.readCache();
             if (cachedState) {
-                this.stateSubject.next(cachedState);
-                this.applyEffectiveRuntimeToShell();
+                this.commitState(cachedState);
                 return of(cachedState);
             }
         }
@@ -38,25 +37,36 @@ export class SettingsEngineService {
         const entityDetails = this.localStorageService.getEntityDetails();
         const accountId = Number(accountDetails?.Account_ID || 0);
         const entityId = Number(entityDetails?.Entity_ID || 0);
+        const fallbackState = this.getFallbackState();
 
         return forkJoin({
-            system: this.settingsApiService.getERPSystemSettings(),
-            account: accountId ? this.settingsApiService.getAccountSettings(accountId) : of({ success: false }),
-            entity: entityId ? this.settingsApiService.getEntitySettings(entityId) : of({ success: false }),
+            account: accountId
+                ? this.settingsApiService.getAccountSettings(accountId).pipe(catchError(() => of(null)))
+                : of(null),
+            entity: entityId
+                ? this.settingsApiService.getEntitySettings(entityId).pipe(catchError(() => of(null)))
+                : of(null),
         }).pipe(
             map((response) => {
+                const accountSystem = this.extractNestedDictionary(response.account, ['System_Settings', 'system_Settings']);
                 const nextState: SettingsLayersState = {
-                    system: this.extractSettingsDictionary(response.system),
-                    defaultAccount: this.extractNestedSettingsFromMessage(response.account, 'default_Account_Settings'),
-                    defaultEntity: this.extractNestedSettingsFromMessage(response.entity, 'default_Entity_Settings'),
-                    account: this.extractAccountCustomDictionary(response.account),
-                    entity: this.extractEntityCustomDictionary(response.entity),
+                    system: accountSystem ?? fallbackState.system,
+                    defaultAccount:
+                        this.extractNestedDictionary(response.account, ['Default_Account_Settings', 'default_Account_Settings']) ??
+                        fallbackState.defaultAccount,
+                    account:
+                        this.extractNestedDictionary(response.account, ['Account_Settings', 'account_Settings']) ??
+                        fallbackState.account,
+                    defaultEntity:
+                        this.extractNestedDictionary(response.entity, ['Default_Entity_Settings', 'default_Entity_Settings']) ??
+                        fallbackState.defaultEntity,
+                    entity:
+                        this.extractNestedDictionary(response.entity, ['Entity_Settings', 'entity_Settings']) ??
+                        fallbackState.entity,
                     lastUpdatedAt: Date.now(),
                 };
 
-                this.stateSubject.next(nextState);
-                this.writeCache(nextState);
-                this.applyEffectiveRuntimeToShell();
+                this.commitState(nextState);
                 return nextState;
             })
         );
@@ -100,8 +110,7 @@ export class SettingsEngineService {
             },
             lastUpdatedAt: Date.now(),
         };
-        this.stateSubject.next(nextState);
-        this.writeCache(nextState);
+        this.commitState(nextState);
     }
 
     removeLayerKeys(layer: SettingsLayer, keys: string[]): void {
@@ -117,36 +126,7 @@ export class SettingsEngineService {
             [layer]: { ...values },
             lastUpdatedAt: Date.now(),
         };
-        this.stateSubject.next(nextState);
-        this.writeCache(nextState);
-    }
-
-    withOptimisticLayerUpdate<T>(
-        layer: SettingsLayer,
-        optimisticValues: Record<string, string>,
-        operation$: Observable<T>
-    ): Observable<T> {
-        const previousLayer = this.getLayer(layer);
-        this.setLayerValues(layer, optimisticValues);
-        return operation$.pipe(
-            tap({
-                error: () => {
-                    this.replaceLayer(layer, previousLayer);
-                },
-            })
-        );
-    }
-
-    withOptimisticLayerRemoval<T>(layer: SettingsLayer, keys: string[], operation$: Observable<T>): Observable<T> {
-        const previousLayer = this.getLayer(layer);
-        this.removeLayerKeys(layer, keys);
-        return operation$.pipe(
-            tap({
-                error: () => {
-                    this.replaceLayer(layer, previousLayer);
-                },
-            })
-        );
+        this.commitState(nextState);
     }
 
     private extractSettingsDictionary(response: any): Record<string, string> {
@@ -201,37 +181,23 @@ export class SettingsEngineService {
         return this.localStorageService.getItem(SETTINGS_CACHE_KEY);
     }
 
-    private extractNestedSettingsFromMessage(response: any, key: string): Record<string, string> {
-        if (!response?.success || !response?.message || typeof response.message !== 'object' || Array.isArray(response.message)) {
-            return {};
-        }
-        return this.mapObjectValuesToStringDict((response.message as Record<string, unknown>)[key]);
-    }
-
-    private extractAccountCustomDictionary(response: any): Record<string, string> {
-        if (!response?.success || !response?.message) {
-            return {};
-        }
-        const msg = response.message;
-        if (typeof msg === 'object' && !Array.isArray(msg) && 'account_Settings' in msg) {
-            return this.mapObjectValuesToStringDict(msg.account_Settings);
-        }
-        return this.extractSettingsDictionary(response);
-    }
-
-    private extractEntityCustomDictionary(response: any): Record<string, string> {
-        if (!response?.success || !response?.message) {
-            return {};
-        }
-        const msg = response.message;
-        if (typeof msg === 'object' && !Array.isArray(msg) && 'entity_Settings' in msg) {
-            return this.mapObjectValuesToStringDict(msg.entity_Settings);
-        }
-        return this.extractSettingsDictionary(response);
-    }
-
     private mapObjectValuesToStringDict(raw: any): Record<string, string> {
-        if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+        if (!raw) {
+            return {};
+        }
+        if (Array.isArray(raw)) {
+            return raw.reduce((acc: Record<string, string>, item: any) => {
+                if (!item || typeof item !== 'object' || Array.isArray(item)) {
+                    return acc;
+                }
+                Object.keys(item).forEach((key) => {
+                    const value = item[key];
+                    acc[key] = value == null ? '' : String(value);
+                });
+                return acc;
+            }, {});
+        }
+        if (typeof raw !== 'object') {
             return {};
         }
         return Object.keys(raw).reduce((acc: Record<string, string>, k: string) => {
@@ -239,6 +205,48 @@ export class SettingsEngineService {
             acc[k] = value == null ? '' : String(value);
             return acc;
         }, {});
+    }
+
+    private commitState(nextState: SettingsLayersState): void {
+        this.stateSubject.next(nextState);
+        this.writeCache(nextState);
+        this.applyEffectiveRuntimeToShell();
+    }
+
+    private getFallbackState(): SettingsLayersState {
+        const currentState = this.stateSubject.value;
+        const cachedState = this.readCache();
+        return {
+            system: this.pickFallbackLayer(currentState.system, cachedState?.system),
+            defaultAccount: this.pickFallbackLayer(currentState.defaultAccount, cachedState?.defaultAccount),
+            account: this.pickFallbackLayer(currentState.account, cachedState?.account),
+            defaultEntity: this.pickFallbackLayer(currentState.defaultEntity, cachedState?.defaultEntity),
+            entity: this.pickFallbackLayer(currentState.entity, cachedState?.entity),
+            lastUpdatedAt: Date.now(),
+        };
+    }
+
+    private pickFallbackLayer(
+        current: Record<string, string> | undefined,
+        cached: Record<string, string> | undefined
+    ): Record<string, string> {
+        if (current && Object.keys(current).length > 0) {
+            return { ...current };
+        }
+        return { ...(cached || {}) };
+    }
+
+    private extractNestedDictionary(response: any, keys: string[]): Record<string, string> | null {
+        if (!response?.success || !response?.message || typeof response.message !== 'object' || Array.isArray(response.message)) {
+            return null;
+        }
+        const message = response.message as Record<string, unknown>;
+        for (const key of keys) {
+            if (Object.prototype.hasOwnProperty.call(message, key)) {
+                return this.mapObjectValuesToStringDict(message[key]);
+            }
+        }
+        return null;
     }
 
     private applyEffectiveRuntimeToShell(): void {

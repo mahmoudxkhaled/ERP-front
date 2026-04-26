@@ -361,35 +361,16 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
 
     changeUserTheme() {
         if (this.themeLoading) {
-            return; // Prevent multiple clicks while loading
+            return;
         }
 
-        this.themeLoading = true; // Set loading to true
-
+        this.themeLoading = true;
         this.userTheme = this.userTheme === 'light' ? 'dark' : 'light';
-        this.applyUserTheme(this.userTheme as 'light' | 'dark');
-        this.saveAccountPreferences(this.userLanguageCode || 'en', this.userTheme);
-        this.ref.detectChanges();
-        this.themeLoading = false; // Reset loading state after response
-
-
-
-    }
-
-    applyUserTheme(theme: string) {
-        // Validate the theme and fallback to 'light' if invalid
-        const validTheme: 'light' | 'dark' = theme === 'light' || theme === 'dark' ? theme : 'light';
-
-        // Access the current layout configuration
-        const config = this.layoutService.config();
-        config.colorScheme = validTheme;
-        config.menuTheme = validTheme;
-
-        // Set the updated configuration in the layout service
-        this.layoutService.config.set(config);
-
-        // Call the method to change the theme, based on the updated color scheme
-        this.layoutService.changeTheme();
+        this.layoutService.applyUserTheme(this.userTheme as 'light' | 'dark');
+        this.saveAccountPreferences(this.userLanguageCode || 'en', this.userTheme, () => {
+            this.themeLoading = false;
+            this.ref.detectChanges();
+        });
         this.ref.detectChanges();
     }
 
@@ -414,12 +395,25 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
         this.ref.detectChanges();
     }
 
-    private saveAccountPreferences(languageCode: string, theme: string): void {
-        const accountId = Number(this.account?.Account_ID || 0);
+    private resolveAccountId(): number {
+        const fromField = Number(this.account?.Account_ID ?? 0);
+        if (fromField > 0) {
+            return fromField;
+        }
+        const fromStorage = Number(this.localStorage.getAccountDetails()?.Account_ID ?? 0);
+        if (fromStorage > 0) {
+            return fromStorage;
+        }
+        return Number(this.currentAccountId ?? 0);
+    }
+
+    private saveAccountPreferences(languageCode: string, theme: string, onSettled?: () => void): void {
+        const accountId = this.resolveAccountId();
         this.localStorage.setPreferredLanguageCode(languageCode === 'ar' ? 'ar' : 'en');
         this.localStorage.setPreferredTheme(theme === 'dark' ? 'dark' : 'light');
 
         if (!accountId) {
+            onSettled?.();
             return;
         }
         const previousLayer = this.settingsEngineService.getLayer('account');
@@ -429,23 +423,36 @@ export class AppTopbarComponent implements OnInit, OnDestroy {
             theme: theme,
         };
 
-        this.settingsApiService.setAccountSettings(accountId, payload).subscribe({
-            next: (response: any) => {
-                if (!response?.success) {
-                    this.messageService.add({
-                        severity: 'error',
-                        summary: this.translate.getInstant('common.error'),
-                        detail: this.translate.getInstant('settings.messages.errors.generic'),
+        const end = () => {
+            onSettled?.();
+        };
+
+        this.subs.add(
+            this.settingsApiService.setAccountSettings(accountId, payload).subscribe({
+                next: (response: any) => {
+                    if (!response?.success) {
+                        this.messageService.add({
+                            severity: 'error',
+                            summary: this.translate.getInstant('common.error'),
+                            detail: this.translate.getInstant('settings.messages.errors.generic'),
+                        });
+                        end();
+                        return;
+                    }
+                    this.localStorage.mergeAccountSettings({
+                        Theme: theme === 'dark' ? 'dark' : 'light',
+                        Language: languageCode === 'ar' ? 'Arabic' : 'English',
                     });
-                    return;
-                }
-                this.settingsEngineService.refreshRuntimeFromServer().subscribe({
-                    error: () => {},
-                });
-            },
-            error: () => {
-            },
-        });
+                    this.settingsEngineService.refreshRuntimeFromServer().subscribe({
+                        error: () => { },
+                    });
+                    end();
+                },
+                error: () => {
+                    end();
+                },
+            })
+        );
     }
 
     private normalizeLanguageCode(rawLanguage: string | undefined): string {

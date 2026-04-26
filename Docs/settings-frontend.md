@@ -12,11 +12,11 @@ Settings are grouped into **five logical layers** (`SettingsLayer` in `src/app/m
 
 | Layer            | Meaning |
 |------------------|---------|
-| `system`         | Global ERP system settings (Developer tab). |
-| `defaultAccount` | Template defaults for accounts (761/760). |
-| `account`        | Per-account overrides (`account_Settings`; 763/762/764). |
-| `defaultEntity`  | Template defaults for entities (781/780). |
-| `entity`         | Per-entity overrides (`entity_Settings`; 783/782/784). |
+| `system`         | Global ERP system settings (`system_Settings` / `System_Settings` from 763 for runtime refresh; 731 for system tab load). |
+| `defaultAccount` | Template defaults for accounts (`Default_Account_Settings`; 763/760). |
+| `account`        | Per-account overrides (`Account_Settings`; 763/762/764). |
+| `defaultEntity`  | Template defaults for entities (`Default_Entity_Settings`; 783/780). |
+| `entity`         | Per-entity overrides (`Entity_Settings`; 783/782/784). |
 
 **Effective value resolution** (first non-null wins) is implemented in `src/app/modules/summary/utils/settings-resolver.ts`:
 
@@ -47,7 +47,7 @@ All calls go through `ApiService.callAPI` with the access token. Set operations 
 | Code | Method | Params | Purpose |
 |------|--------|--------|---------|
 | **730** | `setERPSystemSettings` | `[serialized dict]` | Save system settings. |
-| **731** | `getERPSystemSettings` | `[]` | Load system settings. |
+| **731** | `getERPSystemSettings` | `[]` | Load system settings for the System settings tab only; runtime refresh uses `system_Settings` / `System_Settings` from 763. |
 | **732** | `removeERPSystemSetting` | `[settingName]` | Remove one system key. |
 | **760** | `setDefaultAccountSettings` | `[serialized dict]` | Save default account template. |
 | **761** | `getDefaultAccountSettings` | `[]` | Load default account template. |
@@ -80,8 +80,9 @@ Handled in `SettingsSectionComponent` via `handleBusinessError` + `settings.mess
 
 | Property | Role |
 |----------|------|
-| `default_Account_Settings` / `default_Entity_Settings` | Inherited defaults for that owner context. |
-| `account_Settings` / `entity_Settings` | Stored custom overrides only. |
+| `system_Settings` / `System_Settings` | Global system settings included with account/entity settings. |
+| `Default_Account_Settings` / `Default_Entity_Settings` | Inherited defaults for that owner context. |
+| `Account_Settings` / `Entity_Settings` | Stored custom overrides only. |
 
 The **account** and **entity** tabs each perform **one GET** per tab load and split:
 
@@ -96,23 +97,28 @@ File: `src/app/modules/summary/services/settings-engine.service.ts`.
 
 ### 4.1 `loadAllLayers(forceReload?)`
 
-- **731** system, **763** account (if `Account_ID`), **783** entity (if `Entity_ID`) in `forkJoin`.
+- Runtime network refresh calls **763** account (if `Account_ID`) and **783** entity (if `Entity_ID`) in `forkJoin`.
+- It does **not** call **731** because runtime `system_Settings` / `System_Settings` now comes from **763**.
+- Each runtime call is role-safe: if **763** or **783** fails, the affected layers fall back to current state or cached state so `refreshRuntimeFromServer()` can still emit.
 - Builds `SettingsLayersState`:
-  - `system` — flat dict from 731.
-  - `defaultAccount` / `defaultEntity` — from nested keys on 763/783 message: `default_Account_Settings`, `default_Entity_Settings`.
-  - `account` / `entity` — **only** `account_Settings` / `entity_Settings` (custom slice), not the full message.
+  - `system` — from `system_Settings` / `System_Settings` in 763, then fallback.
+  - `defaultAccount` — from `Default_Account_Settings` in 763.
+  - `account` — from `Account_Settings` in 763.
+  - `defaultEntity` — from `Default_Entity_Settings` in 783.
+  - `entity` — from `Entity_Settings` in 783.
 - Persists to local storage under `SETTINGS_CACHE_KEY` (`erp_settings_layers_cache_v1`).
 
 ### 4.2 Layer mutators
 
 - `getLayer`, `replaceLayer`, `removeLayerKeys`, `setLayerValues`.
-- `withOptimisticLayerUpdate` / `withOptimisticLayerRemoval` — optimistic UI then rollback on HTTP error.
+- All state writes route through private `commitState(nextState)`: `stateSubject.next` + `writeCache` + `applyEffectiveRuntimeToShell`.
+- Settings mutations should not use optimistic layer writes when a successful API response immediately calls `refreshRuntimeFromServer()`.
 
 ### 4.3 Runtime refresh (`refreshRuntimeFromServer`)
 
-After **any** successful settings mutation from the UI (save/remove/reset override), the app calls **`SettingsEngineService.refreshRuntimeFromServer()`**, which runs **`loadAllLayers(true)`** (731 + 763 + 783 as applicable) so all five layers match the server.
+After **any** successful settings mutation from the UI (save/remove/reset override), the app calls **`SettingsEngineService.refreshRuntimeFromServer()`**, which runs **`loadAllLayers(true)`** (763 + 783 only, as applicable) so all five layers match the server/runtime source.
 
-When layers are updated (including the first network load and when a **cached** state is restored), the engine runs **`applyEffectiveRuntimeToShell()`** (private):
+When layers are updated (including the first network load and when a **cached** state is restored), the engine commits through **`commitState()`**, which then runs **`applyEffectiveRuntimeToShell()`** (private):
 
 - Recomputes **`getSetting(key)`** using the resolver order (account → defaultAccount → entity → defaultEntity → system).
 - Writes **`language` / `theme`** into `LocalStorageService` preferences, updates **`LanguageDirService`**, **`TranslationService.useLanguage`**, **`LayoutService.applyUserTheme`**, and sets **`document.documentElement.lang` / `dir`**.

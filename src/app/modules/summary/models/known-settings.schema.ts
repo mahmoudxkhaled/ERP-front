@@ -33,37 +33,6 @@ export const KNOWN_SETTINGS_SCHEMA: Record<string, KnownSettingSchemaEntry> = {
             { labelKey: 'settings.sharedPanel.options.theme.dark', value: 'dark' },
         ],
     },
-    currency: {
-        type: 'select',
-        labelKey: 'settings.sharedPanel.keys.currency',
-        defaultValue: 'USD',
-        options: [
-            { labelKey: 'settings.sharedPanel.options.currency.USD', value: 'USD' },
-            { labelKey: 'settings.sharedPanel.options.currency.EGP', value: 'EGP' },
-            { labelKey: 'settings.sharedPanel.options.currency.OMR', value: 'OMR' },
-            { labelKey: 'settings.sharedPanel.options.currency.AED', value: 'AED' },
-            { labelKey: 'settings.sharedPanel.options.currency.SAR', value: 'SAR' },
-        ],
-    },
-    date_format: {
-        type: 'select',
-        labelKey: 'settings.sharedPanel.keys.dateFormat',
-        defaultValue: 'DD/MM/YYYY',
-        options: [
-            { labelKey: 'settings.sharedPanel.options.dateFormat.ddmmyyyy', value: 'DD/MM/YYYY' },
-            { labelKey: 'settings.sharedPanel.options.dateFormat.mmddyyyy', value: 'MM/DD/YYYY' },
-            { labelKey: 'settings.sharedPanel.options.dateFormat.yyyymmdd', value: 'YYYY/MM/DD' },
-        ],
-    },
-    notifications: {
-        type: 'select',
-        labelKey: 'settings.sharedPanel.keys.notifications',
-        defaultValue: 'true',
-        options: [
-            { labelKey: 'settings.sharedPanel.options.notifications.yes', value: 'true' },
-            { labelKey: 'settings.sharedPanel.options.notifications.no', value: 'false' },
-        ],
-    },
     session_validity: {
         type: 'number',
         labelKey: 'settings.sharedPanel.keys.sessionValidity',
@@ -103,7 +72,7 @@ export function getSchemaKeysOrdered(): string[] {
     return getAllKnownSettingKeys();
 }
 
-export const ACCOUNT_SETTINGS_KEYS = ['language', 'theme', 'currency', 'date_format', 'notifications'] as const;
+export const ACCOUNT_SETTINGS_KEYS = ['language', 'theme'] as const;
 
 export const SYSTEM_ONLY_SETTING_KEYS = ['session_validity', 'reset_password_token_validity'] as const;
 

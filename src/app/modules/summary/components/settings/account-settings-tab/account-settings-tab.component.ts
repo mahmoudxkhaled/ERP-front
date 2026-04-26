@@ -23,7 +23,10 @@ export class AccountSettingsTabComponent implements OnInit {
     ) {}
 
     ngOnInit(): void {
-        this.canManageDefault = this.permissionService.hasAnyRole([Roles.Developer, Roles.SystemAdministrator]);
+        this.canManageDefault = this.permissionService.hasAnyRole([
+            Roles.Developer,
+            Roles.SystemAdministrator,
+        ]);
         this.loadAccountTab();
     }
 
@@ -44,10 +47,11 @@ export class AccountSettingsTabComponent implements OnInit {
         this.settingsApiService.getAccountSettings(accountId).subscribe({
             next: (response: any) => {
                 this.loading = false;
+                console.log('[settings] Get_Account_Settings (763) response:', response);
                 if (response?.success && response?.message) {
                     const msg = response.message;
-                    this.defaultAccountData = { ...(msg.default_Account_Settings ?? {}) };
-                    this.accountCustomData = { ...(msg.account_Settings ?? {}) };
+                    this.defaultAccountData = { ...(msg.Default_Account_Settings ?? msg.default_Account_Settings ?? {}) };
+                    this.accountCustomData = { ...(msg.Account_Settings ?? msg.account_Settings ?? {}) };
                 } else {
                     this.defaultAccountData = {};
                     this.accountCustomData = {};

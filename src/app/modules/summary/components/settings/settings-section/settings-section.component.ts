@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { MessageService } from 'primeng/api';
-import { Observable, of } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { TranslationService } from 'src/app/core/services/translation.service';
 import { SettingsLayer } from '../../../models/settings-engine.model';
@@ -26,9 +26,11 @@ export class SettingsSectionComponent implements OnInit, OnChanges {
     @Input() layer!: SettingsLayer;
     @Input() titleKey!: string;
     @Input() showRemove = false;
+    @Input() allowCustomKey = true;
     @Input() fixedKeys?: string[];
     @Input() preloadedData: Record<string, string> | null = null;
     @Input() inheritedDefaults: Record<string, string> | null = null;
+    @Input() headerContext = '';
     @Output() reloadParentTab = new EventEmitter<void>();
 
     activeKeys: string[] = [];
@@ -42,6 +44,8 @@ export class SettingsSectionComponent implements OnInit, OnChanges {
 
     showRemoveConfirm = false;
     keyToRemove = '';
+
+    showDefaultSaveConfirm = false;
 
     private persisted: Record<string, string> = {};
     private ownerEntityOrAccountId = 0;
@@ -60,8 +64,28 @@ export class SettingsSectionComponent implements OnInit, OnChanges {
         private messageService: MessageService
     ) { }
 
+    get panelHeader(): string {
+        const title = this.translate.getInstant(this.titleKey);
+        const ctx = (this.headerContext || '').trim();
+        return ctx ? `${title} (${ctx})` : title;
+    }
+
     get showAddKey(): boolean {
         return !this.fixedKeys;
+    }
+
+    get hasUnsavedChanges(): boolean {
+        if (this.usesMergedCustomView()) {
+            const current = this.serializeDict(this.buildMergedCustomSavePayload());
+            const saved = this.serializeDict(this.customOverridesSnapshot || {});
+            return current !== saved || this.keysAddedLocally.size > 0;
+        }
+
+        const baseline = this.fixedKeys
+            ? mergeDictionaryWithDefaultsForKeys(this.activeKeys, this.persisted)
+            : this.persisted;
+
+        return this.activeKeys.some((k) => String(this.values?.[k] ?? '') !== String(baseline?.[k] ?? ''));
     }
 
     ngOnInit(): void {
@@ -106,37 +130,23 @@ export class SettingsSectionComponent implements OnInit, OnChanges {
     }
 
     onResetKey(key: string): void {
-        if (!this.usesMergedCustomView() || !key) {
+        if (!key) {
+            return;
+        }
+        if (this.layer === 'system') {
+            const entry = KNOWN_SETTINGS_SCHEMA[key];
+            if (!entry) {
+                return;
+            }
+            const defVal = String(entry.defaultValue ?? '');
+            this.values = { ...this.values, [key]: defVal };
+            return;
+        }
+        if (!this.usesMergedCustomView()) {
             return;
         }
         const defs = this.defaultsSnapshot;
         const hasDef = (k: string) => Object.prototype.hasOwnProperty.call(defs, k);
-        if (this.keysFromCustomApi.has(key) && hasDef(key)) {
-            this.saving = true;
-            this.getRemoveApiCall(key).subscribe({
-                next: (response: any) => {
-                    this.saving = false;
-                    if (!response?.success) {
-                        this.handleBusinessError('remove', response);
-                        return;
-                    }
-                    this.settingsEngineService.refreshRuntimeFromServer().subscribe({
-                        next: () => {
-                            this.reloadParentTab.emit();
-                            this.showSuccessToast(this.getSuccessKey('remove'));
-                        },
-                        error: () => {
-                            this.reloadParentTab.emit();
-                            this.showSuccessToast(this.getSuccessKey('remove'));
-                        },
-                    });
-                },
-                error: () => {
-                    this.saving = false;
-                },
-            });
-            return;
-        }
         if (hasDef(key) && !this.keysAddedLocally.has(key)) {
             const defVal = String(defs[key] ?? '');
             this.values = { ...this.values, [key]: defVal };
@@ -173,24 +183,57 @@ export class SettingsSectionComponent implements OnInit, OnChanges {
 
         if (this.usesMergedCustomView()) {
             const payload = this.buildMergedCustomSavePayload();
-            console.log(`[settings-section] save merged custom (layer=${this.layer})`, payload);
             this.saving = true;
-            this.getSetApiCall(payload).subscribe({
-                next: (response: any) => {
-                    console.log(`[settings-section] save merged response (layer=${this.layer})`, response);
-                    this.saving = false;
-                    if (!response?.success) {
-                        this.handleBusinessError('save', response);
+
+            const keysToRemove = this.getMergedCustomKeysToRemoveOnSave();
+            const remove$ = keysToRemove.length > 0 ? forkJoin(keysToRemove.map((k) => this.getRemoveApiCall(k))) : of([]);
+
+            remove$.subscribe({
+                next: (removeResponses: any[]) => {
+                    const failures = (removeResponses || []).find((r: any) => r && r.success === false);
+                    if (failures) {
+                        this.saving = false;
+                        this.handleBusinessError('remove', failures);
                         return;
                     }
-                    this.settingsEngineService.refreshRuntimeFromServer().subscribe({
-                        next: () => {
-                            this.reloadParentTab.emit();
-                            this.showSuccessToast(this.getSuccessKey('save'));
+
+                    const shouldSet = Object.keys(payload).length > 0 || this.keysAddedLocally.size > 0;
+                    if (!shouldSet) {
+                        this.settingsEngineService.refreshRuntimeFromServer().subscribe({
+                            next: () => {
+                                this.saving = false;
+                                this.reloadParentTab.emit();
+                                this.showSuccessToast(this.getSuccessKey('save'));
+                            },
+                            error: () => {
+                                this.saving = false;
+                                this.reloadParentTab.emit();
+                                this.showSuccessToast(this.getSuccessKey('save'));
+                            },
+                        });
+                        return;
+                    }
+
+                    this.getSetApiCall(payload).subscribe({
+                        next: (response: any) => {
+                            this.saving = false;
+                            if (!response?.success) {
+                                this.handleBusinessError('save', response);
+                                return;
+                            }
+                            this.settingsEngineService.refreshRuntimeFromServer().subscribe({
+                                next: () => {
+                                    this.reloadParentTab.emit();
+                                    this.showSuccessToast(this.getSuccessKey('save'));
+                                },
+                                error: () => {
+                                    this.reloadParentTab.emit();
+                                    this.showSuccessToast(this.getSuccessKey('save'));
+                                },
+                            });
                         },
                         error: () => {
-                            this.reloadParentTab.emit();
-                            this.showSuccessToast(this.getSuccessKey('save'));
+                            this.saving = false;
                         },
                     });
                 },
@@ -201,47 +244,68 @@ export class SettingsSectionComponent implements OnInit, OnChanges {
             return;
         }
 
+        if (this.layer === 'defaultAccount' || this.layer === 'defaultEntity') {
+            this.showDefaultSaveConfirm = true;
+            return;
+        }
+
+        this.executeNonMergedSave();
+    }
+
+    cancelDefaultSave(): void {
+        this.showDefaultSaveConfirm = false;
+    }
+
+    confirmDefaultSave(): void {
+        this.showDefaultSaveConfirm = false;
+        this.executeNonMergedSave();
+    }
+
+    get defaultSaveConfirmTitleKey(): string {
+        return this.layer === 'defaultEntity'
+            ? 'settings.sections.defaultEntity.saveConfirmTitle'
+            : 'settings.sections.defaultAccount.saveConfirmTitle';
+    }
+
+    get defaultSaveConfirmMessageKey(): string {
+        return this.layer === 'defaultEntity'
+            ? 'settings.sections.defaultEntity.saveConfirmMessage'
+            : 'settings.sections.defaultAccount.saveConfirmMessage';
+    }
+
+    private executeNonMergedSave(): void {
         const payload: Record<string, string> = {};
         this.activeKeys.forEach((k) => (payload[k] = this.values[k] ?? ''));
 
-        console.log(`[settings-section] save payload (layer=${this.layer})`, payload);
         this.saving = true;
-        const previous = this.settingsEngineService.getLayer(this.layer);
-        this.settingsEngineService
-            .withOptimisticLayerUpdate(this.layer, payload, this.getSetApiCall(payload))
-            .subscribe({
-                next: (response: any) => {
-                    console.log(`[settings-section] save response (layer=${this.layer})`, response);
-                    this.saving = false;
-                    if (!response?.success) {
-                        this.settingsEngineService.replaceLayer(this.layer, previous);
-                        this.handleBusinessError('save', response);
-                        return;
-                    }
-                    this.settingsEngineService.refreshRuntimeFromServer().subscribe({
-                        next: () => {
-                            this.persisted = { ...this.settingsEngineService.getLayer(this.layer) };
-                            if (!this.fixedKeys) {
-                                this.activeKeys = Object.keys(this.persisted).sort((a, b) => a.localeCompare(b));
-                                this.values = this.mergeValuesForKeys(this.activeKeys, this.persisted);
-                                this.refreshAvailableOptions();
-                            } else {
-                                this.values = mergeDictionaryWithDefaultsForKeys(this.activeKeys, this.persisted);
-                            }
-                            this.showSuccessToast(this.getSuccessKey('save'));
-                        },
-                        error: () => {
-                            this.persisted = { ...payload };
-                            this.settingsEngineService.replaceLayer(this.layer, payload);
-                            this.showSuccessToast(this.getSuccessKey('save'));
-                        },
-                    });
-                },
-                error: () => {
-                    this.saving = false;
-                    this.settingsEngineService.replaceLayer(this.layer, previous);
-                },
-            });
+        this.getSetApiCall(payload).subscribe({
+            next: (response: any) => {
+                this.saving = false;
+                if (!response?.success) {
+                    this.handleBusinessError('save', response);
+                    return;
+                }
+                this.settingsEngineService.refreshRuntimeFromServer().subscribe({
+                    next: () => {
+                        this.persisted = { ...this.settingsEngineService.getLayer(this.layer) };
+                        if (!this.fixedKeys) {
+                            this.activeKeys = Object.keys(this.persisted).sort((a, b) => a.localeCompare(b));
+                            this.values = this.mergeValuesForKeys(this.activeKeys, this.persisted);
+                            this.refreshAvailableOptions();
+                        } else {
+                            this.values = mergeDictionaryWithDefaultsForKeys(this.activeKeys, this.persisted);
+                        }
+                        this.showSuccessToast(this.getSuccessKey('save'));
+                    },
+                    error: () => {
+                        this.showSuccessToast(this.getSuccessKey('save'));
+                    },
+                });
+            },
+            error: () => {
+                this.saving = false;
+            },
+        });
     }
 
     requestRemove(key: string): void {
@@ -302,14 +366,10 @@ export class SettingsSectionComponent implements OnInit, OnChanges {
             this.rebuildPersistedForMerged();
             this.updateRowActions();
             this.refreshAvailableOptions();
-            this.settingsEngineService.refreshRuntimeFromServer().subscribe({
-                error: () => {},
-            });
             this.showSuccessToast(this.getSuccessKey('remove'));
             return;
         }
 
-        const previous = this.settingsEngineService.getLayer(this.layer);
         this.getRemoveApiCall(key).subscribe({
             next: (response: any) => {
                 console.log('[settings-section] confirmRemove response', response);
@@ -362,7 +422,6 @@ export class SettingsSectionComponent implements OnInit, OnChanges {
                 });
             },
             error: () => {
-                this.settingsEngineService.replaceLayer(this.layer, previous);
             },
         });
     }
@@ -548,16 +607,33 @@ export class SettingsSectionComponent implements OnInit, OnChanges {
         });
     }
 
+    private serializeDict(dict: Record<string, string>): string {
+        const keys = Object.keys(dict || {}).sort((a, b) => a.localeCompare(b));
+        const normalized: Record<string, string> = {};
+        keys.forEach((k) => (normalized[k] = String(dict[k] ?? '')));
+        return JSON.stringify(normalized);
+    }
+
     private extractLoadDictionary(response: any): Record<string, string> {
         if (!response?.success || !response?.message) {
             return {};
         }
         const msg = response.message;
-        if (this.layer === 'account' && msg && typeof msg === 'object' && !Array.isArray(msg) && 'account_Settings' in msg) {
-            return this.mapValuesToStringDict(msg.account_Settings);
+        if (this.layer === 'account' && msg && typeof msg === 'object' && !Array.isArray(msg)) {
+            if ('Account_Settings' in msg) {
+                return this.mapValuesToStringDict(msg.Account_Settings);
+            }
+            if ('account_Settings' in msg) {
+                return this.mapValuesToStringDict(msg.account_Settings);
+            }
         }
-        if (this.layer === 'entity' && msg && typeof msg === 'object' && !Array.isArray(msg) && 'entity_Settings' in msg) {
-            return this.mapValuesToStringDict(msg.entity_Settings);
+        if (this.layer === 'entity' && msg && typeof msg === 'object' && !Array.isArray(msg)) {
+            if ('Entity_Settings' in msg) {
+                return this.mapValuesToStringDict(msg.Entity_Settings);
+            }
+            if ('entity_Settings' in msg) {
+                return this.mapValuesToStringDict(msg.entity_Settings);
+            }
         }
         return this.settingsEngineService.extractDictionaryFromApiResponse(response);
     }
@@ -667,13 +743,46 @@ export class SettingsSectionComponent implements OnInit, OnChanges {
             const inCustom = this.keysFromCustomApi.has(k);
             const fromLocalAdd = this.keysAddedLocally.has(k);
             const defVal = Object.prototype.hasOwnProperty.call(defs, k) ? String(defs[k] ?? '') : undefined;
-            if (inCustom || fromLocalAdd) {
+            if (fromLocalAdd) {
+                out[k] = v;
+                continue;
+            }
+            if (inCustom) {
+                if (defVal !== undefined && String(v) === defVal) {
+                    continue;
+                }
                 out[k] = v;
             } else if (defVal !== undefined && String(v) !== defVal) {
                 out[k] = v;
             }
         }
         return out;
+    }
+
+    private getMergedCustomKeysToRemoveOnSave(): string[] {
+        if (!this.usesMergedCustomView()) {
+            return [];
+        }
+        const defs = this.defaultsSnapshot;
+        const hasDef = (k: string) => Object.prototype.hasOwnProperty.call(defs, k);
+        const keys: string[] = [];
+        for (const k of this.activeKeys) {
+            if (this.keysAddedLocally.has(k)) {
+                continue;
+            }
+            if (!this.keysFromCustomApi.has(k)) {
+                continue;
+            }
+            if (!hasDef(k)) {
+                continue;
+            }
+            const cur = String(this.values[k] ?? '');
+            const def = String(defs[k] ?? '');
+            if (cur === def) {
+                keys.push(k);
+            }
+        }
+        return keys;
     }
     // #endregion
 }

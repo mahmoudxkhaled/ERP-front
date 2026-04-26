@@ -838,9 +838,6 @@
             "theme": "Theme",
             "themeLight": "Light",
             "themeDark": "Dark",
-            "currency": "Currency",
-            "dateFormat": "Date Format",
-            "notifications": "Notifications",
             "messages": {
                 "saveSuccess": "Account settings saved successfully",
                 "resetSuccess": "Account settings restored to inherited defaults"
@@ -872,9 +869,6 @@
             "keys": {
                 "language": "Language",
                 "theme": "Theme",
-                "currency": "Currency",
-                "dateFormat": "Date format",
-                "notifications": "Notifications",
                 "sessionValidity": "Session validity (minutes)",
                 "resetPasswordTokenValidity": "Reset password token validity (minutes)",
                 "unknownKey": "{{key}}"
@@ -888,21 +882,6 @@
                 "theme": {
                     "light": "Light",
                     "dark": "Dark"
-                },
-                "currency": {
-                    "USD": "USD",
-                    "EGP": "EGP",
-                    "SAR": "SAR",
-                    "AED": "AED"
-                },
-                "dateFormat": {
-                    "ddmmyyyy": "DD/MM/YYYY",
-                    "mmddyyyy": "MM/DD/YYYY",
-                    "yyyymmdd": "YYYY/MM/DD"
-                },
-                "notifications": {
-                    "yes": "Yes",
-                    "no": "No"
                 }
             },
             "addExistingKey": "Add setting",
@@ -914,7 +893,9 @@
             "removeKeyTooltip": "Remove this setting permanently",
             "removeKeyAria": "Remove setting",
             "resetToDefaultTooltip": "Revert to inherited default value",
-            "resetToDefaultAria": "Revert to default"
+            "resetToDefaultAria": "Revert to default",
+            "resetToCodeDefaultTooltip": "Reset to the application default value",
+            "resetToCodeDefaultAria": "Reset to application default"
         },
         "sections": {
             "general": "General Settings",
@@ -923,6 +904,8 @@
             "privacy": "Privacy",
             "defaultAccount": {
                 "title": "Default account settings",
+                "saveConfirmTitle": "Save default account settings?",
+                "saveConfirmMessage": "This saves the default for accounts that do not have their own values. Accounts with overrides stay as they are.",
                 "saveSuccess": "Default account settings saved successfully",
                 "removeSuccess": "Default account setting removed successfully"
             },
@@ -933,6 +916,8 @@
             },
             "defaultEntity": {
                 "title": "Default entity settings",
+                "saveConfirmTitle": "Save default entity settings?",
+                "saveConfirmMessage": "This saves the default for entities that do not have their own values. Entities with overrides stay as they are.",
                 "saveSuccess": "Default entity settings saved successfully",
                 "removeSuccess": "Default entity setting removed successfully"
             },
@@ -942,6 +927,8 @@
                 "removeSuccess": "Entity override removed"
             },
             "common": {
+                "saveHintTooltip": "You have unsaved changes. Click here to save.",
+                "saveHintAria": "Save changes",
                 "removeConfirmTitle": "Remove setting",
                 "removeConfirmMessage": "Are you sure you want to remove the setting \"{{key}}\"?"
             }

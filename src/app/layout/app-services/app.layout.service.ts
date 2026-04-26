@@ -244,16 +244,12 @@ export class LayoutService {
         // Validate the theme and fallback to 'light' if invalid
         const validTheme: 'light' | 'dark' = theme === 'light' || theme === 'dark' ? theme : 'light';
 
-        // Access the current layout configuration
-        const config = this.config();
-        config.colorScheme = validTheme; // Update the color scheme
-        config.menuTheme = validTheme; // Update the menu theme
-
-        // Set the updated configuration in the layout service
-        this.config.set(config);
-
-        // Call the method to change the theme, based on the updated color scheme
-        this.changeTheme();
+        const current = this.config();
+        this.config.set({
+            ...current,
+            colorScheme: validTheme,
+            menuTheme: validTheme,
+        });
     }
 
     changeScale(value: number) {
