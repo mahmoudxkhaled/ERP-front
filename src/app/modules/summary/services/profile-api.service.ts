@@ -143,10 +143,16 @@ export class ProfileApiService {
      */
     setUserPreferences(userId: number, preferences: Record<string, string>): Observable<any> {
         this.isLoadingSubject.next(true);
-        const params = [userId.toString(), JSON.stringify(preferences)];
+        const params = [userId.toString(), this.serializePreferences(preferences)];
         return this.apiService.callAPI(300, this.getAccessToken(), params).pipe(
             finalize(() => this.isLoadingSubject.next(false))
         );
+    }
+
+    private serializePreferences(preferences: Record<string, string>): string {
+        const keys = Object.keys(preferences || {}).sort((a, b) => a.localeCompare(b));
+        const body = keys.map((k) => ({ [k]: String(preferences[k] ?? '') }));
+        return JSON.stringify(body);
     }
 
     /**

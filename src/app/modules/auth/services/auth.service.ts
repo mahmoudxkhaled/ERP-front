@@ -181,6 +181,11 @@ export class AuthService {
                     });
                 }
                 this.localStorageService.setItem('User_Preferences', dict);
+
+                const layoutConfig = String(dict['layoutConfig'] || '').trim();
+                if (layoutConfig) {
+                    localStorage.setItem('layoutConfig', layoutConfig);
+                }
             },
             error: () => { },
         });

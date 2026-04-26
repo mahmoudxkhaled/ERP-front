@@ -3,6 +3,8 @@ import { MenuService } from '../app-menu/app.menu.service';
 import { ColorScheme, LayoutService, MenuMode } from '../app-services/app.layout.service';
 import { MessageService } from 'primeng/api';
 import { TranslationService } from 'src/app/core/services/translation.service';
+import { LocalStorageService } from 'src/app/core/services/local-storage.service';
+import { ProfileApiService } from 'src/app/modules/summary/services/profile-api.service';
 
 @Component({
     selector: 'app-config',
@@ -33,7 +35,9 @@ export class AppConfigComponent implements OnInit {
         public layoutService: LayoutService,
         public menuService: MenuService,
         private messageService: MessageService,
-        public translate: TranslationService
+        public translate: TranslationService,
+        private localStorageService: LocalStorageService,
+        private profileApiService: ProfileApiService
     ) { }
 
     get visible(): boolean {
@@ -336,23 +340,39 @@ export class AppConfigComponent implements OnInit {
     }
 
     saveChanges() {
-        // Set saving state to show spinner
+        const userId = Number(this.localStorageService.getUserDetails()?.User_ID || 0);
+        if (!userId) {
+            return;
+        }
+
         this.isSaving = true;
 
-        // Save current configuration to localStorage using LayoutService
-        this.layoutService.saveConfigToStorage();
-        // You can also call an API here to save the settings
-        console.log('Settings saved:', this.layoutService.config());
-        this.hasUnsavedChanges = false; // Reset after saving
+        const currentPrefs = this.localStorageService.getUserPreferences() || {};
+        const nextPrefs: Record<string, string> = { ...currentPrefs };
+        nextPrefs['layoutConfig'] = JSON.stringify(this.layoutService.config());
 
-        // Show success message
-        this.messageService.add({
-            severity: 'success',
-            summary: this.translate.getInstant('shared.messages.success'),
-            detail: this.translate.getInstant('layout.config.settingsSavedSuccess'),
-            life: 3000
+        this.profileApiService.setUserPreferences(userId, nextPrefs).subscribe({
+            next: (response: any) => {
+                this.isSaving = false;
+                if (!response?.success) {
+                    return;
+                }
+
+                this.localStorageService.setItem('User_Preferences', nextPrefs);
+                this.layoutService.saveConfigToStorage();
+                this.hasUnsavedChanges = false;
+
+                this.messageService.add({
+                    severity: 'success',
+                    summary: this.translate.getInstant('shared.messages.success'),
+                    detail: this.translate.getInstant('layout.config.settingsSavedSuccess'),
+                    life: 3000,
+                });
+            },
+            error: () => {
+                this.isSaving = false;
+            },
         });
-        this.isSaving = false;
 
         // Wait a bit to show the spinner and message, then reload
         // setTimeout(() => {
@@ -364,6 +384,23 @@ export class AppConfigComponent implements OnInit {
         // Reset to default configuration using LayoutService
         this.layoutService.resetConfigToDefaults();
         this.hasUnsavedChanges = false; // Reset after resetting
+
+        const userId = Number(this.localStorageService.getUserDetails()?.User_ID || 0);
+        if (userId) {
+            const currentPrefs = this.localStorageService.getUserPreferences() || {};
+            const nextPrefs: Record<string, string> = { ...currentPrefs };
+            nextPrefs['layoutConfig'] = JSON.stringify(this.layoutService.config());
+            this.profileApiService.setUserPreferences(userId, nextPrefs).subscribe({
+                next: (response: any) => {
+                    if (!response?.success) {
+                        return;
+                    }
+                    this.localStorageService.setItem('User_Preferences', nextPrefs);
+                    this.layoutService.saveConfigToStorage();
+                },
+                error: () => { },
+            });
+        }
 
         this.messageService.add({
             severity: 'success',
